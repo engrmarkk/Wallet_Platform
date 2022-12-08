@@ -6,7 +6,7 @@
     ><small class="badge badge-pill bg-success py-2 px-4">To wallet</small>
   </div>
   <div class="col-10 col-xs-10 col-sm-10 col-md-6">
-    <!-- wallet sendimg money form-->
+    <!-- wallet sending money form-->
     <form
       action=""
       method="post"
@@ -57,7 +57,7 @@
       {{ form.hidden_tag() }}
 
       <!-- For Username validations -->
-      {{ form.account_number.label(class='label text-muted fw-bold mt-4 lead mb-2') }}
+      {{ form.account_number.label(class='label text-muted fw-bold mt-4 mb-2') }}
       {% if form.account_number.errors %} {{ form.account_number(class="form-control p-2",
       required=False, placeholder="Enter account Number") }} {% for error in
       form.account_number.errors %}
@@ -69,15 +69,15 @@
       required=False, placeholder="Enter account Number") }} {% endif %}
 
       <!-- For Amount validations -->
-      {{ form.amount.label(class='label text-muted fw-bold mt-4 lead mb-2') }}
-      {% if form.amount.errors %} {{ form.amount(class="form-control p-2 lead",
+      {{ form.amount.label(class='label text-muted fw-bold mt-4 mb-2') }}
+      {% if form.amount.errors %} {{ form.amount(class="form-control p-2 ",
       required=False, placeholder='Enter amount') }} {% for error in
       form.amount.errors %}
       <small class="text-danger mt-1"
         ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
         }}</small
       >
-      {% endfor %} {% else %} {{ form.amount(class="form-control p-2 lead",
+      {% endfor %} {% else %} {{ form.amount(class="form-control p-2 ",
       required=False, placeholder='Enter amount') }} {% endif %}
 
       <!-- For submit button -->

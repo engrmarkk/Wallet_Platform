@@ -39,7 +39,7 @@
   {{ form.hidden_tag() }}
 
   <!-- For First name validations -->
-  {{ form.first_name.label(class='label text-muted fw-bold mt-4 lead mb-2') }}
+  {{ form.first_name.label(class='label text-muted fw-bold mt-4   mb-2') }}
 
   {% if form.first_name.errors %} {{ form.first_name(class="form-control p-2",
   required=False, placeholder="Enter First Name") }} {% for error in
@@ -50,7 +50,7 @@
 
 
     <!-- For Last name validations -->
-    {{ form.last_name.label(class='label text-muted fw-bold mt-4 lead mb-2') }}
+    {{ form.last_name.label(class='label text-muted fw-bold mt-4   mb-2') }}
 
     {% if form.last_name.errors %} {{ form.last_name(class="form-control p-2",
     required=False, placeholder="Enter Last Name") }} {% for error in
@@ -60,7 +60,7 @@
     required=False, placeholder="Enter Last Name") }} {% endif %}
 
   <!-- For Emails validations -->
-  {{ form.email.label(class='label text-muted fw-bold mt-4 lead mb-2') }}
+  {{ form.email.label(class='label text-muted fw-bold mt-4   mb-2') }}
 
   {% if form.email.errors %} {{ form.email(class="form-control p-2",
   required=False, placeholder="Enter email") }} {% for error in
@@ -71,7 +71,7 @@
 
 
     <!-- For Phone number validations -->
-    {{ form.phone_number.label(class='label text-muted fw-bold mt-4 lead mb-2') }}
+    {{ form.phone_number.label(class='label text-muted fw-bold mt-4   mb-2') }}
 
     {% if form.phone_number.errors %} {{ form.phone_number(class="form-control p-2",
     required=False, placeholder="Enter Phone Number (080 xxxxxxx)") }} {% for error in
@@ -82,7 +82,7 @@
 
 
     <!-- For Username validations -->
-    {{ form.username.label(class='label text-muted fw-bold mt-4 lead mb-2') }}
+    {{ form.username.label(class='label text-muted fw-bold mt-4   mb-2') }}
 
     {% if form.username.errors %} {{ form.username(class="form-control p-2",
     required=False, placeholder="Enter Userame") }} {% for error in
@@ -93,24 +93,24 @@
 
 
   <!-- For password validations -->
-  {{ form.password.label(class='label text-muted fw-bold mt-4 lead mb-2') }}
+  {{ form.password.label(class='label text-muted fw-bold mt-4   mb-2') }}
 
   {% if form.password.errors %} {{ form.password(class="form-control p-2
-  lead", required=False, placeholder='Enter password') }} {% for error in
+   ", required=False, placeholder='Enter password') }} {% for error in
   form.password.errors %}
   <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
-  {% endfor %} {% else %} {{ form.password(class="form-control p-2 lead",
+  {% endfor %} {% else %} {{ form.password(class="form-control p-2  ",
   required=False, placeholder='Enter password') }} {% endif %}
 
 
     <!-- For Confrim password validations -->
-    {{ form.confirm_password.label(class='label text-muted fw-bold mt-4 lead mb-2') }}
+    {{ form.confirm_password.label(class='label text-muted fw-bold mt-4   mb-2') }}
 
     {% if form.confirm_password.errors %} {{ form.confirm_password(class="form-control p-2
-    lead", required=False, placeholder='Confirm password') }} {% for error in
+     ", required=False, placeholder='Confirm password') }} {% for error in
     form.confirm_password.errors %}
     <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
-    {% endfor %} {% else %} {{ form.confirm_password(class="form-control p-2 lead",
+    {% endfor %} {% else %} {{ form.confirm_password(class="form-control p-2  ",
     required=False, placeholder='Confirm password') }} {% endif %}
 
 

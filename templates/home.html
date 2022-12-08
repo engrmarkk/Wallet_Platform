@@ -44,8 +44,8 @@
              <i class="py-1 fas fa-share"></i>&nbsp; Send Money
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item text-decoration-none text-dark fw-bold small" href="{{ url_for('view.pay') }}">Send to wallet</a>
-              <a class="dropdown-item text-decoration-none text-dark fw-bold small" href="#">Send to bank</a>
+              <a class="dropdown-item text-decoration-none text-dark  small" href="{{ url_for('view.pay') }}">Send to wallet</a>
+              <a class="dropdown-item text-decoration-none text-dark small" href="#">Send to bank</a>
             </div>
           </div>
         
@@ -64,9 +64,9 @@
     </div>
     <hr style="border: 1px solid rgb(112, 112, 110);" class="mt-5">
     <div>
-      <p class="text-center lead fw-bold text-muted">Recent transaction histories</p>
+      <p class="text-center fw-bold text-muted">Recent transaction histories</p>
       {% if not current_user.transacts %}
-        <p class="text-center h4 text-warning mt-3">NO RECORDS</p>
+        <p class="text-center h4 text-warning mt-3">NO RECORD</p>
         {% else %}
 
 <!-- Table -->
