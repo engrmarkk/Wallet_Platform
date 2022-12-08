@@ -104,21 +104,18 @@
         <!-- Name Field -->
         <div>
           {{ form.name.label(class='text-muted text fs-5') }} <br />
-          {{ form.name(class='form-control text-muted', placeholder='Enter your
-          name', required=False) }}
+          {{ form.name(class='form-control text-muted', placeholder='Enter your name', required=False) }}
         </div>
         <!-- Email Field -->
         <div class="mt-3">
           {{ form.email.label(class='text-muted text fs-5') }} <br />
-          {{ form.email(class='form-control text-muted', placeholder='Enter your
-          email', required=False) }}
+          {{ form.email(class='form-control text-muted', placeholder='Enter your email', required=False) }}
         </div>
         <!-- Message Field -->
         <div class="mt-3">
           {{ form.message.label(class='text-muted text fs-5') }} <br />
           <!-- If error -->
-          {{ form.message(class='form-control text-muted', placeholder='Enter
-          your message', required=False) }}
+          {{ form.message(class='form-control text-muted', placeholder='Enter your message', required=False) }}
         </div>
         <!-- Submit Field -->
         <div class="mt-4">{{ form.submit(class='btn btn-success w-100') }}</div>

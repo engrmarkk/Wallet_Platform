@@ -78,7 +78,7 @@
     <!-- Navbar -->
     <nav class="d-flex align-items-center navbar navbar-expand-lg nav-bar py-3" id="navbar">
       <div class="container">
-        <a href="{{ url_for('home') }}" class="navbar-brand">
+        <a href="{{ url_for('view.home') }}" class="navbar-brand">
           <img
             src="{{ url_for('static', filename='images/logo-normal.png') }}"
             alt="company's logo"
@@ -101,7 +101,7 @@
         <div class="collapse navbar-collapse" id="navmenu">
           <ul class="navbar-nav m-auto">
             <li class="nav-item">
-              <a href="{{ url_for('home') }}" class="nav-link nnnnn" id="navlinks">
+              <a href="{{ url_for('view.home') }}" class="nav-link nnnnn" id="navlinks">
                 <i class="fas fa-home d-none d-lg-inline"></i>
                 Home</a>
             </li>
@@ -131,9 +131,9 @@
                 </div>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item text-decoration-none text-dark fw-bold small" href="{{ url_for('account') }}">Profile</a>
+                  <a class="dropdown-item text-decoration-none text-dark fw-bold small" href="{{ url_for('view.account') }}">Profile</a>
                   <a class="dropdown-item text-decoration-none text-dark fw-bold small" href="#">Account</a>
-                  <a class="dropdown-item text-decoration-none text-dark fw-bold small" href="{{ url_for('logout') }}">Logout</a>
+                  <a class="dropdown-item text-decoration-none text-dark fw-bold small" href="{{ url_for('auth.logout') }}">Logout</a>
                 </div>
               </div>
   
@@ -147,7 +147,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3" id="navbar">
       <div class="container">
-        <a href="{{ url_for('front_page') }}" class="navbar-brand">
+        <a href="{{ url_for('view.front_page') }}" class="navbar-brand">
           <img
             src="{{ url_for('static', filename='images/logo-yellow.png') }}"
             alt="company's logo"
@@ -181,7 +181,7 @@
               <a href="#" class="nav-link" style="color: white !important;">Help</a>
             </li>
             <li class="nav-item _button">
-              <a href="{{ url_for('login') }}" class="nav-link nav-btn" style="color: white !important;"><span>Sign In</span></a>
+              <a href="{{ url_for('auth.login') }}" class="nav-link nav-btn" style="color: white !important;"><span>Sign In</span></a>
             </li>
           </ul>
         </div>
@@ -192,7 +192,7 @@
       {% block content %} {% endblock content %}
 
       <!-- footer -->
-      <hr style="border: 1px solid white; margin-top: 7rem" />
+      <!-- <hr style="border: 1px solid rgb(124, 120, 120); margin-top: 7rem"/> -->
     {% if current_user.is_authenticated %}
     <!-- The footer to see if the user is logged in -->
     <footer>
@@ -201,7 +201,7 @@
     {% else %}
     <!-- The footer to see if the user is not yet logged in -->
       <footer
-        class="d-flex flex-column flex-lg-row justify-content-between mt-5"
+        class="d-flex flex-column flex-lg-row justify-content-between mt-5 footer-text"
       >
         <div class="w-100 py-3">
           <img

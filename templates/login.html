@@ -62,7 +62,7 @@
     <a
       class="text-success"
       style="text-decoration: none; font-weight: 500"
-      href=""
+      href="{{ url_for('view.reset_password') }}"
       >Reset it</a
     >
   </p>
@@ -75,7 +75,7 @@
     <a
       class="text-success"
       style="text-decoration: none; font-weight: 700"
-      href="{{ url_for('register') }}"
+      href="{{ url_for('auth.register') }}"
       >here</a
     > to get an account in a few minutes
   </p>
