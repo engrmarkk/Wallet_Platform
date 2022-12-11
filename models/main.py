@@ -13,7 +13,7 @@ class User(db.Model, UserMixin):
     phone_number = db.Column(db.Integer, unique=True, nullable=False)
     account_number = db.Column(db.Integer, unique=True, nullable=False)
     account_balance = db.Column(db.Integer, default=20000)
-    transacts = db.relationship('Transaction', backref='author', lazy=True)
+    transacts = db.relationship("Transaction", backref="author", lazy=True)
 
     # Define a representation with two attribute 'username' and 'email'
     def __repr__(self):

@@ -8,15 +8,17 @@ import os
 def create_app():
     base_dir = os.path.dirname(os.path.realpath(__file__))
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///' + os.path.join(base_dir, 'wallet.db')
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
+        base_dir, "wallet.db"
+    )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config['SECRET_KEY'] = '4f557e8e5eb51bfb7c42'
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 465
-    app.config['MAIL_USERNAME'] = 'atmme1992@gmail.com'
-    app.config['MAIL_PASSWORD'] = 'dvogogdoinarpugn'
-    app.config['MAIL_USE_TLS'] = False
-    app.config['MAIL_USE_SSL'] = True
+    app.config["SECRET_KEY"] = "4f557e8e5eb51bfb7c42"
+    app.config["MAIL_SERVER"] = "smtp.gmail.com"
+    app.config["MAIL_PORT"] = 465
+    app.config["MAIL_USERNAME"] = "atmme1992@gmail.com"
+    app.config["MAIL_PASSWORD"] = "dvogogdoinarpugn"
+    app.config["MAIL_USE_TLS"] = False
+    app.config["MAIL_USE_SSL"] = True
 
     db.init_app(app)
     mail.init_app(app)
@@ -31,8 +33,8 @@ def create_app():
     # redirect page to the login
     @login_manager.unauthorized_handler
     def unauthorized_handler():
-        flash('Login to access this page', category='info')
-        return redirect(url_for('routes.auth.login'))
+        flash("Login to access this page", category="info")
+        return redirect(url_for("auth.login"))
 
     # with app.app_context():
     #     db.create_all()

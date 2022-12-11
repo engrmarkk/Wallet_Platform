@@ -56,17 +56,17 @@
       </div>
       {{ form.hidden_tag() }}
 
-      <!-- For Username validations -->
+      <!-- For account number validations -->
       {{ form.account_number.label(class='label text-muted fw-bold mt-4 mb-2') }}
       {% if form.account_number.errors %} {{ form.account_number(class="form-control p-2",
-      required=False, placeholder="Enter account Number") }} {% for error in
+      required=False, placeholder="Enter account number") }} {% for error in
       form.account_number.errors %}
       <small class="text-danger mt-1"
         ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
         }}</small
-      >
+      ><br>
       {% endfor %} {% else %} {{ form.account_number(class="form-control p-2",
-      required=False, placeholder="Enter account Number") }} {% endif %}
+      required=False, placeholder="Enter account number") }} {% endif %}
 
       <!-- For Amount validations -->
       {{ form.amount.label(class='label text-muted fw-bold mt-4 mb-2') }}
@@ -76,7 +76,7 @@
       <small class="text-danger mt-1"
         ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
         }}</small
-      >
+      ><br>
       {% endfor %} {% else %} {{ form.amount(class="form-control p-2 ",
       required=False, placeholder='Enter amount') }} {% endif %}
 

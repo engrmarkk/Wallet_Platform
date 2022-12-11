@@ -44,7 +44,7 @@
   {% if form.first_name.errors %} {{ form.first_name(class="form-control p-2",
   required=False, placeholder="Enter First Name") }} {% for error in
   form.first_name.errors %}
-  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
+  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
   {% endfor %} {% else %} {{ form.first_name(class="form-control p-2",
   required=False, placeholder="Enter First Name") }} {% endif %}
 
@@ -55,7 +55,7 @@
     {% if form.last_name.errors %} {{ form.last_name(class="form-control p-2",
     required=False, placeholder="Enter Last Name") }} {% for error in
     form.last_name.errors %}
-    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
+    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
     {% endfor %} {% else %} {{ form.last_name(class="form-control p-2",
     required=False, placeholder="Enter Last Name") }} {% endif %}
 
@@ -65,7 +65,7 @@
   {% if form.email.errors %} {{ form.email(class="form-control p-2",
   required=False, placeholder="Enter email") }} {% for error in
   form.email.errors %}
-  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
+  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
   {% endfor %} {% else %} {{ form.email(class="form-control p-2",
   required=False, placeholder="Enter email") }} {% endif %}
 
@@ -76,7 +76,7 @@
     {% if form.phone_number.errors %} {{ form.phone_number(class="form-control p-2",
     required=False, placeholder="Enter Phone Number (080 xxxxxxx)") }} {% for error in
     form.phone_number.errors %}
-    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
+    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
     {% endfor %} {% else %} {{ form.phone_number(class="form-control p-2",
     required=False, placeholder="Enter Phone Number (080X XXX XXXX)") }} {% endif %}
 
@@ -87,7 +87,7 @@
     {% if form.username.errors %} {{ form.username(class="form-control p-2",
     required=False, placeholder="Enter Userame") }} {% for error in
     form.username.errors %}
-    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
+    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
     {% endfor %} {% else %} {{ form.username(class="form-control p-2",
     required=False, placeholder="Enter Username") }} {% endif %}
 
@@ -98,7 +98,7 @@
   {% if form.password.errors %} {{ form.password(class="form-control p-2
    ", required=False, placeholder='Enter password') }} {% for error in
   form.password.errors %}
-  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
+  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
   {% endfor %} {% else %} {{ form.password(class="form-control p-2  ",
   required=False, placeholder='Enter password') }} {% endif %}
 
@@ -109,7 +109,7 @@
     {% if form.confirm_password.errors %} {{ form.confirm_password(class="form-control p-2
      ", required=False, placeholder='Confirm password') }} {% for error in
     form.confirm_password.errors %}
-    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
+    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
     {% endfor %} {% else %} {{ form.confirm_password(class="form-control p-2  ",
     required=False, placeholder='Confirm password') }} {% endif %}
 
