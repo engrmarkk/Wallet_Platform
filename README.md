@@ -129,15 +129,15 @@ Python3: [Get Python](https://www.python.org/downloads/)
    ```
 2. Create a virtual environment
    ```sh
-   python -m venv
+   python -m venv your_venv_name
    ```
 3. Activate the virtual environment on powershell or cmd
    ```sh
-   venv\Scripts\activate.bat
+   your_venv_name\Scripts\activate.bat
    ```
    On Bash ('Scripts' for windows, 'bin' for linux)
    ```sh
-   source venv/Scripts/activate.csh
+   source your_venv_name/Scripts/activate.csh
    ```
 4. Install project dependencies
    ```sh

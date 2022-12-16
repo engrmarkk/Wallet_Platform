@@ -21,14 +21,18 @@ def login():
         # Query the User model and assign the queried data to the variable 'user'
         user = User.query.filter_by(email=form.email.data.lower()).first()
         # Check if the user exist in the database and if the inputted password is same with the one attached to the user on the database
-        if user and check_password_hash(user.password, form.password.data):
-            # If the check passed, login the user and flash a message to the user when redirected to the homepage
-            login_user(user, remember=True)
-            flash("Login Successful", "success")
-            return redirect(url_for("view.home", id=user.id, user=current_user))
+        if user:
+            if check_password_hash(user.password, form.password.data):
+                # If the check passed, login the user and flash a message to the user when redirected to the homepage
+                flash("Login Successful", "success")
+                login_user(user, remember=True)
+                return redirect(url_for("view.home", id=user.id, user=current_user))
+            else:
+                # If the check failed, flash a message to the user while still on the same page
+                flash("Check your Password", "danger")
         else:
-            # If the check failed, flash a message to the user while still on the same page
-            flash("Check your Email / Password", "danger")
+            # If the user doesn't exist, flash a message to the user while still on the same page
+            flash("User doesn't exist", "danger")
 
             """not using this"""
             # return redirect(url_for("auth.login"))
