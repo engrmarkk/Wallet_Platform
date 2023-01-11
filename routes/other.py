@@ -12,7 +12,7 @@ view = Blueprint("view", __name__)
 @view.route("/")
 def front_page():
     if current_user.is_authenticated:
-        return redirect(url_for("home"))
+        return redirect(url_for("view.home"))
     return render_template("front.html", date=datetime.utcnow())
 
 

@@ -36,7 +36,7 @@
       <div class="d-flex align-items-center mt-3">
         <i class="far fas fa-phone bg-warning rounded-circle p-2 h6"></i>
         <p class="text-white text    text-muted" style="margin-left: 1rem">
-          +01 xxx xxxx
+          +01 XXX XXXX
         </p>
       </div>
       <div class="d-flex align-items-center mt-3">
@@ -84,7 +84,7 @@
           form.name.errors %}
           <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
           {% endfor %} {% else %} {{ form.name(class='form-control text-muted', placeholder='Enter your name',
-          required=False, value=current_user.last_name + ' ' + current_user.first_name) }}
+          required=False, value=current_user.last_name.title() + ' ' + current_user.first_name.title()) }}
           {% endif %}
 
         </div>
