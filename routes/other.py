@@ -5,6 +5,7 @@ from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint
 from models import User, Transaction
 from form import *
+from werkzeug.security import generate_password_hash
 
 view = Blueprint("view", __name__)
 
@@ -100,7 +101,7 @@ def reset_password_verified(token):
     form = ResetPasswordForm()
     if request.method == "POST":
         if form.validate_on_submit():
-            password = form.password.data
+            password = generate_password_hash(form.password.data)
             user = User.verify_reset_token(token)
             if not user:
                 flash("Invalid token", "danger")
