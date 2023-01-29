@@ -106,6 +106,10 @@ def register():
                 )
                 return redirect(url_for("auth.register"))
 
+            if len(phone_number) is not 11:
+                flash ("Phone number must be 11 digits", "danger")
+                return redirect(url_for('auth.register'))
+
             # variable 'new_user'
             new_user = User(
                 first_name=first_name,
