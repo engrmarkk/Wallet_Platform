@@ -8,6 +8,12 @@ from form import *
 
 view = Blueprint("view", __name__)
 
+def send_reset_email(user):
+    token = user.get_reset_token()
+    msg = Message('Password Reset Request', sender="atmme1992@gmail.com", recipients=[user.email])
+    msg.html = render_template('reset_email.html', user=user, token=token)
+
+    mail.send(msg)
 
 @view.route("/")
 def front_page():
@@ -77,10 +83,34 @@ def reset_password():
     if request.method == "POST":
         if form.validate_on_submit():
             email = form.email.data
-            if not email:
-                flash("Provide your email please", "danger")
+            user = User.query.filter_by(email=email).first()
+            if not user:
+                flash("Provide valid email please", "danger")
                 return redirect(url_for("view.reset_password"))
+            else:
+                send_reset_email(user)
+                flash("An email has been sent to you", "success")
+                return redirect(url_for("view.reset_password"))
+
+            
     return render_template("reset.html", date=datetime.utcnow(), form=form)
+
+@view.route("/reset-password-verified/<token>", methods=["GET", "POST"])
+def reset_password_verified(token):
+    form = ResetPasswordForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            password = form.password.data
+            user = User.verify_reset_token(token)
+            if not user:
+                flash("Invalid token", "danger")
+                return redirect(url_for("view.reset_password"))
+            else:
+                user.password = password
+                db.session.commit()
+                flash("Password changed successfully", "success")
+                return redirect(url_for("auth.login"))
+    return render_template("reset_verified.html", date=datetime.utcnow(), form=form)
 
 
 @view.route("/send/")

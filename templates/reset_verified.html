@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Reset Password{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <form action="" method="post">
+            {% with messages = get_flashed_messages(with_categories=true) %} 
+            {% if messages %}
+                {% for category, message in messages %}
+                <div
+                class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
+                role="alert"
+                style="height: 3.5rem; transition: 0.6s"
+                >
+                {% if category=='success' %}
+                <p class="small text-center">
+                    <i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}
+                </p>
+                {% else %}
+                <p class="small text-center">
+                    <i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{
+                    message }}
+                </p>
+                {% endif %}
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                ></button>
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        {{ form.hidden_tag() }}
+        <!-- for password reset-->
+        {{ form.password.label }}
+        {% if form.password.errors %} 
+            {{ form.password(class="form-control p-2", required=False, placeholder="Enter new password") }} 
+        {% for error in form.password.errors %}
+        <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
+        }}</small><br>
+        {% endfor %} 
+        {% else %} 
+            {{ form.password(class="form-control p-2", required=False, placeholder="Enter new password") }} 
+        {% endif %}
+        {{ form.confirm_password.label }}
+        {% if form.confirm_password.errors %} {{ form.confirm_password(class="form-control p-2", required=False, placeholder="Confirm new password") }} 
+        {% for error in form.confirm_password.errors %}
+        <small class="text-danger mt-1"
+        ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
+        }}</small><br>
+        {% endfor %} {% else %} {{ form.confirm_password(class="form-control p-2", required=False, placeholder="Confirm new password") }} {% endif %}
+        
+        {{ form.submit(class="btn btn-primary mt-3") }}
+    </form>
+
+    
+{% endblock %}
+

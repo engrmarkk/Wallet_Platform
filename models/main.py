@@ -1,5 +1,7 @@
-from extensions import db
+from extensions import db, app
 from flask_login import UserMixin
+import jwt
+from time import time
 
 
 # creating the User table in the database
@@ -18,3 +20,14 @@ class User(db.Model, UserMixin):
     # Define a representation with two attribute 'username' and 'email'
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"
+
+    def get_reset_token(self, expires_sec=1800):
+        return jwt.encode({'reset_password': self.id, 'exp': time() + expires_sec}, key=app.config['SECRET_KEY'])
+
+    @staticmethod
+    def verify_reset_token(token):
+        try:
+            id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['reset_password']
+        except:
+            return None
+        return User.query.get(id)
