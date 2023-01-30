@@ -1,17 +1,18 @@
 from datetime import datetime
-from extensions import mail, db
+from extensions import mail, db, app
 from flask_mail import Message
 from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint
 from models import User, Transaction
 from form import *
+import os
 from werkzeug.security import generate_password_hash
 
 view = Blueprint("view", __name__)
 
 def send_reset_email(user):
     token = user.get_reset_token()
-    msg = Message('Password Reset Request', sender="atmme1992@gmail.com", recipients=[user.email])
+    msg = Message('Password Reset Request', sender="noah13victor@gmail.com", recipients=[user.email])
     msg.html = render_template('reset_email.html', user=user, token=token)
 
     mail.send(msg)
