@@ -1,12 +1,29 @@
 from datetime import datetime
-from extensions import db
+from extensions import db, mail
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint
 from models import User
 from form import *
+from flask_mail import Message
+from random import randint
 from werkzeug.security import generate_password_hash, check_password_hash
 
 auth = Blueprint("auth", __name__)
+
+otp = randint(100000, 999999)
+
+@auth.route('/validate',methods=['GET','POST'])
+def validate():
+    if request.method=="POST":
+        user_otp=request.form['otp']
+        if otp==int(user_otp):
+            User.confirmed = True
+            flash("Email verification successful", category= "success")
+            return redirect(url_for("auth.login"))
+        else:
+            flash("try again", category="danger")
+
+    return render_template('confirmation.html', date=datetime.utcnow())
 
 
 @auth.route("/login/", methods=["GET", "POST"])
@@ -119,12 +136,19 @@ def register():
                 email=email,
                 account_number=account_number,
                 password=password_hash,
-            )
+                confirmed=False
+            )            
+
+            msg=Message(subject='Email Verification',sender='noah13victor@gmail.com',recipients=[email])
+            msg.html = render_template("email_verification.html", first_name=first_name, otp=str(otp) )
+            mail.send(msg)
+
             # Add the 'new_user'
             db.session.add(new_user)
             db.session.commit()
-            flash("Registration Successful, You can now Login", category="success")
-            return redirect(url_for("auth.login"))
+
+            flash("A confirmation email has been sent to you via email", category="success")
+            return redirect(url_for("auth.validate"))
 
     return render_template("register.html", date=datetime.utcnow(), form=form)
 

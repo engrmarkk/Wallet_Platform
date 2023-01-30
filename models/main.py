@@ -16,6 +16,7 @@ class User(db.Model, UserMixin):
     account_number = db.Column(db.Integer, unique=True, nullable=False)
     account_balance = db.Column(db.Integer, default=20000)
     transacts = db.relationship("Transaction", backref="author", lazy=True)
+    confirmed = db.Column(db.Boolean, nullable=False, default=False)
 
     # Define a representation with two attribute 'username' and 'email'
     def __repr__(self):
