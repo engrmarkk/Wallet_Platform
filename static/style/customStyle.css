@@ -295,3 +295,10 @@ a.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d-flex.align-i
 .light{
     color: #b6b1f1 !important;
 }
+
+div small#upl{
+    position: absolute;
+    font-size: small;
+    cursor: pointer;
+    bottom: 0;
+}

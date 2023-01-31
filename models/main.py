@@ -15,6 +15,11 @@ class User(db.Model, UserMixin):
     phone_number = db.Column(db.Integer, unique=True, nullable=False)
     account_number = db.Column(db.Integer, unique=True, nullable=False)
     account_balance = db.Column(db.Integer, default=20000)
+    photo = db.Column(db.String(100), nullable=False, default='user.png')
+    transaction_pin = db.Column(db.Integer, nullable=False, default=1)
+    secret_question = db.Column(db.Text, nullable=True)
+    secret_answer = db.Column(db.String(50), nullable=True)
+    pin_set = db.Column(db.Boolean, default=False)
     transacts = db.relationship("Transaction", backref="author", lazy=True)
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
 

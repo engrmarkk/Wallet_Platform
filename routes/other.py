@@ -5,17 +5,20 @@ from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint
 from models import User, Transaction
 from form import *
+from func import save_image
 import os
 from werkzeug.security import generate_password_hash
 
 view = Blueprint("view", __name__)
 
+
 def send_reset_email(user):
     token = user.get_reset_token()
-    msg = Message('Password Reset Request', sender="noah13victor@gmail.com", recipients=[user.email])
+    msg = Message('Password Reset Request', sender="engrnark.send@gmail.com", recipients=[user.email])
     msg.html = render_template('reset_email.html', user=user, token=token)
 
     mail.send(msg)
+
 
 @view.route("/")
 def front_page():
@@ -93,9 +96,9 @@ def reset_password():
                 send_reset_email(user)
                 flash("An email has been sent to you", "success")
                 return redirect(url_for("view.reset_password"))
-
             
     return render_template("reset.html", date=datetime.utcnow(), form=form)
+
 
 @view.route("/reset-password-verified/<token>", methods=["GET", "POST"])
 def reset_password_verified(token):
@@ -115,10 +118,24 @@ def reset_password_verified(token):
     return render_template("reset_verified.html", date=datetime.utcnow(), form=form)
 
 
-@view.route("/send/")
+@view.route("/send/", methods=["GET", "POST"])
 @login_required
 def display_profile():
-    return render_template("display-profile.html", date=datetime.utcnow())
+    form = PhotoForm()
+    if request.method == "POST":
+        try:
+            f = form.image.data
+            if not f:
+                flash('nothing to upload', 'danger')
+                return redirect(url_for('view.display_profile'))
+            image_file = save_image(f)
+            current_user.photo = image_file
+            db.session.commit()
+            flash('Profile photo uploaded successfully', 'success')
+            return redirect(url_for('view.display_profile'))
+        except Exception as e:
+            flash(e, 'danger')
+    return render_template("display-profile.html", date=datetime.utcnow(), form=form)
 
 
 @view.route("/contact/", methods=["GET", "POST"])
