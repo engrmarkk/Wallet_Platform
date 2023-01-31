@@ -13,18 +13,20 @@ auth = Blueprint("auth", __name__)
 otp = randint(100000, 999999)
 
 
-@auth.route('/validate', methods=['GET', 'POST'])
-def validate():
+@auth.route("/validate/<email>", methods=["GET", "POST"])
+def validate(email):
     if request.method == "POST":
-        user_otp = request.form['otp']
+        user_otp = request.form["otp"]
+        user = User.query.filter_by(email=email).first_or_404()
         if otp == int(user_otp):
-            User.confirmed = True
+            user.confirmed = True
+            db.session.commit()
             flash("Email verification successful", category="success")
             return redirect(url_for("auth.login"))
         else:
             flash("try again", category="danger")
 
-    return render_template('confirmation.html', date=datetime.utcnow())
+    return render_template("confirmation.html", email=email, date=datetime.utcnow())
 
 
 @auth.route("/login/", methods=["GET", "POST"])
@@ -37,9 +39,26 @@ def login():
     # If the form gets validated on submit
     if form.validate_on_submit():
         # Query the User model and assign the queried data to the variable 'user'
-        user = User.query.filter_by(email=form.email.data.lower()).first()
+        user = User.query.filter_by(email=form.email.data.lower()).first_or_404()
+        email = form.email.data
+        if not user.confirmed:
+            try:
+                flash("First validate your email", category="danger")
+
+                msg = Message(
+                    subject="Email Verification",
+                    sender="noah13victor@gmail.com",
+                    recipients=[email],
+                )
+                msg.html = render_template("email_verification.html", otp=str(otp))
+                mail.send(msg)
+            except:
+                flash("failed to validate", "danger")
+                return render_template("login.html", date=datetime.utcnow(), form=form)
+
+            return redirect(url_for("auth.validate", email=email))
         # Check if the user exist in the database and if the inputted password is same with the one attached to the user on the database
-        if user:
+        elif user:
             if check_password_hash(user.password, form.password.data):
                 # If the check passed, login the user and flash a message to the user when redirected to the homepage
                 flash("Login Successful", "success")
@@ -95,11 +114,14 @@ def register():
                 return redirect(url_for("auth.register"))
 
             # Check if phone number exist
-            existing_phone = User.query.filter_by(email=form.phone_number.data).first()
+            existing_phone = User.query.filter_by(account_number=form.phone_number.data[1:]).first()
             # if the phone number exist
             if existing_phone:
                 # Flash this message to the user and redirect the user to that same page
                 flash("User with this phone number already exist", category="danger")
+                return redirect(url_for("auth.register"))
+            if not form.phone_number.data.isnumeric():
+                flash("This is not a valid number", category="danger")
                 return redirect(url_for("auth.register"))
 
             first_name = form.first_name.data.lower()
@@ -124,9 +146,9 @@ def register():
                 )
                 return redirect(url_for("auth.register"))
 
-            if len(phone_number) is not 11:
+            if len(phone_number) != 11:
                 flash("Phone number must be 11 digits", "danger")
-                return redirect(url_for('auth.register'))
+                return redirect(url_for("auth.register"))
 
             # variable 'new_user'
             new_user = User(
@@ -137,19 +159,29 @@ def register():
                 email=email,
                 account_number=account_number,
                 password=password_hash,
-                confirmed=False
-            )            
-
-            msg = Message(subject='Email Verification', sender='noah13victor@gmail.com', recipients=[email])
-            msg.html = render_template("email_verification.html", first_name=first_name, otp=str(otp))
-            mail.send(msg)
+                confirmed=False,
+            )
+            try:
+                msg = Message(
+                    subject="Email Verification",
+                    sender="noah13victor@gmail.com",
+                    recipients=[email],
+                )
+                msg.html = render_template("email_verification.html", otp=str(otp))
+                mail.send(msg)
+            except:
+                flash("failed to verify email", "danger")
+                return render_template("register.html", date=datetime.utcnow(), form=form)
 
             # Add the 'new_user'
             db.session.add(new_user)
             db.session.commit()
 
-            flash("A confirmation email has been sent to you via email", category="success")
-            return redirect(url_for("auth.validate"))
+            flash(
+                "A confirmation email has been sent to you via email",
+                category="success",
+            )
+            return redirect(url_for("auth.validate", email=email))
 
     return render_template("register.html", date=datetime.utcnow(), form=form)
 
