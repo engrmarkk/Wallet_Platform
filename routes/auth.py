@@ -12,13 +12,14 @@ auth = Blueprint("auth", __name__)
 
 otp = randint(100000, 999999)
 
-@auth.route('/validate',methods=['GET','POST'])
+
+@auth.route('/validate', methods=['GET', 'POST'])
 def validate():
-    if request.method=="POST":
-        user_otp=request.form['otp']
-        if otp==int(user_otp):
+    if request.method == "POST":
+        user_otp = request.form['otp']
+        if otp == int(user_otp):
             User.confirmed = True
-            flash("Email verification successful", category= "success")
+            flash("Email verification successful", category="success")
             return redirect(url_for("auth.login"))
         else:
             flash("try again", category="danger")
@@ -124,7 +125,7 @@ def register():
                 return redirect(url_for("auth.register"))
 
             if len(phone_number) is not 11:
-                flash ("Phone number must be 11 digits", "danger")
+                flash("Phone number must be 11 digits", "danger")
                 return redirect(url_for('auth.register'))
 
             # variable 'new_user'
@@ -139,8 +140,8 @@ def register():
                 confirmed=False
             )            
 
-            msg=Message(subject='Email Verification',sender='noah13victor@gmail.com',recipients=[email])
-            msg.html = render_template("email_verification.html", first_name=first_name, otp=str(otp) )
+            msg = Message(subject='Email Verification', sender='noah13victor@gmail.com', recipients=[email])
+            msg.html = render_template("email_verification.html", first_name=first_name, otp=str(otp))
             mail.send(msg)
 
             # Add the 'new_user'

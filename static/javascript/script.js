@@ -145,3 +145,10 @@ let setDarkMode = localStorage.getItem('dark');
 if(setDarkMode === 'on') {
     darkMode();
 }
+
+// image upload click
+
+
+function chooseFile() {
+    document.getElementById("fileInput").click();
+  }

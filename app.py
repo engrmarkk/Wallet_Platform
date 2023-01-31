@@ -1,8 +1,9 @@
-from extensions import app, db, login_manager, mail
+from extensions import app, db, login_manager, mail, migrate
 from flask import redirect, flash, url_for
 from routes import AuthenticationBlueprint, ViewBlueprint
 from models import User
 import os
+
 
 
 def create_app():
@@ -13,6 +14,7 @@ def create_app():
     )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "4f557e8e5eb51bfb7c42"
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
     app.config["MAIL_SERVER"] = "smtp.gmail.com"
     app.config["MAIL_PORT"] = 465
     app.config["MAIL_USERNAME"] = os.getenv("EMAIL_USER") # "atmme1992@gmail.com"
@@ -23,6 +25,7 @@ def create_app():
     db.init_app(app)
     mail.init_app(app)
     login_manager.init_app(app)
+    migrate.init_app(app, db)
 
     # The decorator that loads the user using the user's id
     @login_manager.user_loader
