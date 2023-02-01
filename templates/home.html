@@ -61,7 +61,12 @@
     background-position: right;
     "
     >
-        <p class="text-muted">Your NGN account is all set <br>
+        <p class="text-muted">
+          {% if pinset == True %}
+          Your NGN account is all set.
+          {% else %}
+          You need to create your transaction pin.
+          {% endif %}<br>
         Your account number is <span class="fw-bold text-success">{{ user.account_number }}</span></p>
     </div>
     <hr style="border: 1px solid rgb(112, 112, 110);" class="mt-5">

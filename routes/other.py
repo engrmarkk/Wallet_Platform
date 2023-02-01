@@ -37,6 +37,7 @@ def home():
     form = ConfirmAccount()
     beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
     balance = f"{current_user.account_balance:,}"
+    pinset = current_user.pin_set
     if request.method == "POST":
         if form.validate_on_submit():
             account_num = int(form.account_number.data)
@@ -50,8 +51,22 @@ def home():
 
             return redirect(url_for("view.pay", acct=account_num))
 
-    return render_template("home.html", date=datetime.utcnow(), beneficials=beneficials, user=current_user, balance=balance, form=form)
+    return render_template("home.html", date=datetime.utcnow(), beneficials=beneficials, user=current_user, balance=balance, form=form, pinset=pinset)
 
+@view.route("/create-transfer-pin/", methods=["GET", "POST"])
+@login_required
+def create_transfer_pin():
+    form = CreateTransferPin()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            pin = int(form.transfer_pin.data)
+            user = User.query.filter_by(id=current_user.id).first()
+            user.transaction_pin = pin
+            user.pin_set = True
+            db.session.commit()
+            flash("Transfer pin created successfully", "success")
+            return redirect(url_for("view.home"))
+    return render_template("create_transfer_pin.html", date=datetime.utcnow(), form=form)
 
 @view.route("/pay/<acct>/", methods=["GET", "POST"])
 @login_required
@@ -60,15 +75,20 @@ def pay(acct):
     beneficial = []
     user = User.query.filter_by(account_number=acct).first()
     beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
+    transfer_pin = current_user.transaction_pin
     for each in beneficials:
         beneficial.append(each.account_number)
     if request.method == "POST":
         if form.validate_on_submit():
             amount = form.amount.data
+            pin = int(form.transfer_pin.data)
             user1 = User.query.filter_by(account_number=acct).first()
             if current_user.account_balance < amount:
                 flash("Insufficient Funds", "danger")
-                return redirect(url_for("view.pay"))
+                return redirect(url_for("view.pay", acct=acct))
+            if pin != transfer_pin:
+                flash("Invalid pin", "danger")
+                return redirect(url_for("view.pay", acct=acct))
             if form.add_beneficiary.data:
                 ben = Beneficiary(first_name=user1.first_name.lower(), last_name=user1.last_name.lower(),
                                   account_number=acct, user_id=current_user.id
@@ -137,7 +157,7 @@ def reset_password_verified(token):
     return render_template("reset_verified.html", date=datetime.utcnow(), form=form)
 
 
-@view.route("/send/", methods=["GET", "POST"])
+@view.route("/profile-picture/", methods=["GET", "POST"])
 @login_required
 def display_profile():
     form = PhotoForm()

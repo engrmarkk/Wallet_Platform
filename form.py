@@ -21,7 +21,13 @@ class LoginForm(FlaskForm):
 class SendMoneyForm(FlaskForm):
     amount = IntegerField("Amount", validators=[DataRequired(), NumberRange(min=100)])
     add_beneficiary = BooleanField("Add as beneficiary")
+    transfer_pin = IntegerField("Enter 4 digits transfer pin", validators=[DataRequired()])
     submit = SubmitField("Send")
+
+class CreateTransferPin(FlaskForm):
+    transfer_pin = IntegerField("Create 4 digits transfer pin", validators=[DataRequired(), NumberRange(min=1000, max=9999)])
+    confirm_transfer_pin = IntegerField("Confirm 4 digits transfer pin", validators=[DataRequired(), EqualTo("transfer_pin")])
+    submit = SubmitField("Create")
 
 
 class RegistrationForm(FlaskForm):

@@ -55,33 +55,23 @@
         />
       </div>
       {{ form.hidden_tag() }}
+        <!-- For wallet number -->
+        <div class="form-group">
+            {{ form.transfer_pin.label(class='form-label') }}
+            {{ form.transfer_pin(class='form-control', placeholder='Enter transfer pin') }}
 
-      <div>
-        <span class="text-muted"><span class="fw-bold"> Account Name</span><br> 
-       <span class="h4 text-white" > {{ user1.last_name.upper() }} &nbsp;{{ user1.first_name.upper() }}
-        </span>
-       </span>
-      </div>
+            {% for error in form.transfer_pin.errors %}
+            <p class="text-danger small">{{ error }}</p>
+            {% endfor %}
 
-      <!-- For Amount validations -->
-      {{ form.amount.label(class='label text-muted fw-bold mt-4 mb-2') }}
-      {% if form.amount.errors %} {{ form.amount(class="form-control p-2 ",
-      required=False, placeholder='Enter amount') }} {% for error in
-      form.amount.errors %}
-      <small class="text-danger mt-1"
-        ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
-        }}</small
-      ><br>
-      {% endfor %} {% else %} {{ form.amount(class="form-control p-2 ",
-      required=False, placeholder='Enter amount') }} {% endif %}
+            {{ form.confirm_transfer_pin(class='form-control', placeholder='Confirm transfer pin') }}   
+            {% for error in form.confirm_transfer_pin.errors %}
+            <p class="text-danger small">{{ error }}</p>
+            {% endfor %}
+            
+        </div>
 
-      {% if user1.account_number not in beneficial %}
-      {{ form.add_beneficiary(class="") }} {{ form.add_beneficiary.label(class='label text-muted fw-bold mt-2') }}
-      <br>
-      {% endif %}
-      <br>
-      {{form.transfer_pin(class='form-control p-2', required=True, placeholder='Enter 4 digits transfer pin') }}
-      <br>
+      
             <!-- For submit button -->
       {{ form.submit(size=20, class='btn btn-success mt-4 w-25 p-1')}}
     </form>
