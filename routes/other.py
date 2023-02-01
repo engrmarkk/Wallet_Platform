@@ -1,12 +1,11 @@
 from datetime import datetime
-from extensions import mail, db, app
+from extensions import mail, db
 from flask_mail import Message
 from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint
 from models import User, Transaction
 from form import *
 from func import save_image
-import os
 from werkzeug.security import generate_password_hash
 
 view = Blueprint("view", __name__)
