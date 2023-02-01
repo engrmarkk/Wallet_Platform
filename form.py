@@ -4,6 +4,7 @@ from wtforms import (
     PasswordField,
     SubmitField,
     IntegerField,
+    BooleanField,
     TelField,
     TextAreaField,
 )
@@ -18,8 +19,8 @@ class LoginForm(FlaskForm):
 
 
 class SendMoneyForm(FlaskForm):
-    account_number = IntegerField("Wallet Account Number", validators=[DataRequired()])
     amount = IntegerField("Amount", validators=[DataRequired(), NumberRange(min=100)])
+    add_beneficiary = BooleanField("Add as beneficiary")
     submit = SubmitField("Send")
 
 
@@ -64,3 +65,7 @@ class ResetPasswordForm(FlaskForm):
 
 class PhotoForm(FlaskForm):
     image = FileField(validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'])])
+
+
+class ConfirmAccount(FlaskForm):
+    account_number = TelField("Wallet Account Number", validators=[DataRequired(), Length(max=10)])
