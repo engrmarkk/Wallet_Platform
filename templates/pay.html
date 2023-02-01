@@ -56,17 +56,12 @@
       </div>
       {{ form.hidden_tag() }}
 
-      <!-- For account number validations -->
-      {{ form.account_number.label(class='label text-muted fw-bold mt-4 mb-2') }}
-      {% if form.account_number.errors %} {{ form.account_number(class="form-control p-2",
-      required=False, placeholder="Enter account number") }} {% for error in
-      form.account_number.errors %}
-      <small class="text-danger mt-1"
-        ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
-        }}</small
-      ><br>
-      {% endfor %} {% else %} {{ form.account_number(class="form-control p-2",
-      required=False, placeholder="Enter account number") }} {% endif %}
+      <div>
+        <span class="text-muted"><span class="fw-bold"> Account Name</span><br> 
+       <span class="h4 text-white" > {{ user1.last_name.upper() }} &nbsp;{{ user1.first_name.upper() }}
+        </span>
+       </span>
+      </div>
 
       <!-- For Amount validations -->
       {{ form.amount.label(class='label text-muted fw-bold mt-4 mb-2') }}
@@ -80,7 +75,11 @@
       {% endfor %} {% else %} {{ form.amount(class="form-control p-2 ",
       required=False, placeholder='Enter amount') }} {% endif %}
 
-      <!-- For submit button -->
+      {% if user1.account_number not in beneficial %}
+      {{ form.add_beneficiary(class="") }} {{ form.add_beneficiary.label(class='label text-muted fw-bold mt-2') }}
+      <br>
+      {% endif %}
+            <!-- For submit button -->
       {{ form.submit(size=20, class='btn btn-success mt-4 w-25 p-1')}}
     </form>
   </div>

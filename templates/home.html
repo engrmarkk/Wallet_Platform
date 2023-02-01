@@ -44,7 +44,9 @@
              <i class="py-1 fas fa-share"></i>&nbsp; Send Money
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item text-decoration-none text-dark  small" href="{{ url_for('view.pay') }}">Send to wallet</a>
+              <a class="dropdown-item text-decoration-none text-dark  small"
+              data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+              >Send to wallet</a>
               <a class="dropdown-item text-decoration-none text-dark small" href="#">Send to bank</a>
             </div>
           </div>
@@ -103,6 +105,82 @@
 <!-- ..........End of table.............. -->
 {% endif %}
 </div>
+</div>
+
+
+<!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  Launch static backdrop modal
+</button> -->
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable"">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm Account</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      
+      <div class="modal-body">
+      <form action="/home" method="post">
+      {{ form.hidden_tag() }}
+
+
+
+
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="flush-headingOne">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+              Beneficiaries
+            </button>
+          </h2>
+          <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+              {% for ben in beneficials %}
+              <div class="d-flex justify-content-between list-group-item">
+                <div class="d-flex flex-column">
+                  <p>{{ ben.last_name.title() + ' ' + ben.first_name.title() }}
+                    <br>
+                    {{ ben.account_number}}
+                  </p>
+                </div>
+                <div>
+                  <a class="btn btn-primary btn-sm" href="{{ url_for('view.pay', acct=ben.account_number) }}">Select</a>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+
+      <!-- For account number validations -->
+      {{ form.account_number.label(class='label text-primary fw-bold mt-4 mb-2') }}
+      {% if form.account_number.errors %} {{ form.account_number(class="form-control p-2",
+      required=False, placeholder="Enter account number") }} {% for error in
+      form.account_number.errors %}
+      <small class="text-danger mt-1"
+        ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
+        }}</small
+      ><br>
+      {% endfor %} {% else %} {{ form.account_number(class="form-control p-2",
+      required=False, placeholder="Enter account number") }} {% endif %}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          
+        <button type="submit" class="btn btn-primary">Confirm account</button>
+      </div>
+      </form>
+
+    </div>
+  </div>
 </div>
 
 {% endblock content %}

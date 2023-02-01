@@ -3,7 +3,7 @@ from extensions import mail, db
 from flask_mail import Message
 from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint
-from models import User, Transaction
+from models import User, Transaction, Beneficiary
 from form import *
 from func import save_image
 from werkzeug.security import generate_password_hash
@@ -31,30 +31,50 @@ def account():
     return render_template("account.html", date=datetime.utcnow())
 
 
-@view.route("/home/")
+@view.route("/home/", methods=["GET", "POST"])
 @login_required
 def home():
+    form = ConfirmAccount()
+    beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
     balance = f"{current_user.account_balance:,}"
-    return render_template(
-        "home.html", date=datetime.utcnow(), user=current_user, balance=balance
-    )
-
-
-@view.route("/pay/", methods=["GET", "POST"])
-@login_required
-def pay():
-    form = SendMoneyForm()
     if request.method == "POST":
         if form.validate_on_submit():
-            account_number = form.account_number.data
-            amount = form.amount.data
-            user1 = User.query.filter_by(account_number=account_number).first()
+            account_num = int(form.account_number.data)
+            user1 = User.query.filter_by(account_number=account_num).first()
             if not user1:
                 flash("Invalid account number", "danger")
-                return redirect(url_for("view.pay"))
+                return redirect(url_for("view.home"))
+            if account_num == current_user.account_number:
+                flash("You can't send money to yourself", "info")
+                return redirect(url_for("view.home"))
+
+            return redirect(url_for("view.pay", acct=account_num))
+
+    return render_template("home.html", date=datetime.utcnow(), beneficials=beneficials, user=current_user, balance=balance, form=form)
+
+
+@view.route("/pay/<acct>/", methods=["GET", "POST"])
+@login_required
+def pay(acct):
+    form = SendMoneyForm()
+    beneficial = []
+    user = User.query.filter_by(account_number=acct).first()
+    beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
+    for each in beneficials:
+        beneficial.append(each.account_number)
+    if request.method == "POST":
+        if form.validate_on_submit():
+            amount = form.amount.data
+            user1 = User.query.filter_by(account_number=acct).first()
             if current_user.account_balance < amount:
                 flash("Insufficient Funds", "danger")
                 return redirect(url_for("view.pay"))
+            if form.add_beneficiary.data:
+                ben = Beneficiary(first_name=user1.first_name.lower(), last_name=user1.last_name.lower(),
+                                  account_number=acct, user_id=current_user.id
+                                  )
+                db.session.add(ben)
+                db.session.commit()
             user1.account_balance += amount
             db.session.commit()
             transact1 = Transaction(
@@ -77,8 +97,8 @@ def pay():
             db.session.add(transact2)
             db.session.commit()
             flash(f"{amount} Naira has been sent to {user1.username}", "success")
-            return redirect(url_for("view.pay"))
-    return render_template("pay.html", date=datetime.utcnow(), form=form)
+            return redirect(url_for("view.pay", acct=acct))
+    return render_template("pay.html", date=datetime.utcnow(), form=form, user1=user, beneficial=beneficial)
 
 
 @view.route("/reset-password/", methods=["GET", "POST"])
