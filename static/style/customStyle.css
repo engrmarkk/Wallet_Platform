@@ -256,7 +256,9 @@ span.navbar-toggler-ico.three {
 }
 
 
-
+footer.footer{
+    margin-top: 10rem;
+}
 .footer-btn{
    background-color: #675be8;
    padding: 0.6rem 2rem; 
