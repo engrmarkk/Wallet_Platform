@@ -1,5 +1,5 @@
 /* Google Font */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
 
 
 :root{
@@ -11,7 +11,7 @@
     box-sizing:border-box;
     margin:0;
     padding:0;
-    font-family: "Poppins",  sans-serif;
+    font-family: "Quicksand",  sans-serif;
 }
 body{
     background: #ffffff;
@@ -39,7 +39,7 @@ body{
     color: #ffc107;
 }
 .navbar-brand span .text-green{
-    color: #4ca445;
+    color: #2e8bb6;
     margin:0;
 }
 .nav-item a.nav-link {
@@ -129,8 +129,12 @@ a.nav-link.nav-btn:hover::before{
 .hero-section{
     animation:1s hero ease-in;
 }
-a.mt-3.text-light.bg-success.px-4.fw-bold.py-2.text-decoration-none.rounded {
-    transition:0.3s ease-in-out;
+a.hero-btn{
+    transition: 0.3s ease-in-out;
+    background: #2e8bb6;
+    box-shadow: 0px 0px 15px #2e8bb6;
+    padding: 0.9rem 2rem !important;
+    border-radius: 10px !important;
 }
 a.mt-3.text-light.bg-success.px-4.fw-bold.py-2.text-decoration-none.rounded:hover {
     box-shadow: 0px 1px 5px 3px #ffc107;
@@ -148,9 +152,19 @@ a.mt-3.text-light.bg-success.px-4.fw-bold.py-2.text-decoration-none.rounded:hove
 .d-flex.flex-column.w-100.p-5 {
     align-items: center;
 }
-h1.text-warning.hero {
-    font-size: 3.8rem;
+h1.hero {
+    font-size: 4rem;
+    font-weight: 600;
     text-transform: capitalize;
+    font-family: "Sora" , sans-serif;
+    color: #000 !important;
+    line-height: 96px;
+}
+h1.hero span{
+    color:#2e8bb6;
+    font-family: inherit;
+    /* text-decoration: wavy underline #ffc107; */
+    border-bottom: 5px dashed #ffc107;
 }
 
 .navbar-toggler{
@@ -192,6 +206,16 @@ span.navbar-toggler-ico.three {
     display:none;
 }
 
+
+.hero-section{
+    margin-top: 2rem;
+    align-items: center;
+    flex-direction: row;
+}
+
+
+
+
 .d-none{
     display:none;
 }
@@ -203,10 +227,6 @@ img.login-img.w-50\.d-none\.d-lg-block {
     display: flex;
     justify-content: center;
     margin: 0 auto;
-}
-.d-flex {
-    /* justify-content: center; */
-    flex-direction: row;
 }
 .d-flex.login{
     align-items: center;
