@@ -36,7 +36,7 @@ body{
 .navbar-brand span {
     font-weight: 800;
     margin-left: 0.5rem;
-    color: #ffc107;
+    color: #5aaf45;
 }
 .navbar-brand span .text-green{
     color: #2e8bb6;
@@ -47,7 +47,7 @@ body{
     transition: 0.3s ease-in-out;
 }
 .nav-item a.nav-link:hover{
-    border-bottom:1px solid var(--accent-color);
+    color:#2e8bb6 !important;
 }
 .footer-text{
     text-align: center;
@@ -87,16 +87,16 @@ li.nav-item._box::before{
     height:10%;
     width:0%;
     border-radius:5px;
-    background: #ffc107;
+    background: #2e8bb6;
     bottom:0;
     left:0;
     transition:0.3s ease-in-out;
 }
 li.nav-item._box:hover::before{
-    width:50%;
+    width:80%;
 }
 a.nav-link.nav-btn{
-    border: 1px solid #9fa2a5;
+    border: 1.5px solid #2e8bb6;
     border-radius:5px;
     color: #333;
     padding-right: 1.5rem !important;
@@ -110,14 +110,14 @@ a.nav-link.nav-btn span{
 }
 
 a.nav-link.nav-btn:hover span{
-    color:#333 !important;
+    color:#fff !important;
 }
 a.nav-link.nav-btn::before{
     content:"";
     position:absolute;
     height:100%;
     width:0%;
-    background:#eee;
+    background:#2e8bb6;
     top:0;
     left:0;
     z-index:-1;
@@ -127,7 +127,7 @@ a.nav-link.nav-btn:hover::before{
     width:100%
 }
 .hero-section{
-    animation:1s hero ease-in;
+    animation:.6s hero ease-in;
 }
 a.hero-btn{
     transition: 0.3s ease-in-out;
@@ -140,12 +140,12 @@ a.mt-3.text-light.bg-success.px-4.fw-bold.py-2.text-decoration-none.rounded:hove
     box-shadow: 0px 1px 5px 3px #ffc107;
 }
     @keyframes hero {
-        from{
-            transform:translateY(20%);
+        0%{
+            transform:scale(0.9);
             opacity:0;
         }
-        to{
-            transform:translateY(0%);
+        50%{
+            transform:scale(1);
             opacity: 1;
         }
     }
@@ -164,7 +164,7 @@ h1.hero span{
     color:#2e8bb6;
     font-family: inherit;
     /* text-decoration: wavy underline #ffc107; */
-    border-bottom: 5px dashed #ffc107;
+    border-bottom: 11px dotted #5aaf45;
 }
 
 .navbar-toggler{
