@@ -29,26 +29,23 @@ body{
 .h3.balance{
     color: #675be8 !important;
 }
+.navbar{
+    background:transparent;
+
+}
 .navbar-brand span {
     font-weight: 800;
     margin-left: 0.5rem;
-    color: #4ca445;
+    color: #ffc107;
 }
-.navbar-brand span span{
-    color:#333;
+.navbar-brand span .text-green{
+    color: #4ca445;
     margin:0;
 }
-/* .nav-item a.nav-link {
-    color: var(--accent-color) !important;
-    transition: 0.3s ease-in-out;
-} */
-
-
-#navlinks {
-    color: var(--accent-color);
+.nav-item a.nav-link {
+    color: #333 !important;
     transition: 0.3s ease-in-out;
 }
-
 .nav-item a.nav-link:hover{
     border-bottom:1px solid var(--accent-color);
 }
@@ -64,11 +61,6 @@ body{
     background-color: #fff;
     box-shadow: 1px 3px 9px #3837375d;
 }
-
-#navbar2{
-    box-shadow: 1px 3px 9px #d4d4d4;
-}
-
 .nav-item a.nav-link {
     color: #343a40;
 }
@@ -106,6 +98,7 @@ li.nav-item._box:hover::before{
 a.nav-link.nav-btn{
     border: 1px solid #9fa2a5;
     border-radius:5px;
+    color: #333;
     padding-right: 1.5rem !important;
     padding-left: 1.5rem !important;
     position: relative;
