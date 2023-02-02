@@ -116,7 +116,6 @@ const usericon = document.querySelector('#usericon')
 const darkMode = () => {
     bodyEl.classList.toggle('night');
     navbar.classList.toggle('night');
-    usericon.classList.toggle('light');
     for(nav of navlink){
         nav.classList.toggle('light')
     }
@@ -131,10 +130,14 @@ darkBtn.addEventListener('click', () => {
         darkMode();
         // Set the value of the itwm to "on" when dark mode is on
         setDarkMode = localStorage.setItem('dark', 'on');
+        darkBtn.classList.remove('fa-moon')
+        darkBtn.classList.add('fa-sun')
     } else {
         darkMode();
         // Set the value of the item to  "null" when dark mode if off
         setDarkMode = localStorage.setItem('dark', null);
+        darkBtn.classList.remove('fa-sun')
+        darkBtn.classList.add('fa-moon')
     }
 });
 
