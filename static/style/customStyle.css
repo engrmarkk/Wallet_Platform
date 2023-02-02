@@ -170,11 +170,9 @@ a.mt-3.text-light.bg-success.px-4.fw-bold.py-2.text-decoration-none.rounded:hove
 }
     @keyframes hero {
         0%{
-            transform:scale(0.9);
             opacity:0;
         }
         50%{
-            transform:scale(1);
             opacity: 1;
         }
     }
