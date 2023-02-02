@@ -83,7 +83,8 @@
             src="{{ url_for('static', filename='images/logo-normal.png') }}"
             alt="company's logo"
             style="width: 2.5rem"
-          /><span>&nbsp;Easy<span class="text-muted">Transact</span></span>
+          />
+          <span>&nbsp;Easy<span class="text-green">Transact</span></span>
         </a>
 
         <button
@@ -147,14 +148,15 @@
 
     {% else %}
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3" id="navbar">
+    <nav class="navbar navbar-expand-lg py-3" id="navbar">
       <div class="container">
         <a href="{{ url_for('view.front_page') }}" class="navbar-brand">
           <img
             src="{{ url_for('static', filename='images/logo-yellow.png') }}"
             alt="company's logo"
             style="width: 2.5rem"
-          /><span class="text-light">&nbsp; EasyTransact</span>
+          />
+          <span>&nbsp;Easy<span class="text-green">Transact</span></span>
         </a>
 
         <button
@@ -171,19 +173,19 @@
         <div class="collapse navbar-collapse" id="navmenu">
           <ul class="navbar-nav ms-auto">
             <li class="nav-item _box">
-              <a href="#" class="nav-link" style="color: white !important;">Features</a>
+              <a href="#" class="nav-link">Features</a>
             </li>
             <li class="nav-item _box">
-              <a href="#about" class="nav-link" style="color: white !important;">Business</a>
+              <a href="#about" class="nav-link">Business</a>
             </li>
             <li class="nav-item _box">
-              <a href="#" class="nav-link" style="color: white !important;">Company</a>
+              <a href="#" class="nav-link">Company</a>
             </li>
             <li class="nav-item _box">
-              <a href="#" class="nav-link" style="color: white !important;">Help</a>
+              <a href="#" class="nav-link">Help</a>
             </li>
             <li class="nav-item _button">
-              <a href="{{ url_for('auth.login') }}" class="nav-link nav-btn" style="color: white !important;"><span>Sign In</span></a>
+              <a href="{{ url_for('auth.login') }}" class="nav-link nav-btn"><span>Sign In</span></a>
             </li>
           </ul>
         </div>
