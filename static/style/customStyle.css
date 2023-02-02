@@ -126,6 +126,37 @@ a.nav-link.nav-btn::before{
 a.nav-link.nav-btn:hover::before{
     width:100%
 }
+.hero-container{
+    position: relative;
+}
+.hero-container :is(.yellow1,.blue2,.yellow2,.blue1){
+    position: absolute;
+    z-index: -1;
+}
+img.blue1 {
+    width: 6rem !important;
+    top: 10%;
+    right: -23px;
+    filter: drop-shadow(2px 4px 6px black);
+}
+img.blue2 {
+    width: 3rem !important;
+    bottom: 15%;
+    left: 200px;
+    filter: drop-shadow(2px 4px 6px black);
+}
+img.yellow1 {
+    width: 7rem !important;
+    right: 1rem;
+    bottom: 16%;
+    filter: drop-shadow(2px 4px 6px black);
+}
+img.yellow2 {
+    width: 11rem !important;
+    left: 33rem;
+    top: 38%;
+    filter: drop-shadow(2px 4px 6px black);
+}
 .hero-section{
     animation:.6s hero ease-in;
 }
@@ -213,9 +244,28 @@ span.navbar-toggler-ico.three {
     flex-direction: row;
 }
 
+.text-h2{
+    font-size:4rem;
+    color:#2e8bb6;
+    font-weight:600;
+    text-shadow: 0 0 2px #000;
+}
+.text-h4{
+    color: #fff;
+    font-size:2.5rem;
+}
 
 
 
+.footer-btn{
+   background-color: #675be8;
+   padding: 0.6rem 2rem; 
+   border-radius:5px;
+   transition: .3s ease-in-out;
+}
+.footer-btn:hover{
+    box-shadow: 0 0 10px #2e8bb6;
+}
 .d-none{
     display:none;
 }
