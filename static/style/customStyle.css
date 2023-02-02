@@ -16,6 +16,7 @@
 body{
     background: #ffffff;
     color:#343a40 !important;
+    transition:0.3s ease-in-out;
 }
 .bg-accent {
     background-color: var(--accent-color) !important;
@@ -60,9 +61,6 @@ body{
     position:fixed;
     background-color: #fff;
     box-shadow: 1px 3px 9px #3837375d;
-}
-.nav-item a.nav-link {
-    color: #343a40;
 }
 .text-accent{
     color:var(--accent-color) !important;
@@ -190,6 +188,7 @@ h1.hero {
     font-family: "Sora" , sans-serif;
     color: #000 !important;
     line-height: 96px;
+    transition: 0.3s ease-in-out;
 }
 h1.hero span{
     color:#2e8bb6;
@@ -354,7 +353,18 @@ a.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d-flex.align-i
     background: #151515 !important;
 }
 
-
+.night h1.hero {
+    color: #fff !important;
+}
+.night .nav-item a.nav-link {
+    color: #fff !important;
+}
+p.text-muted{
+    transition: 0.3s ease-in-out;
+}
+.night p.text-muted {
+    color: #fff !important;
+}
 /* change nav links color when signed in and dark mode */
 
 .light{
