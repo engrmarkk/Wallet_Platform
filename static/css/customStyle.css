@@ -60,11 +60,7 @@ body.night {
     padding-top:1rem;
     border-top:1px solid #9fa2a5;
 }
-.nav-bar{
-    position:fixed;
-    background-color: #fff;
-    box-shadow: 1px 3px 9px #3837375d;
-}
+
 
 .text-accent{
     color:var(--accent-color) !important;

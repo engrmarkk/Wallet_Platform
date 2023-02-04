@@ -69,7 +69,7 @@ def create_transfer_pin():
             return redirect(url_for("view.home"))
     return render_template("create_transfer_pin.html", date=datetime.utcnow(), form=form)
 
-@view.route("change")
+
 
 @view.route("/pay/<acct>/", methods=["GET", "POST"])
 @login_required
