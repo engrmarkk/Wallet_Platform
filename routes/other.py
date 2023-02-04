@@ -28,7 +28,8 @@ def front_page():
 
 @view.route("/account/")
 def account():
-    return render_template("account.html", date=datetime.utcnow())
+    pinset = current_user.pin_set
+    return render_template("account.html", pinset=pinset, date=datetime.utcnow())
 
 
 @view.route("/home/", methods=["GET", "POST"])
@@ -67,6 +68,8 @@ def create_transfer_pin():
             flash("Transfer pin created successfully", "success")
             return redirect(url_for("view.home"))
     return render_template("create_transfer_pin.html", date=datetime.utcnow(), form=form)
+
+@view.route("change")
 
 @view.route("/pay/<acct>/", methods=["GET", "POST"])
 @login_required
