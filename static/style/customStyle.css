@@ -18,6 +18,9 @@ body{
     color:#343a40 !important;
     transition:0.3s ease-in-out;
 }
+body.night {
+    color:#fff !important;
+}
 .bg-accent {
     background-color: var(--accent-color) !important;
 }
@@ -236,7 +239,7 @@ span.navbar-toggler-ico.three {
 
 
 .hero-section{
-    margin-top: 2rem;
+    margin-top: 3rem;
     align-items: center;
     flex-direction: row;
 }
@@ -250,6 +253,14 @@ span.navbar-toggler-ico.three {
 .text-h4{
     color: #fff;
     font-size:2.5rem;
+}
+.text-home{
+    color:#333;
+}
+
+
+.login{
+    border-radius: 10px;
 }
 
 
@@ -312,6 +323,32 @@ a.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d-flex.align-i
     text-align: center;
 }
 
+form.confirmation{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: #00000054 0px 0px 12px 2px;
+    background: rgb(46 139 174 / 13%);
+    border-radius: 5px;
+}
+form.confirmation input{
+    padding: 1.5rem 3rem;
+    height: 2rem;
+    border-radius: 5px;
+    outline: none;
+    border: none;
+    text-align: center;
+    font-size: 1.5rem;
+}
+form.confirmation button{
+    margin-top: 1rem;
+    padding: 1rem 2rem;
+    outline: none;
+    border: none;
+    background: #3381ae;
+    color: #fff;
+    border-radius: 5px;
+}
 @media (max-width:960px) {
     a.nav-link {
         text-align: center;
