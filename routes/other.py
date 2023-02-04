@@ -61,7 +61,7 @@ def create_transfer_pin():
     if request.method == "POST":
         if form.validate_on_submit():
             pin = int(form.transfer_pin.data)
-            secret_question = form.secret_question.data
+            secret_question = request.form.get("secret_question")
             secret_answer = form.secret_answer.data
             user = User.query.filter_by(id=current_user.id).first()
             user.secret_question = secret_question

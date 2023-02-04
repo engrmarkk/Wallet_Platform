@@ -27,7 +27,6 @@ class SendMoneyForm(FlaskForm):
 class CreateTransferPin(FlaskForm):
     transfer_pin = IntegerField("Create 4 digits transfer pin", validators=[DataRequired(), NumberRange(min=1000, max=9999)])
     confirm_transfer_pin = IntegerField("Confirm 4 digits transfer pin", validators=[DataRequired(), EqualTo("transfer_pin")])
-    secret_question = StringField("Select a secret question (This question cannot be changed)", validators=[DataRequired(), Length(min=2, max=50)])
     secret_answer = StringField("Enter a secret answer (This answer cannot be changed)", validators=[DataRequired(), Length(min=2, max=50)])
     submit = SubmitField("Create")
 
