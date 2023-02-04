@@ -65,7 +65,7 @@
           {% if pinset == True %}
           Your NGN account is all set.
           {% else %}
-          You need to create your transaction pin.
+          You need to create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-success">Set pin</a>
           {% endif %}<br>
         Your account number is <span class="fw-bold text-success">{{ user.account_number }}</span></p>
     </div>

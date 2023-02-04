@@ -61,7 +61,11 @@ def create_transfer_pin():
     if request.method == "POST":
         if form.validate_on_submit():
             pin = int(form.transfer_pin.data)
+            secret_question = form.secret_question.data
+            secret_answer = form.secret_answer.data
             user = User.query.filter_by(id=current_user.id).first()
+            user.secret_question = secret_question
+            user.secret_answer = secret_answer
             user.transaction_pin = pin
             user.pin_set = True
             db.session.commit()
@@ -69,7 +73,24 @@ def create_transfer_pin():
             return redirect(url_for("view.home"))
     return render_template("create_transfer_pin.html", date=datetime.utcnow(), form=form)
 
-
+@view.route("/change-transfer-pin/", methods=["GET", "POST"])
+@login_required
+def change_transfer_pin():
+    form = ChangeTransferPin()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            pin = int(form.new_pin.data)
+            user = User.query.filter_by(id=current_user.id).first()
+            secret_answer = form.secret_answer.data
+            if secret_answer != current_user.secret_answer:
+                flash("Invalid answer", "danger")
+                return redirect(url_for("view.change_transfer_pin"))
+            user.transaction_pin = pin
+            db.session.commit()
+            flash("Transfer pin changed successfully", "success")
+            return redirect(url_for("view.home"))
+            
+    return render_template("change_transfer_pin.html", date=datetime.utcnow(), form=form, secret_question=current_user.secret_question)
 
 @view.route("/pay/<acct>/", methods=["GET", "POST"])
 @login_required
