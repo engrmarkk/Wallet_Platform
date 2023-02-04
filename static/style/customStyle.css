@@ -65,6 +65,7 @@ body.night {
     background-color: #fff;
     box-shadow: 1px 3px 9px #3837375d;
 }
+
 .text-accent{
     color:var(--accent-color) !important;
 }
@@ -237,7 +238,7 @@ span.navbar-toggler-ico.three {
     display:none;
 }
 
-
+/* ////////////////////////// */
 .hero-section{
     margin-top: 3rem;
     align-items: center;
@@ -263,6 +264,53 @@ span.navbar-toggler-ico.three {
     border-radius: 10px;
 }
 
+
+/* //////////////home.html//////////////// */
+.home .balance {
+    flex-direction: column;
+    text-align: center;
+}
+.balance .h3.bal-val {
+    color: #558eb8;
+    font-weight: 600;
+    font-family: "Sora",sans-serif;
+}
+.balance .bal-title {
+    color: #6c757d!important;
+    display: block;
+    padding: 0.2rem 1rem;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    font-size: 13px;
+    margin-bottom: 0.5rem;
+}
+.home .options {
+    justify-content: center;
+    gap: 1rem;
+}
+.home .badge {
+    height: 6rem;
+    width: 11rem;
+    font-size: 1.7rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    border-top-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    box-shadow: 0 0 10px 2px #7d74e6;
+}
+.options .dropdown-menu.show {
+    background: #fff;
+}
+.options .dropdown-menu.show a {
+    color: #000 !important;
+}
+.options .dropdown-menu.show a:active{
+    background: #7d74e6;
+    color: #fff !important;
+}
+/* /////////////////////////////// */
 
 footer.footer{
     margin-top: 10rem;
