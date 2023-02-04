@@ -37,6 +37,15 @@
       </a>
     </div>
     <div class="col-lg-4 col-md-6 col-sm-12 acc-col ">
+      {% if pinset == True %}
+      <a
+        href="#"
+        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
+      >
+        <i class="far fa-unlock"></i>
+        <p>Change pin</p>
+      </a>
+      {% else %}
       <a
         href="{{url_for('view.create_transfer_pin')}}"
         class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
@@ -44,6 +53,7 @@
         <i class="far fa-unlock"></i>
         <p>Transaction pin</p>
       </a>
+      {% endif %}
     </div>
 
     <div class="col-lg-4 col-md-6 col-sm-12 acc-col ">

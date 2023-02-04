@@ -29,6 +29,12 @@ class CreateTransferPin(FlaskForm):
     confirm_transfer_pin = IntegerField("Confirm 4 digits transfer pin", validators=[DataRequired(), EqualTo("transfer_pin")])
     submit = SubmitField("Create")
 
+class ChangeTransferPin(FlaskForm):
+    new_pin = IntegerField("Enter new 4 digits transfer pin", validators=[DataRequired(), NumberRange(min=1000, max=9999)])
+    confirm_new_pin = IntegerField("Confirm 4 digits transfer pin", validators=[DataRequired(), EqualTo("new_pin")])
+    email = StringField("Enter your email address", validators=[DataRequired(), Email()])
+    submit = SubmitField("Change")
+
 
 class RegistrationForm(FlaskForm):
     first_name = StringField(
