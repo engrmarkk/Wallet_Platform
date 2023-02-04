@@ -61,7 +61,7 @@
     background-position: right;
     "
     >
-        <p class="text-muted">
+        <p class="text-home">
           {% if pinset == True %}
           Your NGN account is all set.
           {% else %}
@@ -90,21 +90,21 @@
   <tbody>
     {% for transaction in current_user.transacts[::-1] %}
     {% if transaction.transaction_type == 'CRT' %}
-    <tr class="bg-accent text-center text-light">
+    <div class="notification bg-accent text-center text-light">
       <th scope="row">{{ transaction.transaction_type }}</th>
       <td>You received {{ transaction.transaction_amount }} from {{ transaction.sender.lower() }} on {{ transaction.date_posted.strftime('%Y-%m-%d') }}</td>
       <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
       <td>@{{ transaction.sender.lower() }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
-    </tr>
+    </div>
     {% else %}
-    <tr class="bg-danger text-center text-light">
+    <div class="notification bg-danger text-center text-light">
       <th scope="row">{{ transaction.transaction_type }}</th>
       <td>You sent {{ transaction.transaction_amount }} to {{ transaction.sender.lower() }} on {{ transaction.date_posted.strftime('%Y-%m-%d') }}</td>
       <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
       <td>@{{ transaction.sender.lower() }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
-    </tr>
+    </div>
     {% endif %}
     {% endfor %}
       </tbody>
