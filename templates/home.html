@@ -30,6 +30,13 @@
         <img src="{{ url_for('static', filename='images/nigeria.png') }}" class="bg-light rounded-circle py-2" style="width: 4rem;" alt="">
         </p>
         <p class="text-white px-3">
+          <p class="text-home">
+            {% if pinset == True %}
+            Your NGN account is all set.
+            {% else %}
+            You need to create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-success">Set pin</a>
+            {% endif %}
+          </p>
             <small class="bal-title text-muted">Wallet Balance</small>
             <span class="h3 bal-val">
                 <del style="text-decoration-style: double;">N</del>
@@ -54,21 +61,23 @@
 
           
     </div>
-    <div class="bg-mild p-3"
-    style="background: url(../static/images/atm-white.png);
-    background-size: 10rem;
+    <div class="acc-num p-3"
+    style="background: url(../static/images/home.svg);
+    background-size: 15rem;
     background-repeat: no-repeat;
     background-position: right;
     "
-    >
-        <p class="text-home">
-          {% if pinset == True %}
-          Your NGN account is all set.
-          {% else %}
-          You need to create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-success">Set pin</a>
-          {% endif %}<br>
-        Your account number is <span class="fw-bold text-success">{{ user.account_number }}</span></p>
+    >      
+        account number <br/>
+      <div class="acc-copy">
+          <i class="fa-solid fa-copy"></i>
+          <div class='acc-text'>
+            <span class="fw-bold ">{{ user.account_number }}</span>
+            <span>Copied!</span>
+          </div>
+        </div>
     </div>
+
     <hr style="border: 1px solid rgb(112, 112, 110);" class="mt-5">
     <div>
       <p class="text-center fw-bold text-muted">Recent transaction histories</p>

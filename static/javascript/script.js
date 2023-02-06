@@ -114,6 +114,13 @@ const navbar = document.querySelector('#navbar')
 const navlink = document.querySelectorAll('#navlinks')
 const usericon = document.querySelector('#usericon')
 const closeBtn = document.querySelector('.btn-close')
+const copyAcc = document.querySelector('.acc-num')
+const AccNum = document.querySelector('.acc-num span')
+let copyTimer = 2
+copyAcc.onclick = ()=>{
+    navigator.clipboard.writeText(AccNum.textContent)    
+}
+
 const darkMode = () => {
     bodyEl.classList.toggle('night');
     navbar.classList.toggle('night');

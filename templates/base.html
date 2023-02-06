@@ -103,24 +103,24 @@
 
         <div class="collapse navbar-collapse" id="navmenu">
           <ul class="navbar-nav m-auto">
-            <li class="nav-item">
-              <a href="{{ url_for('view.home') }}" class="nav-link" id="navlinks">
+            <li class="nav-item _box">
+              <a href="{{ url_for('view.home') }}" class="nav-link " id="navlinks">
                 <i class="fas fa-home d-none d-lg-inline"></i>
                 Home</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item _box" style="margin-left:2rem">
               <a href="" class="nav-link" id="navlinks">
-                <i class="far fa-money-bill-alt d-none d-lg-inline" style="margin-left: 2rem;"></i>
+                <i class="far fa-money-bill-alt d-none d-lg-inline"></i>
                 Pay</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item _box" style="margin-left:2rem">
               <a href="#" class="nav-link" id="navlinks">
-                <i class="far fa-credit-card d-none d-lg-inline" style="margin-left: 2rem;"></i>
+                <i class="far fa-credit-card d-none d-lg-inline"></i>
                 Card</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item _box" style="margin-left:2rem">
               <a href="#" class="nav-link" id="navlinks">
-                <i class="fas fa-business-time d-none d-lg-inline" style="margin-left: 2rem;"></i>
+                <i class="fas fa-business-time d-none d-lg-inline"></i>
                 Invest</a>
             </li>
 
@@ -129,7 +129,7 @@
             <div class="dropdown">
               <button class="text-accent" style="border: none; background: none;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
               >
-              <div class="d-flex align-items-center">
+              <div class="user d-flex align-items-center">
                  <img src="{{ url_for('static', filename='images/profile/' +current_user.photo) }}" 
                  style="width: 2rem;"
                  class="rounded" alt=""></i> &nbsp; {{ current_user.last_name.title() + ' ' + current_user.first_name.title() }}

@@ -47,7 +47,7 @@ body.night {
     margin:0;
 }
 .nav-item a.nav-link {
-    color: #333 !important;
+    color: #777 !important;
     transition: 0.3s ease-in-out;
 }
 .nav-item a.nav-link:hover{
@@ -69,6 +69,9 @@ button#dropdownMenuButton {
     display: flex;
     align-items: center;
     font-weight: 600;
+}
+button#dropdownMenuButton .user{
+    color:#777;
 }
 i.fas.fa-user-circle.h3 {
     color: #343a40;
@@ -282,7 +285,7 @@ span.navbar-toggler-ico.three {
     text-align: center;
 }
 .balance .h3.bal-val {
-    color: #558eb8;
+    color: #2e8bb6;
     font-weight: 600;
     font-family: "Sora",sans-serif;
 }
@@ -294,6 +297,58 @@ span.navbar-toggler-ico.three {
     border-radius: 5px;
     font-size: 13px;
     margin-bottom: 0.5rem;
+}
+.home .acc-num{
+    margin-top:1rem;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center;
+}
+.home .acc-num .acc-copy{
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:5px;
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    color:#111;
+    background:#eee;
+    cursor:pointer;
+}
+.home .acc-num .acc-copy .acc-text{
+    position: relative;
+    width: 6rem;
+    height: 2rem;
+}
+.home .acc-num .acc-copy .acc-text :nth-child(n){
+    position:absolute;
+    top:0;
+    left:0
+}
+.home .acc-num .acc-copy .acc-text :first-child{
+    z-index:-1;
+}
+.home .acc-num .acc-copy .acc-text :last-child{
+    z-index:1;
+}
+.home .acc-num .acc-copy:active .acc-text :last-child{
+    animation:hide 2s ease forwards;
+}
+@keyframes hide {
+    from{
+        z-index:5;
+    }
+    to{
+        z-index:-1;
+    }
+}
+.home .acc-num .acc-copy .acc-text{
+    border-left: 1px solid #aaa;
+}
+.home .acc-num .acc-copy :nth-child(n){
+    padding:5px;
 }
 .home .options {
     justify-content: center;
@@ -309,12 +364,14 @@ span.navbar-toggler-ico.three {
     flex-direction: column;
     border-top-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
-    box-shadow: 0 0 10px 2px #7d74e6;
+    box-shadow: 0 0 10px 2px #2e8bb6;
+    background: #2e8bb6 !important;
     cursor:pointer;
     transition: 0.3s ease-in-out;
 }
 .home .badge:hover{
     scale:1.1;
+    box-shadow: 0 0 2px #000;
 }
 .options .dropdown-menu.show {
     background: #fff;
