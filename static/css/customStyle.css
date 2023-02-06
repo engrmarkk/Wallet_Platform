@@ -254,8 +254,25 @@ span.navbar-toggler-ico.three {
 .text-home{
     color:#333;
 }
-
-
+.alert-dismissible{
+    position:relative;
+}
+.alert-dismissible::before{
+    content:"";
+    position:absolute;
+    bottom:0;
+    left:0;
+    height:5px;
+    width:0%;
+    z-index: 100;
+    background-color: #2e8bb6;
+    border-radius: 5px;
+    animation:run ease forwards 2s;
+}
+@keyframes run {
+        from{width:0}
+        to{width:100%}
+}
 .login{
     border-radius: 10px;
 }
@@ -295,6 +312,11 @@ span.navbar-toggler-ico.three {
     border-top-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
     box-shadow: 0 0 10px 2px #7d74e6;
+    cursor:pointer;
+    transition: 0.3s ease-in-out;
+}
+.home .badge:hover{
+    scale:1.1;
 }
 .options .dropdown-menu.show {
     background: #fff;
@@ -306,7 +328,23 @@ span.navbar-toggler-ico.three {
     background: #7d74e6;
     color: #fff !important;
 }
-/* /////////////////////////////// */
+/* /////////////Login////////////////// */
+
+form.login {
+    width: 50% !important;
+    border-radius: 10px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* /////////////////////////// */
+
+
+
+
+
+
+
 
 footer.footer{
     margin-top: 10rem;
