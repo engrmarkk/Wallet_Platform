@@ -1,14 +1,50 @@
-{% extends 'base.html' %}
-{% block content %}
+<title>Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&family=Quicksand:wght@400;700&family=Sora&display=swap" rel="stylesheet">
+<link rel='stylesheet' href="{{ url_for('static', filename='css/customStyle.css') }}"/>
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+  crossorigin="anonymous"
+/>
+<link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/customStyle.css') }}"
+    />
+    <script
+    type="text/javascript"
+    src="{{ url_for('static', filename='javascript/jquery-3.6.1.min.js') }}"
+  ></script>
+
+  <!-- Js -->
+
+  <script
+    src="{{ url_for('static', filename='javascript/script.js') }}"
+    defer
+  ></script>
+  <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/logo-normal.png') }}"
+    />
+
+
+
+<div class="login-container">
+  <a href="{{ url_for('view.home') }}" class="navbar-brand">
+    <img
+      src="{{ url_for('static', filename='images/logo-white.png') }}"
+      alt="company's logo"
+      style="width: 2.5rem"
+    />
+    <span>&nbsp;Easy<span class="text-green">Transact</span></span>
+  </a>
 <div class="d-flex login">
 <form
   action=""
   method="post"
-  class="login p-5 mt-5 w-100 bg-"
-  style="
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-    background: rgba(116, 111, 111, 0.212); 
-  "
+  class="login p-5 mt-5 w-100"
 >
 
  <!-- Flash messages -->
@@ -34,13 +70,13 @@
     {% endfor %} {% endif %} {% endwith %}
 
 
-  <p class="text-muted h3">Login to EasyTransact</p>
-  <p class="text-muted">To login, please type in the email address linked to your EasyTransact account</p>
+  <p class="login-header h3">Login to EasyTransact</p>
+  <p class="text-muted"> login with your email address</p>
   {{ form.hidden_tag() }}
 
   
   <!-- For Emails validations -->
-  <div>{{ form.email.label(class='label text-muted fw-bold mt-4 mb-2') }}
+  <div>{{ form.email.label(class='label fw-bold mt-4 mb-2') }}
   {% if form.email.errors %} {{ form.email(class="form-control p-2",
   required=False, placeholder="Enter email") }} {% for error in
   form.email.errors %}
@@ -60,21 +96,21 @@
   <p style="color: black; margin-top: 1rem" class="text-muted">
     Forgot Password?
     <a
-      class="text-success"
-      style="text-decoration: none; font-weight: 500"
+      class="reset"
+      style="text-decoration: none; "
       href="{{ url_for('view.reset_password') }}"
       >Reset it</a
     >
   </p>
 
   <!-- For submit button -->
-  {{ form.submit(size=20, class='btn btn-success mt-1 w-25 p-1')}}
+  {{ form.submit(size=20, class='btn btn-success mt-1 w-25')}}
 
   <p style="color: black; margin-top: 1rem" class="text-muted  small">
     If you don't have an account, you can register
     <a
-      class="text-success"
-      style="text-decoration: none; font-weight: 700"
+      class="signup"
+      style="text-decoration: none;"
       href="{{ url_for('auth.register') }}"
       >here</a
     > to get an account in a few minutes
@@ -83,4 +119,4 @@
 
 <!--<img class="login-img w-50.d-none.d-lg-block px-5" src="{{ url_for('static', filename='images/login.svg') }}" alt="login">-->
 </div>
-<!--{% endblock content %}-->
+</div>
