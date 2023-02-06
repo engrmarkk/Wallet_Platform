@@ -201,6 +201,23 @@ def display_profile():
     return render_template("display-profile.html", date=datetime.utcnow(), form=form)
 
 
+@view.route("/card/", methods=["GET", "POST"])
+@login_required
+def card():
+    form = CardForm()
+    if request.method == "POST":
+        if form.validate_on_submit():
+            card_number = form.card_number.data
+            expiry_date = form.expiry_date.data
+            cvv = form.cvv.data
+            card = Card(card_number=card_number, expiry_date=expiry_date, cvv=cvv, user_id=current_user.id)
+            db.session.add(card)
+            db.session.commit()
+            flash("Card added successfully", "success")
+            return redirect(url_for("view.card"))
+    return render_template("card.html", date=datetime.utcnow(), form=form)
+
+
 @view.route("/contact/", methods=["GET", "POST"])
 @login_required
 def contact():
