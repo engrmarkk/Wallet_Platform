@@ -68,6 +68,34 @@
             {% for error in form.confirm_transfer_pin.errors %}
             <p class="text-danger small">{{ error }}</p>
             {% endfor %}
+            <br>
+            <select name="secret_question" id="secret_question" required>
+                <option value="What elementary school did you attend?">What elementary school did you attend?</option>
+                <option value="What is your favorite color?">What is your favorite color?</option>
+                <option value="What is your favorite food?">What is your favorite food?</option>
+                <option value="When you were young, what did you want to be when you grew up?">When you were young, what did you want to be when you grew up?</option>
+                <option value="What is your middle name?">What is your middle name?</option>
+                <option value="What is your favorite place?">What is your favorite place?</option>
+                <option value="Who was your childhood hero?">Who was your childhood hero?</option>
+                <option value="What is your favorite holiday?">What is your favorite holiday?</option>
+                <option value="What is your favorite drink?">What is your favorite drink?</option>
+                <option value="Where was your best family vacation as a kid?">Where was your best family vacation as a kid?</option>   
+                <option value="What is your favorite fruit?">What is your favorite fruit?</option>
+                <option value="What is your favorite store?">What is your favorite store?</option>
+                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                <option value="What is your favorite app?">What is your favorite app?</option>
+                <option value="What is your favorite game?">What is your favorite game?</option>
+                <option value="What is the name of your first pet?">What is the name of your first pet?</option>
+                <option value="What is your favorite sport?">What is your favorite sport?</option>
+                <option value="What was your first car?">What was your first car?</option>
+                <option value="What is the name of the town where you were born?">What is the name of the town where you were born?</option>
+            </select>
+            <br>
+            {{ form.secret_answer(class='form-control', placeholder='Secret answer') }}   
+            {% for error in form.secret_answer.errors %}
+            <p class="text-danger small">{{ error }}</p>
+            {% endfor %}
+
             
         </div>
 
