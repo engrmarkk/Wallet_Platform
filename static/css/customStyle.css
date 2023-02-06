@@ -273,9 +273,7 @@ span.navbar-toggler-ico.three {
         from{width:0}
         to{width:100%}
 }
-.login{
-    border-radius: 10px;
-}
+
 
 
 /* //////////////home.html//////////////// */
@@ -331,12 +329,57 @@ span.navbar-toggler-ico.three {
 /* /////////////Login////////////////// */
 
 form.login {
-    width: 50% !important;
+    width: 90% !important;
+    padding: 2rem !important;
     border-radius: 10px;
     margin: 0 auto;
     text-align: center;
+    background: #fff;
 }
-
+.login-container{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background:#2e8bb6;
+}
+.login-container a.navbar-brand{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+.login-container a.navbar-brand span{
+    color:#fff !important;
+    font-size: 2rem;
+}
+.login-container .login-header{
+    font-weight: 600;
+    color: #2e8bb6;
+}
+.login-container label {
+    font-size: 13px;
+    display: block;
+    text-align: left;
+    color: #2e8bb6 !important;
+}
+.login-container .btn {
+    background: #2e8bb6;
+    outline: none;
+    border: none;
+    padding: 0.6rem 1rem !important;
+    transition:0.3s ease-in-out;
+}
+.login-container .btn:hover{
+    box-shadow: 0 0 5px 1px #2e8bb6;
+}
+.login-container .btn:active{
+    scale:0.8;
+}
+.login-container :is(.reset,.signup){
+    color:#2e8bb6;
+    font-weight:600;
+}
 /* /////////////////////////// */
 
 
