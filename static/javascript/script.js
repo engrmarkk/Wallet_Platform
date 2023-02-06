@@ -113,6 +113,7 @@ const bodyEl = document.querySelector('body');
 const navbar = document.querySelector('#navbar')
 const navlink = document.querySelectorAll('#navlinks')
 const usericon = document.querySelector('#usericon')
+const closeBtn = document.querySelector('.btn-close')
 const darkMode = () => {
     bodyEl.classList.toggle('night');
     navbar.classList.toggle('night');
@@ -155,3 +156,19 @@ if(setDarkMode === 'on') {
 function chooseFile() {
     document.getElementById("fileInput").click();
   }
+
+  let timer = 1
+  const timeout = ()=>{
+  let myTimer =  setInterval(()=>{
+        if(timer===0){
+            closeBtn.click()
+            clearInterval(myTimer)
+        }
+        else{
+            timer--
+        }
+        console.log(timer)
+    },1000) 
+  }
+  window.addEventListener('DOMContentLoaded',timeout
+  )
