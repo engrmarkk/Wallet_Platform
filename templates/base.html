@@ -78,10 +78,12 @@
       // Do this before the body gets parsed
       if (localStorage.getItem('darkmode') === '1') {
         document.documentElement.classList.add('darkmode');
+      }else{
+        document.documentElement.classList.remove('darkmode');
       }
     </script>
   </head>
-  <body>
+  <body class='light'>
     {% if current_user.is_authenticated %}
 
     <!-- Navbar -->

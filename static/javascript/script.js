@@ -1,114 +1,4 @@
-// DARK MODE 1
-
-
-
-// var theme = window.localStorage.currentTheme;
-
-// $("body").addClass(theme);
-
-// if ($("body").hasClass("night")) {
-//   $(".dntoggle").addClass("fas fa-sun");
-//   $(".dntoggle").removeClass("fas fa-moon");
-// } else {
-//   $(".dntoggle").removeClass("fas fa-sun");
-//   $(".dntoggle").addClass("fas fa-moon");
-// }
-
-// $(".dntoggle").click(function () {
-//   $(".dntoggle").toggleClass("fas fa-sun");
-//   $(".dntoggle").toggleClass("fas fa-moon");
-
-//   if ($("body").hasClass("night")) {
-//     $("body").toggleClass("night");
-//     localStorage.removeItem("currentTheme");
-//     localStorage.currentTheme = "day";
-//   } else {
-//     $("body").toggleClass("night");
-//     localStorage.removeItem("currentTheme");
-//     localStorage.currentTheme = "night";
-//   }
-// });
-
-
-// function darkmode(){
-//     var SetTheme = document.body;
-//     SetTheme.classList.toggle("night")
-//     var theme;
-//     if(SetTheme.classList.contains("night")){
-//         console.log("Dark mode");
-//         theme = "DARK";
-//     }else{
-//         console.log("Light mode");
-//         theme = "LIGHT";
-//     }
-//     // save to localStorage
-//     localStorage.setItem("PageTheme", JSON.stringify(theme));
-//     // ensure you convert to JSON like i have done -----JSON.stringify(theme)
-// }
-
-// setInterval(() => {
-//     let GetTheme = JSON.parse(localStorage.getItem("PageTheme"));
-//     console.log(GetTheme);
-//     if(GetTheme === "DARK"){
-//         document.body.classList = "night";
-//     }else{
-//         document.body.classList = "";
-//     }
-// }, 5);
-
-
-
-
-
-// DARK MODE 2
-
-// // check for saved 'darkMode' in localStorage
-// let darkMode = localStorage.getItem('darkMode'); 
-
-// const darkModeToggle = document.querySelector('#dark-mode-toggle');
-
-// const enableDarkMode = () => {
-//   // 1. Add the class to the body
-//   document.body.classList.add('night');
-//   // 2. Update darkMode in localStorage
-//   localStorage.setItem('darkMode', 'enabled');
-// }
-
-// const disableDarkMode = () => {
-//   // 1. Remove the class from the body
-//   document.body.classList.remove('night');
-//   // 2. Update darkMode in localStorage 
-//   localStorage.setItem('darkMode', null);
-// }
- 
-// // If the user already visited and enabled darkMode
-// // start things off with it on
-// if (darkMode === 'enabled') {
-//   enableDarkMode();
-// }
-
-// // When someone clicks the button
-// darkModeToggle.addEventListener('click', () => {
-//   // get their darkMode setting
-//   darkMode = localStorage.getItem('darkMode'); 
-  
-//   // if it not current enabled, enable it
-//   if (darkMode !== 'enabled') {
-//     enableDarkMode();
-//   // if it has been enabled, turn it off  
-//   } else {  
-//     disableDarkMode(); 
-//   }
-// });
-
-
-
-
-
-// DARK MODE 3
-
-
-const darkBtn = document.querySelector('.dntoggle');
+const toggleBtn = document.querySelector('.dntoggle');
 const fronthead = document.querySelector('.hero');
 const bodyEl = document.querySelector('body');
 const navbar = document.querySelector('#navbar')
@@ -118,6 +8,41 @@ const closeBtn = document.querySelector('.btn-close')
 const copyAcc = document.querySelector('.acc-num')
 const AccNum = document.querySelector('.acc-num span')
 let copyTimer = 2
+
+
+
+document.addEventListener("DOMContentLoaded", function() {    
+    let darkmode =  localStorage.getItem('darkmode') === '1';
+    if (darkmode===true){
+        navbar.classList.replace( "light" ,"night");
+        bodyEl.classList.replace("light" ,"night");
+        toggleBtn.classList.replace('fa-moon', 'fa-sun');
+    }else{
+        navbar.classList.replace( "night" ,"light");
+        bodyEl.classList.replace("night" ,'light');
+        toggleBtn.classList.replace('fa-sun', 'fa-moon');
+    }
+    toggleBtn.addEventListener('click', function() {
+      darkmode = !darkmode;
+      localStorage.setItem('darkmode', darkmode ? '1' : '0');
+      if (darkmode===true){
+        navbar.classList.replace( "light" ,"night");
+        bodyEl.classList.replace("light" ,"night");
+        toggleBtn.classList.replace('fa-moon', 'fa-sun');
+    }else{
+        navbar.classList.replace( "night" ,"light");
+        bodyEl.classList.replace("night" ,'light');
+        toggleBtn.classList.replace('fa-sun', 'fa-moon');
+    }
+     
+     
+    //   toggleBtn.classList.replace(darkmode ? 'fa-sun' : 'fa-moon', darkmode ? 'fa-moon' : 'fa-sun');
+    //   navbar.classList.replace(darkmode? "night":"light" ,darkmode? "light":"night");
+    // bodyEl.classList.replace(darkmode? "night":"light" ,darkmode? "light":"night");
+      console.log(darkmode)
+    });
+});
+
 copyAcc.onclick = ()=>{
     navigator.clipboard.writeText(AccNum.textContent)    
 }
@@ -283,20 +208,6 @@ function chooseFile() {
 //  OPTIMIZED
 
 
-// document.addEventListener("DOMContentLoaded", function() {
-//     var darkmode = localStorage.getItem('darkmode') === '1';
-//     var toggleIcon = document.querySelector('.dntoggle');
-  
-//     navbar.classList.add(darkmode ? 'night' : 'light');
-//     toggleIcon.classList.replace(darkmode ? 'fa-moon' : 'fa-sun', darkmode ? 'fa-sun' : 'fa-moon');
-  
-//     document.querySelector('.dntoggle').addEventListener('click', function() {
-//       darkmode = !darkmode;
-//       localStorage.setItem('darkmode', darkmode ? '1' : '0');
-//       navbar.classList.replace(darkmode ? 'light' : 'night', darkmode ? 'night' : 'light');
-//       toggleIcon.classList.replace(darkmode ? 'fa-sun' : 'fa-moon', darkmode ? 'fa-moon' : 'fa-sun');
-//     });
-// });
 
 
 
@@ -316,27 +227,27 @@ function chooseFile() {
 
 // THIS IS THE JQUERY CODE BELOW
 
-$(document).ready(function() {
-    var wasDarkMode = localStorage.getItem('darkmode') === '1';
-    var $toggleIcon = $('.dntoggle');
+// $(document).ready(function() {
+//     var wasDarkMode = localStorage.getItem('darkmode') === '1';
+//     var $toggleIcon = $('.dntoggle');
   
-    if (wasDarkMode) {
-        $('navbar').addClass('night');
-        $toggleIcon.removeClass('fa-sun').addClass('fa-moon');
-    } else {
-        $toggleIcon.removeClass('fa-moon').addClass('fa-sun');
-    }
+//     if (wasDarkMode) {
+//         $('navbar').addClass('night');
+//         $toggleIcon.removeClass('fa-sun').addClass('fa-moon');
+//     } else {
+//         $toggleIcon.removeClass('fa-moon').addClass('fa-sun');
+//     }
   
-    $('.dntoggle').click(function() {
-        wasDarkMode = localStorage.getItem('darkmode') === '1';
-        localStorage.setItem('darkmode', wasDarkMode ? '0' : '1');
+//     $('.dntoggle').click(function() {
+//         wasDarkMode = localStorage.getItem('darkmode') === '1';
+//         localStorage.setItem('darkmode', wasDarkMode ? '0' : '1');
       
-        if (wasDarkMode) {
-            $('body').removeClass('night');
-            $toggleIcon.removeClass('fa-moon').addClass('fa-sun');
-        } else {
-            $('body').addClass('night');
-            $toggleIcon.removeClass('fa-sun').addClass('fa-moon');
-        }
-    });
-});
+//         if (wasDarkMode) {
+//             $('body').removeClass('night');
+//             $toggleIcon.removeClass('fa-moon').addClass('fa-sun');
+//         } else {
+//             $('body').addClass('night');
+//             $toggleIcon.removeClass('fa-sun').addClass('fa-moon');
+//         }
+//     });
+// });

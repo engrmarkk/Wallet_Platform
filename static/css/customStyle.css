@@ -14,9 +14,11 @@
     font-family: "Quicksand",  sans-serif;
 }
 body{
+    transition:0.3s ease-in-out;
+}
+body.light{
     background: #ffffff;
     color:#343a40 !important;
-    transition:0.3s ease-in-out;
 }
 body.night {
     color:#fff !important;
