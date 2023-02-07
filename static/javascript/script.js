@@ -10,9 +10,9 @@ const AccNum = document.querySelector('.acc-num span')
 let copyTimer = 2
 
 
-
+let darkmode
 document.addEventListener("DOMContentLoaded", function() {    
-    let darkmode =  localStorage.getItem('darkmode') === '1';
+    darkmode =  localStorage.getItem('darkmode') === '1';
     if (darkmode===true){
         navbar.classList.replace( "light" ,"night");
         bodyEl.classList.replace("light" ,"night");
@@ -22,30 +22,47 @@ document.addEventListener("DOMContentLoaded", function() {
         bodyEl.classList.replace("night" ,'light');
         toggleBtn.classList.replace('fa-sun', 'fa-moon');
     }
-    toggleBtn.addEventListener('click', function() {
-      darkmode = !darkmode;
-      localStorage.setItem('darkmode', darkmode ? '1' : '0');
-      if (darkmode===true){
-        navbar.classList.replace( "light" ,"night");
-        bodyEl.classList.replace("light" ,"night");
-        toggleBtn.classList.replace('fa-moon', 'fa-sun');
-    }else{
-        navbar.classList.replace( "night" ,"light");
-        bodyEl.classList.replace("night" ,'light');
-        toggleBtn.classList.replace('fa-sun', 'fa-moon');
-    }
-     
-     
-    //   toggleBtn.classList.replace(darkmode ? 'fa-sun' : 'fa-moon', darkmode ? 'fa-moon' : 'fa-sun');
-    //   navbar.classList.replace(darkmode? "night":"light" ,darkmode? "light":"night");
-    // bodyEl.classList.replace(darkmode? "night":"light" ,darkmode? "light":"night");
-      console.log(darkmode)
-    });
+});
+
+toggleBtn.addEventListener('click', function() {
+  darkmode = !darkmode;
+  localStorage.setItem('darkmode', darkmode ? '1' : '0');
+  if (darkmode===true){
+    navbar.classList.replace( "light" ,"night");
+    bodyEl.classList.replace("light" ,"night");
+    toggleBtn.classList.replace('fa-moon', 'fa-sun');
+}else{
+    navbar.classList.replace( "night" ,"light");
+    bodyEl.classList.replace("night" ,'light');
+    toggleBtn.classList.replace('fa-sun', 'fa-moon');
+}
+  console.log(darkmode)
 });
 
 copyAcc.onclick = ()=>{
     navigator.clipboard.writeText(AccNum.textContent)    
 }
+
+function chooseFile() {
+    document.getElementById("fileInput").click();
+  }
+
+  //************************* */
+
+  let timer = 1
+  const timeout = ()=>{
+  let myTimer =  setInterval(()=>{
+        if(timer===0){
+            closeBtn.click()
+            clearInterval(myTimer)
+        }
+        else{
+            timer--
+        }
+        console.log(timer)
+    },1000) 
+}
+document.addEventListener('DOMContentLoaded',timeout)
 
 // const darkMode = () => {
 //     bodyEl.classList.toggle('night');
@@ -96,28 +113,6 @@ copyAcc.onclick = ()=>{
 
 // image upload click
 
-
-function chooseFile() {
-    document.getElementById("fileInput").click();
-  }
-
-  //************************* */
-
-  let timer = 1
-  const timeout = ()=>{
-  let myTimer =  setInterval(()=>{
-        if(timer===0){
-            closeBtn.click()
-            clearInterval(myTimer)
-        }
-        else{
-            timer--
-        }
-        console.log(timer)
-    },1000) 
-  }
-  window.addEventListener('DOMContentLoaded',timeout
-  )
 
 
 

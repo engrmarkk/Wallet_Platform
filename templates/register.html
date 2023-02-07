@@ -1,6 +1,46 @@
-{% extends 'base.html' %}
-{% block content %}
-<div class="d-flex">
+<title>Login</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&family=Quicksand:wght@400;700&family=Sora&display=swap" rel="stylesheet">
+<link rel='stylesheet' href="{{ url_for('static', filename='css/customStyle.css') }}"/>
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+  integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+  crossorigin="anonymous"
+/>
+<link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/customStyle.css') }}"
+    />
+    <script
+    type="text/javascript"
+    src="{{ url_for('static', filename='javascript/jquery-3.6.1.min.js') }}"
+  ></script>
+
+  <!-- Js -->
+
+  <script
+    src="{{ url_for('static', filename='javascript/script.js') }}"
+    defer
+  ></script>
+  <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/logo-normal.png') }}"
+    />
+
+
+
+<div class ='signup-container'>
+  <a href="{{ url_for('view.front_page') }}" class="navbar-brand">
+    <img
+      src="{{ url_for('static', filename='images/logo-white.png') }}"
+      alt="company's logo"
+      style="width: 2.5rem"
+    />
+    <span>&nbsp;Easy<span class="text-green">Transact</span></span>
+  </a>
+<div class="d-flex signup-wrapper">
 <form
   action=""
   method="post"
@@ -127,17 +167,4 @@
     > to access your account
   </p>
 </form>
-
-<div style="opacity: 0;" class="d-none d-lg-block">
-    <img class="w-50" src="{{ url_for('static', filename='images/globe.png') }}" alt="">
 </div>
-<img class="w-50 d-none d-lg-block" src="{{ url_for('static', filename='images/globe.png') }}" alt=""
-style="position: fixed;
-right: 0;
-z-index: -1;
-margin-right: 5rem;
-filter: opacity(60%);
-"
->
-</div>
-{% endblock content %}
