@@ -73,6 +73,13 @@
       rel="icon"
       href="{{ url_for('static', filename='images/logo-normal.png') }}"
     />
+
+    <script>
+      // Do this before the body gets parsed
+      if (localStorage.getItem('darkmode') === '1') {
+        document.documentElement.classList.add('darkmode');
+      }
+    </script>
   </head>
   <body>
     {% if current_user.is_authenticated %}

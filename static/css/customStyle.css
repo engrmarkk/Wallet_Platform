@@ -528,6 +528,12 @@ p.text-muted{
 
 .light{
     color: #b6b1f1 !important;
+    background: #fff !important;
+}
+
+.bod{
+    background: #fff;
+    color: #000;
 }
 
 div small#upl{
@@ -536,3 +542,14 @@ div small#upl{
     cursor: pointer;
     bottom: 0;
 }
+
+.hero.herroo{
+    color: white !important;
+}
+
+
+
+.darkmode body { background: #222; }
+.darkmode .light-only { display: none; }
+html:not(.darkmode) .dark-only { display: none; }
+
