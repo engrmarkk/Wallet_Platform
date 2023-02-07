@@ -215,7 +215,7 @@ button.navbar-toggler {
     width: 100%;
     border-radius: 10px;
     left: 0;
-    background: #fff;
+    background: rgb(105, 104, 104);
     content: " ";
     position: absolute;
     transition: 0.3s transform cubic-bezier(0.68, -0.55, 0.265, 1.55) , 0.3s ease-in-out display;
@@ -328,22 +328,26 @@ span.navbar-toggler-ico.three {
     left:0
 }
 .home .acc-num .acc-copy .acc-text :first-child{
-    z-index:-1;
+    z-index:2;
 }
 .home .acc-num .acc-copy .acc-text :last-child{
-    z-index:1;
+    z-index:-1;
+    font-weight: 600;
 }
-.home .acc-num .acc-copy:active .acc-text :last-child{
-    animation:hide 2s ease forwards;
+/* .home .acc-num .acc-copy .acc-text :first-child:active{
+    animation:hide 3s ease forwards;
 }
 @keyframes hide {
-    from{
-        z-index:5;
+    0%{
+        z-index:2
     }
-    to{
+    50%{
         z-index:-1;
     }
-}
+    100%{
+        z-index:2
+    }
+} */
 .home .acc-num .acc-copy .acc-text{
     border-left: 1px solid #aaa;
 }
@@ -531,18 +535,6 @@ form.confirmation button{
     color: #fff;
     border-radius: 5px;
 }
-@media (max-width:960px) {
-    a.nav-link {
-        text-align: center;
-    }
-
-    li.nav-item._button {
-        margin-top: 1rem;
-    }
-    img.login-img.w-50\.d-none\.d-lg-block {
-        display: none;
-    }
-}
 
 /* dark mode  */
 .dntoggle{
@@ -593,3 +585,26 @@ div small#upl{
     cursor: pointer;
     bottom: 0;
 }
+    @media (max-width:960px) {
+        .navbar {
+            background: transparent;
+            box-shadow: 0px 0px 5px #717171;
+        }
+        a.nav-link {
+            text-align: center;
+        }
+    
+        li.nav-item._button {
+            margin-top: 1rem;
+        }
+        img.login-img.w-50\.d-none\.d-lg-block {
+            display: none;
+        }
+        li.nav-item._box {
+            margin:0 auto !important;
+            width:90%;
+        }
+        li.nav-item._box:hover::before{
+            width:100%;
+        }
+    }
