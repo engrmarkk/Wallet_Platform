@@ -36,7 +36,7 @@
     <img
       src="{{ url_for('static', filename='images/logo-white.png') }}"
       alt="company's logo"
-      style="width: 2.5rem"
+      style="width: 3rem"
     />
     <span>&nbsp;Easy<span class="text-green">Transact</span></span>
   </a>
@@ -44,11 +44,7 @@
 <form
   action=""
   method="post"
-  class="p-5 mt-5 w-100"
-  style="
-    background: rgba(116, 111, 111, 0.212); 
-    box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-  "
+  class="mt-5 w-100"
 >
 
  <!-- Flash messages -->
@@ -74,7 +70,7 @@
     {% endfor %} {% endif %} {% endwith %}
 
 
-  <p class="text-muted h3">Register for EasyTransact</p>
+  <p class="signup-header h3">Create an EasyTransact account</p>
   <p class="text-muted">To register, please provide a valid details</p>
   {{ form.hidden_tag() }}
 
@@ -157,10 +153,10 @@
   <!-- For submit button -->
   {{ form.submit(size=20, class='btn btn-success mt-4 w-25 p-1')}}
 
-  <p style="color: black; margin-top: 1rem" class="text-muted  small">
+  <p style="color: black; margin-top: 1rem" class="text-muted  small login-txt">
     Have an account?
     <a
-      class="text-success"
+      class="login"
       style="text-decoration: none; font-weight: 700"
       href="{{ url_for('auth.login') }}"
       >Login</a
