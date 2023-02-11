@@ -460,6 +460,8 @@ form.login {
     justify-content: center;
     align-items: center;
     background: #2e8bb6;
+    position: relative;
+    overflow: hidden;
 }
 .signup-wrapper{
     margin-top:5rem; 
@@ -504,8 +506,12 @@ form.login {
 .signup-container .login-txt{
     text-align: center;
 }
+.signup-container :is(.blue1,.blue2,.yellow1,.yellow2){
+    position:absolute;
+    color:#5aaf45,#9D2EB6,#47B62E,#B6592E
+}
 
-
+/* /////////////////////////// */
 
 
 
