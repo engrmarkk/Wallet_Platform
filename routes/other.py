@@ -4,9 +4,12 @@ from flask_mail import Message
 from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint
 from models import User, Transaction, Beneficiary
+from models.transact import Card
 from form import *
 from func import save_image
 from werkzeug.security import generate_password_hash
+import random
+import datetime
 
 view = Blueprint("view", __name__)
 
@@ -18,18 +21,35 @@ def send_reset_email(user):
 
     mail.send(msg)
 
+def generate_card_number():
+        card_number = "".join([str(random.randint(0, 9)) for i in range(16)])
+        if Card.query.filter_by(card_number=card_number).first() is None:
+            return card_number
+        else:
+            return generate_card_number()
+
+x = datetime.datetime.now()
+z = x.strftime("%m" +"/"+ "%y")
+
+
+def create_expiry_date(days_to_expire):
+    expiry_date = datetime.datetime.now() + datetime.timedelta(days=days_to_expire)
+    return expiry_date.strftime("%m" + "/" + "%y")
+
+expiration = create_expiry_date(912)
+
 
 @view.route("/")
 def front_page():
     if current_user.is_authenticated:
         return redirect(url_for("view.home"))
-    return render_template("front.html", date=datetime.utcnow())
+    return render_template("front.html", date=x)
 
 
 @view.route("/account/")
 def account():
     pinset = current_user.pin_set
-    return render_template("account.html", pinset=pinset, date=datetime.utcnow())
+    return render_template("account.html", pinset=pinset, date=x)
 
 
 @view.route("/home/", methods=["GET", "POST"])
@@ -52,7 +72,7 @@ def home():
 
             return redirect(url_for("view.pay", acct=account_num))
 
-    return render_template("home.html", date=datetime.utcnow(), beneficials=beneficials, user=current_user, balance=balance, form=form, pinset=pinset)
+    return render_template("home.html", date=x, beneficials=beneficials, user=current_user, balance=balance, form=form, pinset=pinset)
 
 @view.route("/create-transfer-pin/", methods=["GET", "POST"])
 @login_required
@@ -71,7 +91,7 @@ def create_transfer_pin():
             db.session.commit()
             flash("Transfer pin created successfully", "success")
             return redirect(url_for("view.home"))
-    return render_template("create_transfer_pin.html", date=datetime.utcnow(), form=form)
+    return render_template("create_transfer_pin.html", date=x, form=form)
 
 @view.route("/change-transfer-pin/", methods=["GET", "POST"])
 @login_required
@@ -90,7 +110,7 @@ def change_transfer_pin():
             flash("Transfer pin changed successfully", "success")
             return redirect(url_for("view.home"))
             
-    return render_template("change_transfer_pin.html", date=datetime.utcnow(), form=form, secret_question=current_user.secret_question)
+    return render_template("change_transfer_pin.html", date=x, form=form, secret_question=current_user.secret_question)
 
 @view.route("/pay/<acct>/", methods=["GET", "POST"])
 @login_required
@@ -142,7 +162,7 @@ def pay(acct):
             db.session.commit()
             flash(f"{amount} Naira has been sent to {user1.username}", "success")
             return redirect(url_for("view.pay", acct=acct))
-    return render_template("pay.html", date=datetime.utcnow(), form=form, user1=user, beneficial=beneficial)
+    return render_template("pay.html", date=x, form=form, user1=user, beneficial=beneficial)
 
 
 @view.route("/reset-password/", methods=["GET", "POST"])
@@ -160,7 +180,7 @@ def reset_password():
                 flash("An email has been sent to you", "success")
                 return redirect(url_for("view.reset_password"))
             
-    return render_template("reset.html", date=datetime.utcnow(), form=form)
+    return render_template("reset.html", date=x, form=form)
 
 
 @view.route("/reset-password-verified/<token>", methods=["GET", "POST"])
@@ -178,7 +198,7 @@ def reset_password_verified(token):
                 db.session.commit()
                 flash("Password changed successfully", "success")
                 return redirect(url_for("auth.login"))
-    return render_template("reset_verified.html", date=datetime.utcnow(), form=form)
+    return render_template("reset_verified.html", date=x, form=form)
 
 
 @view.route("/profile-picture/", methods=["GET", "POST"])
@@ -198,7 +218,32 @@ def display_profile():
             return redirect(url_for('view.display_profile'))
         except Exception as e:
             flash(e, 'danger')
-    return render_template("display-profile.html", date=datetime.utcnow(), form=form)
+    return render_template("display-profile.html", date=x, form=form)
+
+
+@view.route("/create-card/", methods=["GET","POST"])
+@login_required
+def create_card():
+    if current_user.card:
+        flash("You already have a card", "success")
+        return redirect(url_for("view.card"))
+    if request.method == "POST":
+        card_number ="".join([str(random.randint(0, 9)) for i in range(16)])
+        expiry_date = expiration
+        cvv = "".join(str(random.randint(0, 9)) for _ in range(3))
+        card = Card(card_number=card_number, expiry_date=expiry_date, cvv=cvv, user_id=current_user.id)
+
+        db.session.add(card)
+        db.session.commit()
+        flash("Card created successfully", "success")
+        return redirect(url_for("view.card"))
+    return render_template("create_card.html", date=x)
+
+@view.route("/card/", methods=["GET", "POST"])
+@login_required
+def card():
+    card = Card.query.filter_by(user_id=current_user.id).first()
+    return render_template("card.html", date=x, card=card)
 
 
 @view.route("/contact/", methods=["GET", "POST"])
@@ -234,4 +279,4 @@ def contact():
             except:
                 flash("Your data connection is off", category="danger")
 
-    return render_template("contact.html", form=form, date=datetime.utcnow())
+    return render_template("contact.html", form=form, date=x)

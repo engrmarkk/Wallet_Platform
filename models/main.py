@@ -22,6 +22,7 @@ class User(db.Model, UserMixin):
     pin_set = db.Column(db.Boolean, default=False)
     transacts = db.relationship("Transaction", backref="author", lazy=True)
     beneficiaries = db.relationship("Beneficiary", backref="user_account", lazy=True)
+    card = db.relationship("Card", backref="card_owner", lazy=True)
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
 
     # Define a representation with two attribute 'username' and 'email'

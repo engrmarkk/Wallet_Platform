@@ -81,3 +81,11 @@ class PhotoForm(FlaskForm):
 
 class ConfirmAccount(FlaskForm):
     account_number = TelField("Wallet Account Number", validators=[DataRequired(), Length(max=10)])
+
+class CardForm(FlaskForm):
+    card_number = TelField("Card Number", validators=[DataRequired(), Length(max=16)])
+    card_name = StringField("Card Name", validators=[DataRequired(), Length(min=2, max=30)])
+    card_expiry = StringField("Card Expiry", validators=[DataRequired(), Length(max=5)])
+    card_cvv = TelField("Card CVV", validators=[DataRequired(), Length(max=3)])
+    card_pin = TelField("Card PIN", validators=[DataRequired(), Length(max=4)])
+    submit = SubmitField("Add Card")
