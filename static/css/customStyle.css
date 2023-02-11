@@ -14,11 +14,13 @@
     font-family: "Quicksand",  sans-serif;
 }
 body{
-    background: #ffffff;
-    color:#343a40 !important;
     transition:0.3s ease-in-out;
 }
-body.night {
+body.light{
+    background: #ffffff;
+    color:#343a40 !important;
+}
+body.night p {
     color:#fff !important;
 }
 .bg-accent {
@@ -37,17 +39,21 @@ body.night {
     background:transparent;
 
 }
+.night .navbar-brand span {
+    color: #fff !important;
+}
 .navbar-brand span {
     font-weight: 800;
     margin-left: 0.5rem;
     color: #5aaf45;
+    transition:0.3s ease-in-out;
 }
 .navbar-brand span .text-green{
     color: #2e8bb6;
     margin:0;
 }
 .nav-item a.nav-link {
-    color: #333 !important;
+    color: #777 !important;
     transition: 0.3s ease-in-out;
 }
 .nav-item a.nav-link:hover{
@@ -69,6 +75,9 @@ button#dropdownMenuButton {
     display: flex;
     align-items: center;
     font-weight: 600;
+}
+button#dropdownMenuButton .user{
+    color:#777;
 }
 i.fas.fa-user-circle.h3 {
     color: #343a40;
@@ -212,10 +221,13 @@ button.navbar-toggler {
     width: 100%;
     border-radius: 10px;
     left: 0;
-    background: #fff;
+    background: rgb(105, 104, 104);
     content: " ";
     position: absolute;
     transition: 0.3s transform cubic-bezier(0.68, -0.55, 0.265, 1.55) , 0.3s ease-in-out display;
+}
+.night .navbar-toggler-ico{
+    background: #fff !important;
 }
 span.navbar-toggler-ico.one {
     top: 0;
@@ -282,7 +294,7 @@ span.navbar-toggler-ico.three {
     text-align: center;
 }
 .balance .h3.bal-val {
-    color: #558eb8;
+    color: #2e8bb6;
     font-weight: 600;
     font-family: "Sora",sans-serif;
 }
@@ -294,6 +306,62 @@ span.navbar-toggler-ico.three {
     border-radius: 5px;
     font-size: 13px;
     margin-bottom: 0.5rem;
+}
+.home .acc-num{
+    margin-top:1rem;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center;
+}
+.home .acc-num .acc-copy{
+    margin-top: 0.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap:5px;
+    border: 1px solid #aaa;
+    border-radius: 10px;
+    color:#111;
+    background:#eee;
+    cursor:pointer;
+}
+.home .acc-num .acc-copy .acc-text{
+    position: relative;
+    width: 6rem;
+    height: 2rem;
+}
+.home .acc-num .acc-copy .acc-text :nth-child(n){
+    position:absolute;
+    top:0;
+    left:0
+}
+.home .acc-num .acc-copy .acc-text :first-child{
+    z-index:2;
+}
+.home .acc-num .acc-copy .acc-text :last-child{
+    z-index:-1;
+    font-weight: 600;
+}
+/* .home .acc-num .acc-copy .acc-text :first-child:active{
+    animation:hide 3s ease forwards;
+}
+@keyframes hide {
+    0%{
+        z-index:2
+    }
+    50%{
+        z-index:-1;
+    }
+    100%{
+        z-index:2
+    }
+} */
+.home .acc-num .acc-copy .acc-text{
+    border-left: 1px solid #aaa;
+}
+.home .acc-num .acc-copy :nth-child(n){
+    padding:5px;
 }
 .home .options {
     justify-content: center;
@@ -309,12 +377,14 @@ span.navbar-toggler-ico.three {
     flex-direction: column;
     border-top-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
-    box-shadow: 0 0 10px 2px #7d74e6;
+    box-shadow: 0 0 10px 2px #2e8bb6;
+    background: #2e8bb6 !important;
     cursor:pointer;
     transition: 0.3s ease-in-out;
 }
 .home .badge:hover{
     scale:1.1;
+    box-shadow: 0 0 2px #000;
 }
 .options .dropdown-menu.show {
     background: #fff;
@@ -376,12 +446,64 @@ form.login {
 .login-container .btn:active{
     scale:0.8;
 }
-.login-container :is(.reset,.signup){
+.login-container :is(.reset,.signup),
+.signup-container .login{
     color:#2e8bb6;
     font-weight:600;
 }
 /* /////////////////////////// */
-
+.signup-container {
+    width: 100%;
+    padding: 5rem 0  !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #2e8bb6;
+}
+.signup-wrapper{
+    margin-top:5rem; 
+    background:#fff;
+    border-radius: 10px;
+}
+.signup-container form{
+    padding: 1rem 3rem  !important;
+}
+.signup-container a.navbar-brand{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+}
+.signup-container a.navbar-brand span{
+    color:#fff !important;
+    font-size: 2rem;
+}
+.signup-container .signup-header{
+    font-weight: 600;
+    color: #2e8bb6;
+}
+.signup-container label {
+    font-size: 13px;
+    display: block;
+    text-align: left;
+    color: #2e8bb6 !important;
+}
+.signup-container .btn {
+    background: #2e8bb6;
+    outline: none;
+    border: none;
+    padding: 0.6rem 1rem !important;
+    transition:0.3s ease-in-out;
+}
+.signup-container .btn:hover{
+    box-shadow: 0 0 5px 1px #2e8bb6;
+}
+.signup-container .btn:active{
+    scale:0.8;
+}
+.signup-container .login-txt{
+    text-align: center;
+}
 
 
 
@@ -474,18 +596,6 @@ form.confirmation button{
     color: #fff;
     border-radius: 5px;
 }
-@media (max-width:960px) {
-    a.nav-link {
-        text-align: center;
-    }
-
-    li.nav-item._button {
-        margin-top: 1rem;
-    }
-    img.login-img.w-50\.d-none\.d-lg-block {
-        display: none;
-    }
-}
 
 /* dark mode  */
 .dntoggle{
@@ -524,10 +634,19 @@ p.text-muted{
 .night p.text-muted {
     color: #fff !important;
 }
+.night .balance .bal-title{
+    color:#fff !important;
+}
 /* change nav links color when signed in and dark mode */
 
 .light{
     color: #b6b1f1 !important;
+    background: #fff !important;
+}
+
+.bod{
+    background: #fff;
+    color: #000;
 }
 
 div small#upl{
@@ -536,3 +655,26 @@ div small#upl{
     cursor: pointer;
     bottom: 0;
 }
+    @media (max-width:960px) {
+        .navbar {
+            background: transparent;
+            box-shadow: 0px 0px 5px #717171;
+        }
+        a.nav-link {
+            text-align: center;
+        }
+    
+        li.nav-item._button {
+            margin-top: 1rem;
+        }
+        img.login-img.w-50\.d-none\.d-lg-block {
+            display: none;
+        }
+        li.nav-item._box {
+            margin:0 auto !important;
+            width:90%;
+        }
+        li.nav-item._box:hover::before{
+            width:100%;
+        }
+    }

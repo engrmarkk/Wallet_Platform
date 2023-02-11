@@ -4,9 +4,11 @@ from flask_mail import Message
 from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint
 from models import User, Transaction, Beneficiary
+from models.transact import Card
 from form import *
 from func import save_image
 from werkzeug.security import generate_password_hash
+import random
 
 view = Blueprint("view", __name__)
 
@@ -17,6 +19,13 @@ def send_reset_email(user):
     msg.html = render_template('reset_email.html', user=user, token=token)
 
     mail.send(msg)
+
+def generate_card_number():
+        card_number = "".join([str(random.randint(0, 9)) for i in range(16)])
+        if Card.query.filter_by(card_number=card_number).first() is None:
+            return card_number
+        else:
+            return generate_card_number()
 
 
 @view.route("/")
@@ -201,21 +210,29 @@ def display_profile():
     return render_template("display-profile.html", date=datetime.utcnow(), form=form)
 
 
-# @view.route("/card/", methods=["GET", "POST"])
-# @login_required
-# def card():
-#     form = CardForm()
-#     if request.method == "POST":
-#         if form.validate_on_submit():
-#             card_number = form.card_number.data
-#             expiry_date = form.expiry_date.data
-#             cvv = form.cvv.data
-#             card = Card(card_number=card_number, expiry_date=expiry_date, cvv=cvv, user_id=current_user.id)
-#             db.session.add(card)
-#             db.session.commit()
-#             flash("Card added successfully", "success")
-#             return redirect(url_for("view.card"))
-#     return render_template("card.html", date=datetime.utcnow(), form=form)
+@view.route("/create-card/", methods=["GET","POST"])
+@login_required
+def create_card():
+    if current_user.card:
+        flash("You already have a card", "success")
+        return redirect(url_for("view.card"))
+    if request.method == "POST":
+        card_number ="".join([str(random.randint(0, 9)) for i in range(16)])
+        expiry_date = "".join([str(random.randint(1, 12)) for i in range(2)])
+        cvv = "".join(str(random.randint(0, 9)) for _ in range(3))
+        card = Card(card_number=card_number, expiry_date=expiry_date, cvv=cvv, user_id=current_user.id)
+
+        db.session.add(card)
+        db.session.commit()
+        flash("Card created successfully", "success")
+        return redirect(url_for("view.card"))
+    return render_template("create_card.html", date=datetime.utcnow())
+
+@view.route("/card/", methods=["GET", "POST"])
+@login_required
+def card():
+    card = Card.query.filter_by(user_id=current_user.id).first()
+    return render_template("card.html", date=datetime.utcnow(), card=card)
 
 
 @view.route("/contact/", methods=["GET", "POST"])
