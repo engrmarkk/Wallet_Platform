@@ -32,6 +32,13 @@ x = datetime.datetime.now()
 z = x.strftime("%m" +"/"+ "%y")
 
 
+def create_expiry_date(days_to_expire):
+    expiry_date = datetime.datetime.now() + datetime.timedelta(days=days_to_expire)
+    return expiry_date.strftime("%m" + "/" + "%y")
+
+expiration = create_expiry_date(912)
+
+
 @view.route("/")
 def front_page():
     if current_user.is_authenticated:
@@ -222,7 +229,7 @@ def create_card():
         return redirect(url_for("view.card"))
     if request.method == "POST":
         card_number ="".join([str(random.randint(0, 9)) for i in range(16)])
-        expiry_date = z
+        expiry_date = expiration
         cvv = "".join(str(random.randint(0, 9)) for _ in range(3))
         card = Card(card_number=card_number, expiry_date=expiry_date, cvv=cvv, user_id=current_user.id)
 
