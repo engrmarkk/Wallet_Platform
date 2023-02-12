@@ -1,7 +1,10 @@
 {% extends 'base.html' %} {% block content %}
 
 <div class="d-flex flex-column justify-content-center align-items-center mt-5">
-  <div>
+  <div style=' 
+  display: flex;
+  align-items: center;
+  gap: 5px;'>
     <span class="text-muted h3">Send Money </span
     ><small class="badge badge-pill bg-success py-2 px-4">To wallet</small>
   </div>
@@ -10,7 +13,7 @@
     <form
       action=""
       method="post"
-      class="p-5 mt-5 w-100"
+      class="p-3 mt-5 w-100"
       style="box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
     background: rgba(116, 111, 111, 0.212); 
       
@@ -76,7 +79,7 @@
 
       
             <!-- For submit button -->
-      {{ form.submit(size=20, class='btn btn-success mt-4 w-25 p-1')}}
+      {{ form.submit(size=20, class='btn btn-success mt-4 w-100 p-1')}}
     </form>
   </div>
 </div>

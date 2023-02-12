@@ -38,6 +38,21 @@ toggleBtn.addEventListener('click', function() {
 }
   console.log(darkmode)
 });
+let timer = 1
+const timeout = ()=>{
+let myTimer =  setInterval(()=>{
+      if(timer===0){
+          closeBtn.click()
+          console.log("closed")
+          clearInterval(myTimer)
+      }
+      else{
+          timer--
+      }
+      console.log(timer)
+  },1000) 
+}
+document.addEventListener('DOMContentLoaded',timeout)
 
 copyAcc.onclick = ()=>{
     navigator.clipboard.writeText(AccNum.textContent)    
@@ -49,20 +64,6 @@ function chooseFile() {
 
   //************************* */
 
-  let timer = 1
-  const timeout = ()=>{
-  let myTimer =  setInterval(()=>{
-        if(timer===0){
-            closeBtn.click()
-            clearInterval(myTimer)
-        }
-        else{
-            timer--
-        }
-        console.log(timer)
-    },1000) 
-}
-document.addEventListener('DOMContentLoaded',timeout)
 
 // const darkMode = () => {
 //     bodyEl.classList.toggle('night');
