@@ -1,4 +1,6 @@
-<title>Login</title>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
 <meta charset="UTF-8" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -31,8 +33,9 @@
       rel="icon"
       href="{{ url_for('static', filename='images/logo-normal.png') }}"
     />
-
-
+<title>Login</title>
+</head>
+<body>
 
 <div class="login-container">
   <a href="{{ url_for('view.front_page') }}" class="navbar-brand">
@@ -123,3 +126,5 @@
 <!--<img class="login-img w-50.d-none.d-lg-block px-5" src="{{ url_for('static', filename='images/login.svg') }}" alt="login">-->
 </div>
 </div>
+</body>
+</html>
