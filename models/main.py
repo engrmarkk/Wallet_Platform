@@ -15,7 +15,7 @@ class User(db.Model, UserMixin):
     phone_number = db.Column(db.Integer, unique=True, nullable=False)
     account_number = db.Column(db.Integer, unique=True, nullable=False)
     account_balance = db.Column(db.Integer, default=20000)
-    photo = db.Column(db.Text, nullable=False, default='user.png')
+    photo = db.Column(db.Text, nullable=False, default='https://res.cloudinary.com/duwyopabr/image/upload/v1676162283/user_xz7o0f.png')
     transaction_pin = db.Column(db.Integer, nullable=False, default=1)
     secret_question = db.Column(db.Text, nullable=True)
     secret_answer = db.Column(db.String(50), nullable=True)

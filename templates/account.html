@@ -7,7 +7,7 @@
   <div class="d-flex align-items-center _profile">
     <div class="d-flex flex-column">
       <img
-        src="{{ url_for('static', filename='images/profile/' +current_user.photo) }}"
+        src="{{ current_user.photo }}"
         class="img-thumbnail article-img"
         style="width: 8rem"
         alt="{{ current_user.last_name.title() + ' ' +

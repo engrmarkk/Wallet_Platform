@@ -139,7 +139,7 @@
               <button class="text-accent" style="border: none; background: none;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
               >
               <div class="user d-flex align-items-center">
-                 <img src="{{ url_for('static', filename='images/profile/' +current_user.photo) }}" 
+                 <img src="{{ current_user.photo }}" 
                  style="width: 2rem;"
                  class="rounded" alt=""></i> &nbsp; {{ current_user.last_name.title() + ' ' + current_user.first_name.title() }}
                 </div>

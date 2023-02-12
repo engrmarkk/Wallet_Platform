@@ -18,7 +18,7 @@
 
 <div class=" d-flex justify-content-center mt-5" style="width: fit-content; position: relative;">
     <img
-    src="{{ url_for('static', filename='images/profile/' +current_user.photo) }}"
+    src="{{ current_user.photo }}"
     class="img-thumbnail article-img"
     style="width: 10rem"
     alt="{{ current_user.last_name.title() + ' ' +
