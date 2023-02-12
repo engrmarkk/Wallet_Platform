@@ -317,3 +317,8 @@ def contact():
                 flash("Your data connection is off", category="danger")
 
     return render_template("contact.html", form=form, date=x)
+
+
+@view.route("/team")
+def team():
+    return render_template("team.html", date=x)
