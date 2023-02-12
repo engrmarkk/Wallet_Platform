@@ -669,6 +669,10 @@ div small#upl{
     width: 30rem;
 }
 
+select{
+    width: -webkit-fill-available;
+}
+
 @media (max-width: 768px) {
     h1.hero {
         font-size: 2rem;
