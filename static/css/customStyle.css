@@ -746,7 +746,7 @@ div small#upl{
 .card-container{
 width: 350px;
 height: 220px;
-background-image: linear-gradient(#3f784d, #191b8a,#00c03a);
+background-image: linear-gradient(#3f784d, #191b8ab4,#00c03a);
 color: white;
 border-radius: 8px;
 padding: 20px;
@@ -757,7 +757,7 @@ box-sizing: border-box;
 .card-container2{
     width: 350px;
     height: 220px;
-    background-image: linear-gradient(#3f784d, #191b8a,#00c03a);
+    background-image: linear-gradient(#3f784d, #191b8ab4,#00c03a);
     color: white;
     border-radius: 8px;
     box-sizing: border-box;
