@@ -732,3 +732,67 @@ div small#upl{
             width:100%;
         }
     }
+
+
+.card-container{
+width: 350px;
+height: 220px;
+background-image: linear-gradient(#3f784d, #562e2e,#401F3E);
+color: white;
+border-radius: 8px;
+padding: 20px;
+box-sizing: border-box;
+}
+
+
+.card-container2{
+    width: 350px;
+    height: 220px;
+    background-image: linear-gradient(#3f784d, #562e2e,#401F3E);
+    color: white;
+    border-radius: 8px;
+    box-sizing: border-box;
+    position: relative;
+    }
+
+.card-name{
+font-weight: 700;
+text-align: right;
+}
+.chip{
+margin-top: 10px;
+width: 40px;
+height: 40px;
+}
+.chip img{
+width: 40px;
+height: 40px;
+}
+.card-no{
+letter-spacing: .456rem;
+margin-top: 10px;
+}
+
+.expire-data{
+display: flex;
+flex-direction: row;
+justify-content: space-between;
+}
+
+.expire-date{
+margin-top: 6px;
+}
+
+.date-label{
+font-size: 8px;
+}
+
+.card-type{
+margin-top: 4px;
+width: 70px;
+height: 40px;
+}
+.card-type img{
+width: 70px;
+height: 40px;
+}
