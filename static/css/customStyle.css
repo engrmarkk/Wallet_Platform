@@ -454,7 +454,7 @@ form.login {
 /* /////////////////////////// */
 .signup-container {
     width: 100%;
-    padding: 5rem 0  !important;
+    padding: 2rem 0 4rem 0  !important;
     display: flex;
     flex-direction: column;
     justify-content: center;
