@@ -39,6 +39,11 @@ body.night p {
     background:transparent;
 
 }
+
+#navbar{
+    box-shadow: rgba(75, 72, 72, 0.15) 1.95px 1.95px 5.6px;
+}
+
 .night .navbar-brand span {
     color: #fff !important;
 }
@@ -799,4 +804,25 @@ height: 40px;
 .card-type img{
 width: 70px;
 height: 40px;
+}
+
+
+#mybalance{
+    display: none;
+}
+
+#mybalance.show{
+    display: block;
+}
+
+#asterik.hide{
+    display: none;
+}
+
+#eye{
+    cursor: pointer;
+}
+
+#eye.hide{
+    display: none;
 }
