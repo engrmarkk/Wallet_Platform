@@ -13,7 +13,7 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary_config
 
-view = Blueprint("view", __name__)
+view = Blueprint("view", __name__, template_folder='../templates')
 
 
 def send_reset_email(user):
