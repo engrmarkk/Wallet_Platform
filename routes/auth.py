@@ -8,7 +8,7 @@ from flask_mail import Message
 from random import randint
 from werkzeug.security import generate_password_hash, check_password_hash
 
-auth = Blueprint("auth", __name__)
+auth = Blueprint("auth", __name__, template_folder='../templates')
 
 otp = randint(100000, 999999)
 
