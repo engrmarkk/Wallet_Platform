@@ -61,6 +61,31 @@ copyAcc.onclick = ()=>{
 function chooseFile() {
     document.getElementById("fileInput").click();
   }
+  
+
+
+
+
+const eye = document.querySelector('#eye')
+const asterik = document.querySelector('#asterik')
+const mybalance = document.querySelector('#mybalance')
+
+const open = 'fa-eye'
+const close = 'fa-eye-slash'
+
+eye.addEventListener("click", function() {
+    asterik.classList.toggle("hide")
+    mybalance.classList.toggle("show")
+    eye.classList.toggle(close)
+    eye.classList.toggle(open)
+})
+
+
+
+
+
+
+
 
   //************************* */
 
