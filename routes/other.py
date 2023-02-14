@@ -61,6 +61,11 @@ def account():
     return render_template("account.html", pinset=pinset, date=x)
 
 
+@view.route("/debit/")
+def debit():
+    return render_template("credit.html")
+
+
 @view.route("/home/", methods=["GET", "POST"])
 @login_required
 def home():
