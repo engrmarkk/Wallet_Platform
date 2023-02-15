@@ -391,6 +391,9 @@ span.navbar-toggler-ico.three {
     scale:1.1;
     box-shadow: 0 0 2px #000;
 }
+:is(#mybalance,#asterik){
+    transition: 0,3s ease-in-out;
+}
 .options .dropdown-menu.show {
     background: #fff;
 }
@@ -452,7 +455,9 @@ form.login {
     scale:0.8;
 }
 .login-container :is(.reset,.signup),
-.signup-container .login{
+.signup-container .login,
+.text-setPin,
+.eye{
     color:#2e8bb6;
     font-weight:600;
 }
@@ -581,11 +586,11 @@ a.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d-flex.align-i
     text-align: center;
 }
 
-form.confirmation{
+form:is(.confirmation,.create-pin){
     display: flex;
     flex-direction: column;
     align-items: center;
-    box-shadow: #00000054 0px 0px 12px 2px;
+    box-shadow: #00000054 0px 0px 6px 0px;
     background: rgb(46 139 174 / 13%);
     border-radius: 5px;
 }
@@ -598,7 +603,11 @@ form.confirmation input{
     text-align: center;
     font-size: 1.5rem;
 }
-form.confirmation button{
+form.create-pin input{
+    margin:0.5rem 0;
+}
+form.confirmation button,
+form.create-pin .btn{
     margin-top: 1rem;
     padding: 1rem 2rem;
     outline: none;
