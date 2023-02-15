@@ -192,36 +192,40 @@ def pay(acct):
 
             # ALERTS WHEN FUNDS HAS BEEN SENT
             # alert for debit transaction
-
-            msg = Message(
-                subject="DEBIT ALERT",
-                sender="noah13victor@gmail.com",
-                recipients=[current_user.email],
-            )
-            msg.html = render_template("debit.html",
-                                       amount=f"{amount:,}",
-                                       user=user1,
-                                       balance=f"{current_user.account_balance:,}",
-                                       date=x,
-                                       acct=str(current_user.account_number)
-                                       )
-            mail.send(msg)
+            try:
+                msg = Message(
+                    subject="DEBIT ALERT",
+                    sender="noah13victor@gmail.com",
+                    recipients=[current_user.email],
+                )
+                msg.html = render_template("debit.html",
+                                           amount=f"{amount:,}",
+                                           user=user1,
+                                           balance=f"{current_user.account_balance:,}",
+                                           date=x,
+                                           acct=str(current_user.account_number)
+                                           )
+                mail.send(msg)
+            except:
+                flash("Check your network", "danger")
 
             # alert for credit transaction
-
-            msg = Message(
-                subject="CREDIT ALERT",
-                sender="noah13victor@gmail.com",
-                recipients=[user1.email],
-            )
-            msg.html = render_template("credit.html",
-                                       user=user1,
-                                       amount=f"{amount:,}",
-                                       balance=f"{user1.account_balance:,}",
-                                       date=x,
-                                       acct=str(user1.account_number)
-                                       )
-            mail.send(msg)
+            try:
+                msg = Message(
+                    subject="CREDIT ALERT",
+                    sender="noah13victor@gmail.com",
+                    recipients=[user1.email],
+                )
+                msg.html = render_template("credit.html",
+                                           user=user1,
+                                           amount=f"{amount:,}",
+                                           balance=f"{user1.account_balance:,}",
+                                           date=x,
+                                           acct=str(user1.account_number)
+                                           )
+                mail.send(msg)
+            except:
+                flash("Check your network", "danger")
             return redirect(url_for("view.pay", acct=acct))
     return render_template(
         "pay.html", date=x, form=form, user1=user, beneficial=beneficial
