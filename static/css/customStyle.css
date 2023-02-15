@@ -586,7 +586,7 @@ a.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d-flex.align-i
     text-align: center;
 }
 
-form:is(.confirmation,.create-pin){
+form:is(.confirmation,.create-pin,.send-money){
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -617,6 +617,19 @@ form.create-pin .btn{
     border-radius: 5px;
 }
 
+/* ///////////////// */
+.account-wrapper .user-name{
+    font-weight: 600;
+}
+.account-wrapper .acc-detail{
+    display: flex;
+    align-items: center;
+    gap:5px;
+}
+.account-wrapper .acc-detail .text-accent{
+    font-size:20px;
+    font-weight: 600;
+}
 /* dark mode  */
 .dntoggle{
     font-size: 20px;
@@ -681,6 +694,10 @@ div small#upl{
     flex-direction: column;
     align-items: center;
     width: 30rem;
+}
+
+select{
+    width: -webkit-fill-available;
 }
 
 @media (max-width: 768px) {

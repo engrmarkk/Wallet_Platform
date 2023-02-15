@@ -1,7 +1,7 @@
 {% extends 'base.html' %} {% block content %}
 
 <div
-  class="mt-5 card bg-mild p-5 col-15 col-xs-10 col-sm-10 col-md-9"
+  class="mt-5 account-wrapper p-5 col-15 col-xs-10 col-sm-10 col-md-9"
   style="margin: auto"
 >
   <div class="d-flex align-items-center _profile">
@@ -9,20 +9,20 @@
       <img
         src="{{ current_user.photo }}"
         class="img-thumbnail article-img"
-        style="width: 8rem"
+        style="width: 11rem"
         alt="{{ current_user.last_name.title() + ' ' +
         current_user.first_name.title() }} image"
       />
     </div>
-    <div class="d-flex flex-column px-3">
-      <span class="text-accent h4"
+    <div class="d-flex  flex-column px-3">
+      <span class="text-accent user-name h4"
         >{{ current_user.last_name.title() + ' ' +
         current_user.first_name.title() }}</span
       >
-      <p>
+     <!-- <p class='acc-detail'>
         <small class="text-muted">Account Number</small><br />
-        <span class="text-accent h5">{{ current_user.account_number }}</span>
-      </p>
+        <span class="text-accent">{{ current_user.account_number }}</span>
+      </p> i dont think there's need to include this here -->
     </div>
   </div>
   <div class="container acc-con">
