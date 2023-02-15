@@ -1,4 +1,9 @@
-<title>Sign Up</title>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="UTF-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Quicksand:wght@400;700&family=Sora&display=swap" rel="stylesheet">
@@ -28,10 +33,11 @@
       rel="icon"
       href="{{ url_for('static', filename='images/logo-normal.png') }}"
     />
+<title>Sign Up</title>
+</head>
+<body>
 
-
-
-<div class ='signup-container'>
+<div class ='signup-container' style="height: fit-content;">
   <a href="{{ url_for('view.front_page') }}" class="navbar-brand">
     <img
       src="{{ url_for('static', filename='images/logo-white.png') }}"
@@ -164,3 +170,6 @@
   </p>
 </form>
 </div>
+</div>
+</body>
+</html>
