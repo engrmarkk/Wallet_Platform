@@ -35,6 +35,7 @@
   <p class="h5 text-muted" style="font-weight: 700">
     EasyTransact Transaction Alert Service
   </p>
+  <p class="h5 text-info mt-5 mb-3">Hello {{current_user.last_name.title()}},</p>
   <p>Please be informed that a Debit transaction occured on your wallet</p>
   <p>Kindly find the details of the transaction below</p>
   <!-- <div class="bg-success py-1">Transaction Details</div> -->
@@ -46,7 +47,7 @@
     </tbody>
     <tbody class="text-muted">
       <td>Account Number:</td>
-      <td>0000*******</td>
+      <td>{{acct[:4]}}******</td>
     </tbody>
 
     <tbody class="text-muted">
@@ -56,19 +57,19 @@
 
     <tbody class="text-muted">
       <td>Description:</td>
-      <td>FUND SENT TO ADE MARK</td>
+      <td>FUND SENT TO {{ user.first_name.upper() }}</td>
     </tbody>
     <tbody class="text-muted">
       <td>Transaction Amount:</td>
-      <td><del style="text-decoration-style: double;">N</del> 3,500</td>
+      <td><del style="text-decoration-style: double;">N</del> {{ amount }}</td>
     </tbody>
     <tbody class="text-muted">
       <td>Current Balance:</td>
-      <td><del style="text-decoration-style: double;">N</del> 1,500</td>
+      <td><del style="text-decoration-style: double;">N</del> {{ balance }}</td>
     </tbody>
     <tbody class="text-muted">
       <td>Transaction Date:</td>
-      <td>25/08/2023</td>
+      <td>{{ date.strftime('%Y-%m-%d') }}</td>
     </tbody>
   </table>
   </div>
