@@ -41,27 +41,27 @@
       {% endfor %} {% endif %} {% endwith %}
 
       <div
-        class="bg-light d-flex mb-3 rounded"
-        style="width: fit-content; margin: auto"
+        class="bg-light d-flex mb-3 "
+        style="width: 10.5rem;height:10.5rem; margin: auto ;border-radius:50%"
       >
         <img
           src="{{ url_for('static', filename='images/logo-normal.png') }}"
           class="p-2"
-          style="width: 4.5rem; margin: auto"
+          style="width: 10.5rem; margin: auto;"
           alt=""
         />
       </div>
       {{ form.hidden_tag() }}
 
       <div>
-        <span class="text-muted"><span class="fw-bold"> Account Name</span><br> 
+        <span class="pay-header"><span class="fw-bold"> Account Name</span><br> 
        <span class="h4 text-white" > {{ user1.last_name.upper() }} &nbsp;{{ user1.first_name.upper() }}
         </span>
        </span>
       </div>
 
       <!-- For Amount validations -->
-      {{ form.amount.label(class='label text-muted fw-bold mt-4 mb-2') }}
+      
       {% if form.amount.errors %} {{ form.amount(class="form-control p-2 ",
       required=False, placeholder='Enter amount') }} {% for error in
       form.amount.errors %}
@@ -72,15 +72,17 @@
       {% endfor %} {% else %} {{ form.amount(class="form-control p-2 ",
       required=False, placeholder='Enter amount') }} {% endif %}
 
-      {% if user1.account_number not in beneficial %}
-      {{ form.add_beneficiary(class="") }} {{ form.add_beneficiary.label(class='label text-muted fw-bold mt-2') }}
       <br>
-      {% endif %}
       <br>
       {{form.transfer_pin(class='form-control p-2', required=True, placeholder='Enter 4 digits transfer pin') }}
       <br>
+      {% if user1.account_number not in beneficial %}
+      <div class='d-flex align-item-center' style='gap:5px; flex-direction:row-reverse;'>
+      {{ form.add_beneficiary(class="") }} {{ form.add_beneficiary.label(class='label text-muted fw-bold') }}
+      </div>
+      {% endif %}
             <!-- For submit button -->
-      {{ form.submit(size=20, class='btn btn-success mt-4 w-100 p-1')}}
+      {{ form.submit(size=20, class='pay-btn btn btn-success mt-4 w-100 p-1')}}
     </form>
   </div>
 </div>
