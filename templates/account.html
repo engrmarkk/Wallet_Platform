@@ -5,20 +5,22 @@
   style="margin: auto"
 >
   <div class="d-flex align-items-center _profile">
-    <div class="d-flex flex-column">
+    <div class="d-flex acc-header">
       <img
         src="{{ current_user.photo }}"
-        class="img-thumbnail article-img"
+        class="img-thumbnail article-img border-none"
         style="width: 11rem"
         alt="{{ current_user.last_name.title() + ' ' +
         current_user.first_name.title() }} image"
       />
-    </div>
-    <div class="d-flex  flex-column px-3">
+      <div>
+        <h1>My Account</h1><br>
       <span class="text-accent user-name h4"
         >{{ current_user.last_name.title() + ' ' +
         current_user.first_name.title() }}</span
-      >
+      ></div>
+    </div>
+    <div class="d-flex  flex-column px-3">
      <!-- <p class='acc-detail'>
         <small class="text-muted">Account Number</small><br />
         <span class="text-accent">{{ current_user.account_number }}</span>
@@ -27,7 +29,7 @@
   </div>
   <div class="container acc-con">
   <div class="acc-row row ">
-    <div class="col-lg-4 col-md-6 col-sm-12 acc-col ">
+    <div class="col-lg-12 acc-col ">
       <a
         href="{{ url_for('view.display_profile') }}"
         class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
@@ -36,7 +38,7 @@
         <p>Profile Picture</p>
       </a>
     </div>
-    <div class="col-lg-4 col-md-6 col-sm-12 acc-col ">
+    <div class="col-lg-12 acc-col ">
       {% if pinset == True %}
       <a
         href="{{url_for('view.change_transfer_pin')}}"
@@ -56,7 +58,7 @@
       {% endif %}
     </div>
 
-    <div class="col-lg-4 col-md-6 col-sm-12 acc-col ">
+    <div class="col-lg-12 acc-col ">
       <a
         href="#"
         class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
@@ -66,7 +68,7 @@
       </a>
     </div>
 
-    <div class="col-lg-4 col-md-6 col-sm-12 acc-col ">
+    <div class="col-lg-12 acc-col ">
       <a
         href="#"
         class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
@@ -76,7 +78,7 @@
       </a>
     </div>
 
-    <div class="col-lg-4 col-md-6 col-sm-12 acc-col ">
+    <div class="col-lg-12 acc-col ">
       <a
         href="#"
         class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
@@ -86,7 +88,7 @@
       </a>
     </div>
 
-    <div class="col-lg-4 col-md-6 col-sm-12 acc-col ">
+    <div class="col-lg-12 acc-col ">
       <a
         href=""
         class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
@@ -96,7 +98,7 @@
       </a>
     </div>
 
-    <div class="col-lg-4 col-md-6 col-sm-12 acc-col ">
+    <div class="col-lg-12 acc-col ">
       <a
         href="#"
         class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
@@ -106,7 +108,7 @@
       </a>
     </div>
 
-    <div class="col-lg-4 col-md-6 col-sm-12 acc-col ">
+    <div class="col-lg-12 acc-col ">
       <a
         href="{{ url_for('view.contact') }}"
         class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
