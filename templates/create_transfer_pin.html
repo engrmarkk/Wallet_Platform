@@ -5,19 +5,15 @@
   display: flex;
   align-items: center;
   gap: 5px;'>
-    <span class="text-muted h3 fw-bold">Create Pin </span
-    >
+    <span class="text-muted h3">Send Money </span
+    ><small class="badge badge-pill bg-success py-2 px-4">To wallet</small>
   </div>
   <div class="col-10 col-xs-10 col-sm-10 col-md-6">
     <!-- wallet sending money form-->
     <form
       action=""
       method="post"
-      class="p-3 mt-3 w-100"
-      style="box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-    background: rgba(221, 207, 207, 0.158); 
-      
-      "
+      class="p-5 create-pin mt-5 w-100"
     >
       <!-- Flash messages -->
       {% with messages = get_flashed_messages(with_categories=true) %} {% if
@@ -60,8 +56,8 @@
       {{ form.hidden_tag() }}
         <!-- For wallet number -->
         <div class="form-group">
-            {{ form.transfer_pin.label(class='form-label text-muted') }}
-            {{ form.transfer_pin(class='form-control mb-2', placeholder='Enter transfer pin') }}
+            {{ form.transfer_pin.label(class='form-label') }}
+            {{ form.transfer_pin(class='form-control', placeholder='Enter transfer pin') }}
 
             {% for error in form.transfer_pin.errors %}
             <p class="text-danger small">{{ error }}</p>
@@ -72,8 +68,7 @@
             <p class="text-danger small">{{ error }}</p>
             {% endfor %}
             <br>
-            <div class="mb-1 text-muted">Secret Questions</div>
-            <select name="secret_question" id="secret_question" class="form-control" required>
+            <select name="secret_question" id="secret_question" required>
                 <option value="What elementary school did you attend?">What elementary school did you attend?</option>
                 <option value="What is your favorite color?">What is your favorite color?</option>
                 <option value="What is your favorite food?">What is your favorite food?</option>
@@ -105,8 +100,9 @@
 
       
             <!-- For submit button -->
-      {{ form.submit(size=20, class='btn btn-success mt-4 w-100 p-1')}}
+      {{ form.submit(size=20, class='btn')}}
     </form>
   </div>
 </div>
 {% endblock content %}
+
