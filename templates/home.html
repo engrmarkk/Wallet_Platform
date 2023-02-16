@@ -34,15 +34,15 @@
             {% if pinset == True %}
             Your NGN account is all set.
             {% else %}
-            You need to create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-success">Set pin</a>
+            You need to create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-setPin">Set pin</a>
             {% endif %}
           </p>
             <small class="bal-title text-muted">Wallet Balance</small>
-            <div class="d-flex justify-content-center">
+            <div class="d-flex justify-content-center align-items-center">
             <span class="h3 bal-val mt-1" id="mybalance">
                 <del style="text-decoration-style: double;">N</del>
                 {{ balance }}</span>
-                <span class="h3 bal-val mt-1" id="asterik">*******</span>&nbsp; &nbsp; <span class="h3 bal-val text-muted rounded-circle py-2" style="font-size: 1.1rem;"><i class="fas fa-eye-slash" id="eye"></i>
+                <span class="h3 bal-val mt-1" id="asterik">*******</span>&nbsp; &nbsp; <span class="h3 bal-val text-muted rounded-circle py-2" style="font-size: 1.1rem;"><i class="eye fas fa-eye-slash" id="eye"></i>
                 </span>
                 </div>
         </p>

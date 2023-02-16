@@ -11,11 +11,7 @@
     <form
       action=""
       method="post"
-      class="p-5 mt-5 w-100"
-      style="box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-    background: rgba(116, 111, 111, 0.212); 
-      
-      "
+      class="send-money p-3 mt-3 w-100"
     >
       <!-- Flash messages -->
       {% with messages = get_flashed_messages(with_categories=true) %} {% if
@@ -84,7 +80,7 @@
       {{form.transfer_pin(class='form-control p-2', required=True, placeholder='Enter 4 digits transfer pin') }}
       <br>
             <!-- For submit button -->
-      {{ form.submit(size=20, class='btn btn-success mt-4 w-25 p-1')}}
+      {{ form.submit(size=20, class='btn btn-success mt-4 w-100 p-1')}}
     </form>
   </div>
 </div>
