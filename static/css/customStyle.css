@@ -3,7 +3,7 @@
 
 
 :root{
-    --accent-color:#7d74e6;
+    --accent-color:#2e8bb6;
     --white-color:#ffffff;
     --mild-bg:#ededed;
 }
@@ -568,18 +568,17 @@ a.acc-box-item.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d
 }
 a.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d-flex.align-items-center.justify-content-between {
     margin: 1rem auto;
-    height: 12rem;
-    width: 80%;
-    border-radius: 2rem;
+    height: 7rem;
+    border-radius: 20px;
     padding: 2rem !important;
     align-items: center !important;
     justify-content: space-between !important;
-    flex-direction: column;
-    box-shadow:1px 3px 5px #858484;
-    transition:0.3s ease-in-out;
+    flex-direction: row-reverse;
+    box-shadow: 0px 0px 4px #85848459;
+    transition: 0.3s ease-in-out;
 }
 a.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d-flex.align-items-center.justify-content-between:hover {
-    box-shadow:1px 3px 5px #675be8;
+    box-shadow:1px 3px 5px #2e8bb6;
 }
 
 a.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d-flex.align-items-center.justify-content-between p{
@@ -618,6 +617,9 @@ form.create-pin .btn{
 }
 
 /* ///////////////// */
+.account-wrapper .article-img{
+    border:none !important;
+}
 .account-wrapper .user-name{
     font-weight: 600;
 }
@@ -628,7 +630,20 @@ form.create-pin .btn{
 }
 .account-wrapper .acc-detail .text-accent{
     font-size:20px;
-    font-weight: 600;
+    /* font-weight: 600; */
+}
+.account-wrapper .acc-header{
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+    gap: 130px;
+}
+.account-wrapper .acc-header h1{
+    color:#2e8bb6;
+    font-size:4rem;
+    font-weight:600;
+    font-family:"Sora",sans-serif;
 }
 /* dark mode  */
 .dntoggle{
