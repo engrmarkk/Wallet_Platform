@@ -441,7 +441,8 @@ form.login {
     text-align: left;
     color: #2e8bb6 !important;
 }
-.login-container .btn {
+.login-container .btn,
+.pay-btn {
     background: #2e8bb6;
     outline: none;
     border: none;
@@ -457,9 +458,15 @@ form.login {
 .login-container :is(.reset,.signup),
 .signup-container .login,
 .text-setPin,
-.eye{
-    color:#2e8bb6;
+.eye,
+.pay-header .text-white{
+    color:#2e8bb6 !important;
     font-weight:600;
+}
+.pay-header{
+    text-align: center;
+    display: block;
+    margin: 0 0 2rem;
 }
 /* /////////////////////////// */
 .signup-container {
@@ -583,6 +590,7 @@ a.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d-flex.align-i
 
 a.bg-profile-menu.text-accent.text-decoration-none.py-1.px-3.lead.d-flex.align-items-center.justify-content-between p{
     text-align: center;
+    font-family: "Sora",san-serif;
 }
 
 form:is(.confirmation,.create-pin,.send-money){
@@ -606,7 +614,8 @@ form.create-pin input{
     margin:0.5rem 0;
 }
 form.confirmation button,
-form.create-pin .btn{
+form.create-pin .btn,
+.form-group form button{
     margin-top: 1rem;
     padding: 1rem 2rem;
     outline: none;
@@ -644,6 +653,25 @@ form.create-pin .btn{
     font-size:4rem;
     font-weight:600;
     font-family:"Sora",sans-serif;
+}
+
+/* /////////////////////////////// */
+.form-group {
+    display: flex;
+    width: 100%;
+    height: 80vh;
+    align-items: center;
+    justify-content: center;
+}
+.form-group form {
+    flex-direction: column;
+    display: flex;
+    align-items: center;
+    height: 100px;
+    justify-content: space-evenly;
+}
+.form-group form p{
+    font-size: 2rem;
 }
 /* dark mode  */
 .dntoggle{
@@ -785,20 +813,20 @@ select{
 
 
 .card-container{
-width: 350px;
-height: 220px;
-background-image: linear-gradient(#3f784d, #191b8ab4,#00c03a);
-color: white;
-border-radius: 8px;
-padding: 20px;
-box-sizing: border-box;
+    width: 350px;
+    height: 210px;
+    background-image: linear-gradient(to left,#005176 ,#4fbaff);
+    color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-sizing: border-box;
 }
 
 
 .card-container2{
     width: 350px;
-    height: 220px;
-    background-image: linear-gradient(#3f784d, #191b8ab4,#00c03a);
+    height: 210px;
+    background-image: linear-gradient(#49b2f5, #191b8ab4,#00c03a 109%);
     color: white;
     border-radius: 8px;
     box-sizing: border-box;
@@ -806,8 +834,9 @@ box-sizing: border-box;
     }
 
 .card-name{
-font-weight: 700;
-text-align: right;
+    font-weight: 500;
+    text-align: right;
+    color: #eee;
 }
 .chip{
 margin-top: 10px;
@@ -815,8 +844,9 @@ width: 40px;
 height: 40px;
 }
 .chip img{
-width: 40px;
-height: 40px;
+    width: 45px;
+    height: 40px;
+    filter: contrast(4.5) grayscale(1);
 }
 .card-no{
 letter-spacing: .456rem;
@@ -827,6 +857,7 @@ margin-top: 10px;
 display: flex;
 flex-direction: row;
 justify-content: space-between;
+align-items: center;
 }
 
 .expire-date{
