@@ -42,15 +42,15 @@
     <div class="card-data">
         <div class="card-no">{{card.card_number}}</div>
         <div class="expire-data">
-            <div class="expire-date">
-                <div class="date-label">MONTH/YEAR</div>
-                <div class="date" title="01/17">{{card.expiry_date}}</div>
-            </div>
-            <div class="card-type">
+          <div>{{ current_user.last_name.title() + ' ' + current_user.first_name.title() }}</div>
+          <div class="card-type">
             <img src="{{ url_for('static', filename='images/Mastercard.png') }}">
-            </div>
+          </div>
         </div>
-        <div>{{ current_user.last_name.title() + ' ' + current_user.first_name.title() }}</div>
+        <small class="expire-date">
+            <div class="date-label">MONTH/YEAR</div>
+            <div class="date" title="01/17">{{card.expiry_date}}</div>
+        </small>
     </div>
     
 </div>
