@@ -39,9 +39,9 @@ def login():
     # If the form gets validated on submit
     if form.validate_on_submit():
         # Query the User model and assign the queried data to the variable 'user'
-        user = User.query.filter_by(email=form.email.data.lower()).first_or_404()
+        user = User.query.filter_by(email=form.email.data.lower()).first()
         email = form.email.data
-        if not user.confirmed:
+        if user and not user.confirmed:
             try:
                 flash("First validate your email", category="danger")
 
@@ -58,7 +58,7 @@ def login():
 
             return redirect(url_for("auth.validate", email=email))
         # Check if the user exist in the database and if the inputted password is same with the one attached to the user on the database
-        elif user:
+        if user:
             if check_password_hash(user.password, form.password.data):
                 # If the check passed, login the user and flash a message to the user when redirected to the homepage
                 flash("Login Successful", "success")
