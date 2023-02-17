@@ -555,7 +555,7 @@ form.login {
     background: #2e8bb6;
     outline: none;
     border: none;
-    padding: 0.6rem 1rem !important;
+    padding: 0.6rem 1rem;
     transition:0.3s ease-in-out;
 }
 .signup-container .btn:hover{
