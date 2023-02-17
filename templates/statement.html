@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Statement of Account</title>
+    <style>
+      tr:hover {
+        background-color: #f5f5f5;
+      }
+    </style>
+  </head>
+  <body style="
+        font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #333;
+        background-color: #fff;
+  ">
+    <h1>Statement of Account</h1>
+
+    <div>
+        Name: {{ current_user.first_name.title() }} {{ current_user.last_name.title() }} <br>
+        Account Number: {{ current_user.account_number }}<br>
+      Opening Balance:
+      <del style="text-decoration-style: double">N</del> 20,000.00
+    </div>
+
+    <table style="width: 100%; margin-top: 20px; border: 1px solid #ddd">
+      <tr>
+        <th
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f2f2f2;
+          "
+        >
+          Date
+        </th>
+        <th
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f2f2f2;
+          "
+        >
+          Description
+        </th>
+        <th
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f2f2f2;
+          "
+        >
+          Debit
+        </th>
+        <th
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f2f2f2;
+          "
+        >
+          Credit
+        </th>
+      </tr>
+      {% for transaction in current_user.transacts %}
+      <tr>
+        {% if transaction.transaction_type == 'DBT' %}
+
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+          {{ transaction.date_posted.strftime('%Y-%m-%d') }} {{
+          transaction.date_posted.strftime('%I:%M %p') }}
+        </td>
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+          Money sent to {{ transaction.sender.lower() }}
+        </td>
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+        <del style="text-decoration-style: double">N</del>
+        {{ "{:,.2f}".format(transaction.transaction_amount) }}
+        </td>
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        ></td>
+        {% elif transaction.transaction_type == 'CRT' %}
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+          {{ transaction.date_posted.strftime('%Y-%m-%d') }} {{
+          transaction.date_posted.strftime('%I:%M %p') }}
+        </td>
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+          Money received from {{ transaction.sender.lower() }}
+        </td>
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        ></td>
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+        <del style="text-decoration-style: double">N</del>
+          {{ "{:,.2f}".format(transaction.transaction_amount) }}
+        </td>
+        {% endif %}
+      </tr>
+      {% endfor %}
+      <tr>
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        ></td>
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        ></td>
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+          <b>Balance</b>
+        </td>
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+        <del style="text-decoration-style: double">N</del>
+        {{"{:,.2f}".format(current_user.account_balance)}}
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
