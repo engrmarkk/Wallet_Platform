@@ -5,6 +5,7 @@ from PIL import Image
 from functools import wraps
 from datetime import datetime, timedelta
 from flask_login import logout_user
+import pytz
 
 
 def save_image(form_picture):
@@ -20,15 +21,3 @@ def save_image(form_picture):
 
     return picture_fn
 
-
-def check_user_activity(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        last_activity = session.get('last_activity')
-        if last_activity is not None and datetime.now() - last_activity > timedelta(minutes=5):
-            logout_user()  # or you could call your custom logout function here
-            flash("Session expired", "danger")
-            return redirect(url_for('auth.login'))
-        session['last_activity'] = datetime.now()
-        return f(*args, **kwargs)
-    return decorated_function

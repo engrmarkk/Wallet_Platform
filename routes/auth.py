@@ -62,7 +62,7 @@ def login():
             if check_password_hash(user.password, form.password.data):
                 # If the check passed, login the user and flash a message to the user when redirected to the homepage
                 flash("Login Successful", "success")
-                login_user(user, remember=True)
+                login_user(user, remember=False)
                 return redirect(url_for("view.home", id=user.id, user=current_user))
             else:
                 # If the check failed, flash a message to the user while still on the same page
