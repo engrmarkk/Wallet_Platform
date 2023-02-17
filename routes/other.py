@@ -68,6 +68,11 @@ def showtransaction():
     return render_template("show-histories.html", date=x)
 
 
+@view.route("/statement")
+def statement():
+    return render_template("statement.html")
+
+
 @view.route("/home/", methods=["GET", "POST"])
 @login_required
 def home():
