@@ -5,7 +5,7 @@ from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint
 from models import User, Transaction, Beneficiary, Card
 from form import *
-# from func import save_image
+# from func import check_user_activity
 from werkzeug.security import generate_password_hash
 import random
 import datetime

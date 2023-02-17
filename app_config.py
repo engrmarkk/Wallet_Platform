@@ -1,8 +1,11 @@
 from extensions import app, db, login_manager, mail, migrate
-from flask import redirect, flash, url_for
+from flask import redirect, flash, url_for, session
 from routes import AuthenticationBlueprint, ViewBlueprint
 from models import User
+from datetime import timedelta
 import os
+import flask
+from flask_login import current_user
 
 
 def create_app():
@@ -40,6 +43,13 @@ def create_app():
 
     # with app.app_context():
     #     db.create_all()
+
+    @app.before_request
+    def before_request():
+        session.permanent = True
+        app.permanent_session_lifetime = timedelta(minutes=1)
+        session.modified = True
+        flask.g.user = current_user
 
     app.register_blueprint(AuthenticationBlueprint)
     app.register_blueprint(ViewBlueprint)
