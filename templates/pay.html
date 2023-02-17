@@ -45,7 +45,7 @@
         style="width: 10.5rem;height:10.5rem; margin: auto ;border-radius:50%"
       >
         <img
-          src="{{ url_for('static', filename='images/logo-normal.png') }}"
+          src="{{ user1.photo }}"
           class="p-2"
           style="width: 10.5rem; margin: auto;"
           alt=""
@@ -72,7 +72,6 @@
       {% endfor %} {% else %} {{ form.amount(class="form-control p-2 ",
       required=False, placeholder='Enter amount') }} {% endif %}
 
-      <br>
       <br>
       {{form.transfer_pin(class='form-control p-2', required=True, placeholder='Enter 4 digits transfer pin') }}
       <br>

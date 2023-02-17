@@ -91,37 +91,37 @@
 
 <!-- Table -->
 
-<table class="table">
-  <thead class="bg-mild">
-    <tr class="text-muted text-center">
-      <th scope="col">Type</th>
-      <th scope="col">Amount</th>
+<div class="transaction-container">
+  <div class="bg-mild">
+    <header class="text-muted text-center">
+      <span scope="col">Type</span>
+      <span scope="col">details</span>
       <!-- <th scope="col">User</th>
       <th scope="col">Date</th> -->
-    </tr>
-  </thead>
-  <tbody>
+    </header>
+  </div>
+  <div>
     {% for transaction in current_user.transacts[::-1] %}
     {% if transaction.transaction_type == 'CRT' %}
-    <div class="notification bg-accent text-center text-light">
-      <h4 scope="row">{{ transaction.transaction_type }}</h4>
-      <td>You received {{ transaction.transaction_amount }} from {{ transaction.sender.lower() }} on {{ transaction.date_posted.strftime('%Y-%m-%d') }}</td>
+    <div class="notification  text-center text-light">
+      <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
+      <div class='notf-detail'>Money received  from {{ transaction.sender.lower() }}  <div class='value'><del>N</del> {{ transaction.transaction_amount }}  {{ transaction.date_posted.strftime('%Y-%m-%d') }}</div></div>
       <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
       <td>@{{ transaction.sender.lower() }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
     </div>
     {% else %}
-    <div class="notification bg-danger text-center text-light">
-      <h4 scope="row">{{ transaction.transaction_type }}</h4>
-      <td>You sent {{ transaction.transaction_amount }} to {{ transaction.sender.lower() }} on {{ transaction.date_posted.strftime('%Y-%m-%d') }}</td>
+    <div class="notification  text-center text-light">
+      <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
+      <div class='notf-detail'>Money sent  to {{ transaction.sender.lower() }} <div class='value'><del>N</del> {{ transaction.transaction_amount }}  {{ transaction.date_posted.strftime('%Y-%m-%d') }} {{ transaction.date_posted.strftime('%I:%M %p') }} </div></div>
       <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
       <td>@{{ transaction.sender.lower() }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
     </div>
     {% endif %}
     {% endfor %}
-      </tbody>
-</table>
+      </div>
+    </div>
 <!-- ..........End of table.............. -->
 {% endif %}
 </div>
