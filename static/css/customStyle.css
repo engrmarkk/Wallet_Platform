@@ -505,7 +505,7 @@ form.login {
     color:#000;
     font-weight: 600;
 }
-.transaction-container .notification .notf-detail .value{
+.transaction-container .notification .value{
     color:#333;
 }
 .transaction-container :is(header,.notification) :nth-child(2){
