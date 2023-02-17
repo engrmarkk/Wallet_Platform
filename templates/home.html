@@ -101,7 +101,7 @@
     </header>
   </div>
   <div>
-    {% for transaction in current_user.transacts[::-1] %}
+    {% for transaction in current_user.transacts[::-1][:3] %}
     {% if transaction.transaction_type == 'CRT' %}
     <div class="notification  text-center text-light">
       <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
@@ -122,6 +122,9 @@
     </div>
     {% endif %}
     {% endfor %}
+    <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content;" class="m-auto d-flex justify-content-center align-items-center text-decoration-none btn btn-primary">See more
+      <i class="fa fa-plus-circle mx-2"></i>
+    </a>
       </div>
     </div>
 <!-- ..........End of table.............. -->

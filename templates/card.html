@@ -42,7 +42,7 @@
     <div class="card-data">
         <div class="card-no">{{card.card_number}}</div>
         <div class="expire-data">
-          <div>{{ current_user.last_name.title() + ' ' + current_user.first_name.title() }}</div>
+          <div>{{ current_user.first_name.title() + ' ' + current_user.last_name.title() }}</div>
           <div class="card-type">
             <img src="{{ url_for('static', filename='images/Mastercard.png') }}">
           </div>
