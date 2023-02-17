@@ -12,6 +12,7 @@ import datetime
 import cloudinary
 import cloudinary.uploader
 import cloudinary_config
+from routes.auth import login
 
 view = Blueprint("view", __name__, template_folder='../templates')
 
@@ -59,6 +60,12 @@ def front_page():
 def account():
     pinset = current_user.pin_set
     return render_template("account.html", pinset=pinset, date=x)
+
+
+@view.route("/transaction-history")
+@login_required
+def showtransaction():
+    return render_template("show-histories.html", date=x)
 
 
 @view.route("/home/", methods=["GET", "POST"])
