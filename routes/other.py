@@ -2,7 +2,7 @@ from datetime import datetime
 from extensions import mail, db
 from flask_mail import Message
 from flask_login import current_user, login_required
-from flask import redirect, url_for, flash, request, render_template, Blueprint
+from flask import redirect, url_for, flash, request, render_template, Blueprint, make_response
 from models import User, Transaction, Beneficiary, Card
 from form import *
 # from func import check_user_activity
@@ -10,6 +10,8 @@ from werkzeug.security import generate_password_hash
 import random
 import datetime
 import cloudinary
+import os
+import requests
 import cloudinary.uploader
 import cloudinary_config
 from routes.auth import login
@@ -66,11 +68,6 @@ def account():
 @login_required
 def showtransaction():
     return render_template("show-histories.html", date=x)
-
-
-@view.route("/statement")
-def statement():
-    return render_template("statement.html")
 
 
 @view.route("/home/", methods=["GET", "POST"])
@@ -371,3 +368,20 @@ def contact():
 @view.route("/team")
 def team():
     return render_template("team.html", date=x)
+
+
+@view.route('/download_pdf', methods=['GET'])
+def download_pdf():
+    try:
+        html = render_template('statement.html')
+        response = requests.post('https://api.pdfshift.io/v3/convert/pdf',
+                                 json={'source': html},
+                                 headers={'Authorization': f'{os.getenv("PDF_KEY")}'})
+        pdf = response.content
+        response = make_response(pdf)
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Content-Disposition'] = \
+            f"attachment; filename={current_user.last_name.title() + ' ' + current_user.first_name.title()}.pdf"
+        return response
+    except:
+        flash("Failed to download statement of account", "danger")
