@@ -2,7 +2,8 @@ from datetime import datetime
 from extensions import mail, db
 from flask_mail import Message
 from flask_login import current_user, login_required
-from flask import redirect, url_for, flash, request, render_template, Blueprint, make_response
+from flask import redirect, url_for, flash, request, \
+    render_template, Blueprint, make_response, jsonify
 from models import User, Transaction, Beneficiary, Card
 from form import *
 # from func import check_user_activity
@@ -373,15 +374,24 @@ def team():
 @view.route('/download_pdf', methods=['GET'])
 def download_pdf():
     try:
+        # render the Jinja2 template with the desired context
         html = render_template('statement.html')
-        response = requests.post('https://api.pdfshift.io/v3/convert/pdf',
-                                 json={'source': html},
-                                 headers={'Authorization': f'{os.getenv("PDF_KEY")}'})
-        pdf = response.content
-        response = make_response(pdf)
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = \
-            f"attachment; filename={current_user.last_name.title() + ' ' + current_user.first_name.title()}.pdf"
-        return response
+
+        # convert the HTML to PDF using pdfshift.io
+        response = requests.post(
+            'https://api.pdfshift.io/v3/convert/pdf',
+            auth=('api', f'{os.environ.get("PDF_KEY")}'),
+            json={
+                'source': html,
+                'landscape': False,
+                'use_print': False
+            })
+
+        response.raise_for_status()
+
+        # return the PDF as a Flask response
+        return response.content, 200, \
+            {'Content-Type': 'application/pdf',
+             'Content-Disposition': f'attachment; filename={current_user.last_name.title() + " " + current_user.fisrt_name.title()}.pdf'}
     except:
-        flash("Failed to download statement of account", "danger")
+        flash('Something went wrong', 'danger')
