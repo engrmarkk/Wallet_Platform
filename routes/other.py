@@ -373,25 +373,24 @@ def team():
 
 @view.route('/download_pdf', methods=['GET'])
 def download_pdf():
-    try:
-        # render the Jinja2 template with the desired context
-        html = render_template('statement.html')
+    # render the Jinja2 template with the desired context
+    html = render_template('statement.html')
 
-        # convert the HTML to PDF using pdfshift.io
-        response = requests.post(
-            'https://api.pdfshift.io/v3/convert/pdf',
-            auth=('api', f'{os.environ.get("PDF_KEY")}'),
-            json={
-                'source': html,
-                'landscape': False,
-                'use_print': False
-            })
+    # convert the HTML to PDF using pdfshift.io
+    response = requests.post(
+        'https://api.pdfshift.io/v3/convert/pdf',
+        auth=('api', f'{os.environ.get("PDF_KEY")}'),
+        json={
+            'source': html,
+            'landscape': False,
+            'use_print': False
+        })
 
-        response.raise_for_status()
+    response.raise_for_status()
 
-        # return the PDF as a Flask response
-        return response.content, 200, \
-            {'Content-Type': 'application/pdf',
-             'Content-Disposition': f'attachment; filename={current_user.last_name.title() + " " + current_user.fisrt_name.title()}.pdf'}
-    except:
-        flash('Something went wrong', 'danger')
+    # return the PDF as a Flask response
+    return response.content, 200, \
+        {'Content-Type': 'application/pdf',
+         'Content-Disposition': f'attachment; filename={current_user.last_name.title() + " " + current_user.first_name.title()}.pdf'}
+
+
