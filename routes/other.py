@@ -782,7 +782,7 @@ def _get_pdfkit_config():
         return pdfkit.configuration(wkhtmltopdf=os.environ.get('WKHTMLTOPDF_BINARY', r'.\bin\wkhtmltopdf.exe'))
     else:
         os.environ['PATH'] += os.pathsep + os.path.dirname(sys.executable)
-        WKHTMLTOPDF_CMD = subprocess.Popen(['which', os.environ.get('WKHTMLTOPDF_BINARY', 'wkhtmltopdf')],
+        WKHTMLTOPDF_CMD = subprocess.Popen(['which', os.environ.get('WKHTMLTOPDF_BINARY', r'.\bin\wkhtmltopdf.exe')],
             stdout=subprocess.PIPE).communicate()[0].strip()
         return pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_CMD)
 
