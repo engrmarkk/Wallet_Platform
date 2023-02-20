@@ -237,7 +237,12 @@ def pay(acct):
                 mail.send(msg)
             except:
                 flash("Check your network", "danger")
-            return redirect(url_for("view.pay", acct=acct))
+            return redirect(url_for("view.transaction_successful",
+                                    amount=f"{amount:,}",
+                                    user_name=user1.first_name,
+                                    user_name2=user1.last_name,
+                                    user_acct=str(user1.account_number),
+                                    ))
     return render_template(
         "pay.html", date=x, form=form, user1=user, beneficial=beneficial
     )
@@ -404,6 +409,7 @@ def faq():
     return render_template("faq.html", date=x)
 
 
-@view.route("/completed")
-def transaction_successful():
-    return render_template("trans_success.html", date=x)
+@view.route("/completed/<amount>/<user_name>/<user_name2>/<user_acct>")
+def transaction_successful(user_name, amount, user_name2, user_acct):
+    return render_template("trans_success.html", date=x, amount=amount,
+                           user1=user_name, user2=user_name2, user_acct=user_acct)
