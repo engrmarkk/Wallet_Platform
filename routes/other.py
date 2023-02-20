@@ -60,6 +60,7 @@ def front_page():
 
 
 @view.route("/account/")
+@login_required
 def account():
     pinset = current_user.pin_set
     return render_template("account.html", pinset=pinset, date=x)
@@ -373,24 +374,36 @@ def team():
 
 @view.route('/download_pdf', methods=['GET'])
 def download_pdf():
-    # render the Jinja2 template with the desired context
-    html = render_template('statement.html')
+    try:
+        # render the Jinja2 template with the desired context
+        html = render_template('statement.html')
 
-    # convert the HTML to PDF using pdfshift.io
-    response = requests.post(
-        'https://api.pdfshift.io/v3/convert/pdf',
-        auth=('api', f'{os.environ.get("PDF_KEY")}'),
-        json={
-            'source': html,
-            'landscape': False,
-            'use_print': False
-        })
+        # convert the HTML to PDF using pdfshift.io
+        response = requests.post(
+            'https://api.pdfshift.io/v3/convert/pdf',
+            auth=('api', f'{os.environ.get("PDF_KEY")}'),
+            json={
+                'source': html,
+                'landscape': False,
+                'use_print': False
+            })
 
-    response.raise_for_status()
+        response.raise_for_status()
 
-    # return the PDF as a Flask response
-    return response.content, 200, \
-        {'Content-Type': 'application/pdf',
-         'Content-Disposition': f'attachment; filename={current_user.last_name.title() + " " + current_user.first_name.title()}.pdf'}
+        # return the PDF as a Flask response
+        return response.content, 200, \
+            {'Content-Type': 'application/pdf',
+             'Content-Disposition': f'attachment; filename={current_user.last_name.title() + " " + current_user.first_name.title()}.pdf'}
+    except:
+        flash("Cannot generate your account's statement", "danger")
+        return redirect(url_for("view.account"))
 
 
+@view.route("/faq")
+def faq():
+    return render_template("faq.html", date=x)
+
+
+@view.route("/completed")
+def transaction_successful():
+    return render_template("trans_success.html", date=x)
