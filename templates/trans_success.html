@@ -1,5 +1,45 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    
+
+    <!-- <style>
+        td{
+            width: fit-content !important;
+        }
+    </style> -->
+
+    <div class="card my-5 p-2" style="background: none;">
+        <h4 class="text-center text-info fw-bold">Transaction Receipt</h4>
+        <small class="text-muted text-center mb-4">Generated from EasyTransact on 10/10/2023</small>
+
+        <table class="table m-auto" style="width: 90%;">
+            <tbody>
+                <tr>
+                  <td class="text-success fw-bold">Transaction Amount</td>
+                  <td class="text-info fw-bold">20,000</td>
+                </tr>
+                <tr>
+                  <td class="text-success fw-bold">Transaction Type</td>
+                  <td class="text-info fw-bold">Debit</td>
+                </tr>
+                <tr>
+                    <td class="text-success fw-bold">Transaction Date</td>
+                    <td class="text-info fw-bold">09/02/23</td>
+                  </tr>
+                  <tr>
+                    <td class="text-success fw-bold">Sender</td>
+                    <td class="text-info fw-bold">
+                        Name Name <br>
+                        12334556666 <br>
+                        EasyTransact NG
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-success fw-bold">Transaction Status</td>
+                    <td class="text-info fw-bold">Successful</td>
+                  </tr>
+              </tbody>
+        </table>
+    </div>
+    </div>
 {% endblock content %}
