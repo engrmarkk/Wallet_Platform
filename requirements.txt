@@ -48,4 +48,4 @@ Werkzeug==2.2.2
 wkhtmltopdf==0.2
 WTForms==3.0.1
 zopfli==0.2.2
-wkhtmltopdf-pack==0.12.3.0
+wkhtmltopdf-pack==0.12.6
