@@ -775,6 +775,23 @@ def contact():
 def team():
     return render_template("team.html", date=x)
 
+import os, sys, subprocess, platform
+
+def _get_pdfkit_config():
+    """wkhtmltopdf lives and functions differently depending on Windows or Linux. We
+     need to support both since we develop on windows but deploy on Heroku.
+
+    Returns:
+        A pdfkit configuration
+    """
+    if platform.system() == 'Windows':
+        return pdfkit.configuration(wkhtmltopdf=os.environ.get('WKHTMLTOPDF_BINARY', r'.bin\wkhtmltopdf.exe'))
+    else:
+        WKHTMLTOPDF_CMD = subprocess.Popen(['which', os.environ.get('WKHTMLTOPDF_BINARY', 'wkhtmltopdf')], stdout=subprocess.PIPE).communicate()[0].strip()
+        return pdfkit.configuration(wkhtmltopdf=WKHTMLTOPDF_CMD)
+
+
+
 # configh = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
 @view.route("/pdf")
 def download_pdf():
@@ -782,7 +799,7 @@ def download_pdf():
         "statement.html")
     pdf = pdfkit.from_string(html, False,
                              options={"enable-local-file-access": ""},
-                             configuration=config
+                             configuration=_get_pdfkit_config()
                              )
     response = make_response(pdf)
     response.headers["Content-Type"] = "application/pdf"
