@@ -106,7 +106,7 @@
     <div class="notification  text-center text-light">
       <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
       <div class='notf-detail'>Money received  from {{ transaction.sender.lower() }}  </div>
-      <div class='value'><del>N</del> {{ transaction.transaction_amount }}  {{ transaction.date_posted.strftime('%Y-%m-%d') }}</div>
+      <div class='value'><del>N</del> {{ transaction.transaction_amount }} - {{ transaction.date_posted.strftime('%Y-%m-%d') }}</div>
       <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
       <td>@{{ transaction.sender.lower() }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
@@ -115,7 +115,7 @@
     <div class="notification  text-center text-light">
       <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
       <div class='notf-detail'>Money sent  to {{ transaction.sender.lower() }}</div>
-      <div class='value'><del>N</del> {{ transaction.transaction_amount }}  {{ transaction.date_posted.strftime('%Y-%m-%d') }}</div>
+      <div class='value'><del>N</del> {{ transaction.transaction_amount }} - {{ transaction.date_posted.strftime('%Y-%m-%d') }}</div>
       <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
       <td>@{{ transaction.sender.lower() }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
