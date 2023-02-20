@@ -15,8 +15,18 @@ import requests
 import cloudinary.uploader
 import cloudinary_config
 from routes.auth import login
+import pdfkit
 
 view = Blueprint("view", __name__, template_folder='../templates')
+
+
+"""
+config = pdfkit.configuration(wkhtmltopdf='./bin/wkhtmltopdf')
+"""
+
+path_wkhtmltopdf = r'.\bin\wkhtmltopdf.exe'
+config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
+pdfkit.from_url("http://google.com", "out.pdf", configuration=config)
 
 
 def send_reset_email(user):
@@ -59,6 +69,7 @@ def front_page():
 
 
 @view.route("/account/")
+@login_required
 def account():
     pinset = current_user.pin_set
     return render_template("account.html", pinset=pinset, date=x)
@@ -369,19 +380,16 @@ def contact():
 def team():
     return render_template("team.html", date=x)
 
-
-@view.route('/download_pdf', methods=['GET'])
-def download_pdf():
-    try:
-        html = render_template('statement.html')
-        response = requests.post('https://api.pdfshift.io/v3/convert/pdf',
-                                 json={'source': html},
-                                 headers={'Authorization': f'{os.getenv("PDF_KEY")}'})
-        pdf = response.content
-        response = make_response(pdf)
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = \
-            f"attachment; filename={current_user.last_name.title() + ' ' + current_user.first_name.title()}.pdf"
-        return response
-    except:
-        flash("Failed to download statement of account", "danger")
+# configh = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+@view.route("/pdf")
+def pdf():
+    html = render_template(
+        "statement.html")
+    pdf = pdfkit.from_string(html, False,
+                             options={"enable-local-file-access": ""},
+                             configuration=config
+                             )
+    response = make_response(pdf)
+    response.headers["Content-Type"] = "application/pdf"
+    response.headers["Content-Disposition"] = "inline; filename=output.pdf"
+    return response
