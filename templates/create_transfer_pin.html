@@ -55,7 +55,7 @@
       {{ form.hidden_tag() }}
         <!-- For wallet number -->
         <div class="form-group">
-            {{ form.transfer_pin.label(class='form-label') }}
+            {{ form.transfer_pin.label(class='form-label text-muted badge') }}
             {{ form.transfer_pin(class='form-control', placeholder='Enter transfer pin') }}
 
             {% for error in form.transfer_pin.errors %}
