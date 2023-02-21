@@ -111,10 +111,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-mail.txt
-#wallet.db
-flask_session/
-flask_session
+wallet.db
 
 # Spyder project settings
 .spyderproject
