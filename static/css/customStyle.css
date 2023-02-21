@@ -270,7 +270,9 @@ span.navbar-toggler-ico.three {
     font-size:2.5rem;
 }
 .text-home{
-    color:#333;
+    color:#fff;
+    font-size:2rem;
+    font-weight: 600;
 }
 .alert-dismissible{
     position:relative;
@@ -300,12 +302,12 @@ span.navbar-toggler-ico.three {
     text-align: center;
 }
 .balance .h3.bal-val {
-    color: #2e8bb6;
+    color: #ffffff;
     font-weight: 600;
     font-family: "Sora",sans-serif;
 }
 .balance .bal-title {
-    color: #6c757d!important;
+    color: #ffffff!important;
     display: block;
     padding: 0.2rem 1rem;
     border: 1px solid #aaa;
@@ -384,10 +386,16 @@ span.navbar-toggler-ico.three {
     border-top-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
     box-shadow: 0 0 10px 2px #2e8bb6;
-    background: #2e8bb6 !important;
+    background: #ffffff !important;
     cursor:pointer;
     transition: 0.3s ease-in-out;
 }
+.badge-text-color{
+    color:#2e8bb6;
+}
+/* .night .badge-text-color{
+    color:#fff !important;
+} */
 .home .badge:hover{
     scale:1.1;
     box-shadow: 0 0 2px #000;
@@ -459,10 +467,12 @@ form.login {
 .login-container :is(.reset,.signup),
 .signup-container .login,
 .text-setPin,
-.eye,
 .pay-header .text-white{
     color:#2e8bb6 !important;
     font-weight:600;
+}
+.eye{
+    color:#fff !important;
 }
 .pay-header{
     text-align: center;
@@ -488,8 +498,8 @@ form.login {
     border-radius: 20px;
 }
 .transaction-container .notification small:is(.credit,.debit){
-    height:20px;
-    width:20px;
+    height:30px;
+    width:30px;
     border-radius:50%;
     font-size:9px;
     display:flex;
@@ -497,10 +507,10 @@ form.login {
     justify-content: center;
 }
 .transaction-container .notification small.debit{
-    background-color: red;
+    background-color: #c66f00;
 }
 .transaction-container .notification small.credit{
-    background-color: green;
+    background-color: #2e8ab5;
 }
 .transaction-container .notification .notf-detail{
     color:#000;
@@ -524,7 +534,17 @@ form.login {
     font-weight: 200;
 }
 .main-container{
-    
+    background: #2e8bb6;
+    padding: 2rem 0;
+    color: #fff !important;
+    border-top-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+.see-more{
+    background: #2e8bb6;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem;
 }
 /* /////////////////////////// */
 .signup-container {
