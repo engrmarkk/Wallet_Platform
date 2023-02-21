@@ -417,3 +417,8 @@ def transaction_successful(user_name, amount, user_name2, user_acct):
 @view.route("/coming-soon")
 def coming_soon():
     return render_template("coming-soon.html")
+
+
+@view.route("/profile")
+def user_profile():
+    return render_template("profile.html", date=x)
