@@ -39,9 +39,10 @@ body.night p {
     background:transparent;
 
 }
-
-#navbar{
-    box-shadow: rgba(75, 72, 72, 0.15) 1.95px 1.95px 5.6px;
+@media (max-width:992px){
+    #navbar{
+        box-shadow: rgba(75, 72, 72, 0.15) 1.95px 1.95px 5.6px;
+    }
 }
 
 .night .navbar-brand span {
@@ -505,13 +506,26 @@ form.login {
     color:#000;
     font-weight: 600;
 }
-.transaction-container .notification .notf-detail .value{
+.transaction-container .notification .value{
     color:#333;
 }
 .transaction-container :is(header,.notification) :nth-child(2){
     flex-grow: 1;
 }
-
+.transaction-container :is(header,.notification) .notf-detail{
+    flex-grow: 1;
+    display: flex;
+    margin-left: 3rem;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.notf-detail :last-child {
+    color: #8d8d8d !important;
+    font-weight: 200;
+}
+.main-container{
+    
+}
 /* /////////////////////////// */
 .signup-container {
     width: 100%;

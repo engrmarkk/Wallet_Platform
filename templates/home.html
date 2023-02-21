@@ -24,7 +24,7 @@
     </div>
     {% endfor %} {% endif %} {% endwith %}
 
-
+    <div class="main-container">
     <div class="balance d-flex align-items-center">
         <p class="" style="width: fit-content;">
         <img src="{{ url_for('static', filename='images/nigeria.png') }}" class="bg-light rounded-circle py-2" style="width: 4rem;" alt="Nigeria">
@@ -61,6 +61,9 @@
 
           
     </div>
+  </div>
+
+
     <div class="acc-num p-3"
     style="background: url(../static/images/home.svg);
     background-size: 15rem;
@@ -101,7 +104,8 @@
     {% if transaction.transaction_type == 'CRT' %}
     <div class="notification  text-center text-light">
       <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
-      <div class='notf-detail'>Money received  from {{ transaction.sender.lower() }}  <div class='value'><del>N</del> {{ transaction.transaction_amount }}  {{ transaction.date_posted.strftime('%Y-%m-%d') }} {{ transaction.date_posted.strftime('%I:%M %p') }}</div></div>
+      <div class='notf-detail'><span>Money received  from {{ transaction.sender.lower() }}</span><span>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</span>  </div>
+      <div class='value'>+ <del>N</del> {{ transaction.transaction_amount }} </div>
       <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
       <td>@{{ transaction.sender.lower() }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
@@ -109,16 +113,19 @@
     {% else %}
     <div class="notification  text-center text-light">
       <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
-      <div class='notf-detail'>Money sent  to {{ transaction.sender.lower() }} <div class='value'><del>N</del> {{ transaction.transaction_amount }}  {{ transaction.date_posted.strftime('%Y-%m-%d') }} {{ transaction.date_posted.strftime('%I:%M %p') }} </div></div>
+      <div class='notf-detail'><span>Money sent to {{ transaction.sender.lower() }}</span><span>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</span>  </div>
+      <div class='value'>- <del>N</del> {{ transaction.transaction_amount }} </div>
       <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
       <td>@{{ transaction.sender.lower() }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
     </div>
     {% endif %}
     {% endfor %}
-    <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content;" class="m-auto d-flex justify-content-center align-items-center text-decoration-none btn btn-primary">See more
+    <div style="justify-content:flex-end;" class=" d-flex align-items-center">
+    <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content;" class=" d-flex align-items-center text-decoration-none btn btn-primary">See more
       <i class="fa fa-plus-circle mx-2"></i>
     </a>
+  </div>
       </div>
     </div>
 <!-- ..........End of table.............. -->
