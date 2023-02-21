@@ -420,5 +420,6 @@ def coming_soon():
 
 
 @view.route("/profile")
+@login_required
 def user_profile():
     return render_template("profile.html", date=x)
