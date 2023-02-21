@@ -5,8 +5,7 @@
   display: flex;
   align-items: center;
   gap: 5px;'>
-    <span class="text-muted h3">Send Money </span
-    ><small class="badge badge-pill bg-success py-2 px-4">To wallet</small>
+    <span class="text-muted h3">Create Pin </span>
   </div>
   <div class="col-10 col-xs-10 col-sm-10 col-md-6">
     <!-- wallet sending money form-->
@@ -56,7 +55,7 @@
       {{ form.hidden_tag() }}
         <!-- For wallet number -->
         <div class="form-group">
-            {{ form.transfer_pin.label(class='form-label') }}
+            {{ form.transfer_pin.label(class='form-label text-muted badge') }}
             {{ form.transfer_pin(class='form-control', placeholder='Enter transfer pin') }}
 
             {% for error in form.transfer_pin.errors %}
@@ -68,7 +67,8 @@
             <p class="text-danger small">{{ error }}</p>
             {% endfor %}
             <br>
-            <select name="secret_question" id="secret_question" required>
+            <span class="mb-2 badge text-muted">Secret Question and Answer</span>
+            <select name="secret_question" id="secret_question" class="p-2 border-1" required>
                 <option value="What elementary school did you attend?">What elementary school did you attend?</option>
                 <option value="What is your favorite color?">What is your favorite color?</option>
                 <option value="What is your favorite food?">What is your favorite food?</option>
@@ -89,7 +89,6 @@
                 <option value="What was your first car?">What was your first car?</option>
                 <option value="What is the name of the town where you were born?">What is the name of the town where you were born?</option>
             </select>
-            <br>
             {{ form.secret_answer(class='form-control', placeholder='Secret answer') }}   
             {% for error in form.secret_answer.errors %}
             <p class="text-danger small">{{ error }}</p>

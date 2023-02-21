@@ -321,6 +321,7 @@ span.navbar-toggler-ico.three {
     flex-direction: column;
     justify-content: center;
     align-items:center;
+    height: 15rem;
 }
 .home .acc-num .acc-copy{
     margin-top: 0.5rem;
@@ -857,7 +858,6 @@ select{
     border-top-left-radius: 1rem;
     border-bottom-right-radius: 1rem;
     box-shadow: 0 0 10px 2px #2e8bb6;
-    background: #2e8bb6 !important;
     cursor: pointer;
     transition: 0.3s ease-in-out;
 }
