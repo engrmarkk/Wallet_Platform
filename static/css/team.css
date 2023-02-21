@@ -114,11 +114,12 @@ a.navbar-brand span{
 .social-media-icon a{
     color: #2e8bb6;
     position: relative;
-    transition: .7s;
+    transition: .7s ease-in-out;
 }
 
 .social-media-icon a:hover{
     bottom: 10px;
+    transition: .7s ease-in-out;
 }
 
 
