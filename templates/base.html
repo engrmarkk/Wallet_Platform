@@ -128,7 +128,7 @@
                 Card</a>
             </li>
             <li class="nav-item _box" style="margin-left:2rem">
-              <a href="#" class="nav-link" id="navlinks">
+              <a href="{{ url_for('view.coming_soon') }}" class="nav-link" id="navlinks">
                 <i class="fas fa-business-time d-none d-lg-inline"></i>
                 Invest</a>
             </li>
@@ -185,16 +185,16 @@
           <ul class="navbar-nav ms-auto">
             <li class="nav-item _box
             ">
-              <a href="#" class="nav-link">Features</a>
+              <a href="{{ url_for('view.coming_soon') }}" class="nav-link">Features</a>
             </li>
             <li class="nav-item _box">
-              <a href="#about" class="nav-link">Business</a>
+              <a href="{{ url_for('view.coming_soon') }}" class="nav-link">Business</a>
             </li>
             <li class="nav-item _box">
               <a href="{{ url_for('view.team') }}" class="nav-link">Team</a>
             </li>
             <li class="nav-item _box">
-              <a href="#" class="nav-link">Help</a>
+              <a href="{{ url_for('view.contact') }}" class="nav-link">Help</a>
             </li>
             <li class="nav-item _button">
               <a href="{{ url_for('auth.login') }}" class="nav-link nav-btn"><span>Sign In</span></a>
