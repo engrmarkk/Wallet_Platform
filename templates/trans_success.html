@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+     <!-- Flash messages -->
+ {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div
+      class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }} mt-3"
+      role="alert"
+      style="height: 3.5rem; transition: 0.6s"
+    >
+    {% if category=='success' %}
+      <p class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
+      {% else %}
+      <p class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
+      {% endif %}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endif %} {% endwith %}
+
+
+
+    <div class="card my-5 p-2 m-auto" style="background: none; max-width: 400px;">
+        <h4 class="text-center text-info fw-bold">Transaction Receipt</h4>
+        <small class="text-muted text-center mb-4">Generated from EasyTransact on {{ date.strftime('%d/%m/%Y') }}</small>
+
+        <table class="table m-auto">
+            <tbody>
+                <tr>
+                  <td class="text-success fw-bold">Transaction Amount</td>
+                  <td class="text-info fw-bold"><del style="text-decoration-style: double;">N</del> {{amount}}</td>
+                </tr>
+                <tr>
+                  <td class="text-success fw-bold">Transaction Type</td>
+                  <td class="text-info fw-bold">Debit</td>
+                </tr>
+                <tr>
+                    <td class="text-success fw-bold">Transaction Date</td>
+                    <td class="text-info fw-bold">{{ date.strftime('%Y-%m-%d') }} {{ date.strftime('%I:%M %p') }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-success fw-bold">Sender</td>
+                    <td class="text-info fw-bold">
+                        {{current_user.last_name.title() + ' ' + current_user.first_name.title()}}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-success fw-bold">Beneficiary</td>
+                    <td class="text-info fw-bold">{{user1.title() + " " + user2.title()}} <br>
+                        {{user_acct}} <br>
+                        EasyTransact NG
+                    </td>
+                  </tr>
+                  <tr>
+                    <td class="text-success fw-bold">Transaction Status</td>
+                    <td class="text-info fw-bold">Successful</td>
+                  </tr>
+              </tbody>
+        </table>
+        <small class="text-muted mt-5 text-center">If you have any question or would like more information, please contact the
+            <a href="{{ url_for('view.contact') }}" class="text-info text-decoration-none">customer care</a>
+        </small>
+    </div>
+    </div>
+{% endblock content %}

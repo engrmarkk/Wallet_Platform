@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+ <!-- Flash messages -->
+ {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div
+      class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }} mt-3"
+      role="alert"
+      style="height: 3.5rem; transition: 0.6s"
+    >
+    {% if category=='success' %}
+      <p class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
+      {% else %}
+      <p class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
+      {% endif %}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endif %} {% endwith %}
+
+
+
+<h2  class="text-center mt-4">Frequently Asked Question</h2>
+
+<div class="my-4">
+
+    <!-- *********************************************************** -->
+
+<div class="accordion my-2" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="flush-headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+        Question 1
+        </button>
+      </h2>
+      <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime praesentium nisi ullam optio amet accusantium, facere et quibusdam laborum, enim obcaecati adipisci sit quae quo ab, voluptas quia doloribus natus!
+        </div>
+      </div>
+    </div>
+  </div>
+
+      <!-- *********************************************************** -->
+
+<div class="accordion my-2" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="flush-headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne2" aria-expanded="false" aria-controls="flush-collapseOne">
+          Question 2
+        </button>
+      </h2>
+      <div id="flush-collapseOne2" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime praesentium nisi ullam optio amet accusantium, facere et quibusdam laborum, enim obcaecati adipisci sit quae quo ab, voluptas quia doloribus natus!
+        </div>
+      </div>
+    </div>
+  </div>
+
+      <!-- *********************************************************** -->
+
+<div class="accordion my-2" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="flush-headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne3" aria-expanded="false" aria-controls="flush-collapseOne">
+          Question 3
+        </button>
+      </h2>
+      <div id="flush-collapseOne3" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime praesentium nisi ullam optio amet accusantium, facere et quibusdam laborum, enim obcaecati adipisci sit quae quo ab, voluptas quia doloribus natus!
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+      <!-- *********************************************************** -->
+
+<div class="accordion my-2" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="flush-headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne4" aria-expanded="false" aria-controls="flush-collapseOne">
+        Question 4
+        </button>
+      </h2>
+      <div id="flush-collapseOne4" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime praesentium nisi ullam optio amet accusantium, facere et quibusdam laborum, enim obcaecati adipisci sit quae quo ab, voluptas quia doloribus natus!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
