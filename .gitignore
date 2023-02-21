@@ -111,7 +111,6 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-mail.txt
 wallet.db
 
 # Spyder project settings
