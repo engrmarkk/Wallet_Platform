@@ -413,3 +413,8 @@ def faq():
 def transaction_successful(user_name, amount, user_name2, user_acct):
     return render_template("trans_success.html", date=x, amount=amount,
                            user1=user_name, user2=user_name2, user_acct=user_acct)
+
+
+@view.route("/coming-soon")
+def coming_soon():
+    return render_template("coming-soon.html")
