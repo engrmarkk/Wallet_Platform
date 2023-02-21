@@ -27,12 +27,12 @@
     <div class="main-container">
     <div class="balance d-flex align-items-center">
         <p class="" style="width: fit-content;">
-        <img src="{{ url_for('static', filename='images/nigeria.png') }}" class="bg-light rounded-circle py-2" style="width: 4rem;" alt="Nigeria">
+        <img src="{{ url_for('static', filename='images/logo-normal.png') }}" class="bg-light rounded-circle py-2" style="width: 4rem;" alt="Nigeria">
         </p>
         <p class="text-white px-3">
           <p class="text-home">
             {% if pinset == True %}
-            Your NGN account is all set.
+            Hello {{current_user.first_name.title()}},
             {% else %}
             You need to create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-setPin">Set pin</a>
             {% endif %}
@@ -48,10 +48,10 @@
         </p>
     </div>
     <div class="options d-flex align-items-center mb-4 mt-2">
-        <div class="badge badge-pill text-white bg-accent mx-1"><i class="px-2 py-1 fas fa-money-bill-wave"></i>Spend</div>
-        <div class="badge badge-pill text-white bg-accent mx-1"><i class="px-2 py-1 fas fa-dice-d6"></i>Save</div>
+        <div class="badge badge-pill badge-text-color bg-accent mx-1"><i class="px-2 py-1 fas fa-money-bill-wave"></i>Spend</div>
+        <div class="badge badge-pill badge-text-color bg-accent mx-1"><i class="px-2 py-1 fas fa-dice-d6"></i>Save</div>
         <div class="mx-1">
-            <a class="badge badge-pill text-white bg-accent text-decoration-none"
+            <a class="badge badge-pill badge-text-color bg-accent text-decoration-none"
               data-bs-toggle="modal" data-bs-target="#staticBackdrop"
             style="border: none;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
              <i class="py-1 fas fa-share"></i>Send Money
@@ -122,7 +122,7 @@
     {% endif %}
     {% endfor %}
     <div style="justify-content:flex-end;" class=" d-flex align-items-center">
-    <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content;" class=" d-flex align-items-center text-decoration-none btn btn-primary">See more
+    <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content;" class="see-more d-flex align-items-center text-decoration-none btn btn-primary">See more
       <i class="fa fa-plus-circle mx-2"></i>
     </a>
   </div>
