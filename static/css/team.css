@@ -7,7 +7,10 @@
     color: white;
     width: 100%;
 }
-
+.parent-container{
+    display:flex;
+    justify-content: space-evenly;
+}
 .child-container img{
     width: 100%;
     margin: 0 auto;
@@ -32,7 +35,6 @@
     background: #ffffff;
     width: 21rem;
     height: fit-content;
-    margin: 3rem auto;
     padding: 1rem;
     border-radius: 1rem;
     color: white;
