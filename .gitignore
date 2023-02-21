@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 *$py.class
-wallet.db
+#wallet.db
 
 # C extensions
 *.so
@@ -112,7 +112,7 @@ ENV/
 env.bak/
 venv.bak/
 mail.txt
-wallet.db
+#wallet.db
 flask_session/
 flask_session
 
