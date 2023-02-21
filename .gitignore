@@ -113,6 +113,8 @@ env.bak/
 venv.bak/
 mail.txt
 wallet.db
+flask_session/
+flask_session
 
 # Spyder project settings
 .spyderproject

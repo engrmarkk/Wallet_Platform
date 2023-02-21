@@ -34,7 +34,7 @@
             {% if pinset == True %}
             Hello {{current_user.first_name.title()}},
             {% else %}
-            You need to create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-setPin">Set pin</a>
+            <span class="small" style="font-size: small; width: fit-content;">You need to create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-setPin bg-white px-1 rounded">Set pin</a></span>
             {% endif %}
           </p>
             <small class="bal-title text-muted">Wallet Balance</small>

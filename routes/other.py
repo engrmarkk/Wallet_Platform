@@ -337,7 +337,6 @@ def card():
 
 
 @view.route("/contact/", methods=["GET", "POST"])
-@login_required
 def contact():
     form = ContactForm()
     if request.method == "POST":
