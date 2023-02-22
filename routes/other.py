@@ -378,6 +378,9 @@ def team():
 
 @view.route('/download_pdf', methods=['GET'])
 def download_pdf():
+    if not current_user.transacts:
+        flash("You have no transaction history", "danger")
+        return redirect(url_for("view.account"))
     try:
         # render the Jinja2 template with the desired context
         html = render_template('statement.html')
