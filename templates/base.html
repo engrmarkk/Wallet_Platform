@@ -146,7 +146,7 @@
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <a class="dropdown-item text-decoration-none text-dark small" href="{{ url_for('view.account') }}">Account</a>
-                  <a class="dropdown-item text-decoration-none text-dark small" href="#">Profile</a>
+                  <a class="dropdown-item text-decoration-none text-dark small" href="{{ url_for('view.user_profile') }}">Profile</a>
                   <a class="dropdown-item text-decoration-none text-dark small" href="{{ url_for('auth.logout') }}">Logout</a>
                 </div>
               </div>
