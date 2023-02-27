@@ -734,6 +734,10 @@ form.create-pin .btn,
     font-family:"Sora",sans-serif;
 }
 
+.account-wrapper{
+    background: none
+}
+
 /* /////////////////////////////// */
 .form-group {
     display: flex;
