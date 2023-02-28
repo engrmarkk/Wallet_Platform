@@ -310,7 +310,7 @@ span.navbar-toggler-ico.three {
   font-family: "Sora", sans-serif;
 }
 .balance .bal-title {
-    color: #1c77a1 !important;
+    color: #666 !important;
     display: block;
     padding: 0.2rem 1rem;
     border: 1px solid #fff;
@@ -335,7 +335,7 @@ span.navbar-toggler-ico.three {
   justify-content: center;
   align-items: center;
   border-radius: 10px;
-  color: #111;
+  color: #666;
   background: #fff;
   cursor: pointer;
 }
@@ -837,7 +837,7 @@ select {
   width: -webkit-fill-available;
 }
 .head-text {
-    background: linear-gradient(341deg,#2b0064,  #2e8bb6);
+    background: linear-gradient(341deg,#1edf00,  #2e8bb6);
     width: 100%;
     display: flex;
     padding: 3rem 2rem;
