@@ -29,7 +29,7 @@
         <p class="" style="width: fit-content;">
         <img src="{{ url_for('static', filename='images/logo-normal.png') }}" class="bg-light rounded-circle p-4" style="width: 6rem;" alt="Nigeria">
         </p>
-        <p class="text-white px-3">
+        <div class="text-white px-3">
           <p class="text-home">
             {% if pinset == True %}
             Hello {{current_user.first_name.title()}},
@@ -37,6 +37,7 @@
             <span class="small" style="font-size: small; width: fit-content;">Create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-setPin bg-white px-1 rounded">Set pin</a></span>
             {% endif %}
           </p>
+          <div>
             <small class="bal-title text-muted">Wallet Balance</small>
             <div class="d-flex justify-content-center align-items-center">
             <span class="h3 bal-val mt-1" id="mybalance">
@@ -45,7 +46,7 @@
                 <span class="h3 bal-val mt-1" id="asterik">*******</span>&nbsp; &nbsp; <span class="h3 bal-val text-muted rounded-circle py-2" style="font-size: 1.1rem;"><i class="eye fas fa-eye-slash" id="eye"></i>
                 </span>
                 </div>
-        </p>
+              </div>
     </div>
     <div class="options d-flex align-items-center mb-4 mt-2">
         <div class="badge badge-pill badge-text-color bg-accent mx-1 thiss"><i class="px-2 py-1 fas fa-money-bill-wave"></i>Spend</div>
