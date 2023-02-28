@@ -306,6 +306,7 @@ span.navbar-toggler-ico.three {
 .balance .h3.bal-val {
   color: #ffffff;
   font-weight: 600;
+  font-size: 3rem;
   font-family: "Sora", sans-serif;
 }
 .balance .bal-title {
@@ -318,33 +319,14 @@ span.navbar-toggler-ico.three {
   margin-bottom: 0.5rem;
 }
 .home .acc-num {
-  margin-top: 1rem;
+  
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
     color: #ffffff!important;
-    display: block;
-    padding: 0.2rem 1rem;
-    border: 1px solid #aaa;
-    border-radius: 5px;
-    font-size: 13px;
-    margin-bottom: 0.5rem;
-    width: fit-content;
-    margin: auto;
-    margin-bottom: 1rem;
 }
 
-
-
-.home .acc-num{
-    margin-top:1rem;
-    display:flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items:center;
-    height: 15rem;
-}
 .home .acc-num .acc-copy {
   margin-top: 0.5rem;
   display: flex;

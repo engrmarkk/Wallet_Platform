@@ -21,28 +21,9 @@
     </div>
     {% endfor %} {% endif %} {% endwith %}
 
-  <div class="main-container">
+  <!-- <div class="main-container">
     <div class="balance d-flex align-items-center">
-        <p class="" style="width: fit-content;">
-        <!-- <img src="{{ url_for('static', filename='images/logo-normal.png') }}" class="bg-light rounded-circle p-4" style="width: 6rem;" alt="Nigeria"> -->
-        </p>
-        <div class="text-white px-3">
-          <p class="text-home">
-            {% if pinset == True %}
-            <span class="small">
-            Hello {{current_user.first_name.title()}},
-            </span>
-            {% else %}
-            <span class="small" style="font-size: small; width: fit-content;">Create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-setPin bg-white px-1 rounded">Set pin</a></span>
-            {% endif %}
-          </p>
-          <div>
-            <small class="bal-title text-muted">Available Balance</small>
-            <div class="d-flex justify-content-center align-items-center">
-      <p class="" style="width: fit-content;">
-        <img src="{{ url_for('static', filename='images/logo-normal.png') }}" class="bg-light rounded-circle p-4"
-          style="width: 6rem;" alt="Nigeria">
-      </p>
+    
       <div class="head-text text-white">
         <div>
         <p class="text-home">
@@ -82,7 +63,7 @@
           
     </div>
   </div>
-  {% endfor %} {% endif %} {% endwith %}
+   -->
 
   <div class="main-container">
     <div class="balance d-flex align-items-center">
@@ -91,7 +72,10 @@
           style="width: 6rem;" alt="Nigeria">
       </p>
       <div class="head-text text-white">
-        <div>
+        <div style="    
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;">
         <p class="text-home">
           {% if pinset == True %}
           {{current_user.first_name.title()}}
@@ -101,14 +85,15 @@
               class="text-decoration-none text-setPin bg-white px-1 rounded">Set pin</a>
             </span>
           {% endif %}
-        </p>
-        <div>
+        </p>    
+            <div>
           <small class="bal-title text-muted">Wallet Balance</small>
           <div class="d-flex justify-content-center align-items-center">
             <span class="h3 bal-val mt-1" id="mybalance">
               <del style="text-decoration-style: double;">N</del>
               {{ balance }}</span>
-            <span class="h3 bal-val mt-1" id="asterik">*******</span>&nbsp; &nbsp; <span
+            <span class="h3 bal-val mt-1" id="asterik">*******</span>&nbsp; &nbsp; 
+            <span
               class="h3 bal-val text-muted rounded-circle py-2" style="font-size: 1.1rem;"><i
                 class="eye fas fa-eye-slash" id="eye"></i>
             </span>
@@ -116,7 +101,7 @@
         </div>
       </div>
         <div class="acc-num">
-          <span class="text-white">Account Number</span> <br />
+          <span class="text-white">Account Number</span>
           <div class="acc-copy">
             <i class="fa-solid fa-copy"></i>
             <div class='acc-text'>
