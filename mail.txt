@@ -1,6 +1,0 @@
-set EMAIL_USER=noah13victor@gmail.com
-set EMAIL_PASS=btmmewcuxsfmzxkv
-set CLOUD_NAME=duwyopabr
-set API_KEY=827963865175173
-set API_SECRET=qBPWszxprbof_v9mVuhknZznk90
-set PDF_KEY=a0eb9db77ca5477da78209e817f2cc69
