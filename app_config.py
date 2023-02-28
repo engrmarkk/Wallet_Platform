@@ -1,5 +1,5 @@
 from extensions import app, db, login_manager, mail, migrate
-from flask import redirect, flash, url_for, session
+from flask import redirect, flash, url_for, session, render_template
 from routes import AuthenticationBlueprint, ViewBlueprint
 from models import User
 from datetime import timedelta
@@ -43,6 +43,10 @@ def create_app():
 
     # with app.app_context():
     #     db.create_all()
+
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template('404.html'), 404
 
     @app.before_request
     def before_request():

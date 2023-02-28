@@ -25,7 +25,20 @@
     {% endfor %} {% endif %} {% endwith %}
 
 
-
+    <div class="sent-wrapper" style=" display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 4rem;">
+    <i class="fa-solid fa-thumbs-up" style="  
+    font-size: 6rem;
+    color: #fff;
+    background: #2e8bbc;
+    border: 8px solid #2e8bbc;
+    border-radius: 50%;
+    padding: 2rem;"></i>
+    <span style="color:#2e8bbc; font-weight:600;font-size:3rem;">Sent!</span>
+  </div>
     <div class="card my-5 p-2 m-auto" style="background: none; max-width: 400px;">
         <h4 class="text-center text-info fw-bold">Transaction Receipt</h4>
         <small class="text-muted text-center mb-4">Generated from EasyTransact on {{ date.strftime('%d/%m/%Y') }}</small>
@@ -33,33 +46,33 @@
         <table class="table m-auto">
             <tbody>
                 <tr>
-                  <td class="text-success fw-bold">Transaction Amount</td>
+                  <td style="color: #333333b3;" class=" fw-bold">Transaction Amount</td>
                   <td class="text-info fw-bold"><del style="text-decoration-style: double;">N</del> {{amount}}</td>
                 </tr>
                 <tr>
-                  <td class="text-success fw-bold">Transaction Type</td>
+                  <td style="color: #333333b3;" class=" fw-bold">Transaction Type</td>
                   <td class="text-info fw-bold">Debit</td>
                 </tr>
                 <tr>
-                    <td class="text-success fw-bold">Transaction Date</td>
+                    <td style="color: #333333b3;" class=" fw-bold">Transaction Date</td>
                     <td class="text-info fw-bold">{{ date.strftime('%Y-%m-%d') }} {{ date.strftime('%I:%M %p') }}
                     </td>
                   </tr>
                   <tr>
-                    <td class="text-success fw-bold">Sender</td>
+                    <td style="color: #333333b3;" class=" fw-bold">Sender</td>
                     <td class="text-info fw-bold">
                         {{current_user.last_name.title() + ' ' + current_user.first_name.title()}}
                     </td>
                   </tr>
                   <tr>
-                    <td class="text-success fw-bold">Beneficiary</td>
+                    <td style="color: #333333b3;" class=" fw-bold">Beneficiary</td>
                     <td class="text-info fw-bold">{{user1.title() + " " + user2.title()}} <br>
                         {{user_acct}} <br>
                         EasyTransact NG
                     </td>
                   </tr>
                   <tr>
-                    <td class="text-success fw-bold">Transaction Status</td>
+                    <td style="color: #333333b3;" class=" fw-bold">Transaction Status</td>
                     <td class="text-info fw-bold">Successful</td>
                   </tr>
               </tbody>
