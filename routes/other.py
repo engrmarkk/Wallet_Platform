@@ -90,11 +90,10 @@ def home():
                 if account_num == current_user.account_number:
                     flash("You can't send money to yourself", "info")
                     return redirect(url_for("view.home"))
+                return redirect(url_for("view.pay", acct=account_num))
         except ValueError:
             flash("Invalid account number", "danger")
             return redirect(url_for("view.home"))
-
-            return redirect(url_for("view.pay", acct=account_num))
 
     return render_template(
         "home.html",
