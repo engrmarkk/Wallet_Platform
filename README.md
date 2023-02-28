@@ -143,11 +143,21 @@ Python3: [Get Python](https://www.python.org/downloads/)
    ```sh
    pip install -r requirements.txt
    ```
-5. Run Flask
+5. Set configurations
+  ```sh
+  set EMAIL_USER=<your-email>
+  set EMAIL_PASS=<your-generated-password>
+  set CLOUD_NAME=<your-cloudinary-name>
+  set API_KEY=<your-cloudinary-api-key>
+  set API_SECRET=<your-cloudinary-api-secret>
+  set PDF_KEY=<your-pdf-key>
+  ```
+
+6. Run Flask
    ```sh
    flask run
    ```
-6. Open the link generated in the terminal on a browser
+7. Open the link generated in the terminal on a browser
     ```sh
    http://127.0.0.1:5000/
    ```
