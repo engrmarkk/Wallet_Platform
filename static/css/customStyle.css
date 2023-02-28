@@ -319,10 +319,7 @@ span.navbar-toggler-ico.three {
     margin-bottom: 1rem;
 }
 
-.thiss{
-    width: fit-content;
-    border: 1px solid #aaa;
-}
+
 
 .home .acc-num{
     margin-top:1rem;
@@ -876,7 +873,8 @@ select{
 
 /* The added style for the save, spend and send button */
 .thiss{
-    width: 4rem !important;
+    width: fit-content !important;
+    padding: 0 1rem !important;
 }
 
 .home .badge {
