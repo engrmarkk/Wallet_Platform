@@ -323,6 +323,27 @@ span.navbar-toggler-ico.three {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+    color: #ffffff!important;
+    display: block;
+    padding: 0.2rem 1rem;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    font-size: 13px;
+    margin-bottom: 0.5rem;
+    width: fit-content;
+    margin: auto;
+    margin-bottom: 1rem;
+}
+
+
+
+.home .acc-num{
+    margin-top:1rem;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items:center;
+    height: 15rem;
 }
 .home .acc-num .acc-copy {
   margin-top: 0.5rem;

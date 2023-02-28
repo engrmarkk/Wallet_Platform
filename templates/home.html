@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block content %}
+{% block content %} 
 <div class="home mt-5" style="margin: auto; width: 90%;">
 
   <!-- Flash messages -->
@@ -8,11 +8,79 @@
   <div class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}" role="alert"
     style="height: 3.5rem; transition: 0.6s">
     {% if category=='success' %}
-    <p class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
-    {% else %}
-    <p class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
-    {% endif %}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      <p class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
+      {% else %}
+      <p class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
+      {% endif %}
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-label="Close"
+      ></button>
+    </div>
+    {% endfor %} {% endif %} {% endwith %}
+
+  <div class="main-container">
+    <div class="balance d-flex align-items-center">
+        <p class="" style="width: fit-content;">
+        <!-- <img src="{{ url_for('static', filename='images/logo-normal.png') }}" class="bg-light rounded-circle p-4" style="width: 6rem;" alt="Nigeria"> -->
+        </p>
+        <div class="text-white px-3">
+          <p class="text-home">
+            {% if pinset == True %}
+            <span class="small">
+            Hello {{current_user.first_name.title()}},
+            </span>
+            {% else %}
+            <span class="small" style="font-size: small; width: fit-content;">Create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-setPin bg-white px-1 rounded">Set pin</a></span>
+            {% endif %}
+          </p>
+          <div>
+            <small class="bal-title text-muted">Available Balance</small>
+            <div class="d-flex justify-content-center align-items-center">
+      <p class="" style="width: fit-content;">
+        <img src="{{ url_for('static', filename='images/logo-normal.png') }}" class="bg-light rounded-circle p-4"
+          style="width: 6rem;" alt="Nigeria">
+      </p>
+      <div class="head-text text-white">
+        <div>
+        <p class="text-home">
+          {% if pinset == True %}
+          {{current_user.first_name.title()}}
+          {% else %}
+          <span class="small" style="font-size: small; width: fit-content;">Create your transaction pin. <a
+              href="{{url_for('view.create_transfer_pin')}} "
+              class="text-decoration-none text-setPin bg-white px-1 rounded">Set pin</a>
+            </span>
+          {% endif %}
+        </p>
+        <div>
+          <small class="bal-title text-muted">Wallet Balance</small>
+          <div class="d-flex justify-content-center align-items-center">
+            <span class="h3 bal-val mt-1" id="mybalance">
+                <del style="text-decoration-style: double;">N</del>
+                {{ balance }}</span>
+                <span class="h3 bal-val mt-1" id="asterik">*******</span>&nbsp; &nbsp; <span class="h3 bal-val text-muted rounded-circle py-2" style="font-size: 1.1rem;"><i class="eye fas fa-eye-slash" id="eye"></i>
+                </span>
+                </div>
+              </div>
+              </div>
+    </div>
+    <div class="options d-flex align-items-center mb-4 mt-2">
+        <div class="badge badge-pill badge-text-color bg-accent thiss"><i class="px-2 py-1 fas fa-money-bill-wave"></i>Spend</div>
+        <div class="badge badge-pll badge-text-color bg-accent thiss"><i class="px-2 py-1 fas fa-dice-d6"></i>Save</div>
+        <div class="">
+            <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss"
+              data-bs-toggle="modal" data-bs-target="#staticBackdrop"
+            style="border: none;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <i class="py-1 fas fa-share"></i>Send
+            </a>
+          </div>
+        
+
+          
+    </div>
   </div>
   {% endfor %} {% endif %} {% endwith %}
 
