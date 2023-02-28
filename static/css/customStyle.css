@@ -848,12 +848,17 @@ select{
 .signup-container {
     height: 100vh;
 }
-.home .options {
+/* .home .options {
     flex-direction: column-reverse;
-}
+} */
 .text-accent {
     text-align: center;
 }
+
+.thiss{
+    width: 4rem !important;
+}
+
 .home .badge {
     height: 3rem;
     width: 11rem;
