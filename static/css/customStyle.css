@@ -855,6 +855,7 @@ select{
     text-align: center;
 }
 
+/* The added style for the save, spend and send button */
 .thiss{
     width: 4rem !important;
 }
