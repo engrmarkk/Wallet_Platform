@@ -27,7 +27,7 @@
     <div class="main-container">
     <div class="balance d-flex align-items-center">
         <p class="" style="width: fit-content;">
-        <img src="{{ url_for('static', filename='images/logo-normal.png') }}" class="bg-light rounded-circle p-4" style="width: 6rem;" alt="Nigeria">
+        <!-- <img src="{{ url_for('static', filename='images/logo-normal.png') }}" class="bg-light rounded-circle p-4" style="width: 6rem;" alt="Nigeria"> -->
         </p>
         <div class="text-white px-3">
           <p class="text-home">
@@ -38,7 +38,7 @@
             {% endif %}
           </p>
           <div>
-            <small class="bal-title text-muted">Wallet Balance</small>
+            <small class="bal-title text-muted">Available Balance</small>
             <div class="d-flex justify-content-center align-items-center">
             <span class="h3 bal-val mt-1" id="mybalance">
                 <del style="text-decoration-style: double;">N</del>
@@ -50,9 +50,9 @@
               </div>
     </div>
     <div class="options d-flex align-items-center mb-4 mt-2">
-        <div class="badge badge-pill badge-text-color bg-accent mx-1 thiss"><i class="px-2 py-1 fas fa-money-bill-wave"></i>Spend</div>
-        <div class="badge badge-pill badge-text-color bg-accent mx-1 thiss"><i class="px-2 py-1 fas fa-dice-d6"></i>Save</div>
-        <div class="mx-1">
+        <div class="badge badge-pill badge-text-color bg-accent thiss"><i class="px-2 py-1 fas fa-money-bill-wave"></i>Spend</div>
+        <div class="badge badge-pll badge-text-color bg-accent thiss"><i class="px-2 py-1 fas fa-dice-d6"></i>Save</div>
+        <div class="">
             <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss"
               data-bs-toggle="modal" data-bs-target="#staticBackdrop"
             style="border: none;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

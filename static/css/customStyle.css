@@ -314,7 +314,16 @@ span.navbar-toggler-ico.three {
     border-radius: 5px;
     font-size: 13px;
     margin-bottom: 0.5rem;
+    width: fit-content;
+    margin: auto;
+    margin-bottom: 1rem;
 }
+
+.thiss{
+    width: fit-content;
+    border: 1px solid #aaa;
+}
+
 .home .acc-num{
     margin-top:1rem;
     display:flex;
@@ -377,19 +386,20 @@ span.navbar-toggler-ico.three {
     gap: 1rem;
 }
 .home .badge {
-    height: 6rem;
-    width: 11rem;
-    font-size: 1.7rem;
+    width: fit-content;
+    font-size: 1rem;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    border-top-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
+    /* border-top-left-radius: 1rem; */
+    /* border-bottom-right-radius: 1rem; */
     box-shadow: 0 0 10px 2px #2e8bb6;
     background: #ffffff !important;
     cursor:pointer;
+    padding: .5rem 3rem;
     transition: 0.3s ease-in-out;
+    margin-top: 2rem;
 }
 .badge-text-color{
     color:#2e8bb6;
@@ -536,10 +546,12 @@ form.login {
 }
 .main-container{
     background: #2e8bb6;
-    padding: 2rem 0;
+    padding: 2rem 4rem;
     color: #fff !important;
     border-top-left-radius: 20px;
     border-bottom-right-radius: 20px;
+    width: fit-content;
+    margin: auto;
 }
 .see-more{
     background: #2e8bb6;
