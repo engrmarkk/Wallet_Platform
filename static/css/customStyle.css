@@ -857,6 +857,11 @@ select{
 .text-h2 {
     font-size: 2.5rem;
 }
+
+.main-container{
+    width: 100%;
+}
+
 .signup-container {
     height: 100vh;
 }
