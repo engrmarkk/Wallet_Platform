@@ -1,207 +1,209 @@
 {% extends 'base.html' %}
-{% block content %} 
+{% block content %}
 <div class="home mt-5" style="margin: auto; width: 90%;">
 
-     <!-- Flash messages -->
- {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %}
-    <div
-      class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
-      role="alert"
-      style="height: 3.5rem; transition: 0.6s"
-    >
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}" role="alert"
+    style="height: 3.5rem; transition: 0.6s">
     {% if category=='success' %}
-      <p class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
-      {% else %}
-      <p class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
-      {% endif %}
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
-    </div>
-    {% endfor %} {% endif %} {% endwith %}
-
-    <div class="main-container">
-    <div class="balance d-flex align-items-center">
-        <p class="" style="width: fit-content;">
-        <img src="{{ url_for('static', filename='images/logo-normal.png') }}" class="bg-light rounded-circle p-4" style="width: 6rem;" alt="Nigeria">
-        </p>
-        <div class="text-white px-3">
-          <p class="text-home">
-            {% if pinset == True %}
-            Hello {{current_user.first_name.title()}},
-            {% else %}
-            <span class="small" style="font-size: small; width: fit-content;">Create your transaction pin. <a href="{{url_for('view.create_transfer_pin')}} " class="text-decoration-none text-setPin bg-white px-1 rounded">Set pin</a></span>
-            {% endif %}
-          </p>
-          <div>
-            <small class="bal-title text-muted">Wallet Balance</small>
-            <div class="d-flex justify-content-center align-items-center">
-            <span class="h3 bal-val mt-1" id="mybalance">
-                <del style="text-decoration-style: double;">N</del>
-                {{ balance }}</span>
-                <span class="h3 bal-val mt-1" id="asterik">*******</span>&nbsp; &nbsp; <span class="h3 bal-val text-muted rounded-circle py-2" style="font-size: 1.1rem;"><i class="eye fas fa-eye-slash" id="eye"></i>
-                </span>
-                </div>
-              </div>
-    </div>
-    <div class="options d-flex align-items-center mb-4 mt-2">
-        <div class="badge badge-pill badge-text-color bg-accent mx-1 thiss"><i class="px-2 py-1 fas fa-money-bill-wave"></i>Spend</div>
-        <div class="badge badge-pill badge-text-color bg-accent mx-1 thiss"><i class="px-2 py-1 fas fa-dice-d6"></i>Save</div>
-        <div class="mx-1">
-            <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss"
-              data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-            style="border: none;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-             <i class="py-1 fas fa-share"></i>Send
-            </a>
-          </div>
-        
-
-          
-    </div>
+    <p class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
+    {% else %}
+    <p class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
+    {% endif %}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
+  {% endfor %} {% endif %} {% endwith %}
 
-
-    <div class="acc-num p-3"
-    style="background: url(../static/images/home.svg);
-    background-size: 15rem;
-    background-repeat: no-repeat;
-    background-position: right;
-    "
-    >      
-        <span class="text-muted">Account Number</span> <br/>
-      <div class="acc-copy">
-          <i class="fa-solid fa-copy"></i>
-          <div class='acc-text'>
-            <span class="fw-bold ">{{ user.account_number }}</span>
-            <span class="text-muted">Copied!</span>
+  <div class="main-container">
+    <div class="balance d-flex align-items-center">
+      <p class="" style="width: fit-content;">
+        <img src="{{ url_for('static', filename='images/logo-normal.png') }}" class="bg-light rounded-circle p-4"
+          style="width: 6rem;" alt="Nigeria">
+      </p>
+      <div class="head-text text-white">
+        <div>
+        <p class="text-home">
+          {% if pinset == True %}
+          {{current_user.first_name.title()}}
+          {% else %}
+          <span class="small" style="font-size: small; width: fit-content;">Create your transaction pin. <a
+              href="{{url_for('view.create_transfer_pin')}} "
+              class="text-decoration-none text-setPin bg-white px-1 rounded">Set pin</a>
+            </span>
+          {% endif %}
+        </p>
+        <div>
+          <small class="bal-title text-muted">Wallet Balance</small>
+          <div class="d-flex justify-content-center align-items-center">
+            <span class="h3 bal-val mt-1" id="mybalance">
+              <del style="text-decoration-style: double;">N</del>
+              {{ balance }}</span>
+            <span class="h3 bal-val mt-1" id="asterik">*******</span>&nbsp; &nbsp; <span
+              class="h3 bal-val text-muted rounded-circle py-2" style="font-size: 1.1rem;"><i
+                class="eye fas fa-eye-slash" id="eye"></i>
+            </span>
           </div>
         </div>
+      </div>
+        <div class="acc-num">
+          <span class="text-white">Account Number</span> <br />
+          <div class="acc-copy">
+            <i class="fa-solid fa-copy"></i>
+            <div class='acc-text'>
+              <span class="fw-bold ">{{ user.account_number }}</span>
+              <span class="text-muted">Copied!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="options d-flex align-items-center mb-4 mt-2">
+        <div class="badge badge-pill badge-text-color bg-accent mx-1 thiss"><i
+            class="px-2 py-1 fas fa-money-bill-wave"></i>Spend</div>
+        <div class="badge badge-pill badge-text-color bg-accent mx-1 thiss"><i class="px-2 py-1 fas fa-dice-d6"></i>Save
+        </div>
+        <div class="mx-1">
+          <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
+            data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="py-1 fas fa-share"></i>Send
+          </a>
+        </div>
+
+      </div>
+
+      </div>
     </div>
+
+
+   
 
     <hr style="border: 1px solid rgb(112, 112, 110);" class="mt-5">
     <div>
       <p class="text-center fw-bold text-muted">Recent transaction histories</p>
       {% if not current_user.transacts %}
-        <p class="text-center h4 text-warning mt-3">NO RECORD</p>
-        {% else %}
+      <p class="text-center h4 text-warning mt-3">NO RECORD</p>
+      {% else %}
 
-<!-- Table -->
+      <!-- Table -->
 
-<div class="transaction-container">
-  <div class="bg-mild">
-    <header class="text-muted text-center">
-      <span scope="col">Type</span>
-      <span scope="col">details</span>
-      <!-- <th scope="col">User</th>
+      <div class="transaction-container">
+        <div class="bg-mild">
+          <header class="text-muted text-center">
+            <span scope="col">Type</span>
+            <span scope="col">details</span>
+            <!-- <th scope="col">User</th>
       <th scope="col">Date</th> -->
-    </header>
-  </div>
-  <div>
-    {% for transaction in current_user.transacts[::-1][:3] %}
-    {% if transaction.transaction_type == 'CRT' %}
-    <div class="notification  text-center text-light">
-      <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
-      <div class='notf-detail'><span>Money received  from {{ transaction.sender.lower() }}</span><span>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</span>  </div>
-      <div class='value'>+ <del>N</del> {{ transaction.transaction_amount }} </div>
-      <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
+          </header>
+        </div>
+        <div>
+          {% for transaction in current_user.transacts[::-1][:3] %}
+          {% if transaction.transaction_type == 'CRT' %}
+          <div class="notification  text-center text-light">
+            <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
+            <div class='notf-detail'><span>Money received from {{ transaction.sender.lower() }}</span><span>{{
+                transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
+            <div class='value'>+ <del>N</del> {{ transaction.transaction_amount }} </div>
+            <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
       <td>@{{ transaction.sender.lower() }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
-    </div>
-    {% else %}
-    <div class="notification  text-center text-light">
-      <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
-      <div class='notf-detail'><span>Money sent to {{ transaction.sender.lower() }}</span><span>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</span>  </div>
-      <div class='value'>- <del>N</del> {{ transaction.transaction_amount }} </div>
-      <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
+          </div>
+          {% else %}
+          <div class="notification  text-center text-light">
+            <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
+            <div class='notf-detail'><span>Money sent to {{ transaction.sender.lower() }}</span><span>{{
+                transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
+            <div class='value'>- <del>N</del> {{ transaction.transaction_amount }} </div>
+            <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
       <td>@{{ transaction.sender.lower() }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
-    </div>
-    {% endif %}
-    {% endfor %}
-    <div style="justify-content:flex-end;" class=" d-flex align-items-center">
-    <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content;" class="see-more d-flex align-items-center text-decoration-none btn btn-primary">See more
-      <i class="fa fa-plus-circle mx-2"></i>
-    </a>
-  </div>
+          </div>
+          {% endif %}
+          {% endfor %}
+          <div style="justify-content:flex-end;" class=" d-flex align-items-center">
+            <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content;"
+              class="see-more d-flex align-items-center text-decoration-none btn btn-primary">See more
+              <i class="fa fa-plus-circle mx-2"></i>
+            </a>
+          </div>
+        </div>
       </div>
+      <!-- ..........End of table.............. -->
+      {% endif %}
     </div>
-<!-- ..........End of table.............. -->
-{% endif %}
-</div>
-</div>
+  </div>
 
 
-<!-- Button trigger modal -->
-<!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  <!-- Button trigger modal -->
+  <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
   Launch static backdrop modal
 </button> -->
 
-<!-- Modal -->
-<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable"">
-    <div class="modal-content">
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable"">
+    <div class=" modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm Account</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      
+
       <div class="modal-body">
-      <form action="/home" method="post">
-      {{ form.hidden_tag() }}
+        <form action="/home" method="post">
+          {{ form.hidden_tag() }}
 
 
 
 
-      <div class="accordion" id="accordionExample">
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="flush-headingOne">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-              Beneficiaries
-            </button>
-          </h2>
-          <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-            <div class="accordion-body">
-              {% for ben in beneficials %}
-              <div class="d-flex justify-content-between list-group-item">
-                <div class="d-flex flex-column">
-                  <p>{{ ben.last_name.title() + ' ' + ben.first_name.title() }}
-                    <br>
-                    {{ ben.account_number}}
-                  </p>
-                </div>
-                <div>
-                  <a class="btn btn-primary btn-sm" href="{{ url_for('view.pay', acct=ben.account_number) }}">Select</a>
+          <div class="accordion" id="accordionExample">
+            <div class="accordion-item">
+              <h2 class="accordion-header" id="flush-headingOne">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
+                  Beneficiaries
+                </button>
+              </h2>
+              <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne"
+                data-bs-parent="#accordionFlushExample">
+                <div class="accordion-body">
+                  {% for ben in beneficials %}
+                  <div class="d-flex justify-content-between list-group-item">
+                    <div class="d-flex flex-column">
+                      <p>{{ ben.last_name.title() + ' ' + ben.first_name.title() }}
+                        <br>
+                        {{ ben.account_number}}
+                      </p>
+                    </div>
+                    <div>
+                      <a class="btn btn-primary btn-sm"
+                        href="{{ url_for('view.pay', acct=ben.account_number) }}">Select</a>
+                    </div>
+                  </div>
+                  {% endfor %}
                 </div>
               </div>
-              {% endfor %}
             </div>
           </div>
-        </div>
-      </div>
 
 
 
 
 
-      <!-- For account number validations -->
-      {{ form.account_number.label(class='label text-primary fw-bold mt-4 mb-2') }}
-      {% if form.account_number.errors %} {{ form.account_number(class="form-control p-2",
-      required=False, placeholder="Enter account number") }} {% for error in
-      form.account_number.errors %}
-      <small class="text-danger mt-1"
-        ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
-        }}</small
-      ><br>
-      {% endfor %} {% else %} {{ form.account_number(class="form-control p-2",
-      required=False, placeholder="Enter account number") }} {% endif %}
+          <!-- For account number validations -->
+          {{ form.account_number.label(class='label text-primary fw-bold mt-4 mb-2') }}
+          {% if form.account_number.errors %} {{ form.account_number(class="form-control p-2",
+          required=False, placeholder="Enter account number") }} {% for error in
+          form.account_number.errors %}
+          <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
+            }}</small><br>
+          {% endfor %} {% else %} {{ form.account_number(class="form-control p-2",
+          required=False, placeholder="Enter account number") }} {% endif %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          
+
         <button type="submit" class="btn btn-primary">Confirm account</button>
       </div>
       </form>
