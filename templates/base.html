@@ -141,12 +141,12 @@
               <div class="user d-flex align-items-center">
                  <img src="{{ current_user.photo }}" 
                  style="width: 2rem;"
-                 class="rounded" alt=""></i> &nbsp; {{ current_user.last_name.title() + ' ' + current_user.first_name.title() }}
+                 class="rounded" alt="{{ current_user.first_name }}"></i> &nbsp; {{ current_user.last_name.title() + ' ' + current_user.first_name.title() }}
                 </div>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <a class="dropdown-item text-decoration-none text-dark small" href="{{ url_for('view.account') }}">Account</a>
-                  <a class="dropdown-item text-decoration-none text-dark small" href="#">Profile</a>
+                  <a class="dropdown-item text-decoration-none text-dark small" href="{{ url_for('view.user_profile') }}">Profile</a>
                   <a class="dropdown-item text-decoration-none text-dark small" href="{{ url_for('auth.logout') }}">Logout</a>
                 </div>
               </div>
@@ -183,10 +183,6 @@
 
         <div class="collapse navbar-collapse" id="navmenu">
           <ul class="navbar-nav ms-auto">
-            <li class="nav-item _box
-            ">
-              <a href="{{ url_for('view.coming_soon') }}" class="nav-link">Features</a>
-            </li>
             <li class="nav-item _box">
               <a href="{{ url_for('view.coming_soon') }}" class="nav-link">Business</a>
             </li>
@@ -223,42 +219,27 @@
           <img
             class=""
             src="{{ url_for('static', filename='images/logo-normal.png') }}"
-            alt=""
+            alt="EasyTransact"
             style="width: 4rem; margin-left: 2rem"
           />
         </div>
         <div class="d-flex flex-row w-100">
           <ul class="w-100 text-muted" style="list-style: none">
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-          </ul>
-          <ul class="w-100 text-muted" style="list-style: none">
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
+            <li class="p-2">Useful Links</li>
+            <li class="p-2"> <a href="{{ url_for('view.faq') }}" class="text-decoration-none text-info">FAQs</a> </li>
+            <li class="p-2"> <a href="{{ url_for('view.contact') }}" class="text-decoration-none text-info">Help</a></li>
+            <li class="p-2"> <a href="{{ url_for('view.coming_soon') }}" class="text-decoration-none text-info">Business</a> </li>
+            <li class="p-2"> <a href="{{ url_for('view.team') }}" class="text-decoration-none text-info">Team</a></li>
           </ul>
         </div>
 
         <div class="d-flex flex-row w-100">
           <ul class="w-100 text-muted" style="list-style: none">
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-          </ul>
-
-          <ul class="w-100 text-muted" style="list-style: none">
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
-            <li class="p-2">lorem</li>
+            <li class="p-2">Socials</li>
+            <li class="p-2"><a href="#" class="text-decoration-none text-info">Twitter</a></li>
+            <li class="p-2"><a href="#" class="text-decoration-none text-info">Instagram</a></li>
+            <li class="p-2"><a href="#" class="text-decoration-none text-info">Linkedin</a></li>
+            <li class="p-2"><a href="#" class="text-decoration-none text-info">Facebook</a></li>
           </ul>
         </div>
       </footer>
