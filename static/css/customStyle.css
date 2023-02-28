@@ -929,6 +929,10 @@ td.fw-bold {
         li.nav-item._box:hover::before{
             width:100%;
         }
+
+        .main-container{
+            width: 100%;
+        }
     }
 
 
