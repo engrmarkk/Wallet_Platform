@@ -30,10 +30,8 @@
           style="width: 6rem;" alt="Nigeria">
       </p>
       <div class="head-text text-white">
-        <div style="    
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;">
+        <div 
+        class="head-text-head">
         <p class="text-home">
           {% if pinset == True %}
           {{current_user.first_name.title()}}
@@ -135,7 +133,7 @@
           {% endif %}
           {% endfor %}
           <div style="justify-content:flex-end;" class=" d-flex align-items-center">
-            <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content;"
+            <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content; background: linear-gradient(341deg,#1edf00,  #2e8bb6);"
               class="see-more d-flex align-items-center text-decoration-none btn btn-primary">See more
               <i class="fa fa-plus-circle mx-2"></i>
             </a>
