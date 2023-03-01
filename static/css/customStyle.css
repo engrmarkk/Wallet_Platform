@@ -313,7 +313,6 @@ span.navbar-toggler-ico.three {
     color: #666 !important;
     display: block;
     padding: 0.2rem 1rem;
-    border: 1px solid #fff;
     border-radius: 5px;
     font-size: 13px;
     font-weight: 600;
@@ -810,13 +809,16 @@ p.text-muted {
 }
 .night .balance .bal-title {
   color: #fff !important;
-  background: #151515 !important;
+  background: #212020 !important;
 }
 .night .badge-text-color {
     color: #ffffff !important;
 }
 .night .home .badge i{
     background: #151515 !important;
+}
+.night .bg-profile-menu {
+    background: #212020 !important;
 }
 /* change nav links color when signed in and dark mode */
 
@@ -849,7 +851,7 @@ select {
   width: -webkit-fill-available;
 }
 .head-text {
-    background: linear-gradient(341deg,#1edf00,  #2e8bb6);
+    background: linear-gradient(158deg,#1edf00 -45%,  #2e8bb6);
     width: 100%;
     display: flex;
     padding: 3rem 2rem;
