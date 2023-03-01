@@ -866,6 +866,9 @@ select {
     width: 4rem;
     font-size: 1.5rem;
   }
+  .balance .h3.bal-val {
+    font-size: 2.5rem;
+}
   h1.hero {
     font-size: 2rem;
     line-height: 60px;
