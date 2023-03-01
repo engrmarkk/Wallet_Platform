@@ -853,6 +853,9 @@ select {
 }
 
 @media (max-width: 768px) {
+    .logo-text{
+        display: none;
+    }
   .head-text {
     width: 100%;
     flex-direction: column;
