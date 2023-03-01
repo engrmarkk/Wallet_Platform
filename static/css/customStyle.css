@@ -625,7 +625,17 @@ form.login {
 /* /////////////////////////// */
 
 footer.footer {
-  margin-top: 10rem;
+    margin-top: 10rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+.footer-wrapper{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
 }
 .footer-btn {
   background-color: #675be8;
@@ -874,6 +884,18 @@ select {
     width: 100%;
     flex-direction: column;
     align-items: center;
+  }
+  .text-h4 {
+    text-align: center;
+}
+.before-footer{
+    align-items: center;
+}
+p.text-muted.h6.mt-3.w-75 {
+    text-align: center;
+}
+  .footer-wrapper{
+
   }
   .head-text-head{
     align-items: center !important;
