@@ -28,7 +28,7 @@
   {% endfor %} {% endif %} {% endwith %}
 
   <div
-    class="card rounded-circle p-4"
+    class="card rounded-circle p-4 mt-5"
     style="
       max-width: 14rem;
       height: 14rem;
@@ -51,6 +51,7 @@
   >
     Save Now
   </button>
+  <a href="{{ url_for('view.withdraw') }}" class="btn btn-info m-auto d-flex mt-2" style="width: fit-content;">Withdraw</a>
 
   
 

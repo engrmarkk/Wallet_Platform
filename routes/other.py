@@ -458,3 +458,27 @@ def savings():
                 flash("Saved successfully", "success")
             return render_template("savings.html", date=x, form=form, n=n)
     return render_template("savings.html", date=x, form=form, n=n)
+
+
+@view.route("/withdraw", methods=["GET", "POST"])
+@login_required
+def withdraw():
+    form = SaveMoneyForm()
+    amount = current_user.savings
+    if not current_user.savings:
+        flash("No savings to withdraw", "danger")
+        return render_template("savings.html", date=x, form=form, n=1)
+    current_user.account_balance += current_user.savings
+    current_user.savings -= current_user.savings
+    db.session.commit()
+
+    transact1 = Transaction(
+        transaction_type="CRT",
+        transaction_amount=amount,
+        sender=current_user.username + ' ' + 'savings',
+        user_id=current_user.id,
+    )
+    db.session.add(transact1)
+    db.session.commit()
+    flash("Withdraw successful", "success")
+    return redirect(url_for('view.home'))
