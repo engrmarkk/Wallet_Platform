@@ -430,7 +430,8 @@ def coming_soon():
 def user_profile():
     return render_template("profile.html", date=x)
 
-@view.route("/savings")
+
+@view.route("/savings", methods=["GET", "POST"])
 @login_required
 def savings():
     return render_template("savings.html", date=x)
