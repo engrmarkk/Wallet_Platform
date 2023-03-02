@@ -437,7 +437,14 @@ def savings():
     form = SaveMoneyForm()
     n = 0
     if request.method == "POST":
-        n = 1
+        amount = form.amount.data
+        n += 1
         if form.validate_on_submit():
-            return redirect("view.savings")
+            if current_user.account_balance < amount:
+                flash("Insufficient Amount", "danger")
+            else:
+                current_user.account_balance = current_user.account_balance - int(amount)
+                current_user.savings = current_user.savings + int(amount)
+                db.session.commit()
+            return render_template("savings.html", date=x, form=form, n=n)
     return render_template("savings.html", date=x, form=form, n=n)

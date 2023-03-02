@@ -39,7 +39,13 @@
     <p class="m-auto text-white text-center">
       Savings<br />
       <span class="h4 fw-bold"
-        ><del style="text-decoration-style: double">N</del> 300</span
+        ><del style="text-decoration-style: double">N</del> 
+        {% if current_user.savings %}
+        {{ current_user.savings }}
+        {% else %}
+        0
+        </span
+        {% endif %}
       >
     </p>
   </div>
