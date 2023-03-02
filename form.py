@@ -92,3 +92,9 @@ class CardForm(FlaskForm):
     card_cvv = TelField("Card CVV", validators=[DataRequired(), Length(max=3)])
     card_pin = TelField("Card PIN", validators=[DataRequired(), Length(max=4)])
     submit = SubmitField("Add Card")
+
+
+class SaveMoneyForm(FlaskForm):
+    amount = IntegerField("Amount", validators=[DataRequired(), NumberRange(min=100)])
+    submit = SubmitField("Send")
+    
