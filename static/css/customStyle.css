@@ -36,6 +36,13 @@ body.night p {
 .navbar {
   background: transparent;
 }
+.primary-text {
+  color: #164e49!important;
+}
+.primary-btn{
+  background-color: #164e49!important;
+  color: #fff !important;
+}
 @media (max-width: 992px) {
   #navbar {
     box-shadow: rgba(75, 72, 72, 0.15) 1.95px 1.95px 5.6px;
@@ -389,6 +396,7 @@ span.navbar-toggler-ico.three {
   transition: 0.3s ease-in-out;
   background: transparent !important;
 }
+.home .badge:hover {color: #016341 !important;}
 .home .badge i{
     height: 6rem;
     background: #ffffff !important;
@@ -427,6 +435,11 @@ span.navbar-toggler-ico.three {
 .options .dropdown-menu.show a:active {
   background: #7d74e6;
   color: #fff !important;
+}
+.modal.show .modal-dialog{
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 /* /////////////Login////////////////// */
 
@@ -894,9 +907,7 @@ select {
 p.text-muted.h6.mt-3.w-75 {
     text-align: center;
 }
-  .footer-wrapper{
-
-  }
+  
   .head-text-head{
     align-items: center !important;
   }
@@ -910,6 +921,9 @@ p.text-muted.h6.mt-3.w-75 {
 }
 .account-wrapper{
     padding: 0 !important;
+}
+.account-header{
+  text-align: center;
 }
 button#dropdownMenuButton {
     margin: 0 auto !important;
@@ -999,7 +1013,7 @@ button#dropdownMenuButton {
 .card-container {
   width: 350px;
   height: 210px;
-  background-image: linear-gradient(to left, #005176, #4fbaff);
+  background: linear-gradient(348deg,#1edf00 -45%,  #2e8bb6);
   color: white;
   border-radius: 8px;
   padding: 20px;
@@ -1032,7 +1046,8 @@ button#dropdownMenuButton {
   filter: contrast(4.5) grayscale(1);
 }
 .card-no {
-  letter-spacing: 0.456rem;
+  font-weight: 600;
+  letter-spacing: 0.670rem;
   margin-top: 10px;
 }
 
