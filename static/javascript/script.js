@@ -81,7 +81,12 @@ eye.addEventListener("click", function() {
 })
 
 
+const dissapearBtn = document.getElementById("savebtn")
+const dissapearMenu = document.getElementsByClassName("savealert")
 
+dissapearBtn.addEventListener("click", function(){
+    dissapearMenu.classList.add("dissappear");
+})
 
 
 

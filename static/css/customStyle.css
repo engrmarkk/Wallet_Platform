@@ -1080,3 +1080,22 @@ button#dropdownMenuButton {
 #eye.hide {
   display: none;
 }
+
+.dissappear{
+    top: -300px;
+}
+
+
+.savealert{
+    width: fit-content; font-size: .8rem;
+    position: absolute;
+    z-index: 99;
+    right: 0;
+    left: 0;
+    transition: 1s;
+    border: 1px solid rgb(218, 215, 215);
+    font-weight: bold;
+    margin: auto;
+    background: #ffff;
+    padding: 1rem;
+}

@@ -21,9 +21,17 @@
       </div>
       {% endfor %} {% endif %} {% endwith %}
 
+      <div class="card rounded-circle p-4" style="max-width: 14rem; height: 14rem; margin: auto; background: linear-gradient(158deg,#1edf00 -45%,  #2e8bb6);">
+        <p class="m-auto text-white text-center">Savings<br> <span class=" h4 fw-bold "><del style="text-decoration-style: double ;">N</del> 300</span></p>
+      </div>
 
-
-
-      
+      <!-- overlay -->
+      <div class="savealert">
+        <div>You get an interest rate of 5% at the end of the month</div>
+        <button class="btn btn-info mr-auto mt-3" id="savebtn">
+            OK
+        </button>
+      </div>
     </div>
+    
 {% endblock content %}
