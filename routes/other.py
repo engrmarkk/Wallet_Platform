@@ -429,3 +429,8 @@ def coming_soon():
 @login_required
 def user_profile():
     return render_template("profile.html", date=x)
+
+@view.route("/savings")
+@login_required
+def savings():
+    return render_template("savings.html", date=x)
