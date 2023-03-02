@@ -113,6 +113,7 @@ env.bak/
 venv.bak/
 mail.txt
 wallet.db
+migrations/
 
 # Spyder project settings
 .spyderproject
