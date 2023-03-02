@@ -1105,3 +1105,8 @@ button#dropdownMenuButton {
     background: #ffff;
     padding: 1rem;
 }
+button#savebtn {
+    background: #333;
+    border: none;
+    padding: 0.2rem 1rem;
+}
