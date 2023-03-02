@@ -434,4 +434,10 @@ def user_profile():
 @view.route("/savings", methods=["GET", "POST"])
 @login_required
 def savings():
-    return render_template("savings.html", date=x)
+    form = SaveMoneyForm()
+    n = 0
+    if request.method == "POST":
+        n = 1
+        if form.validate_on_submit():
+            return redirect("view.savings")
+    return render_template("savings.html", date=x, form=form, n=n)

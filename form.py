@@ -96,5 +96,4 @@ class CardForm(FlaskForm):
 
 class SaveMoneyForm(FlaskForm):
     amount = IntegerField("Amount", validators=[DataRequired(), NumberRange(min=100)])
-    submit = SubmitField("Send")
-    
+    submit = SubmitField("Save")
