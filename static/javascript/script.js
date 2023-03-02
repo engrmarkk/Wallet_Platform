@@ -8,9 +8,11 @@ const closeBtn = document.querySelector('.btn-close')
 const copyAcc = document.querySelector('.acc-num')
 const AccNum = document.querySelector('.acc-num .fw-bold')
 let copyTimer = 2
-
-
 let darkmode
+
+
+
+
 document.addEventListener("DOMContentLoaded", function() {    
     darkmode =  localStorage.getItem('darkmode') === '1';
     if (darkmode===true){
@@ -78,14 +80,6 @@ eye.addEventListener("click", function() {
     mybalance.classList.toggle("show")
     eye.classList.toggle(close)
     eye.classList.toggle(open)
-})
-
-
-const dissapearBtn = document.getElementById("savebtn")
-const dissapearMenu = document.getElementsByClassName("savealert")
-
-dissapearBtn.addEventListener("click", function(){
-    dissapearMenu.classList.add("dissappear");
 })
 
 

@@ -137,7 +137,7 @@
           {% endfor %}
           <div style="justify-content:flex-end;" class=" d-flex align-items-center">
             <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content; background: linear-gradient(158deg,#1edf00 -45%,  #2e8bb6);"
-              class="see-more d-flex align-items-center text-decoration-none btn btn-primary">See more
+              class="see-more d-flex align-items-center text-decoration-none btn primary-btn">See more
               <i class="fa fa-plus-circle mx-2"></i>
             </a>
           </div>
@@ -150,7 +150,7 @@
 
 
   <!-- Button trigger modal -->
-  <!-- <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+  <!-- <button type="button" class="btn primary-btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
   Launch static backdrop modal
 </button> -->
 
@@ -191,7 +191,7 @@
                       </p>
                     </div>
                     <div>
-                      <a class="btn btn-primary btn-sm"
+                      <a class="btn primary-btn btn-sm"
                         href="{{ url_for('view.pay', acct=ben.account_number) }}">Select</a>
                     </div>
                   </div>
@@ -206,7 +206,7 @@
 
 
           <!-- For account number validations -->
-          {{ form.account_number.label(class='label text-primary fw-bold mt-4 mb-2') }}
+          {{ form.account_number.label(class='label primary-text fw-bold mt-4 mb-2') }}
           {% if form.account_number.errors %} {{ form.account_number(class="form-control p-2",
           required=False, placeholder="Enter account number") }} {% for error in
           form.account_number.errors %}
@@ -218,7 +218,7 @@
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
-        <button type="submit" class="btn btn-primary">Confirm account</button>
+        <button type="submit" class="btn primary-btn">Confirm account</button>
       </div>
       </form>
 
