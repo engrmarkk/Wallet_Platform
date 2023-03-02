@@ -7,16 +7,12 @@ const usericon = document.querySelector('#usericon')
 const closeBtn = document.querySelector('.btn-close')
 const copyAcc = document.querySelector('.acc-num')
 const AccNum = document.querySelector('.acc-num .fw-bold')
-const disapearBtn = document.querySelector("#savebtn")
-const disapearMenu = document.querySelector(".savealert-container")
 let copyTimer = 2
-
-
-disapearBtn.onclick=()=>{
-    disapearMenu.classList.add('disappear')
-}
-
 let darkmode
+
+
+
+
 document.addEventListener("DOMContentLoaded", function() {    
     darkmode =  localStorage.getItem('darkmode') === '1';
     if (darkmode===true){
