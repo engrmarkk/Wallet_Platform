@@ -928,6 +928,9 @@ p.text-muted.h6.mt-3.w-75 {
 button#dropdownMenuButton {
     margin: 0 auto !important;
 }
+.transaction-container .notification .notf-detail :last-child {
+  font-size: 0.6rem;
+}
   h1.hero {
     font-size: 2rem;
     line-height: 60px;
