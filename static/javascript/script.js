@@ -6,7 +6,7 @@ const navlink = document.querySelectorAll('#navlinks')
 const usericon = document.querySelector('#usericon')
 const closeBtn = document.querySelector('.btn-close')
 const copyAcc = document.querySelector('.acc-num')
-const AccNum = document.querySelector('.acc-num span')
+const AccNum = document.querySelector('.acc-num .fw-bold')
 let copyTimer = 2
 
 
@@ -81,7 +81,12 @@ eye.addEventListener("click", function() {
 })
 
 
+const dissapearBtn = document.getElementById("savebtn")
+const dissapearMenu = document.getElementsByClassName("savealert")
 
+dissapearBtn.addEventListener("click", function(){
+    dissapearMenu.classList.add("dissappear");
+})
 
 
 

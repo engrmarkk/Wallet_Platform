@@ -80,17 +80,20 @@ def home():
     balance = f"{current_user.account_balance:,}"
     pinset = current_user.pin_set
     if request.method == "POST":
-        if form.validate_on_submit():
-            account_num = int(form.account_number.data)
-            user1 = User.query.filter_by(account_number=account_num).first()
-            if not user1:
-                flash("Invalid account number", "danger")
-                return redirect(url_for("view.home"))
-            if account_num == current_user.account_number:
-                flash("You can't send money to yourself", "info")
-                return redirect(url_for("view.home"))
-
-            return redirect(url_for("view.pay", acct=account_num))
+        try:
+            if form.validate_on_submit():
+                account_num = int(form.account_number.data)
+                user1 = User.query.filter_by(account_number=account_num).first()
+                if not user1:
+                    flash("Invalid account number", "danger")
+                    return redirect(url_for("view.home"))
+                if account_num == current_user.account_number:
+                    flash("You can't send money to yourself", "info")
+                    return redirect(url_for("view.home"))
+                return redirect(url_for("view.pay", acct=account_num))
+        except ValueError:
+            flash("Invalid account number", "danger")
+            return redirect(url_for("view.home"))
 
     return render_template(
         "home.html",
@@ -426,3 +429,8 @@ def coming_soon():
 @login_required
 def user_profile():
     return render_template("profile.html", date=x)
+
+@view.route("/savings")
+@login_required
+def savings():
+    return render_template("savings.html", date=x)
