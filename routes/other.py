@@ -443,8 +443,18 @@ def savings():
             if current_user.account_balance < amount:
                 flash("Insufficient Amount", "danger")
             else:
-                current_user.account_balance = current_user.account_balance - int(amount)
-                current_user.savings = current_user.savings + int(amount)
+                current_user.account_balance -= amount
+                current_user.savings += amount
                 db.session.commit()
+
+                transact2 = Transaction(
+                    transaction_type="DBT",
+                    transaction_amount=amount,
+                    sender=current_user.username + ' ' + 'savings',
+                    user_id=current_user.id,
+                )
+                db.session.add(transact2)
+                db.session.commit()
+                flash("Saved successfully", "success")
             return render_template("savings.html", date=x, form=form, n=n)
     return render_template("savings.html", date=x, form=form, n=n)
