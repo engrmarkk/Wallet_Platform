@@ -313,12 +313,12 @@ span.navbar-toggler-ico.three {
     color: #666 !important;
     display: block;
     padding: 0.2rem 1rem;
-    border: 1px solid #fff;
     border-radius: 5px;
     font-size: 13px;
     font-weight: 600;
     background: #fff;
     margin-bottom: 0.5rem;
+    transition: 0.3s ease-in-out;
 }
 .home .acc-num {
   
@@ -387,7 +387,7 @@ span.navbar-toggler-ico.three {
   align-items: center;
   flex-direction: column;
   transition: 0.3s ease-in-out;
-  background: #ffffff !important;
+  background: transparent !important;
 }
 .home .badge i{
     height: 6rem;
@@ -406,6 +406,8 @@ span.navbar-toggler-ico.three {
 }
 .badge-text-color {
   color: #777777;
+  transition: 0.3s ease-in-out;
+
 }
 /* .night .badge-text-color{
     color:#fff !important;
@@ -468,7 +470,7 @@ form.login {
   background: #2e8bb6;
   outline: none;
   border: none;
-  padding: 0.6rem 1rem !important;
+  padding: 0.6rem 0.5rem !important;
   transition: 0.3s ease-in-out;
 }
 .login-container .btn:hover {
@@ -574,6 +576,7 @@ form.login {
 .signup-wrapper {
   margin-top: 5rem;
   background: #fff;
+  width: 90%;
   border-radius: 10px;
 }
 .signup-container form {
@@ -622,7 +625,17 @@ form.login {
 /* /////////////////////////// */
 
 footer.footer {
-  margin-top: 10rem;
+    margin-top: 10rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+}
+.footer-wrapper{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
 }
 .footer-btn {
   background-color: #675be8;
@@ -777,7 +790,7 @@ form.create-pin .btn,
   box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   position: fixed;
-  bottom: 25px;
+  bottom: 61px;
   left: 20px;
   z-index: 99;
   border: 1px solid white;
@@ -806,12 +819,23 @@ p.text-muted {
 }
 .night .balance .bal-title {
   color: #fff !important;
+  background: #212020 !important;
+}
+.night .badge-text-color {
+    color: #ffffff !important;
+}
+.night .home .badge i{
+    background: #151515 !important;
+}
+.night .bg-profile-menu {
+    background: #212020 !important;
 }
 /* change nav links color when signed in and dark mode */
 
 .light {
   color: #b6b1f1 !important;
   background: #fff !important;
+
 }
 
 .bod {
@@ -837,7 +861,7 @@ select {
   width: -webkit-fill-available;
 }
 .head-text {
-    background: linear-gradient(341deg,#1edf00,  #2e8bb6);
+    background: linear-gradient(158deg,#1edf00 -45%,  #2e8bb6);
     width: 100%;
     display: flex;
     padding: 3rem 2rem;
@@ -853,10 +877,25 @@ select {
 }
 
 @media (max-width: 768px) {
+    .logo-text{
+        display: none;
+    }
   .head-text {
     width: 100%;
     flex-direction: column;
     align-items: center;
+  }
+  .text-h4 {
+    text-align: center;
+}
+.before-footer{
+    align-items: center;
+}
+p.text-muted.h6.mt-3.w-75 {
+    text-align: center;
+}
+  .footer-wrapper{
+
   }
   .head-text-head{
     align-items: center !important;
@@ -895,6 +934,9 @@ button#dropdownMenuButton {
   .signup-container {
     height: 100vh;
   }
+  .signup-container form {
+    padding: 1rem 2rem !important;
+}
   /* .home .options {
     flex-direction: column-reverse;
 } */
