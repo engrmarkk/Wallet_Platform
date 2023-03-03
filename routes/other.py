@@ -467,7 +467,7 @@ def withdraw():
     amount = current_user.savings
     if not current_user.savings:
         flash("No savings to withdraw", "danger")
-        return render_template("savings.html", date=x, form=form, n=1)
+        return redirect(url_for("view.home"))
     current_user.account_balance += current_user.savings
     current_user.savings -= current_user.savings
     db.session.commit()
