@@ -589,11 +589,12 @@ form.login {
 .signup-wrapper {
   margin-top: 5rem;
   background: #fff;
-  width: 90%;
+  /* width: 90%; */
   border-radius: 10px;
 }
 .signup-container form {
   padding: 1rem 3rem !important;
+  width: 90%;
 }
 .signup-container a.navbar-brand {
   display: flex;
