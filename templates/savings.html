@@ -28,7 +28,7 @@
   {% endfor %} {% endif %} {% endwith %}
 
   <div
-    class="card rounded-circle p-4"
+    class="card rounded-circle p-4 mt-5"
     style="
       max-width: 14rem;
       height: 14rem;
@@ -39,18 +39,94 @@
     <p class="m-auto text-white text-center">
       Savings<br />
       <span class="h4 fw-bold"
-        ><del style="text-decoration-style: double">N</del> 300</span
-      >
+        ><del style="text-decoration-style: double">N</del> 
+        {{ current_user.savings }} </span>
     </p>
   </div>
 
+  <button class="text-center btn btn-success d-flex m-auto mt-4" id="openform"
+  data-bs-toggle="modal"
+  data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
+  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+  >
+    Save Now
+  </button>
+  <a href="{{ url_for('view.withdraw') }}" class="btn btn-info m-auto d-flex mt-2" style="width: fit-content;">Withdraw</a>
+
+  
+
+  <!-- end of form -->
+
   <!-- overlay -->
+  {% if not n %}
   <div class="savealert-container">
     <div class="savealert">
       <div>You get an interest rate of 5% at the end of the month</div>
-      <button class="btn btn-info mr-auto mt-3" id="savebtn">OK</button>
+      <button class="btn btn-info mr-auto mt-3" id="savebtn" autofocus>OK</button>
     </div>
   </div>
+  {% endif %}
+
+
+
+
+
+
+      <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable"">
+  <div class=" modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title fs-5" id="staticBackdropLabel">Amount</h1>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+      <!-- form -->
+  <form
+      action=""
+      method="post"
+      class="p-3 mt-3 m-auto"
+    >
+      {{ form.hidden_tag() }}
+      <!-- For Amount validations -->
+      {{ form.amount(class="form-control p-2 ", required=False, placeholder='Enter amount') }}
+      
+      {% if form.amount.errors %}
+      {% for error in form.amount.errors %}
+      <small class="text-danger mt-1"
+        ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
+        }}</small
+      ><br>
+      {% endfor %} 
+      {% endif %}
+            <!-- For submit button -->
+      {{ form.submit(size=20, class='pay-btn btn btn-success mt-4 w-100 p-1')}}
+    </form>
+
+  </div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   <script>
     const disapearBtn = document.querySelector("#savebtn");
     const disapearMenu = document.querySelector(".savealert-container");

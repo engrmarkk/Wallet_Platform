@@ -68,10 +68,13 @@
         </div>
       </div>
       <div class="options d-flex align-items-center mb-4 mt-2">
-        <div class="badge badge-pill badge-text-color bg-accent mx-1 thiss">
+        <div class="">
+          <a href="{{url_for('view.coming_soon')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
           <i
           class="px-2 py-1 fas fa-money-bill-wave"></i>
-            Spend</div>
+            Spend
+          </a>
+        </div>
         <div class="">
           <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
           <i class="px-2 py-1 fas fa-dice-d6"></i>Save
@@ -115,7 +118,9 @@
           {% for transaction in current_user.transacts[::-1][:3] %}
           {% if transaction.transaction_type == 'CRT' %}
           <div class="notification  text-center text-light">
+            <div class="" style="width: 10%;">
             <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
+            </div>
             <div class='notf-detail'><span>Money received from {{ transaction.sender.lower() }}</span><span>{{
                 transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
             <div class='value'>+ <del>N</del> {{ transaction.transaction_amount }} </div>
@@ -125,7 +130,9 @@
           </div>
           {% else %}
           <div class="notification  text-center text-light">
+            <div class="" style="width: 10%;">
             <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
+            </div>
             <div class='notf-detail'><span>Money sent to {{ transaction.sender.lower() }}</span><span>{{
                 transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
             <div class='value'>- <del>N</del> {{ transaction.transaction_amount }} </div>

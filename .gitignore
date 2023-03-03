@@ -114,6 +114,7 @@ venv.bak/
 mail.txt
 wallet.db
 migrations/
+flask_session/
 
 # Spyder project settings
 .spyderproject

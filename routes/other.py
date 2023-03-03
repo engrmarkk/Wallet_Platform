@@ -430,7 +430,55 @@ def coming_soon():
 def user_profile():
     return render_template("profile.html", date=x)
 
-@view.route("/savings")
+
+@view.route("/savings", methods=["GET", "POST"])
 @login_required
 def savings():
-    return render_template("savings.html", date=x)
+    form = SaveMoneyForm()
+    n = 0
+    if request.method == "POST":
+        amount = form.amount.data
+        n += 1
+        if form.validate_on_submit():
+            if current_user.account_balance < amount:
+                flash("Insufficient Amount", "danger")
+            else:
+                current_user.account_balance -= amount
+                current_user.savings += amount
+                db.session.commit()
+
+                transact2 = Transaction(
+                    transaction_type="DBT",
+                    transaction_amount=amount,
+                    sender=current_user.username + ' ' + 'savings',
+                    user_id=current_user.id,
+                )
+                db.session.add(transact2)
+                db.session.commit()
+                flash("Saved successfully", "success")
+            return render_template("savings.html", date=x, form=form, n=n)
+    return render_template("savings.html", date=x, form=form, n=n)
+
+
+@view.route("/withdraw", methods=["GET", "POST"])
+@login_required
+def withdraw():
+    form = SaveMoneyForm()
+    amount = current_user.savings
+    if not current_user.savings:
+        flash("No savings to withdraw", "danger")
+        return redirect(url_for("view.home"))
+    current_user.account_balance += current_user.savings
+    current_user.savings -= current_user.savings
+    db.session.commit()
+
+    transact1 = Transaction(
+        transaction_type="CRT",
+        transaction_amount=amount,
+        sender=current_user.username + ' ' + 'savings',
+        user_id=current_user.id,
+    )
+    db.session.add(transact1)
+    db.session.commit()
+    flash("Withdraw successful", "success")
+    return redirect(url_for('view.home'))
