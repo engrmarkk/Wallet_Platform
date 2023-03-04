@@ -114,7 +114,7 @@ def create_transfer_pin():
         if form.validate_on_submit():
             pin = int(form.transfer_pin.data)
             secret_question = request.form.get("secret_question")
-            secret_answer = form.secret_answer.data
+            secret_answer = form.secret_answer.data.lower()
             user = User.query.filter_by(id=current_user.id).first()
             user.secret_question = secret_question
             user.secret_answer = secret_answer
@@ -134,7 +134,7 @@ def change_transfer_pin():
         if form.validate_on_submit():
             pin = int(form.new_pin.data)
             user = User.query.filter_by(id=current_user.id).first()
-            secret_answer = form.secret_answer.data
+            secret_answer = form.secret_answer.data.lower()
             if secret_answer != current_user.secret_answer:
                 flash("Invalid answer", "danger")
                 return redirect(url_for("view.change_transfer_pin"))
