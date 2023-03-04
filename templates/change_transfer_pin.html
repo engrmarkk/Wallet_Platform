@@ -60,17 +60,18 @@
       {{ form.hidden_tag() }}
         <!-- For wallet number -->
         <div class="form-group">
-            {{ form.new_pin.label(class='form-label') }}
+            {{ form.new_pin.label(class='form-label text-muted h') }}
             {{ form.new_pin(class='form-control', placeholder='Enter new 4 digits transfer pin') }}
 
             {% for error in form.new_pin.errors %}
             <p class="text-danger small">{{ error }}</p>
             {% endfor %}
             <br>
+            <p class="text-center"><span class="" style="font-size: .9rem;"> SECRET QUESTION: </span><br>
             <strong>{{secret_question}}</strong>
-            <br>
-            {{ form.secret_answer.label(class='form-label') }}
-            {{ form.secret_answer(class='form-control', placeholder='Confirm secret answer') }}   
+            </p>
+            {{ form.secret_answer.label(class='form-label text-muted h6') }}
+            {{ form.secret_answer(class='form-control', placeholder='Enter secret answer') }}   
             {% for error in form.secret_answer.errors %}
             <p class="text-danger small">{{ error }}</p>
             {% endfor %}
