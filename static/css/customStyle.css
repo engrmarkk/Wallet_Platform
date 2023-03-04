@@ -587,14 +587,16 @@ form.login {
   overflow: hidden;
 }
 .signup-wrapper {
-  margin-top: 5rem;
-  background: #fff;
+  margin: 3rem 0;
+  align-items: center;
+  justify-content: center;
   /* width: 90%; */
-  border-radius: 10px;
 }
 .signup-container form {
-  padding: 1rem 3rem !important;
+  background: #fff;
+  padding: 2rem 3rem 1rem !important;
   width: 90%;
+  border-radius: 10px;
 }
 .signup-container a.navbar-brand {
   display: flex;
@@ -953,20 +955,18 @@ button#dropdownMenuButton {
     height: 100vh;
   }
   .signup-container form {
-    padding: 1rem 2rem !important;
+    padding: 2rem !important;
 }
-  /* .home .options {
-    flex-direction: column-reverse;
-} */
+.signup-container .signup-header {
+  text-align: center;
+}
+.signup-wrapper p.text-muted {
+  text-align: center;
+}
+  
   .text-accent {
     text-align: center;
   }
-
-  /* The added style for the save, spend and send button */
-  /* .thiss{
-    width: 4rem !important;
-} */
-
   .home .badge {
     font-size: 1rem;
     flex-direction: column;

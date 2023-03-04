@@ -193,8 +193,7 @@ Python3: [Get Python](https://www.python.org/downloads/)
 Adeniyi Olanrewaju - [@iamengrmark](https://twitter.com/iamengrmark) - adeniyiboladale@yahoo.com <br>
 Solomon Great - [@B_lovedth](https://twitter.com/b_lovedth) - greatsoma2019@gmail.com
 
-Project Link: [Wallet_Platform](https://github.com/engrmarkk/Wallet_Platform)
-
+Project Link: [Wallet_Platform](https://github.com/engrmarkk/W
 <p align="right"><a href="#readme-top">back to top</a></p>
 
 ---
