@@ -59,11 +59,26 @@ def front_page():
     return render_template("front.html", date=x)
 
 
-@view.route("/account/")
+@view.route("/account/", methods=["GET", "POST"])
 @login_required
 def account():
+    form = PhotoForm()
     pinset = current_user.pin_set
-    return render_template("account.html", pinset=pinset, date=x)
+    if request.method == "POST":
+        try:
+            f = form.image.data
+            if not f:
+                flash("nothing to upload", "danger")
+                return redirect(url_for("view.display_profile"))
+            result = cloudinary.uploader.upload(f)
+            image_url = result["secure_url"]
+            current_user.photo = image_url
+            db.session.commit()
+            flash("Profile photo uploaded successfully", "success")
+            return redirect(url_for("view.display_profile"))
+        except Exception as e:
+            flash(e, "danger")
+    return render_template("account.html", pinset=pinset, date=x, form=form)
 
 
 @view.route("/transaction-history")

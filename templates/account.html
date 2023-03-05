@@ -29,14 +29,13 @@
 >
 <div class="d-flex align-items-center _profile">
   <div class="d-flex acc-header">
-    <a href="{{ url_for('view.display_profile') }}"><img
+    <div onclick="chooseFile();"><img
       src="{{ current_user.photo }}"
       class="img-thumbnail article-img border-none"
       style="width: 11rem"
       alt="{{ current_user.last_name.title() + ' ' +
       current_user.first_name.title() }} image"
-    /></a>
-      
+    /></div>
       <div class='account-header'>
         <h1>My Account</h1><br>
       <span class="text-accent user-name h4"
@@ -44,6 +43,27 @@
         current_user.first_name.title() }}</span
       ></div>
     </div>
+
+    <form action="" method="post" class="mb-5" enctype="multipart/form-data" id="upload-form">
+      <!-- For image validations -->
+      <!-- {{ form.image.label(class='label') }} -->
+      <div style="height: 0px; overflow: hidden; 
+      ">
+          {{ form.image(class=" w-100 mt-5 form-control-file",
+          required=False, placeholder="Enter email", id="fileInput") }}
+      </div>
+      
+      <div style="overflow: hidden;
+      height: 0px; 
+      ">
+      <input type="submit" value="Upload" class="btn btn-success py-0 px-2" id="upload"
+      style="font-size: small;
+      ">
+      </div>
+  
+  </form>
+
+    
     <div class="d-flex  flex-column px-3">
      <!-- <p class='acc-detail'>
         <small class="text-muted">Account Number</small><br />
@@ -143,5 +163,15 @@
     </div>
   </div>
 </div>
+
+<script>
+  function chooseFile() {
+    document.getElementById("fileInput").click();
+  }
+
+  document.getElementById("fileInput").addEventListener("change", function() {
+      document.getElementById("upload-form").submit();
+  });
+</script>
 
 {% endblock content %}
