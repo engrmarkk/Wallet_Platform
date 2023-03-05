@@ -70,7 +70,9 @@ def account():
             if not f:
                 flash("nothing to upload", "danger")
                 return redirect(url_for("view.display_profile"))
-            result = cloudinary.uploader.upload(f)
+            result = cloudinary.uploader.upload(f, transformation=[
+                    {"width": 176, "height": 176, "crop": "fill"}
+                ])
             image_url = result["secure_url"]
             current_user.photo = image_url
             db.session.commit()
@@ -302,25 +304,25 @@ def reset_password_verified(token):
     return render_template("reset_verified.html", date=x, form=form)
 
 
-@view.route("/profile-picture/", methods=["GET", "POST"])
-@login_required
-def display_profile():
-    form = PhotoForm()
-    if request.method == "POST":
-        try:
-            f = form.image.data
-            if not f:
-                flash("nothing to upload", "danger")
-                return redirect(url_for("view.display_profile"))
-            result = cloudinary.uploader.upload(f)
-            image_url = result["secure_url"]
-            current_user.photo = image_url
-            db.session.commit()
-            flash("Profile photo uploaded successfully", "success")
-            return redirect(url_for("view.display_profile"))
-        except Exception as e:
-            flash(e, "danger")
-    return render_template("display-profile.html", date=x, form=form)
+# @view.route("/profile-picture/", methods=["GET", "POST"])
+# @login_required
+# def display_profile():
+#     form = PhotoForm()
+#     if request.method == "POST":
+#         try:
+#             f = form.image.data
+#             if not f:
+#                 flash("nothing to upload", "danger")
+#                 return redirect(url_for("view.display_profile"))
+#             result = cloudinary.uploader.upload(f)
+#             image_url = result["secure_url"]
+#             current_user.photo = image_url
+#             db.session.commit()
+#             flash("Profile photo uploaded successfully", "success")
+#             return redirect(url_for("view.display_profile"))
+#         except Exception as e:
+#             flash(e, "danger")
+#     return render_template("display-profile.html", date=x, form=form)
 
 
 @view.route("/create-card/", methods=["GET", "POST"])
