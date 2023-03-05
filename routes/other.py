@@ -63,21 +63,6 @@ def front_page():
 @login_required
 def account():
     pinset = current_user.pin_set
-    form = PhotoForm()
-    if request.method == "POST":
-        try:
-            f = form.image.data
-            if not f:
-                flash("nothing to upload", "danger")
-                return redirect(url_for("view.display_profile"))
-            result = cloudinary.uploader.upload(f)
-            image_url = result["secure_url"]
-            current_user.photo = image_url
-            db.session.commit()
-            flash("Profile photo uploaded successfully", "success")
-            return redirect(url_for("view.display_profile"))
-        except Exception as e:
-            flash(e, "danger")
     return render_template("account.html", pinset=pinset, date=x)
 
 
