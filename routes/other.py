@@ -77,7 +77,7 @@ def account():
             current_user.photo = image_url
             db.session.commit()
             flash("Profile photo uploaded successfully", "success")
-            return redirect(url_for("view.display_profile"))
+            return redirect(url_for("view.account"))
         except Exception as e:
             flash(e, "danger")
     return render_template("account.html", pinset=pinset, date=x, form=form)
