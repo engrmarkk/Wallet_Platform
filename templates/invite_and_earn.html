@@ -1,2 +1,110 @@
-{{ extends 'base.html' }}
+{% extends 'base.html' %}
+{% block content %}
+    <p class="mt-5 text-center fw-bold">Your account number is your referral code</p>
+<div class="d-flex border m-auto" style="max-width: 500px;">
+    <div class="bg-success text-center text-light p-5 w-100">
+        <small class="h5">Earnings</small> <br>
+        <span class="h1">{{ current_user.invite_earn }}</span>
+    </div>
+    <div class="bg-info text-center text-light p-5 w-100">
+        <small class="h5">Invitees</small> <br>
+        <span class="h1">{{ len }}</span>
+    </div>
 
+</div>
+<a href="" class="btn btn-success m-auto d-flex mt-3" style="width: fit-content;">Withdraw</a>
+
+
+<div class="mt-5">
+    
+  <div class="accordion my-2" id="accordionExample" >
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="flush-headingOne">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne3" aria-expanded="false" aria-controls="flush-collapseOne">
+          USER INVITED
+        </button>
+      </h2>
+      <div id="flush-collapseOne3" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            {% for each in current_user.invitees %}
+            <h6>You invited <span class="fw-bold">{{ each.last_name }} {{ each.first_name }}</span></h6>
+            {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="accordion my-2" id="accordionExample">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="flush-headingO">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseO" aria-expanded="false" aria-controls="flush-collapseOne">
+          INVITE AND EARN INFORMATION
+        </button>
+      </h2>
+      <div id="flush-collapseO" class="accordion-collapse collapse" aria-labelledby="flush-headingO" data-bs-parent="#accordionFlushExample">
+        <div class="accordion-body">
+            <div id="overlay-earnn">
+                <div class="border m-auto p-3" style="width: fit-content;">
+                <div class="card m-auto rounded p-3 mt-3" style="width: fit-content; background: rgb(89, 167, 11); border: 5px solid rgb(248, 252, 255); ">
+                    <h5 class="text-center badge">REFER AND EARN</h5>
+                    <h1 class="fw-bolder text-center text-white"><del style="text-decoration-style: double;">N</del> 100</h1>
+                </div>
+            
+                <ul class="m-auto mt-3" style="max-width: 500px; line-height: 2rem;">
+                    <li>The more friends you invite, the more you earn</li>
+                    <li>You earn <del style="text-decoration-style: double;">N</del> 100 bonus when your friend confirmed his/her email address</li>
+                </ul>
+            
+                <h6 class="text-center bg-white text-success m-auto fw-bold px-2 mt-5" style="width: fit-content;">How to earn bonus</h6>
+            
+                <ol class="m-auto mt-3" style="max-width: 500px; line-height: 2rem;">
+                    <li>Ask your friend to create an account with Easytransact</li>
+                    <li>During the registration process, an invited by field is available, your Invitation code (i.e your account number) should be provided in that field</li>
+                    <li>The new user should kindly confirm his/her email for you to be credited</li>
+                </ol>
+            
+                <!-- <p class="btn btn-info mt-4 m-auto d-flex" id="see-earn" style="width: fit-content;">See earning</p> -->
+            </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- <div id="overlay-earnn">
+    <div class="m-auto d-flex align-items-center justify-content-center my-4">
+        <img src="{{ url_for('static', filename='images/logo-white.png') }}" alt="easytransact logo" style="width: 2.5rem;">
+        <p class="h4 px-2">EasyTransact</p>
+    </div>
+    <div class="border m-auto p-3" style="width: fit-content;">
+    <div class="card m-auto rounded p-3 mt-3" style="width: fit-content; background: rgba(128, 255, 0, 0.219); border: 5px solid rgb(248, 252, 255); ">
+        <h5 class="text-center badge">REFER AND EARN</h5>
+        <h1 class="fw-bolder text-center"><del style="text-decoration-style: double;">N</del> 100</h1>
+    </div>
+
+    <ul class="m-auto mt-3" style="max-width: 500px; line-height: 2rem;">
+        <li>The more friends you invite, the more you earn</li>
+        <li>You earn <del style="text-decoration-style: double;">N</del> 100 bonus when your friend confirmed his/her email address</li>
+    </ul>
+
+    <p class="text-center bg-white text-success m-auto fw-bold px-2 mt-5" style="width: fit-content;">How to earn bonus</p>
+
+    <ol class="m-auto mt-3" style="max-width: 500px; line-height: 2rem;">
+        <li>Ask your friend to create an account with Easytransact</li>
+        <li>During the registration process, an invited by field is available, your Invitation code (i.e your account number) should be provided in that field</li>
+        <li>The new user should kindly confirm his/her email for you to be credited</li>
+    </ol>
+
+    <p class="btn btn-info mt-4 m-auto d-flex" id="see-earn" style="width: fit-content;">See earning</p>
+</div>
+</div> -->
+
+<!-- <script>
+   document.getElementById("see-earn").addEventListener("click", function() {
+       document.getElementById("overlay-earn").style.top="-990px"
+   });
+</script> -->
+
+{% endblock content %}

@@ -4,7 +4,7 @@ from flask_mail import Message
 from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, \
     render_template, Blueprint, make_response, jsonify
-from models import User, Transaction, Beneficiary, Card
+from models import User, Transaction, Beneficiary, Card, Invitees
 from form import *
 # from func import check_user_activity
 from werkzeug.security import generate_password_hash
@@ -503,4 +503,6 @@ def withdraw():
 
 @view.route("/invite_and_earn", methods=["GET", "POST"])
 def invite_and_earn():
-    return render_template("invite_and_earn.html", date=x)
+    invitees = Invitees.query.filter_by(invited_by=current_user.id).all()
+    all_invitees = len(invitees)
+    return render_template("invite_and_earn.html", date=x, len=all_invitees)

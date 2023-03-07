@@ -1131,3 +1131,16 @@ button#savebtn {
     border: none;
     padding: 0.2rem 1rem;
 }
+
+/* #overlay-earn{
+  position: absolute;
+  top: 0px;
+  left: 0;
+  right: 0;
+  background: #016341;
+  height: fit-content;
+  max-height: 150vh;
+  z-index: 9999;
+  color: white;
+  transition: 1s;
+} */
