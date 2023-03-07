@@ -50,6 +50,7 @@ class RegistrationForm(FlaskForm):
     )
     email = StringField("Email", validators=[DataRequired(), Email()])
     phone_number = TelField("Phone Number", validators=[DataRequired(), Length(max=11)])
+    invited_by = TelField("Invited by (optional)", validators=[Length(max=10)])
     password = PasswordField("Password", validators=[DataRequired()])
     confirm_password = PasswordField(
         "Confirm Password", validators=[DataRequired(), EqualTo("password")]
