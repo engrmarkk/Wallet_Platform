@@ -123,6 +123,17 @@
     required=False, placeholder="Enter Phone Number (080X XXX XXXX)") }} {% endif %}
 
 
+          <!-- For Invited validations -->
+    {{ form.invited_by.label(class='label text-muted fw-bold mt-4   mb-2') }}
+
+    {% if form.invited_by.errors %} {{ form.invited_by(class="form-control p-2",
+    required=False, placeholder="Enter Invitation code") }} {% for error in
+    form.invited_by.errors %}
+    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
+    {% endfor %} {% else %} {{ form.invited_by(class="form-control p-2",
+    required=False, placeholder="Enter Invitation code") }} {% endif %}
+
+
     <!-- For Username validations -->
     {{ form.username.label(class='label text-muted fw-bold mt-4   mb-2') }}
 
