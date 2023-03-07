@@ -499,3 +499,8 @@ def withdraw():
     db.session.commit()
     flash("Withdraw successful", "success")
     return redirect(url_for('view.home'))
+
+
+@view.route("/invite_and_earn", methods=["GET", "POST"])
+def invite_and_earn():
+    return render_template("invite_and_earn.html", date=x)

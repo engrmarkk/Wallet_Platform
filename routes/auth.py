@@ -123,7 +123,7 @@ def register():
                 return redirect(url_for("auth.register"))
             if not form.phone_number.data.isnumeric():
                 flash("This is not a valid number", category="danger")
-                return redirect(url_for("auth.register"))
+                return render_template("register.html", date=datetime.utcnow(), form=form)
 
             first_name = form.first_name.data.lower()
             last_name = form.last_name.data.lower()
