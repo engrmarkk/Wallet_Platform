@@ -16,6 +16,8 @@ class User(db.Model, UserMixin):
     account_number = db.Column(db.Integer, unique=True, nullable=False)
     account_balance = db.Column(db.Integer, default=20000)
     savings = db.Column(db.Integer, default=0)
+    invite_earn = db.Column(db.Integer, default=0)
+    invited_by = db.Column(db.Integer, default=0)
     photo = db.Column(db.Text, nullable=False, default='https://res.cloudinary.com/duwyopabr/image/upload/v1676162283/user_xz7o0f.png')
     transaction_pin = db.Column(db.Integer, nullable=False, default=1)
     secret_question = db.Column(db.Text, nullable=True)
@@ -24,6 +26,7 @@ class User(db.Model, UserMixin):
     transacts = db.relationship("Transaction", backref="author", lazy=True)
     beneficiaries = db.relationship("Beneficiary", backref="user_account", lazy=True)
     card = db.relationship("Card", backref="card_owner", lazy=True)
+    invitees = db.relationship('Invitees', backref='invited_by', lazy=True)
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
 
     # Define a representation with two attribute 'username' and 'email'
