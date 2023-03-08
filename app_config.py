@@ -1,4 +1,4 @@
-from extensions import app, db, login_manager, mail, migrate
+from extensions import app, db, login_manager, mail, migrate, moment
 from flask import redirect, flash, url_for, session, render_template
 from routes import AuthenticationBlueprint, ViewBlueprint
 from models import User
@@ -28,6 +28,7 @@ def create_app():
     mail.init_app(app)
     login_manager.init_app(app)
     migrate.init_app(app, db)
+    moment.init_app(app)
 
     # The decorator that loads the user using the user's id
     @login_manager.user_loader

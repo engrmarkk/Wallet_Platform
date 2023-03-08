@@ -304,27 +304,6 @@ def reset_password_verified(token):
     return render_template("reset_verified.html", date=x, form=form)
 
 
-# @view.route("/profile-picture/", methods=["GET", "POST"])
-# @login_required
-# def display_profile():
-#     form = PhotoForm()
-#     if request.method == "POST":
-#         try:
-#             f = form.image.data
-#             if not f:
-#                 flash("nothing to upload", "danger")
-#                 return redirect(url_for("view.display_profile"))
-#             result = cloudinary.uploader.upload(f)
-#             image_url = result["secure_url"]
-#             current_user.photo = image_url
-#             db.session.commit()
-#             flash("Profile photo uploaded successfully", "success")
-#             return redirect(url_for("view.display_profile"))
-#         except Exception as e:
-#             flash(e, "danger")
-#     return render_template("display-profile.html", date=x, form=form)
-
-
 @view.route("/create-card/", methods=["GET", "POST"])
 @login_required
 def create_card():
@@ -447,6 +426,17 @@ def coming_soon():
 def user_profile():
     return render_template("profile.html", date=x)
 
+def savings_interest():
+    payday = datetime.datetime.now().day
+    if payday == 1:
+        users = User.query.all()
+        for user in users:
+            if user.savings > 0:
+                user.savings += user.savings * 0.05
+                db.session.commit()
+    else:
+        pass
+
 
 @view.route("/savings", methods=["GET", "POST"])
 @login_required
@@ -473,6 +463,7 @@ def savings():
                 db.session.add(transact2)
                 db.session.commit()
                 flash("Saved successfully", "success")
+                savings_interest()
             return render_template("savings.html", date=x, form=form, n=n)
     return render_template("savings.html", date=x, form=form, n=n)
 
