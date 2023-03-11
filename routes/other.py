@@ -497,3 +497,16 @@ def invite_and_earn():
     invitees = Invitees.query.filter_by(invited_by=current_user.id).all()
     all_invitees = len(invitees)
     return render_template("invite_and_earn.html", date=x, len=all_invitees)
+
+
+@view.route("/withdraw-earnings", methods=["POST"])
+def withdraw_earnings():
+    if current_user.invite_earn:
+        current_user.account_balance += current_user.invite_earn
+        current_user.invite_earn -= current_user.invite_earn
+        db.session.commit()
+        flash("Withdrawal successful", "success")
+    else:
+        flash("No earnings to withdraw", "danger")
+    return redirect(url_for("view.home"))
+    

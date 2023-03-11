@@ -2,7 +2,7 @@ from datetime import datetime
 from extensions import db, mail
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint
-from models import User
+from models import User, Invitees
 from form import *
 from flask_mail import Message
 from random import randint
@@ -20,6 +20,13 @@ def validate(email):
         user = User.query.filter_by(email=email).first_or_404()
         if otp == int(user_otp):
             user.confirmed = True
+            if user.invited_by:
+                user1 = User.query.filter_by(account_number=user.invited_by)
+                user1.invite_earn += 100
+                invitee = Invitees(first_name=user.first_name,
+                                    last_name=user.last_name,
+                                    invited_by=user1.id)
+                db.session.add(invitee)
             db.session.commit()
             flash("Email verification successful", category="success")
             return redirect(url_for("auth.login"))
@@ -131,6 +138,7 @@ def register():
             email = form.email.data.lower()
             phone_number = str(form.phone_number.data)
             account_number = int(str(phone_number)[1:])
+            invited_by = int(form.invited_by.data)
             password_hash = generate_password_hash(form.password.data)
 
             # to check if the password is the mixture of uppercase, lowercase and a number at least
@@ -151,6 +159,13 @@ def register():
                 flash("Phone number must be 11 digits", "danger")
                 return redirect(url_for("auth.register"))
 
+            if not User.query.filter_by(account_number=invited_by).first():
+                flash("Invalid referral code", "danger")
+                return render_template("register.html", date=datetime.utcnow(), form=form)
+
+            if not invited_by:
+                invited_by = 0
+
             # variable 'new_user'
             new_user = User(
                 first_name=first_name,
@@ -159,6 +174,7 @@ def register():
                 phone_number=phone_number,
                 email=email,
                 account_number=account_number,
+                invited_by=invited_by,
                 password=password_hash,
                 confirmed=False,
             )
