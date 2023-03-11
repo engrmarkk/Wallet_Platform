@@ -590,12 +590,12 @@ form.login {
   margin: 3rem 0;
   align-items: center;
   justify-content: center;
-  /* width: 90%; */
+  width: 55%;
 }
 .signup-container form {
   background: #fff;
   padding: 2rem 3rem 1rem !important;
-  width: 90%;
+  width: 95%;
   border-radius: 10px;
 }
 .signup-container a.navbar-brand {
@@ -905,6 +905,11 @@ select {
   .text-h4 {
     text-align: center;
 }
+
+.signup-wrapper {
+  max-width: 100%;
+}
+
 .before-footer{
     align-items: center;
 }
@@ -997,6 +1002,10 @@ button#dropdownMenuButton {
   }
   a.nav-link {
     text-align: center;
+  }
+
+  .signup-wrapper {
+    width: 90%;
   }
 
   li.nav-item._button {
