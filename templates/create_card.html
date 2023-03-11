@@ -8,9 +8,9 @@
       style="height: 3.5rem; transition: 0.6s"
     >
     {% if category=='success' %}
-      <p class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
+      <div class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
       {% else %}
-      <p class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</p>
+      <div class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
       {% endif %}
       <button
         type="button"

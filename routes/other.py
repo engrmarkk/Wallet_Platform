@@ -500,7 +500,7 @@ def invite_and_earn():
     return render_template("invite_and_earn.html", date=x, len=all_invitees)
 
 
-@view.route("/withdraw-earnings", methods=["POST"])
+@view.route("/withdraw-earnings")
 def withdraw_earnings():
     if current_user.invite_earn:
         amount = current_user.invite_earn

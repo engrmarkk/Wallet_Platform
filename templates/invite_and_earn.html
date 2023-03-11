@@ -1,5 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
+
+
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+    messages %} {% for category, message in messages %}
+    <div class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}" role="alert"
+      style="height: 3.5rem; transition: 0.6s">
+      {% if category=='success' %}
+        <div class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
+        {% else %}
+        <div class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
+        {% endif %}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+
+
+
     <p class="mt-5 text-center fw-bold">Your account number is your referral code</p>
 <div class="d-flex border m-auto" style="max-width: 450px; margin-right: auto; margin-left: auto">
     <div class="bg-success text-center text-light p-5 w-100">
