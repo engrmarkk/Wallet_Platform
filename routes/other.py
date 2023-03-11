@@ -428,7 +428,8 @@ def user_profile():
 
 def savings_interest():
     payday = datetime.datetime.now().day
-    if payday == 1:
+    paytime = datetime.datetime.now().hour
+    if payday == 1 and paytime == 0:
         users = User.query.all()
         for user in users:
             if user.savings > 0:
