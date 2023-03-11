@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
     <p class="mt-5 text-center fw-bold">Your account number is your referral code</p>
-<div class="d-flex border m-auto" style="max-width: 500px;">
+<div class="d-flex border m-auto" style="max-width: 450px; margin-right: auto; margin-left: auto">
     <div class="bg-success text-center text-light p-5 w-100">
         <small class="h5">Earnings</small> <br>
         <span class="h1">{{ current_user.invite_earn }}</span>
@@ -12,7 +12,7 @@
     </div>
 
 </div>
-<a href="" class="btn btn-success m-auto d-flex mt-3" style="width: fit-content;">Withdraw</a>
+<a href="{{ url_for('view.withdraw_earnings') }}" class="btn btn-success m-auto d-flex mt-3" style="width: fit-content;">Withdraw</a>
 
 
 <div class="mt-5">
