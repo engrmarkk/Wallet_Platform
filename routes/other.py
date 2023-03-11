@@ -502,11 +502,19 @@ def invite_and_earn():
 @view.route("/withdraw-earnings", methods=["POST"])
 def withdraw_earnings():
     if current_user.invite_earn:
-        current_user.account_balance += current_user.invite_earn
-        current_user.invite_earn -= current_user.invite_earn
+        amount = current_user.invite_earn
+        current_user.account_balance += amount
+        current_user.invite_earn -= amount
+
+        transact1 = Transaction(
+            transaction_type="CRT",
+            transaction_amount=amount,
+            sender=current_user.username + ' ' + 'invite earning',
+            user_id=current_user.id,
+        )
+        db.session.add(transact1)
         db.session.commit()
         flash("Withdrawal successful", "success")
     else:
         flash("No earnings to withdraw", "danger")
     return redirect(url_for("view.home"))
-    
