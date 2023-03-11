@@ -514,7 +514,7 @@ def withdraw_earnings():
         )
         db.session.add(transact1)
         db.session.commit()
-        flash("Withdrawal successful", "success")
+        flash(f"Withdrawal of N{amount} successful", "success")
     else:
         flash("No earnings to withdraw", "danger")
     return redirect(url_for("view.home"))
