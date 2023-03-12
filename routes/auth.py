@@ -17,11 +17,17 @@ otp = randint(100000, 999999)
 def validate(email):
     if request.method == "POST":
         user_otp = request.form["otp"]
+        if not user_otp:
+            flash("Please enter the OTP", category="danger")
+            return redirect(url_for("auth.validate", email=email))
         user = User.query.filter_by(email=email).first_or_404()
+        in_num = int(user.invited_by)
         if otp == int(user_otp):
             user.confirmed = True
             if user.invited_by:
-                user1 = User.query.filter_by(account_number=user.invited_by)
+                user1 = User.query.filter_by(account_number=in_num).first()
+                print(int(user.invited_by))
+                print(user1.first_name)
                 user1.invite_earn += 100
                 invitee = Invitees(first_name=user.first_name,
                                     last_name=user.last_name,
@@ -138,7 +144,6 @@ def register():
             email = form.email.data.lower()
             phone_number = str(form.phone_number.data)
             account_number = int(str(phone_number)[1:])
-            invited_by = int(form.invited_by.data)
             password_hash = generate_password_hash(form.password.data)
 
             # to check if the password is the mixture of uppercase, lowercase and a number at least
@@ -159,12 +164,14 @@ def register():
                 flash("Phone number must be 11 digits", "danger")
                 return redirect(url_for("auth.register"))
 
-            if not User.query.filter_by(account_number=invited_by).first():
+            if form.invited_by.data and not User.query.filter_by(account_number=form.invited_by.data).first():
                 flash("Invalid referral code", "danger")
                 return render_template("register.html", date=datetime.utcnow(), form=form)
 
-            if not invited_by:
+            if not form.invited_by.data:
                 invited_by = 0
+            else:
+                invited_by = int(form.invited_by.data)
 
             # variable 'new_user'
             new_user = User(
