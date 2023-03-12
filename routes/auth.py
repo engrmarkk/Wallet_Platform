@@ -26,8 +26,6 @@ def validate(email):
             user.confirmed = True
             if user.invited_by:
                 user1 = User.query.filter_by(account_number=in_num).first()
-                print(int(user.invited_by))
-                print(user1.first_name)
                 user1.invite_earn += 100
                 invitee = Invitees(first_name=user.first_name,
                                     last_name=user.last_name,
@@ -37,7 +35,7 @@ def validate(email):
             flash("Email verification successful", category="success")
             return redirect(url_for("auth.login"))
         else:
-            flash("try again", category="danger")
+            flash("try again, invalid code", category="danger")
 
     return render_template("confirmation.html", email=email, date=datetime.utcnow())
 
