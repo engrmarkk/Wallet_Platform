@@ -24,10 +24,13 @@
 
 
     <p class="mt-5 text-center fw-bold">Your account number is your referral code</p>
-<div class="d-flex border m-auto" style="max-width: 450px; margin-right: auto; margin-left: auto">
+<div class="border m-auto" style="max-width: 400px; margin-right: auto; margin-left: auto;
+display: flex; justify-content: center; align-items: center; flex-direction: row;
+margin:auto
+">
     <div class="bg-success text-center text-light p-5 w-100">
         <small class="h5">Earnings</small> <br>
-        <span class="h1">{{ current_user.invite_earn }}</span>
+        <span class="h1"><del style="text-decoration-style: double;" class="h3">N</del> {{ current_user.invite_earn }}</span>
     </div>
     <div class="bg-info text-center text-light p-5 w-100">
         <small class="h5">Invitees</small> <br>
