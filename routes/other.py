@@ -387,7 +387,7 @@ def download_pdf():
         # convert the HTML to PDF using pdfshift.io
         response = requests.post(
             'https://api.pdfshift.io/v3/convert/pdf',
-            auth=('api', f'{os.environ.get("PDF_KEY")}'),
+            auth=('api', f'{os.environ.get(random.choice(["PDF_KEY", "PDF_KEY2", "PDF_KEY3"]))}'),
             json={
                 'source': html,
                 'landscape': False,
