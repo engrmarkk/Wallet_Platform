@@ -6,14 +6,19 @@ from datetime import timedelta
 import os
 import flask
 from flask_login import current_user
+from decouple import config
 
+uri = config('DATABASE_URL')  # or other relevant config var
+if uri.startswith('postgres://'):
+    uri = uri.replace('postgres://', 'postgresql://', 1)
 
 def create_app():
     base_dir = os.path.dirname(os.path.realpath(__file__))
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-        base_dir, "wallet.db"
-    )
+    # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
+    #     base_dir, "wallet.db"
+    # )
+    app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "4f557e8e5eb51bfb7c42"
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
