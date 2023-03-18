@@ -9,8 +9,8 @@ from flask_login import current_user
 from decouple import config
 
 db_name = 'wallet'
-default_uri = "postgres://{}:{}@{}/{}".format('postgres', 'password', 'localhost:5432', db_name)
-uri = config('DATABASE_URL', default_uri)  # or other relevant config var
+# default_uri = "postgres://{}:{}@{}/{}".format('postgres', 'password', 'localhost:5432', db_name)
+uri = config('DATABASE_URL')  # or other relevant config var
 if uri.startswith('postgres://'):
     uri = uri.replace('postgres://', 'postgresql://', 1)
 
