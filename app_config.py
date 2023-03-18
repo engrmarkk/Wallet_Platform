@@ -8,9 +8,12 @@ import flask
 from flask_login import current_user
 from decouple import config
 
-uri = config('DATABASE_URL')  # or other relevant config var
+db_name = 'wallet'
+default_uri = "postgres://{}:{}@{}/{}".format('postgres', 'password', 'localhost:5432', db_name)
+uri = config('DATABASE_URL', default_uri)  # or other relevant config var
 if uri.startswith('postgres://'):
     uri = uri.replace('postgres://', 'postgresql://', 1)
+
 
 def create_app():
     base_dir = os.path.dirname(os.path.realpath(__file__))

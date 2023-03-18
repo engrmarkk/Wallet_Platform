@@ -123,7 +123,7 @@ def register():
             if existing_email:
                 # Flash this message to the user and redirect the user to that same page
                 flash("User with this email already exist", category="danger")
-                return redirect(url_for("auth.register"))
+                return render_template("register.html", date=datetime.utcnow(), form=form)
 
             # Check if phone number exist
             existing_phone = User.query.filter_by(account_number=form.phone_number.data[1:]).first()
@@ -156,7 +156,7 @@ def register():
                     "Password should contain at least an uppercase, lowercase and a number",
                     "danger",
                 )
-                return redirect(url_for("auth.register"))
+                return render_template("register.html", date=datetime.utcnow(), form=form)
 
             if len(phone_number) != 11:
                 flash("Phone number must be 11 digits", "danger")
