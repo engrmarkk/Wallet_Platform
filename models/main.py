@@ -11,7 +11,7 @@ class User(db.Model, UserMixin):
     last_name = db.Column(db.String(50), nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)
     email = db.Column(db.String(70), unique=True, nullable=False)
-    password = db.Column(db.String(60), nullable=False)
+    password = db.Column(db.Text, nullable=False)
     phone_number = db.Column(db.BigInteger, unique=True, nullable=False)
     account_number = db.Column(db.BigInteger, unique=True, nullable=False)
     account_balance = db.Column(db.Integer, default=20000)
