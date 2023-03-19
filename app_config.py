@@ -27,6 +27,7 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "4f557e8e5eb51bfb7c42"
+    app.config['DEBUG'] = True
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
     app.config["MAIL_SERVER"] = "smtp.gmail.com"
     app.config["MAIL_PORT"] = 465
