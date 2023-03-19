@@ -1,5 +1,5 @@
-from extensions import app, db, login_manager, mail, migrate, moment
-from flask import redirect, flash, url_for, session, render_template
+from extensions import db, login_manager, mail, migrate, moment
+from flask import redirect, flash, url_for, session, render_template, Flask
 from routes import AuthenticationBlueprint, ViewBlueprint
 from models import User
 from datetime import timedelta
@@ -21,6 +21,9 @@ def create_app():
     # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
     #     base_dir, "wallet.db"
     # )
+
+    app = Flask(__name__)
+
     app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "4f557e8e5eb51bfb7c42"
