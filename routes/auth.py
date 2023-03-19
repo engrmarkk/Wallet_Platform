@@ -140,8 +140,10 @@ def register():
             last_name = form.last_name.data.lower()
             username = form.username.data.lower()
             email = form.email.data.lower()
-            phone_number = str(form.phone_number.data)
-            account_number = int(str(phone_number)[1:])
+            # phone_number = str(form.phone_number.data)
+            phone_number = form.phone_number.data
+            # account_number = int(str(phone_number)[1:])
+            account_number = form.phone_number.data
             password_hash = generate_password_hash(form.password.data)
 
             # to check if the password is the mixture of uppercase, lowercase and a number at least
