@@ -8,7 +8,7 @@ class Beneficiary(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(50))
     last_name = db.Column(db.String(50))
-    account_number = db.Column(db.Integer)
+    account_number = db.Column(db.BigInteger)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
 
     # Define a representation with two attribute 'first_name' and 'last_name'
