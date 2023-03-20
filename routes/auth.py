@@ -22,7 +22,7 @@ def validate(email):
             return redirect(url_for("auth.validate", email=email))
         user = User.query.filter_by(email=email).first_or_404()
         in_num = int(user.invited_by)
-        if otp == int(user_otp):
+        if int(user_otp) == otp:
             user.confirmed = True
             if user.invited_by:
                 user1 = User.query.filter_by(account_number=in_num).first()
