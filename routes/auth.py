@@ -75,7 +75,7 @@ def login():
                     # If the check passed, login the user and flash a message to the user when redirected to the homepage
                     flash("Login Successful", "success")
                     login_user(user, remember=False)
-                    return redirect(url_for("view.home", id=user.id, user=current_user))
+                    return redirect(url_for("view.home"))
                 else:
                     # If the check failed, flash a message to the user while still on the same page
                     flash("Check your Password", "danger")
