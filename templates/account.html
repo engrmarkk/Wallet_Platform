@@ -31,13 +31,13 @@
   <div class="d-flex acc-header">
     <div onclick="chooseFile();"><img
       src="{{ current_user.photo }}"
-      class="img-thumbnail article-img border-none"
+      class="img-thumbnail article-img border-none mt-4"
       style="width: 11rem; height: 11rem; cursor: pointer;"
       alt="{{ current_user.last_name.title() + ' ' +
       current_user.first_name.title() }} image"
     /></div>
       <div class='account-header'>
-        <h1>My Account</h1><br>
+        <h1 class="mt-3">My Account</h1><br>
       <span class="text-accent user-name h4"
         >{{ current_user.last_name.title() + ' ' +
         current_user.first_name.title() }}</span
