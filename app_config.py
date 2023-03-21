@@ -57,6 +57,10 @@ def create_app():
     # with app.app_context():
     #     db.create_all()
 
+    @app.errorhandler(413)
+    def too_large(e):
+        flash("File too large", category="danger")
+
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template('404.html'), 404
