@@ -7,8 +7,10 @@ from wtforms import (
     BooleanField,
     TelField,
     TextAreaField,
+    ValidationError
 )
 from flask_wtf.file import FileField, FileRequired, FileAllowed
+from flask import flash
 from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
 
 
@@ -80,6 +82,12 @@ class ResetPasswordForm(FlaskForm):
 
 class PhotoForm(FlaskForm):
     image = FileField(validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'])])
+
+    def validate_image(self, field):
+        if field.data:
+            if len(field.data.read()) > 1 * 1024 * 1024:
+                flash("File size should be less than 1 MB.", category="danger")
+                raise ValidationError("File size should be less than 1 MB.")
 
 
 class ConfirmAccount(FlaskForm):
