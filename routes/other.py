@@ -68,18 +68,21 @@ def account():
         try:
             f = form.image.data
             if not f:
-                flash("nothing to upload", "danger")
+                flash("Nothing to upload", "danger")
                 return redirect(url_for("view.display_profile"))
+            if f.content_length > 1 * 1024 * 1024:  # check file size
+                flash("File is too large. Maximum file size is 1MB.", "danger")
+                return redirect(url_for("view.account"))
             result = cloudinary.uploader.upload(f, transformation=[
-                    {"width": 176, "height": 176, "crop": "fill"}
-                ])
+                {"width": 176, "height": 176, "crop": "fill"}
+            ])
             image_url = result["secure_url"]
             current_user.photo = image_url
             db.session.commit()
             flash("Profile photo uploaded successfully", "success")
             return redirect(url_for("view.account"))
         except Exception as e:
-            flash(e, "danger")
+            flash(str(e), "danger")
     return render_template("account.html", pinset=pinset, date=x, form=form)
 
 
