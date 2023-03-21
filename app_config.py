@@ -18,11 +18,11 @@ if uri.startswith('postgres://'):
 def create_app():
     base_dir = os.path.dirname(os.path.realpath(__file__))
 
+    app = Flask(__name__)
+
     # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
     #     base_dir, "wallet.db"
     # )
-
-    app = Flask(__name__)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -59,7 +59,8 @@ def create_app():
 
     @app.errorhandler(413)
     def too_large(e):
-        flash("File too large", category="danger")
+        flash("File too large, max size is 1MB", category="danger")
+        return redirect(url_for("view.account"))
 
     @app.errorhandler(404)
     def page_not_found(e):
