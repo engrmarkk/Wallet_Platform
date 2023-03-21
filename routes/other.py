@@ -86,8 +86,10 @@ def account():
             return redirect(url_for("view.account"))
         except ValidationError as e:
             flash(str(e), "danger")
+            return redirect(url_for("view.account"))
         except RequestEntityTooLarge:
             flash("File is too large. Maximum file size is 1MB.", "danger")
+            return redirect(url_for("view.account"))
     return render_template("account.html", pinset=pinset, date=x, form=form)
 
 
