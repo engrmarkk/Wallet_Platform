@@ -1,4 +1,7 @@
 from datetime import datetime
+
+from werkzeug.exceptions import RequestEntityTooLarge
+
 from extensions import mail, db
 from flask_mail import Message
 from flask_login import current_user, login_required
@@ -83,6 +86,8 @@ def account():
             return redirect(url_for("view.account"))
         except ValidationError as e:
             flash(str(e), "danger")
+        except RequestEntityTooLarge:
+            flash("File is too large. Maximum file size is 1MB.", "danger")
     return render_template("account.html", pinset=pinset, date=x, form=form)
 
 
