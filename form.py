@@ -86,7 +86,7 @@ class PhotoForm(FlaskForm):
     def validate_image(self, field):
         if field.data:
             if len(field.data.read()) > 1 * 1024 * 1024:
-                flash("File size should be less than 1 MB.", category="danger")
+                # flash("File size should be less than 1 MB.", category="danger")
                 raise ValidationError("File size should be less than 1 MB.")
 
 
