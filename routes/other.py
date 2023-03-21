@@ -70,7 +70,7 @@ def account():
             if not f:
                 flash("Nothing to upload", "danger")
                 return redirect(url_for("view.display_profile"))
-            if f.content_length > 1 * 1024 * 1024:  # check file size
+            if f.content_length > request.max_content_length:  # check file size
                 flash("File is too large. Maximum file size is 1MB.", "danger")
                 return redirect(url_for("view.account"))
             result = cloudinary.uploader.upload(f, transformation=[
