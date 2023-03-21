@@ -7,11 +7,11 @@ from wtforms import (
     BooleanField,
     TelField,
     TextAreaField,
-    ValidationError
+    # ValidationError
 )
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from flask import flash
-from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange
+from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, ValidationError
 
 
 class LoginForm(FlaskForm):
