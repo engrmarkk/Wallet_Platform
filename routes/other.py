@@ -81,7 +81,7 @@ def account():
             db.session.commit()
             flash("Profile photo uploaded successfully", "success")
             return redirect(url_for("view.account"))
-        except Exception as e:
+        except ValidationError as e:
             flash(str(e), "danger")
     return render_template("account.html", pinset=pinset, date=x, form=form)
 
