@@ -8,23 +8,23 @@ import flask
 from flask_login import current_user
 from decouple import config
 
-db_name = 'wallet'
+# db_name = 'wallet'
 # default_uri = "postgres://{}:{}@{}/{}".format('postgres', 'password', 'localhost:5432', db_name)
-uri = config('DATABASE_URL')  # or other relevant config var
-if uri.startswith('postgres://'):
-    uri = uri.replace('postgres://', 'postgresql://', 1)
+# uri = config('DATABASE_URL')  # or other relevant config var
+# if uri.startswith('postgres://'):
+#     uri = uri.replace('postgres://', 'postgresql://', 1)
 
 
 def create_app():
-    # base_dir = os.path.dirname(os.path.realpath(__file__))
+    base_dir = os.path.dirname(os.path.realpath(__file__))
 
     app = Flask(__name__)
 
-    # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-    #     base_dir, "wallet.db"
-    # )
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
+        base_dir, "wallet.db"
+    )
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = uri
+    # app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "4f557e8e5eb51bfb7c42"
     app.config['DEBUG'] = False
@@ -54,8 +54,8 @@ def create_app():
         flash("Login to access this page", category="info")
         return redirect(url_for("auth.login"))
 
-    # with app.app_context():
-    #     db.create_all()
+    with app.app_context():
+        db.create_all()
 
     @app.errorhandler(413)
     def too_large(e):
