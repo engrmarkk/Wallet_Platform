@@ -16,7 +16,7 @@ if uri.startswith('postgres://'):
 
 
 def create_app():
-    base_dir = os.path.dirname(os.path.realpath(__file__))
+    # base_dir = os.path.dirname(os.path.realpath(__file__))
 
     app = Flask(__name__)
 
@@ -27,7 +27,7 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "4f557e8e5eb51bfb7c42"
-    app.config['DEBUG'] = True
+    app.config['DEBUG'] = False
     app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
     app.config["MAIL_SERVER"] = "smtp.gmail.com"
     app.config["MAIL_PORT"] = 465
