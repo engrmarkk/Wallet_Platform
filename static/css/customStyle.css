@@ -335,7 +335,9 @@ span.navbar-toggler-ico.three {
   align-items: center;
     color: #ffffff!important;
 }
-
+.text-p{
+  line-height: 1.5rem !important;
+}
 .home .acc-num .acc-copy {
   margin-top: 0.5rem;
   display: flex;
@@ -807,7 +809,7 @@ form.create-pin .btn,
   box-shadow: 1px 2px 6px rgba(0, 0, 0, 0.3);
   cursor: pointer;
   position: fixed;
-  bottom: 61px;
+  bottom: 25px;
   left: 20px;
   z-index: 99;
   border: 1px solid white;
@@ -946,8 +948,12 @@ button#dropdownMenuButton {
     position: absolute;
     display: none;
   }
+  .et-logo{
+    width:7rem !important
+  }
   .d-flex img {
-    width: 20rem;
+    width: 20rem ;
+    transition: 0.3s ease-in-out;
   }
   .text-h2 {
     font-size: 2.5rem;
