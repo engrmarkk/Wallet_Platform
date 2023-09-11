@@ -59,7 +59,7 @@ def login():
 
                     msg = Message(
                         subject="Email Verification",
-                        sender="noah13victor@gmail.com",
+                        sender="Easytransact <easytransact.send@gmail.com>",
                         recipients=[email],
                     )
                     msg.html = render_template("email_verification.html", otp=str(otp))
@@ -188,12 +188,13 @@ def register():
             try:
                 msg = Message(
                     subject="Email Verification",
-                    sender="noah13victor@gmail.com",
+                    sender="EasyTransact <easytransact.send@gmail.com>",
                     recipients=[email],
                 )
                 msg.html = render_template("email_verification.html", otp=str(otp))
                 mail.send(msg)
-            except:
+            except Exception as e:
+                print(e)
                 flash("failed to verify email", "danger")
                 return render_template("register.html", date=datetime.utcnow(), form=form)
 

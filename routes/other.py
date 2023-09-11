@@ -27,7 +27,7 @@ def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message(
         "Password Reset Request",
-        sender="engrnark.send@gmail.com",
+        sender="EasyTransact <easytransact.send@gmail.com>",
         recipients=[user.email],
     )
     msg.html = render_template("reset_email.html", user=user, token=token)
@@ -236,7 +236,7 @@ def pay(acct):
             try:
                 msg = Message(
                     subject="DEBIT ALERT",
-                    sender="noah13victor@gmail.com",
+                    sender="EasyTransact <easytransact.send@gmail.com>",
                     recipients=[current_user.email],
                 )
                 msg.html = render_template("debit.html",
@@ -254,7 +254,7 @@ def pay(acct):
             try:
                 msg = Message(
                     subject="CREDIT ALERT",
-                    sender="noah13victor@gmail.com",
+                    sender="EasyTransact <easytransact.send@gmail.com>",
                     recipients=[user1.email],
                 )
                 msg.html = render_template("credit.html",
