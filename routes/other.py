@@ -54,42 +54,6 @@ def create_expiry_date(days_to_expire):
 
 expiration = create_expiry_date(912)
 
-@view.route("/vtpass-payment", methods=["POST"])
-@login_required
-def vtpass_payment():
-    amount = request.form.get("amount")
-    phone_number = request.form.get("phone_number")
-    service_id = request.form.get("service_id")
-
-    if not amount or not phone_number or not service_id:
-        flash("All fields are required", "danger")
-        return redirect(url_for("view.home"))
-    
-    # Make a request to the VTPass API to initiate the payment
-    response = requests.post(
-        "https://vtpass.com/api/pay",
-        headers={"Content-Type": "application/json"},
-        json={
-            "request_id": str(datetime.datetime.now().timestamp()) + str(current_user.id),
-            "amount": amount,
-            "phone_number": phone_number,
-            "serviceID": glo,
-            "phone": current_user.phone_number,
-        }
-    )
-    
-    if response.status_code == 200:
-        # Payment was successful
-        flash("Payment successful", "success")
-        return redirect(url_for("view.home"))
-    else:
-        # Payment failed
-        flash("Payment failed", "danger")
-        return redirect(url_for("view.home"))
-    
-
-
-
 
 @view.route("/")
 def front_page():
@@ -283,7 +247,8 @@ def pay(acct):
                                            acct=str(current_user.account_number)
                                            )
                 mail.send(msg)
-            except:
+            except Exception as e:
+                print(e, "ERROR")
                 flash("Check your network", "danger")
 
             # alert for credit transaction
@@ -301,7 +266,8 @@ def pay(acct):
                                            acct=str(user1.account_number)
                                            )
                 mail.send(msg)
-            except:
+            except Exception as e:
+                print(e, "ERROR")
                 flash("Check your network", "danger")
             return redirect(url_for("view.transaction_successful",
                                     amount=f"{amount:,}",
