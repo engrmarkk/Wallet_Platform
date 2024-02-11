@@ -11,6 +11,7 @@ from models import User, Transaction, Beneficiary, Card, Invitees
 from form import *
 # from func import check_user_activity
 from werkzeug.security import generate_password_hash
+from services import VtpassService
 import random
 import datetime
 import cloudinary
@@ -23,6 +24,8 @@ from routes.auth import login
 bills = Blueprint("bills", __name__, template_folder='../templates')
 
 
+vtpass_service = VtpassService()
+
 @bills.route("/purchase_product", methods=["POST"])
 @login_required
 def vtpass_payment():
@@ -33,19 +36,6 @@ def vtpass_payment():
     if not amount or not phone_number or not service_id:
         flash("All fields are required", "danger")
         return redirect(url_for("view.home"))
-
-    # Make a request to the VTPass API to initiate the payment
-    response = requests.post(
-        "https://vtpass.com/api/pay",
-        headers={"Content-Type": "application/json"},
-        json={
-            "request_id": str(datetime.datetime.now().timestamp()) + str(current_user.id),
-            "amount": amount,
-            "phone_number": phone_number,
-            "serviceID": glo,
-            "phone": current_user.phone_number,
-        }
-    )
 
     if response.status_code == 200:
         # Payment was successful
