@@ -26,19 +26,6 @@ bills = Blueprint("bills", __name__, template_folder='../templates')
 vtpass_service = VtpassService()
 
 
-def determine_pruchase_type(service_id):
-    if service_id in ["mtn", "glo", "etisalat", "airtel"]:
-        return "airtime"
-    elif service_id in ["mtn-data", "glo-data", "etisalat-data", "airtel-data", "smiles", "spectranet"]:
-        return "data"
-    elif service_id in ["ikedc", "ibedc"]:
-        return "electricity"
-    elif service_id in ["cable"]:
-        return "cable"
-    else:
-        return None
-
-
 @bills.route("/purchase_product", methods=["POST"])
 @login_required
 def vtpass_payment():
