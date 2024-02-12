@@ -81,6 +81,7 @@ def vtpass_payment():
         return redirect(url_for("view.home"))
     if status_code == 200:
         # Payment was successful
+        # process the wallet history
         flash("Payment successful", "success")
         return redirect(url_for("view.home"))
     else:
