@@ -20,6 +20,7 @@ import requests
 import cloudinary.uploader
 import cloudinary_config
 from routes.auth import login
+from utils import determine_purchase_type
 
 bills = Blueprint("bills", __name__, template_folder='../templates')
 
@@ -38,7 +39,7 @@ def vtpass_payment():
         flash("All fields are required", "danger")
         return redirect(url_for("view.home"))
 
-    purchase_type = determine_pruchase_type(service_id)
+    purchase_type = determine_purchase_type(service_id)
 
     payload = dict(
         amount=amount,
