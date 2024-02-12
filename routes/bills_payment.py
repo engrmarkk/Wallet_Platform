@@ -23,8 +23,21 @@ from routes.auth import login
 
 bills = Blueprint("bills", __name__, template_folder='../templates')
 
-
 vtpass_service = VtpassService()
+
+
+def determine_pruchase_type(service_id):
+    if service_id in ["mtn", "glo", "etisalat", "airtel"]:
+        return "airtime"
+    elif service_id in ["mtn-data", "glo-data", "etisalat-data", "airtel-data", "smiles", "spectranet"]:
+        return "data"
+    elif service_id in ["ikedc", "ibedc"]:
+        return "electricity"
+    elif service_id in ["cable"]:
+        return "cable"
+    else:
+        return None
+
 
 @bills.route("/purchase_product", methods=["POST"])
 @login_required
@@ -32,12 +45,41 @@ def vtpass_payment():
     amount = request.form.get("amount")
     phone_number = request.form.get("phone_number")
     service_id = request.form.get("service_id")
+    request_id = str(datetime.datetime.now().timestamp()) + str(current_user.id),
 
     if not amount or not phone_number or not service_id:
         flash("All fields are required", "danger")
         return redirect(url_for("view.home"))
 
-    if response.status_code == 200:
+    purchase_type = determine_pruchase_type(service_id)
+
+    payload = dict(
+        amount=amount,
+        phone_number=phone_number,
+        service_id=service_id,
+        request_id=request_id
+    )
+
+    if purchase_type == "airtime":
+        response, status_code = vtpass_service.purchase_airtime(
+            payload
+        )
+    elif purchase_type == "data":
+        response, status_code = vtpass_service.purchase_data(
+            payload
+        )
+    elif purchase_type == "electricity":
+        response, status_code = vtpass_service.purchase_electricity(
+            payload
+        )
+    elif purchase_type == "cable":
+        response, status_code = vtpass_service.purchase_cable(
+            payload
+        )
+    else:
+        flash("Invalid service ID", "danger")
+        return redirect(url_for("view.home"))
+    if status_code == 200:
         # Payment was successful
         flash("Payment successful", "success")
         return redirect(url_for("view.home"))
