@@ -20,5 +20,5 @@ class VtpassService(VtpassBase):
     def purchase_electricity(self, payload):
         pass
 
-    def purchase_tv_subscription(self, payload):
+    def purchase_cable(self, payload):
         pass
