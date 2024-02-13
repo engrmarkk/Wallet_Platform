@@ -1,1 +1,1 @@
-from vtpass_base import VtpassBase
+from base.vtpass_base import VtpassBase
