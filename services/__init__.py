@@ -1,1 +1,1 @@
-from vtpass_service import VtpassService
+from services.vtpass_service import VtpassService
