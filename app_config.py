@@ -1,6 +1,6 @@
 from extensions import db, login_manager, mail, migrate, moment
 from flask import redirect, flash, url_for, session, render_template, Flask
-from routes import AuthenticationBlueprint, ViewBlueprint
+from routes import AuthenticationBlueprint, ViewBlueprint, BillsBlueprint
 from models import User
 from datetime import timedelta
 import os
@@ -75,5 +75,6 @@ def create_app():
 
     app.register_blueprint(AuthenticationBlueprint)
     app.register_blueprint(ViewBlueprint)
+    app.register_blueprint(BillsBlueprint)
 
     return app
