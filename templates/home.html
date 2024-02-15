@@ -67,53 +67,52 @@
           </div>
         </div>
       </div>
-      <div class="mb-4 mt-2 row"> 
-        <!-- options -->
-        <div class="col-md-4">
-          <a href="{{url_for('view.coming_soon')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-          <i
-          class="px-2 py-1 fas fa-money-bill-wave"></i>
-            Spend
-          </a>
+      <div class="mb-4 mt-2 row w-100">
+        <!-- Save -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
+                <i class="px-2 py-1 fas fa-dice-d6"></i>Save
+            </a>
         </div>
-        <div class="col-md-4">
-          <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-          <i class="px-2 py-1 fas fa-dice-d6"></i>Save
-          </a>
+    
+        <!-- Send -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="py-1 fas fa-share"></i>Send
+            </a>
         </div>
-        <div class="col-md-4">
-          <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
-            data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="py-1 fas fa-share"></i>Send
-          </a>
+    
+        <!-- Airtime -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a href="" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
+                <i class="py-1 fas fa-mobile"></i>Airtime
+            </a>
         </div>
-
-        <div class="col-md-4 mt-3">
-          <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-            <i class="py-1 fas fa-mobile"></i>Airtime
-          </a>
+    
+        <!-- Data -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a href="" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
+                <i class="py-1 fas fa-mobile-alt"></i>Data
+            </a>
         </div>
-
-        <div class="col-md-4 mt-3">
-          <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-            <i class="py-1 fas fa-mobile-alt"></i>Data
-          </a>
+    
+        <!-- Cable -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a href="" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
+                <i class="py-1 fas fa-tv"></i>Cable
+            </a>
         </div>
-
-        <div class="col-md-4 mt-3">
-          <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-            <i class="py-1 fas fa-tv"></i>Cable
-          </a>
+    
+        <!-- Electricity -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a href="" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
+                <i class="py-1 fas fa-lightbulb"></i>Electricity
+            </a>
         </div>
-
-        <div class="col-md-4 mt-3">
-          <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-            <i class="py-1 fas fa-lightbulb"></i>Electricity
-          </a>
-        </div>
-
-      </div>
+    </div>
+    
 
       </div>
     </div>
