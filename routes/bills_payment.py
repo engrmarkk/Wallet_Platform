@@ -76,3 +76,9 @@ def vtpass_payment():
         # Payment failed
         flash("Payment failed", "danger")
         return redirect(url_for("view.home"))
+
+
+@bills.route("/display_service/<string:product>")
+@login_required
+def display_service(product):
+    return render_template("display_service.html", product=product)
