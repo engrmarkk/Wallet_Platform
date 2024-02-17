@@ -22,3 +22,6 @@ class VtpassService(VtpassBase):
 
     def purchase_cable(self, payload):
         pass
+
+    def service_id(self):
+        pass
