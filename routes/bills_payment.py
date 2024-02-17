@@ -33,6 +33,10 @@ def vtpass_payment():
     amount = request.form.get("amount")
     phone_number = request.form.get("phone_number")
     service_id = request.form.get("service_id")
+    billers_code = request.form.get("billers_code")
+    type = request.form.get("type")
+    variation_code = request.form.get("variation_code")
+    quantity = request.form.get("quantity")
     request_id = str(datetime.datetime.now().timestamp()) + str(current_user.id),
 
     if not amount or not phone_number or not service_id:
@@ -43,24 +47,39 @@ def vtpass_payment():
 
     payload = dict(
         amount=amount,
-        phone_number=phone_number,
+        phone=phone_number,
         service_id=service_id,
-        request_id=request_id
+        request_id=request_id,
+        billers_code=billers_code,
+        type=type
     )
 
     if purchase_type == "airtime":
+        payload["phone"] = "08011111111"
         response, status_code = vtpass_service.purchase_airtime(
             payload
         )
     elif purchase_type == "data":
+        payload["phone"] = "08011111111"
         response, status_code = vtpass_service.purchase_data(
             payload
         )
     elif purchase_type == "electricity":
+        payload["billers_code"] = "1111111111111" if type.lower() == "prepaid" else "1010101010101"
         response, status_code = vtpass_service.purchase_electricity(
             payload
         )
     elif purchase_type == "cable":
+        payload = {
+            "serviceID": service_id,
+            "request_id": request_id,
+            "billersCode": "1212121212",
+            "variation_code": variation_code,
+            "amount": amount,
+            "phone": phone_number,
+            "subscription_type": type,
+            "quantity": quantity
+        }
         response, status_code = vtpass_service.purchase_cable(
             payload
         )
@@ -78,7 +97,9 @@ def vtpass_payment():
         return redirect(url_for("view.home"))
 
 
-@bills.route("/display_service/<string:product>")
+@bills.route("/display_service/<string:service>")
 @login_required
-def display_service(product):
-    return render_template("display_service.html", product=product)
+def display_service(service):
+    response = vtpass_service.service_identifier(service)
+    print(response, "response")
+    return render_template("display_service.html", services=response['content'], date=datetime.datetime.utcnow())
