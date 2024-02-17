@@ -20,11 +20,11 @@ def create_app():
 
     app = Flask(__name__)
 
-    # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-    #     base_dir, "wallet.db"
-    # )
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
+        base_dir, "wallet.db"
+    )
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = uri
+    # app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "4f557e8e5eb51bfb7c42"
     app.config['DEBUG'] = False
