@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex justify-content-between mt-4">
+    {% for service in services %}
+    {% if service['image'] %}
+    <div class="px-2">
+        <div class="">
+            <img src="{{ service['image'] }}" class="card-img-top rounded-circle img-thumbnail mb-2 w-75 m-auto" alt="{{ service['name'] }}">
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock %}
+
