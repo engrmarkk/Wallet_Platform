@@ -102,4 +102,4 @@ def vtpass_payment():
 def display_service(service):
     response = vtpass_service.service_identifier(service)
     # print(response, "response")
-    return render_template("display_service.html", services=response['content'], date=datetime.datetime.utcnow())
+    return render_template("display_serv.html", services=response['content'], date=datetime.datetime.utcnow(), service=service)
