@@ -1,17 +1,55 @@
 {% extends 'base.html' %}
 {% block content %}
 
+<style>
+
+    /* Hide the radio input */
+    .form-check-input {
+        display: none;
+    }
+</style>
+
 <div class="d-flex justify-content-between mt-4">
     {% for service in services %}
-    {% if service['image'] %}
-    <div class="px-2">
-        <div class="">
-            <img src="{{ service['image'] }}" class="card-img-top rounded-circle img-thumbnail mb-2 w-75 m-auto" alt="{{ service['name'] }}">
-        </div>
-    </div>
-    {% endif %}
+        {% if service['image'] %}
+            <div class="px-2">
+                <label class="selected-image" onclick="checkRadio('{{ service['name'] }}', this)">
+                    <img src="{{ service['image'] }}" class="card-img-top rounded-circle img-thumbnail mb-2 w-75 m-auto" alt="{{ service['name'] }}">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="serviceRadios" id="{{ service['name'] }}">
+                        <!-- <label class="form-check-label" for="{{ service['name'] }}">
+                            {{ service['name'] }}
+                        </label> -->
+                    </div>
+                </label>
+            </div>
+        {% endif %}
     {% endfor %}
 </div>
 
-{% endblock %}
+<script>
+    function checkRadio(name, element) {
+        // Remove the 'checked' class from all elements
+        var elements = document.querySelectorAll('.px-2');
+        elements.forEach(function (el) {
+            el.classList.remove('checked');
+        });
 
+        // Add the 'checked' class to the clicked element
+        element.classList.add('checked');
+
+        // Remove the 'bg-secondary' class from all images
+        var images = document.querySelectorAll('.selected-image img');
+        images.forEach(function (img) {
+            img.classList.remove('bg-secondary');
+        });
+
+        // Add the 'bg-secondary' class to the clicked image
+        var clickedImage = element.querySelector('.selected-image img');
+        clickedImage.classList.add('bg-secondary');
+
+        document.getElementById(name).checked = true;
+    }
+</script>
+
+{% endblock %}
