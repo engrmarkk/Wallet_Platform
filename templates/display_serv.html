@@ -9,18 +9,15 @@
     }
 </style>
 
-<form action="" method="post">
 <div class="d-flex justify-content-between mt-4">
     {% for service in services %}
         {% if service['image'] %}
             <div class="px-2">
                 <label class="selected-image" onclick="checkRadio('{{ service['name'] }}', this)">
                     <img src="{{ service['image'] }}" class="card-img-top rounded-circle img-thumbnail mb-2 w-75 m-auto" alt="{{ service['name'] }}">
+                    <a href="{{url_for('bills.get_variation', service_id=service['serviceID'])}}" class="d-none" id="click_me{{ service['name'] }}">click</a>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="serviceRadios" id="{{ service['name'] }}">
-                        <!-- <label class="form-check-label" for="{{ service['name'] }}">
-                            {{ service['name'] }}
-                        </label> -->
                     </div>
                 </label>
                 
@@ -29,12 +26,12 @@
             {% endfor %}
         </div>
             
-            <select name="" id="" class="form-control w-100">
-                <option value="{{service}}" disabled selected>{{service.title()}}</option>
-            </select>
-    </form>
+{% if variations %}
+<h1>Still developing what to appear here</h1>
+{% endif %}
 
 <script>
+
     function checkRadio(name, element) {
         // Remove the 'checked' class from all elements
         var elements = document.querySelectorAll('.px-2');
@@ -56,6 +53,13 @@
         clickedImage.classList.add('bg-secondary');
 
         document.getElementById(name).checked = true;
+        // serviceId = document.getElementById("service_id").textContent
+        // console.log(serviceId, "service id")
+        document.getElementById(`click_me${name}`).click()
+
+
+        
+
     }
 </script>
 
