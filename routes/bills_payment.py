@@ -107,7 +107,8 @@ def display_service(service):
 
 @bills.route("/display_variation/<string:service_id>", methods=["GET"])
 def get_variation(service_id):
+    img = request.args.get('img')
     response = vtpass_service.variation_codes(service_id)
     print(response, "response")
     return render_template("display_serv.html", variations=response['content']['varations'], date=datetime.datetime.utcnow(),
-                           service_id=service_id, variations_code=1)
+                           service_id=service_id, variations_code=1, img=img)
