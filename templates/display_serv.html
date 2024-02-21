@@ -28,6 +28,14 @@
             
 {% if variations %}
 <img src="{{ img }}" class="card-img-top img-thumbnail m-auto d-flex justify-content-center" alt="image" style="width: 10rem;">
+<form action="" class="form-group">
+<select name="" id="" class="form-control w-50">
+    <option value="select" disabled selected>Select</option>
+    {% for variation in variations %}
+        <option value="{{ variation['variation_code'] }}">{{ variation['variation_code'] }} - {{ variation['name'] }}</option>
+    {% endfor %}
+</select>
+</form>
 {% endif %}
 
 <script>
