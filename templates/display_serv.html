@@ -26,19 +26,74 @@
             {% endfor %}
         </div>
             
-{% if variations %}
+{% if variations_code %}
 <img src="{{ img }}" class="card-img-top img-thumbnail m-auto d-flex justify-content-center" alt="image" style="width: 10rem;">
 <form action="" class="form-group">
+{% if variations %}
 <select name="" id="" class="form-control w-50">
     <option value="select" disabled selected>Select</option>
     {% for variation in variations %}
         <option value="{{ variation['variation_code'] }}">{{ variation['variation_code'] }} - {{ variation['name'] }}</option>
     {% endfor %}
 </select>
+{% else %}
+<select name="" id="amount_select" class="form-control w-50">
+    <option value="select" disabled selected>Select</option>
+    <option value="100">100</option>
+    <option value="200">200</option>
+    <option value="300">300</option>
+    <option value="400">400</option>
+    <option value="500">500</option>
+    <option value="600">600</option>
+</select>
+<input type="number" class="form-control w-50 mt-4" id="amount" placeholder="Enter amount">
+<input type="tel" name="" id="telephone" class="form-control w-50 mt-4 d-none" placeholder="Enter telephone" maxlength="11">
+{% endif %}
+<!-- submit button -->
+<button type="submit" class="btn btn-success mt-4" disabled id="submit_btn">Submit</button>
 </form>
 {% endif %}
 
 <script>
+
+    select_amount = document.getElementById("amount_select")
+    amount = document.getElementById("amount")
+    tel = document.getElementById("telephone")
+    submit_btn = document.getElementById("submit_btn")
+
+    select_amount.addEventListener("change", function() {
+        amount.value = select_amount.value
+    })
+
+    document.addEventListener("input", function() {
+    // check if the amount has value
+        if (amount.value) {
+            // remove the d-none class from the tel input
+            tel.classList.remove("d-none");
+        } else {
+            // add the d-none class to the tel input
+            tel.classList.add("d-none");
+        }
+    });
+
+    document.addEventListener("change", function() {
+    // check if the amount has value
+        if (amount.value) {
+            // remove the d-none class from the tel input
+            tel.classList.remove("d-none");
+        } else {
+            // add the d-none class to the tel input
+            tel.classList.add("d-none");
+        }
+    });
+
+    document.addEventListener("input", function() {
+    if (tel.value.length === 11) {
+        submit_btn.disabled = false;
+    } else {
+        submit_btn.disabled = true; // optional, depending on your use case
+    }
+});
 
     function checkRadio(name, element) {
         // Remove the 'checked' class from all elements
