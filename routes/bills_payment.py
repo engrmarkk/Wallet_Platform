@@ -6,7 +6,7 @@ from extensions import mail, db
 from flask_mail import Message
 from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, \
-    render_template, Blueprint, make_response, jsonify
+    render_template, Blueprint, make_response, jsonify, session
 from models import User, Transaction, Beneficiary, Card, Invitees
 from form import *
 # from func import check_user_activity
@@ -107,8 +107,15 @@ def display_service(service):
 
 @bills.route("/display_variation/<string:service_id>", methods=["GET"])
 def get_variation(service_id):
-    img = request.args.get('img')
+    img = session.get('img')
     response = vtpass_service.variation_codes(service_id)
     print(response, "response")
     return render_template("display_serv.html", variations=response['content']['varations'], date=datetime.datetime.utcnow(),
                            service_id=service_id, variations_code=1, img=img)
+
+
+@bills.route("/set_img_and_redirect/<string:service_id>", methods=["GET"])
+def set_img_and_redirect(service_id):
+    img = request.args.get('img')
+    session['img'] = img
+    return redirect(url_for('bills.get_variation', service_id=service_id))
