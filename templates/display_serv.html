@@ -15,7 +15,7 @@
             <div class="px-2">
                 <label class="selected-image" onclick="checkRadio('{{ service['name'] }}', this)">
                     <img src="{{ service['image'] }}" class="card-img-top rounded-circle img-thumbnail mb-2 w-75 m-auto" alt="{{ service['name'] }}">
-                    <a href="{{url_for('bills.get_variation', service_id=service['serviceID'], img=service['image'])}}" class="d-none" id="click_me{{ service['name'] }}">click</a>
+                    <a href="{{ url_for('bills.set_img_and_redirect', service_id=service['serviceID'], img=service['image']) }}" class="d-none" id="click_me{{ service['name'] }}">click</a>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="serviceRadios" id="{{ service['name'] }}">
                     </div>
