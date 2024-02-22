@@ -102,15 +102,19 @@ def vtpass_payment():
 def display_service(service):
     response = vtpass_service.service_identifier(service)
     # print(response, "response")
-    return render_template("display_serv.html", services=response['content'], date=datetime.datetime.utcnow(), service=service)
+    return render_template("display_serv.html", services=response['content'], date=datetime.datetime.utcnow(),
+                           service=service)
 
 
 @bills.route("/display_variation/<string:service_id>", methods=["GET"])
 def get_variation(service_id):
     img = session.get('img')
-    response = vtpass_service.variation_codes(service_id) if service_id.lower() not in ["mtn", "glo", "etisalat", "airtel"] else True
+    response = vtpass_service.variation_codes(service_id) if service_id.lower() not in ["mtn", "glo", "etisalat",
+                                                                                        "airtel"] else True
     print(response, "response")
-    return render_template("display_serv.html", variations=response['content']['varations'] if isinstance(response, dict) else [], date=datetime.datetime.utcnow(),
+    return render_template("display_serv.html",
+                           variations=response['content']['varations'] if isinstance(response, dict) else [],
+                           date=datetime.datetime.utcnow(),
                            service_id=service_id, variations_code=1, img=img)
 
 
