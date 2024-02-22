@@ -36,6 +36,7 @@
         <option value="{{ variation['variation_code'] }}">{{ variation['variation_code'] }} - {{ variation['name'] }}</option>
     {% endfor %}
 </select>
+<input type="tel" name="" id="telephone2" class="form-control w-50 mt-4 d-none" placeholder="Enter telephone" maxlength="11">
 <button type="submit" class="btn btn-success mt-4" disabled id="submit_btn2">Submit</button>
 </form>
 {% else %}
@@ -63,7 +64,9 @@ let variations_cd = document.getElementById("variations_cd");
 if (variations_cd) {
     variations_cd.addEventListener("change", function () {
         let submit_btn2 = document.getElementById("submit_btn2");
+        let tel2 = document.getElementById("telephone2")
         if (submit_btn2) {
+            tel2.classList.remove("d-none")
             submit_btn2.disabled = false;
         }
     });
