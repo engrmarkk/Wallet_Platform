@@ -46,3 +46,15 @@ class VtpassService(VtpassBase):
         except Exception as e:
             print(e)
             return None
+
+    def verify_meter_and_smartcard_number(self, payload):
+        try:
+            url = self.base_url + f"/api/merchant-verify"
+            response = requests.post(
+                url, self.set_headers(), json=payload
+            )
+            response.raise_for_status()
+            return response.json()
+        except Exception as e:
+            print(e)
+            return None
