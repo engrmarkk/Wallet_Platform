@@ -20,11 +20,11 @@ def create_app():
 
     app = Flask(__name__)
 
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-        base_dir, "wallet.db"
-    )
+    # app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
+    #     base_dir, "wallet.db"
+    # )
 
-    # app.config["SQLALCHEMY_DATABASE_URI"] = uri
+    app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "4f557e8e5eb51bfb7c42"
     app.config['DEBUG'] = False
@@ -69,7 +69,7 @@ def create_app():
     @app.before_request
     def before_request():
         session.permanent = True
-        app.permanent_session_lifetime = timedelta(minutes=10)
+        app.permanent_session_lifetime = timedelta(minutes=20)
         session.modified = True
         flask.g.user = current_user
 
