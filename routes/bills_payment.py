@@ -123,3 +123,21 @@ def set_img_and_redirect(service_id):
     img = request.args.get('img')
     session['img'] = img
     return redirect(url_for('bills.get_variation', service_id=service_id))
+
+
+@bills.route("/verify_number", methods=["GET"])
+def verify_number():
+    data = request.json()
+    billers_code = data.get('billers_code', "")
+    service_id = data.get('service_id', "")
+    type_ = data.get('type', "")
+
+    payload = dict(
+        billersCode=billers_code,
+        serviceID=service_id,
+    )
+
+    if type_:
+        payload['type'] = type_
+    response = vtpass_service.verify_meter_and_smartcard_number(payload)
+    return jsonify(response)
