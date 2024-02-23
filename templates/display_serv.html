@@ -37,13 +37,13 @@
     {% endfor %}
 </select>
 {% if "electric" in service_id %}
-<input type="text" name="prepaid_number" id="" class="form-control w-50 mt-4" placeholder="Enter your Prepaid Number">
+<input type="text" name="prepaid_number" id="" class="form-control w-50 mt-4" placeholder="Enter your Prepaid Number" required>
 <span class="reveal1"></span>
 {% elif "dstv" in service_id or "gotv" in service_id or "startimes" in service_id or "showmax" in service_id %}
-<input type="text" name="smartcard_number" id="" class="form-control w-50 mt-4" placeholder="Enter your SmartCard Number">
+<input type="text" name="smartcard_number" id="" class="form-control w-50 mt-4" placeholder="Enter your SmartCard Number" required>
 <span class="reveal1"></span>
 {% endif %}
-<input type="tel" name="" id="telephone2" class="form-control w-50 mt-4 d-none" placeholder="Enter telephone" maxlength="11">
+<input type="tel" name="" id="telephone2" class="form-control w-50 mt-4 d-none" placeholder="Enter telephone" maxlength="11" required>
 <button type="submit" class="btn btn-success mt-4" disabled id="submit_btn2">Submit</button>
 </form>
 {% else %}
