@@ -140,4 +140,5 @@ def verify_number():
     if type_:
         payload['type'] = type_
     response = vtpass_service.verify_meter_and_smartcard_number(payload)
-    return jsonify(response)
+    print(response, "response")
+    return jsonify(response['content']['Customer_Name'])
