@@ -40,11 +40,11 @@
         {% endfor %}
     </select>
     {% if "electric" in service_id %}
-    <input type="text" name="prepaid_number" id="" class="form-control w-50 mt-4"
+    <input type="text" name="prepaid_number" id="prepaid_number" class="form-control w-50 mt-4"
         placeholder="Enter your Prepaid Number" required maxlength="13">
     <span class="reveal1"></span>
     {% elif "dstv" in service_id or "gotv" in service_id or "startimes" in service_id or "showmax" in service_id %}
-    <input type="text" name="smartcard_number" id="" class="form-control w-50 mt-4"
+    <input type="text" name="smartcard_number" id="smartcard_number" class="form-control w-50 mt-4"
         placeholder="Enter your SmartCard Number" required maxlength="13">
     <span class="reveal1"></span>
     {% endif %}
@@ -84,6 +84,17 @@
                 submit_btn2.disabled = false;
             }
         });
+    }
+
+    let card_input = document.getElementById("smartcard_number")
+    let electric_input = document.getElementById("prepaid_number")
+
+    if(card_input || electric_input){
+        if(card_input){
+            // call an endpoint and get the data from the reesponse
+        }else{
+            // call same endpoint and get the data from the response
+        }
     }
 
 
