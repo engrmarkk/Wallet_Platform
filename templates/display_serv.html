@@ -41,11 +41,11 @@
     </select>
     {% if "electric" in service_id %}
     <input type="text" name="prepaid_number" id="" class="form-control w-50 mt-4"
-        placeholder="Enter your Prepaid Number" required>
+        placeholder="Enter your Prepaid Number" required maxlength="13">
     <span class="reveal1"></span>
     {% elif "dstv" in service_id or "gotv" in service_id or "startimes" in service_id or "showmax" in service_id %}
     <input type="text" name="smartcard_number" id="" class="form-control w-50 mt-4"
-        placeholder="Enter your SmartCard Number" required>
+        placeholder="Enter your SmartCard Number" required maxlength="13">
     <span class="reveal1"></span>
     {% endif %}
     <input type="tel" name="" id="telephone2" class="form-control w-50 mt-4 d-none" placeholder="Enter telephone"
@@ -85,6 +85,8 @@
             }
         });
     }
+
+
 
     // Part 2: Handle amount_select, amount, telephone, and submit_btn
     let select_amount = document.getElementById("amount_select");
