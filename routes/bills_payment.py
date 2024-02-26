@@ -34,10 +34,14 @@ def vtpass_payment():
     phone_number = request.form.get("phone_number")
     service_id = request.form.get("service_id")
     billers_code = request.form.get("billers_code")
-    type = request.form.get("type")
+    type_ = request.form.get("type")
     variation_code = request.form.get("variation_code")
     quantity = request.form.get("quantity")
-    request_id = str(datetime.datetime.now().timestamp()) + str(current_user.id),
+    request_id = str(datetime.datetime.now().timestamp()) + str(current_user.id)
+
+    print("amount: ", amount, "phone_number: ", phone_number, "service_id: ", service_id,
+          "billers_code: ", billers_code, "type_: ", type_, "variation_code: ", variation_code, "quantity: ", quantity,
+          "request_id: ", request_id)
 
     if not amount or not phone_number or not service_id:
         flash("All fields are required", "danger")
@@ -51,7 +55,7 @@ def vtpass_payment():
         service_id=service_id,
         request_id=request_id,
         billers_code=billers_code,
-        type=type
+        type=type_
     )
 
     if purchase_type == "airtime":
@@ -65,7 +69,7 @@ def vtpass_payment():
             payload
         )
     elif purchase_type == "electricity":
-        payload["billers_code"] = "1111111111111" if type.lower() == "prepaid" else "1010101010101"
+        payload["billers_code"] = "1111111111111" if type_.lower() == "prepaid" else "1010101010101"
         response, status_code = vtpass_service.purchase_electricity(
             payload
         )
@@ -77,7 +81,7 @@ def vtpass_payment():
             "variation_code": variation_code,
             "amount": amount,
             "phone": phone_number,
-            "subscription_type": type,
+            "subscription_type": type_,
             "quantity": quantity
         }
         response, status_code = vtpass_service.purchase_cable(
