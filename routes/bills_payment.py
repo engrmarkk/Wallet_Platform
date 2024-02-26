@@ -30,7 +30,7 @@ vtpass_service = VtpassService()
 @bills.route("/purchase_product", methods=["POST"])
 @login_required
 def vtpass_payment():
-    service_id = request.form.get("service_id", "")
+    service_id = request.args.get("service_id", "")
     amount = request.form.get("amount")
     phone_number = request.form.get("phone_number")
     billers_code = request.form.get("billers_code")
