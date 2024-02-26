@@ -31,7 +31,7 @@
 <img src="{{ img }}" class="card-img-top img-thumbnail m-auto d-flex justify-content-center" alt="image"
     style="width: 10rem;">
 {% if variations %}
-<form action="{{url_for('bills.vtpass_payment')}}" class="form-group" method="post">
+<form action="{{url_for('bills.vtpass_payment', service_id=service_id)}}" class="form-group" method="post">
     <select name="" id="variations_cd" class="form-control w-50">
         <option value="select" disabled selected>Select</option>
         {% for variation in variations %}
