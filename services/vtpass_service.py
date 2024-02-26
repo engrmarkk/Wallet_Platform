@@ -1,14 +1,14 @@
 from base import VtpassBase
 import requests
+import json
 
 
 class VtpassService(VtpassBase):
     def purchase_airtime(self, payload):
 
         url = self.base_url + "/api/pay"
-        response = requests.post(
-            url, self.set_headers(), json=payload
-        )
+        headers = self.set_headers()
+        response = requests.post(url, headers=headers, data=json.dumps(payload))
         response.raise_for_status()
         print(response.status_code)
         print(response.json())
