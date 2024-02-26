@@ -52,9 +52,9 @@ def vtpass_payment():
     payload = dict(
         amount=amount,
         phone=phone_number,
-        service_id=service_id,
+        serviceID=service_id,
         request_id=request_id,
-        billers_code=billers_code,
+        billersCode=billers_code,
         type=type_
     )
 
