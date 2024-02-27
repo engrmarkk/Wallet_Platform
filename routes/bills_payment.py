@@ -16,11 +16,6 @@ import random
 import datetime
 import cloudinary
 import pytz
-import os
-import requests
-import cloudinary.uploader
-import cloudinary_config
-from routes.auth import login
 from utils import determine_purchase_type
 
 bills = Blueprint("bills", __name__, template_folder='../templates')
