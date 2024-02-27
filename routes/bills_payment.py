@@ -15,6 +15,7 @@ from services import VtpassService
 import random
 import datetime
 import cloudinary
+import pytz
 import os
 import requests
 import cloudinary.uploader
@@ -30,6 +31,8 @@ vtpass_service = VtpassService()
 @bills.route("/purchase_product", methods=["POST"])
 @login_required
 def vtpass_payment():
+    tz = pytz.timezone("Africa/Lagos")
+
     service_id = request.args.get("service_id", "")
     amount = request.form.get("amount")
     phone_number = request.form.get("phone_number")
@@ -37,7 +40,7 @@ def vtpass_payment():
     type_ = request.form.get("type")
     variation_code = request.form.get("variation_code")
     quantity = request.form.get("quantity")
-    request_id = str(datetime.datetime.now().timestamp()) + str(current_user.id)
+    request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(current_user.id)
 
     print("amount: ", amount, "phone_number: ", phone_number, "service_id: ", service_id,
           "billers_code: ", billers_code, "type_: ", type_, "variation_code: ", variation_code, "quantity: ", quantity,
