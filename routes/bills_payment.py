@@ -1,18 +1,10 @@
 from datetime import datetime
-
-from werkzeug.exceptions import RequestEntityTooLarge
-
-from extensions import mail, db
-from flask_mail import Message
 from flask_login import current_user, login_required
 from flask import redirect, url_for, flash, request, \
     render_template, Blueprint, make_response, jsonify, session
-from models import User, Transaction, Beneficiary, Card, Invitees
 from form import *
 from func import deduct_history, refund, update_transaction, update_status
-from werkzeug.security import generate_password_hash
 from services import VtpassService
-import random
 import datetime
 import pytz
 from utils import determine_purchase_type
