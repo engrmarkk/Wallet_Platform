@@ -145,11 +145,11 @@
             <div class="" style="width: 10%;">
             <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
             </div>
-            <div class='notf-detail'><span>Money received from {{ transaction.sender.lower() }}</span><span>{{
+            <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
                 transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
             <div class='value'>+ <del>N</del> {{ transaction.transaction_amount }} </div>
             <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
-      <td>@{{ transaction.sender.lower() }}</td>
+      <td>@{{ transaction.description }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
           </div>
           {% else %}
@@ -157,11 +157,11 @@
             <div class="" style="width: 10%;">
             <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
             </div>
-            <div class='notf-detail'><span>Money sent to {{ transaction.sender.lower() }}</span><span>{{
+            <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
                 transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
             <div class='value'>- <del>N</del> {{ transaction.transaction_amount }} </div>
             <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
-      <td>@{{ transaction.sender.lower() }}</td>
+      <td>@{{ transaction.description }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
           </div>
           {% endif %}
