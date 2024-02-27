@@ -9,7 +9,7 @@ from flask import redirect, url_for, flash, request, \
     render_template, Blueprint, make_response, jsonify
 from models import User, Transaction, Beneficiary, Card, Invitees
 from form import *
-# from func import check_user_activity
+from func import save_transaction_cat, get_cat
 from werkzeug.security import generate_password_hash
 import random
 import datetime
@@ -19,6 +19,8 @@ import requests
 import cloudinary.uploader
 import cloudinary_config
 from routes.auth import login
+import random
+import string
 
 view = Blueprint("view", __name__, template_folder='../templates')
 
@@ -33,6 +35,11 @@ def send_reset_email(user):
     msg.html = render_template("reset_email.html", user=user, token=token)
 
     mail.send(msg)
+
+
+def generate_reference():
+    characters = string.digits + string.ascii_uppercase
+    return "".join(random.choice(characters) for _ in range(16))
 
 
 def generate_card_number():
@@ -57,6 +64,7 @@ expiration = create_expiry_date(912)
 
 @view.route("/")
 def front_page():
+    save_transaction_cat()
     if current_user.is_authenticated:
         return redirect(url_for("view.home"))
     return render_template("front.html", date=x)
@@ -213,6 +221,11 @@ def pay(acct):
             transact1 = Transaction(
                 transaction_type="CRT",
                 transaction_amount=amount,
+                balance=user1.account_balance,
+                transaction_ref="W2W-" + generate_reference(),
+                category=get_cat("W2W"),
+                description="W2W Transfer from " + current_user.username,
+                status="Success",
                 sender=current_user.username,
                 user_id=user1.id,
             )
@@ -224,6 +237,11 @@ def pay(acct):
             transact2 = Transaction(
                 transaction_type="DBT",
                 transaction_amount=amount,
+                balance=current_user.account_balance,
+                transaction_ref="W2W-" + generate_reference(),
+                category=get_cat("W2W"),
+                description="W2W Transfer to " + user1.username,
+                status="Success",
                 sender=user1.username,
                 user_id=current_user.id,
             )
@@ -249,7 +267,7 @@ def pay(acct):
                 mail.send(msg)
             except Exception as e:
                 print(e, "ERROR")
-                flash("Check your network", "danger")
+                flash("Network Error", "danger")
 
             # alert for credit transaction
             try:
@@ -268,7 +286,7 @@ def pay(acct):
                 mail.send(msg)
             except Exception as e:
                 print(e, "ERROR")
-                flash("Check your network", "danger")
+                flash("Network error", "danger")
             return redirect(url_for("view.transaction_successful",
                                     amount=f"{amount:,}",
                                     user_name=user1.first_name,
@@ -412,7 +430,8 @@ def download_pdf():
         return response.content, 200, \
             {'Content-Type': 'application/pdf',
              'Content-Disposition': f'attachment; filename={current_user.last_name.title() + " " + current_user.first_name.title()}.pdf'}
-    except:
+    except Exception as e:
+        print(e, "error from pdfshift.io")
         flash("Cannot generate your account's statement", "danger")
         return redirect(url_for("view.account"))
 
@@ -437,6 +456,7 @@ def coming_soon():
 @login_required
 def user_profile():
     return render_template("profile.html", date=x)
+
 
 def savings_interest():
     payday = datetime.datetime.now().day
@@ -470,6 +490,11 @@ def savings():
                 transact2 = Transaction(
                     transaction_type="DBT",
                     transaction_amount=amount,
+                    balance=current_user.account_balance,
+                    transaction_ref="Savings-" + generate_reference(),
+                    category=get_cat("Savings"),
+                    description="Savings",
+                    status="Success",
                     sender=current_user.username + ' ' + 'savings',
                     user_id=current_user.id,
                 )
@@ -496,6 +521,11 @@ def withdraw():
     transact1 = Transaction(
         transaction_type="CRT",
         transaction_amount=amount,
+        balance=current_user.account_balance,
+        transaction_ref="Savings-" + generate_reference(),
+        category=get_cat("Savings"),
+        description="Savings withdrawal",
+        status="Success",
         sender=current_user.username + ' ' + 'savings',
         user_id=current_user.id,
     )
@@ -522,6 +552,11 @@ def withdraw_earnings():
         transact1 = Transaction(
             transaction_type="CRT",
             transaction_amount=amount,
+            balance=current_user.account_balance,
+            transaction_ref="Referral-" + generate_reference(),
+            description="Referral earnings",
+            status="Success",
+            category=get_cat("Referral"),
             sender=current_user.username + ' ' + 'invite earning',
             user_id=current_user.id,
         )
