@@ -9,7 +9,7 @@ from flask import redirect, url_for, flash, request, \
     render_template, Blueprint, make_response, jsonify, session
 from models import User, Transaction, Beneficiary, Card, Invitees
 from form import *
-# from func import check_user_activity
+from func import deduct_history, refund, update_transaction, update_status
 from werkzeug.security import generate_password_hash
 from services import VtpassService
 import random
@@ -42,6 +42,8 @@ def vtpass_payment():
     quantity = request.form.get("quantity")
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(current_user.id)
 
+    amount = float(amount)
+
     print("amount: ", amount, "phone_number: ", phone_number, "service_id: ", service_id,
           "billers_code: ", billers_code, "type_: ", type_, "variation_code: ", variation_code, "quantity: ", quantity,
           "request_id: ", request_id)
@@ -51,6 +53,8 @@ def vtpass_payment():
         return redirect(url_for("view.home"))
 
     purchase_type = determine_purchase_type(service_id)
+
+    transact = deduct_history(amount, current_user, request_id, purchase_type, service_id, phone_number)
 
     payload = dict(
         amount=amount,
@@ -93,12 +97,18 @@ def vtpass_payment():
     else:
         flash("Invalid service ID", "danger")
         return redirect(url_for("view.home"))
-    if status_code == 200:
+    if status_code == 200 and response['code'] == "000":
         # Payment was successful
         # process the wallet history
+        if purchase_type == "electricity":
+            token = response["token"] if "token" in response else ""
+            update_transaction(token, transact)
+        update_status(transact, "Success")
         flash("Payment successful", "success")
         return redirect(url_for("view.home"))
     else:
+        update_status(transact, "Failed")
+        refund(amount, current_user, request_id, purchase_type, phone_number)
         # Payment failed
         flash("Payment failed", "danger")
         return redirect(url_for("view.home"))
@@ -148,4 +158,4 @@ def verify_number():
         payload['type'] = type_
     response = vtpass_service.verify_meter_and_smartcard_number(payload)
     print(response, "response")
-    return jsonify(response['content']['Customer_Name'])
+    return jsonify({"customer_name": response['content']['Customer_Name']}), 200
