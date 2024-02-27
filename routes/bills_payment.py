@@ -14,7 +14,6 @@ from werkzeug.security import generate_password_hash
 from services import VtpassService
 import random
 import datetime
-import cloudinary
 import pytz
 from utils import determine_purchase_type
 
