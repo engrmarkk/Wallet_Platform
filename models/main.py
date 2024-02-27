@@ -2,11 +2,16 @@ from extensions import db, app
 from flask_login import UserMixin
 import jwt
 from time import time
+import uuid
+
+
+def hexid():
+    return uuid.uuid4().hex
 
 
 # creating the User table in the database
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.String(100), default=hexid, primary_key=True)
     first_name = db.Column(db.String(50), nullable=False)
     last_name = db.Column(db.String(50), nullable=False)
     username = db.Column(db.String(20), unique=True, nullable=False)
@@ -14,7 +19,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.Text, nullable=False)
     phone_number = db.Column(db.BigInteger, unique=True, nullable=False)
     account_number = db.Column(db.BigInteger, unique=True, nullable=False)
-    account_balance = db.Column(db.Integer, default=20000)
+    account_balance = db.Column(db.Float, default=20000)
     savings = db.Column(db.Integer, default=0)
     invite_earn = db.Column(db.Integer, nullable=False, default=0)
     invited_by = db.Column(db.BigInteger, nullable=False, default=0)
@@ -40,6 +45,7 @@ class User(db.Model, UserMixin):
     def verify_reset_token(token):
         try:
             id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['reset_password']
-        except:
+        except Exception as e:
+            print(e, "error in token verification")
             return None
         return User.query.get(id)
