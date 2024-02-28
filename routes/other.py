@@ -102,7 +102,7 @@ def account():
     return render_template("account.html", pinset=pinset, date=x, form=form)
 
 
-@view.route("/transaction-history", methods=["GET", "POST"])
+@view.route("/transaction-history")
 @login_required
 def showtransaction():
     cats = get_all_cats()
