@@ -13,7 +13,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <!-- <p><strong style="color: #4caf50;">Transaction ID:</strong> {{ trans.id }}</p> -->
-                            <p><strong style="color: #007bff;">Type:</strong> {{ trans.transaction_type }}</p>
+                            <p class="{% if trans.transaction_type == 'CRT' %}text-success{% else %}text-danger{% endif %}"><strong style="color: #007bff;">Type:</strong> {{ trans.transaction_type }}</p>
                             <p><strong style="color: #4caf50;">Date:</strong> {{ trans.date_posted.strftime("%Y-%m-%d %H:%M:%S") }}</p>
                             <p><strong style="color: #4caf50;">Amount:</strong> <span>&#8358;</span>{{ "{:,.2f}".format(trans.transaction_amount) }}</p>
                         </div>
@@ -26,9 +26,16 @@
                     </div>
                     <hr>
                     <p><strong style="color: #4caf50;">Description:</strong> {{ trans.description }}</p>
-                    <p><strong style="color: #4caf50;">Status:</strong> {{ trans.status }}</p>
+                    <p><strong style="color: #4caf50;">Status:</strong> <span class="badge {% if trans.status == 'Success' %}bg-success{% elif trans.status == 'Failed' %}text-danger{% elif trans.status == 'Pending' %}bg-warning{% elif trans.status == 'Refunded' %}bg-info{% endif %}"> {{ trans.status }} </span></p>
+                    {% if trans.phone_number %}
                     <p><strong style="color: #4caf50;">Phone Number:</strong> {{ trans.phone_number }}</p>
+                    {% endif %}
+                    {% if trans.sender %}
                     <p><strong style="color: #4caf50;">Sender:</strong> {{ trans.sender }}</p>
+                    {% endif %}
+                    {% if trans.token %}
+                    <p><strong style="color: #4caf50;">Token:</strong> {{ trans.token }}</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
