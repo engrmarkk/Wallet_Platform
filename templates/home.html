@@ -141,29 +141,27 @@
         <div>
           {% for transaction in current_user.transacts[::-1][:3] %}
           {% if transaction.transaction_type == 'CRT' %}
-          <div class="notification  text-center text-light">
-            <div class="" style="width: 10%;">
-            <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
+          <a href="">
+            <div class="notification  text-center text-light">
+              <div class="" style="width: 10%;">
+              <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
+              </div>
+              <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
+                  transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
+              <div class='value'>+ <del>N</del> {{ transaction.transaction_amount }} </div>
             </div>
-            <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
-                transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
-            <div class='value'>+ <del>N</del> {{ transaction.transaction_amount }} </div>
-            <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
-      <td>@{{ transaction.description }}</td>
-      <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
-          </div>
+          </a>
           {% else %}
-          <div class="notification  text-center text-light">
-            <div class="" style="width: 10%;">
-            <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
+          <a href="">
+            <div class="notification  text-center text-light">
+              <div class="" style="width: 10%;">
+              <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
+              </div>
+              <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
+                  transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
+              <div class='value'>- <del>N</del> {{ transaction.transaction_amount }} </div>
             </div>
-            <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
-                transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
-            <div class='value'>- <del>N</del> {{ transaction.transaction_amount }} </div>
-            <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
-      <td>@{{ transaction.description }}</td>
-      <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
-          </div>
+          </a>
           {% endif %}
           {% endfor %}
           <div style="justify-content:flex-end;" class=" d-flex align-items-center">
