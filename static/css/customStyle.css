@@ -881,7 +881,7 @@ select {
 }
 .head-text {
     background: linear-gradient(158deg,#1edf00 -45%,  #2e8bb6);
-    width: 85%;
+    width: 75%;
     display: flex;
     padding: 3rem 2rem;
     border-radius: 60px 10px 60px 10px;
