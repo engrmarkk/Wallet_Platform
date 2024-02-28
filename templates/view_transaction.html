@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title">Transaction Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- <p><strong style="color: #4caf50;">Transaction ID:</strong> {{ trans.id }}</p> -->
+                            <p><strong style="color: #007bff;">Type:</strong> {{ trans.transaction_type }}</p>
+                            <p><strong style="color: #4caf50;">Date:</strong> {{ trans.date_posted.strftime("%Y-%m-%d %H:%M:%S") }}</p>
+                            <p><strong style="color: #4caf50;">Amount:</strong> <span>&#8358;</span>{{ "{:,.2f}".format(trans.transaction_amount) }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong style="color: #4caf50;">Balance:</strong> <span>&#8358;</span>{{ "{:,.2f}".format(trans.balance) }}</p>
+                            <p><strong style="color: #4caf50;">Reference:</strong> {{ trans.transaction_ref }}</p>
+                            <p><strong style="color: #4caf50;">Category:</strong> {{ trans.trans_category.category }}</p>
+                            <!-- Add more fields as needed -->
+                        </div>
+                    </div>
+                    <hr>
+                    <p><strong style="color: #4caf50;">Description:</strong> {{ trans.description }}</p>
+                    <p><strong style="color: #4caf50;">Status:</strong> {{ trans.status }}</p>
+                    <p><strong style="color: #4caf50;">Phone Number:</strong> {{ trans.phone_number }}</p>
+                    <p><strong style="color: #4caf50;">Sender:</strong> {{ trans.sender }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
