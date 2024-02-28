@@ -9,8 +9,9 @@ from flask import redirect, url_for, flash, request, \
     render_template, Blueprint, make_response, jsonify
 from models import User, Transaction, Beneficiary, Card, Invitees
 from form import *
-from func import save_transaction_cat, get_cat
+from func import save_transaction_cat, get_cat, get_all_cats
 from werkzeug.security import generate_password_hash
+from sqlalchemy import func
 import random
 import datetime
 import cloudinary
@@ -101,14 +102,24 @@ def account():
     return render_template("account.html", pinset=pinset, date=x, form=form)
 
 
-@view.route("/transaction-history")
+@view.route("/transaction-history", methods=["GET", "POST"])
 @login_required
 def showtransaction():
+    cats = get_all_cats()
+    category = request.args.get("category")
+    status = request.args.get("status")
+    transaction_type = request.args.get("types")
     page = request.args.get('page', 1, type=int)
     per_page = 10  # You can adjust the number of items per page as needed
-    transactions = Transaction.query.filter_by(
-        user_id=current_user.id).order_by(Transaction.date_posted.desc()).paginate(page=page, per_page=per_page)
-    return render_template("show-histories.html", date=x, transactions=transactions)
+    print(category, status)
+    transactions = Transaction.query.filter(
+        Transaction.user_id == current_user.id,
+        func.lower(Transaction.category) == category.lower() if category else True,
+        func.lower(Transaction.status) == status.lower() if status else True,
+        func.lower(Transaction.transaction_type) == transaction_type.lower() if transaction_type else True
+        ).order_by(Transaction.date_posted.desc()).paginate(page=page, per_page=per_page)
+    print(transactions.items, "transactions")
+    return render_template("show-histories.html", date=x, transactions=transactions, cats=cats)
 
 
 @view.route("/home/", methods=["GET", "POST"])
