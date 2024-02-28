@@ -67,7 +67,7 @@
           </div>
         </div>
       </div>
-      <div class="mb-4 mt-2 row w-100">
+      <div class="mb-4 mt-2 row w-75">
         <!-- Save -->
         <div class="col-4 col-sm-3 col-md-4 mb-3">
             <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
@@ -120,8 +120,8 @@
 
    
 
-    <hr style="border: 1px solid rgb(112, 112, 110);" class="mt-5">
-    <div>
+    <hr style="border: 1px solid rgb(112, 112, 110);" class="mt-5 w-75 m-auto">
+    <div class="w-75 mt-3 m-auto">
       <p class="text-center fw-bold text-muted">Recent transaction histories</p>
       {% if not current_user.transacts %}
       <p class="text-center h4 text-warning mt-3">NO RECORD</p>
@@ -133,7 +133,8 @@
         <div class="bg-mild">
           <header class="text-muted text-center">
             <span scope="col">Type</span>
-            <span scope="col">details</span>
+            <span scope="col">Details</span>
+            <span scope="col">Amount</span>
             <!-- <th scope="col">User</th>
       <th scope="col">Date</th> -->
           </header>
