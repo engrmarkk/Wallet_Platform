@@ -566,3 +566,11 @@ def withdraw_earnings():
     else:
         flash("No earnings to withdraw", "danger")
     return redirect(url_for("view.home"))
+
+
+# view one transaction
+@view.route("/transaction/<string:trans_id>")
+@login_required
+def view_transaction(trans_id):
+    trans = Transaction.query.filter_by(id=trans_id).first()
+    return render_template("view_transaction.html", date=x, trans=trans)
