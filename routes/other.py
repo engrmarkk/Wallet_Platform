@@ -106,20 +106,28 @@ def account():
 @login_required
 def showtransaction():
     cats = get_all_cats()
-    category = request.args.get("category")
-    status = request.args.get("status")
+    category = None
+    types = None
+    status = None
+    category_ = request.args.get("category")
+    status_ = request.args.get("status")
     transaction_type = request.args.get("types")
     page = request.args.get('page', 1, type=int)
     per_page = 10  # You can adjust the number of items per page as needed
     print(category, status)
+    category = category_ if category_ else category
+    status = status_ if status_ else status
+    types = transaction_type if transaction_type else types
     transactions = Transaction.query.filter(
         Transaction.user_id == current_user.id,
-        func.lower(Transaction.category) == category.lower() if category else True,
-        func.lower(Transaction.status) == status.lower() if status else True,
+        func.lower(Transaction.category) == category_.lower() if category else True,
+        func.lower(Transaction.status) == status_.lower() if status else True,
         func.lower(Transaction.transaction_type) == transaction_type.lower() if transaction_type else True
         ).order_by(Transaction.date_posted.desc()).paginate(page=page, per_page=per_page)
     print(transactions.items, "transactions")
-    return render_template("show-histories.html", date=x, transactions=transactions, cats=cats)
+    return render_template("show-histories.html",
+                           date=x, transactions=transactions,
+                           cats=cats, types=types, status=status, category=category)
 
 
 @view.route("/home/", methods=["GET", "POST"])
