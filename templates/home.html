@@ -141,7 +141,7 @@
         <div>
           {% for transaction in current_user.transacts[::-1][:3] %}
           {% if transaction.transaction_type == 'CRT' %}
-          <a href="">
+          <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
             <div class="notification  text-center text-light">
               <div class="" style="width: 10%;">
               <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
@@ -152,7 +152,7 @@
             </div>
           </a>
           {% else %}
-          <a href="">
+          <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
             <div class="notification  text-center text-light">
               <div class="" style="width: 10%;">
               <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
