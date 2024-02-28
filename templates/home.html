@@ -148,7 +148,7 @@
               </div>
               <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
                   transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
-              <div class='value'>+ <del>N</del> {{ transaction.transaction_amount }} </div>
+              <div class='value'>+ <del style="text-decoration-style: double;">N</del> {{ transaction.transaction_amount }} </div>
             </div>
           </a>
           {% else %}
@@ -159,7 +159,7 @@
               </div>
               <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
                   transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
-              <div class='value'>- <del>N</del> {{ transaction.transaction_amount }} </div>
+              <div class='value'>- <del style="text-decoration-style: double;">N</del> {{ transaction.transaction_amount }} </div>
             </div>
           </a>
           {% endif %}
