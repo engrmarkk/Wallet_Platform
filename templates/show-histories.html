@@ -1,9 +1,36 @@
 {% extends 'base.html' %}
 {% block content %} 
 
+
+<div class="mt-5">
+  <form action="" class="d-flex">
+    <select name="status" id="" class="form-control" style="width: 6rem;">
+      <option value="" disabled selected>Status</option>
+      <option value="Success">Success</option>
+      <option value="Failed">Failed</option>
+      <option value="Pending">Pending</option>
+      <option value="Refunded">Refunded</option>
+    </select>
+
+    <select name="category" id="" class="form-control" style="width: 6rem; margin-left: .7rem;">
+      <option value="" disabled selected>Categories</option>
+      {% for cat in cats %}
+      <option value="{{ cat.id }}">{{ cat.category }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="types" id="" class="form-control" style="width: 6rem; margin-left: .7rem;">
+      <option value="" disabled selected>Types</option>
+      <option value="CRT">Credit</option>
+      <option value="DBT">Debit</option>
+    </select>
+
+    <button type="submit" class="btn btn-info mx-2"><i class="fas fa-filter"></i></button>
+  </form>
+</div>
 <!-- Table -->
 
-<div class="transaction-container mt-5">
+<div class="transaction-container mt-1">
     <div class="bg-mild">
       <header class="text-muted text-center">
         <span scope="col">Type</span>
