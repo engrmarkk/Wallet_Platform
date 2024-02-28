@@ -57,35 +57,29 @@ expiration = create_expiry_date(912)
 @view.route("/vtpass-payment", methods=["POST"])
 @login_required
 def vtpass_payment():
-    amount = request.form.get("amount")
-    phone_number = request.form.get("phone_number")
-    service_id = request.form.get("service_id")
-
-    if not amount or not phone_number or not service_id:
-        flash("All fields are required", "danger")
-        return redirect(url_for("view.home"))
-    
     # Make a request to the VTPass API to initiate the payment
-    response = requests.post(
-        "https://vtpass.com/api/pay",
-        headers={"Content-Type": "application/json"},
-        json={
-            "request_id": str(datetime.datetime.now().timestamp()) + str(current_user.id),
-            "amount": amount,
-            "phone_number": phone_number,
-            "serviceID": glo,
-            "phone": current_user.phone_number,
+    # The response will contain the payment link
+    airtime_purchase = requests.post(
+        "https://sandbox.vtpass.com/api/pay", json={
+            "request_id": str(datetime.datetime.now().timestamp()),
+            "serviceID": "glo",
+            "amount": "100",
+            "phone": "08011111111",
         }
     )
-    
-    if response.status_code == 200:
-        # Payment was successful
-        flash("Payment successful", "success")
-        return redirect(url_for("view.home"))
-    else:
-        # Payment failed
-        flash("Payment failed", "danger")
-        return redirect(url_for("view.home"))
+    response = {  
+        "code":"000",
+        "response_description":"TRANSACTION SUCCESSFUL",
+        "requestId":"SAND0192837465738253A1HSD",
+        "transactionId":"1563873435424",
+        "amount":"50.00",
+        "transaction_date":{  
+        "date":"2019-07-23 10:17:16.000000",
+        "timezone_type":3,
+        "timezone":"Africa/Lagos"
+        },
+        "purchased_code":""
+        }
     
 
 
