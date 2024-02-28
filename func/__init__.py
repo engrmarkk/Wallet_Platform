@@ -47,6 +47,10 @@ def save_transaction_cat():
         return False
 
 
+def get_all_cats():
+    return TransactionCategories.query.order_by(TransactionCategories.category).all()
+
+
 def get_cat(cat):
     return TransactionCategories.query.filter_by(category=cat).first().id
 
