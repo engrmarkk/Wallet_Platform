@@ -104,7 +104,11 @@ def account():
 @view.route("/transaction-history")
 @login_required
 def showtransaction():
-    return render_template("show-histories.html", date=x)
+    page = request.args.get('page', 1, type=int)
+    per_page = 10  # You can adjust the number of items per page as needed
+    transactions = Transaction.query.filter_by(
+        user_id=current_user.id).order_by(Transaction.date_posted.desc()).paginate(page=page, per_page=per_page)
+    return render_template("show-histories.html", date=x, transactions=transactions)
 
 
 @view.route("/home/", methods=["GET", "POST"])
