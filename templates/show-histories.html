@@ -7,13 +7,14 @@
     <div class="bg-mild">
       <header class="text-muted text-center">
         <span scope="col">Type</span>
-        <span scope="col">details</span>
+        <span scope="col">Details</span>
+        <span scope="col">Amount</span>
         <!-- <th scope="col">User</th>
         <th scope="col">Date</th> -->
       </header>
     </div>
     <div>
-      {% for transaction in current_user.transacts[::-1] %}
+      {% for transaction in transactions %}
           {% if transaction.transaction_type == 'CRT' %}
           <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
             <div class="notification  text-center text-light">
@@ -41,5 +42,35 @@
         </div>
       </div>
   <!-- ..........End of table.............. -->
+  <!-- Pagination -->
+<div class="pagination justify-content-center mt-4">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      {% if transactions.has_prev %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('view.showtransaction', page=transactions.prev_num) }}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+      {% endif %}
+      {% for num in transactions.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if num %}
+          <li class="page-item {% if num == transactions.page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('view.showtransaction', page=num) }}">{{ num }}</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">...</span></li>
+        {% endif %}
+      {% endfor %}
+      {% if transactions.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('view.showtransaction', page=transactions.next_num) }}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
 
   {% endblock content %}
