@@ -5,24 +5,24 @@
 <div class="mt-5">
   <form action="" class="d-flex">
     <select name="status" id="" class="form-control" style="width: 6rem;">
-      <option value="" disabled selected>Status</option>
-      <option value="Success">Success</option>
-      <option value="Failed">Failed</option>
-      <option value="Pending">Pending</option>
-      <option value="Refunded">Refunded</option>
+      <option value="" disabled {% if not status %} selected {% endif %}>Status</option>
+      <option value="Success" {% if status == 'Success' %} selected {% endif %}>Success</option>
+      <option value="Failed" {% if status == 'Failed' %} selected {% endif %}>Failed</option>
+      <option value="Pending" {% if status == 'Pending' %} selected {% endif %}>Pending</option>
+      <option value="Refunded" {% if status == 'Refunded' %} selected {% endif %}>Refunded</option>
     </select>
 
     <select name="category" id="" class="form-control" style="width: 6rem; margin-left: .7rem;">
-      <option value="" disabled selected>Categories</option>
+      <option value="" disabled {% if not category %} selected {% endif %}>Categories</option>
       {% for cat in cats %}
-      <option value="{{ cat.id }}">{{ cat.category }}</option>
+      <option value="{{ cat.id }}" {% if category == cat.id %} selected {% endif %}>{{ cat.category }}</option>
       {% endfor %}
     </select>
 
     <select name="types" id="" class="form-control" style="width: 6rem; margin-left: .7rem;">
-      <option value="" disabled selected>Types</option>
-      <option value="CRT">Credit</option>
-      <option value="DBT">Debit</option>
+      <option value="" disabled {% if not types %} selected {% endif %}>Types</option>
+      <option value="CRT" {% if types == 'CRT' %} selected {% endif %} >Credit</option>
+      <option value="DBT" {% if types == 'DBT' %} selected {% endif %}>Debit</option>
     </select>
 
     <button type="submit" class="btn btn-info mx-2"><i class="fas fa-filter"></i></button>
