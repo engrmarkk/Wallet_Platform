@@ -3,6 +3,7 @@ from flask_login import UserMixin
 import jwt
 from time import time
 import uuid
+import os
 
 
 def hexid():
@@ -39,7 +40,7 @@ class User(db.Model, UserMixin):
         return f"User('{self.username}', '{self.email}')"
 
     def get_reset_token(self, expires_sec=1800):
-        return jwt.encode({'reset_password': self.id, 'exp': time() + expires_sec}, key=app.config['SECRET_KEY'])
+        return jwt.encode({'reset_password': self.id, 'exp': time() + expires_sec}, key=os.getenv("SECRET_KEY"))
 
     @staticmethod
     def verify_reset_token(token):
