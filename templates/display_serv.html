@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<style>
+    /* Hide the radio input */
+    .form-check-input {
+        display: none;
+    }
+</style>
+
+<div class="d-flex justify-content-between mt-4">
+    {% for service in services %}
+    {% if service['image'] %}
+    <div class="px-2">
+        <label class="selected-image" onclick="checkRadio('{{ service['name'] }}', this)">
+            <img src="{{ service['image'] }}" class="card-img-top rounded-circle img-thumbnail mb-2 w-75 m-auto"
+                alt="{{ service['name'] }}">
+            <a href="{{ url_for('bills.set_img_and_redirect', service_id=service['serviceID'], img=service['image']) }}"
+                class="d-none" id="click_me{{ service['name'] }}">click</a>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="serviceRadios" id="{{ service['name'] }}">
+            </div>
+        </label>
+
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+
+{% if variations_code %}
+<img src="{{ img }}" class="card-img-top img-thumbnail m-auto d-flex justify-content-center" alt="image"
+    style="width: 10rem;">
+{% if variations %}
+<form action="{{url_for('bills.vtpass_payment', service_id=service_id)}}" class="form-group" method="post">
+    <select name="" id="variations_cd" class="form-control w-50">
+        <option value="select" disabled selected>Select</option>
+        {% for variation in variations %}
+        <option value="{{ variation['variation_code'] }}">{{ variation['variation_code'] }} - {{ variation['name'] }}
+        </option>
+        {% endfor %}
+    </select>
+    {% if "electric" in service_id %}
+    <input type="text" name="prepaid_number" id="prepaid_number" class="form-control w-50 mt-4"
+        placeholder="Enter your Prepaid Number" required maxlength="13">
+    <span class="reveal1"></span>
+    {% elif "dstv" in service_id or "gotv" in service_id or "startimes" in service_id or "showmax" in service_id %}
+    <input type="text" name="smartcard_number" id="smartcard_number" class="form-control w-50 mt-4"
+        placeholder="Enter your SmartCard Number" required maxlength="13">
+    <span class="reveal1"></span>
+    {% endif %}
+    <input type="tel" name="" id="telephone2" class="form-control w-50 mt-4 d-none" placeholder="Enter telephone"
+        maxlength="11" required>
+    <button type="submit" class="btn btn-success mt-4" disabled id="submit_btn2">Submit</button>
+</form>
+{% else %}
+<form action="{{url_for('bills.vtpass_payment', service_id=service_id)}}" class="form-group" method="post">
+    <select name="" id="amount_select" class="form-control w-50">
+        <option value="select" disabled selected>Select</option>
+        <option value="100">100</option>
+        <option value="200">200</option>
+        <option value="300">300</option>
+        <option value="400">400</option>
+        <option value="500">500</option>
+        <option value="600">600</option>
+    </select>
+    <input type="number" class="form-control w-50 mt-4" id="amount" placeholder="Enter amount" name="amount">
+    <input type="tel" name="phone_number" id="telephone" class="form-control w-50 mt-4 d-none" placeholder="Enter telephone"
+        maxlength="11">
+    <button type="submit" class="btn btn-success mt-4" disabled id="submit_btn">Submit</button>
+</form>
+{% endif %}
+{% endif %}
+
+<script>
+
+    // Part 1: Handle variations_cd
+    let variations_cd = document.getElementById("variations_cd");
+    if (variations_cd) {
+        variations_cd.addEventListener("change", function () {
+            let submit_btn2 = document.getElementById("submit_btn2");
+            let tel2 = document.getElementById("telephone2")
+            if (submit_btn2) {
+                tel2.classList.remove("d-none")
+                submit_btn2.disabled = false;
+            }
+        });
+    }
+
+    let card_input = document.getElementById("smartcard_number")
+    let electric_input = document.getElementById("prepaid_number")
+
+    if(card_input || electric_input){
+        if(card_input){
+            // call an endpoint and get the data from the reesponse
+        }else{
+            // call same endpoint and get the data from the response
+        }
+    }
+
+
+
+    // Part 2: Handle amount_select, amount, telephone, and submit_btn
+    let select_amount = document.getElementById("amount_select");
+    let amount = document.getElementById("amount");
+    let tel = document.getElementById("telephone");
+    let submit_btn = document.getElementById("submit_btn");
+
+    if (select_amount && amount && tel && submit_btn) {
+        select_amount.addEventListener("change", function () {
+            amount.value = select_amount.value;
+        });
+
+        document.addEventListener("input", function () {
+            if (amount.value) {
+                tel.classList.remove("d-none");
+            } else {
+                tel.classList.add("d-none");
+            }
+        });
+
+        document.addEventListener("change", function () {
+            if (amount.value) {
+                tel.classList.remove("d-none");
+            } else {
+                tel.classList.add("d-none");
+            }
+        });
+
+        document.addEventListener("input", function () {
+            if (tel.value.length === 11) {
+                submit_btn.disabled = false;
+            } else {
+                submit_btn.disabled = true;
+            }
+        });
+    }
+
+
+    function checkRadio(name, element) {
+        // Remove the 'checked' class from all elements
+        var elements = document.querySelectorAll('.px-2');
+        elements.forEach(function (el) {
+            el.classList.remove('checked');
+        });
+
+        // Add the 'checked' class to the clicked element
+        element.classList.add('checked');
+
+        // Remove the 'bg-secondary' class from all images
+        var images = document.querySelectorAll('.selected-image img');
+        images.forEach(function (img) {
+            img.classList.remove('bg-secondary');
+        });
+
+        // Add the 'bg-secondary' class to the clicked image
+        var clickedImage = element.querySelector('.selected-image img');
+        clickedImage.classList.add('bg-secondary');
+
+        document.getElementById(name).checked = true;
+        // serviceId = document.getElementById("service_id").textContent
+        // console.log(serviceId, "service id")
+        document.getElementById(`click_me${name}`).click()
+
+
+
+
+    }
+</script>
+
+{% endblock %}

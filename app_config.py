@@ -1,7 +1,7 @@
 from extensions import db, login_manager, mail, migrate, moment
 from flask import redirect, flash, url_for, session, render_template, Flask
-from routes import AuthenticationBlueprint, ViewBlueprint
-from models import User
+from routes import AuthenticationBlueprint, ViewBlueprint, BillsBlueprint
+from models import User, Transaction, Beneficiary, Card, Invitees, TransactionCategories
 from datetime import timedelta
 import os
 import flask
@@ -21,7 +21,7 @@ def create_app():
     app = Flask(__name__)
 
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(
-        base_dir, "wallet.db"
+        base_dir, "easytransact.db"
     )
 
     # app.config["SQLALCHEMY_DATABASE_URI"] = uri
@@ -45,7 +45,7 @@ def create_app():
     # The decorator that loads the user using the user's id
     @login_manager.user_loader
     def user_loader(id):
-        return User.query.get(int(id))
+        return User.query.get(id)
 
     # If the user isn't logged in and tries to access a login required route, this decorator allows the page to
     # redirect page to the login
@@ -69,11 +69,12 @@ def create_app():
     @app.before_request
     def before_request():
         session.permanent = True
-        app.permanent_session_lifetime = timedelta(minutes=10)
+        app.permanent_session_lifetime = timedelta(minutes=20)
         session.modified = True
         flask.g.user = current_user
 
     app.register_blueprint(AuthenticationBlueprint)
     app.register_blueprint(ViewBlueprint)
+    app.register_blueprint(BillsBlueprint)
 
     return app

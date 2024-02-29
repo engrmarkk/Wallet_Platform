@@ -67,28 +67,52 @@
           </div>
         </div>
       </div>
-      <div class="options d-flex align-items-center mb-4 mt-2">
-        <div class="">
-          <a href="{{url_for('view.coming_soon')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-          <i
-          class="px-2 py-1 fas fa-money-bill-wave"></i>
-            Spend
-          </a>
+      <div class="mb-4 mt-2 row w-100">
+        <!-- Save -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
+                <i class="px-2 py-1 fas fa-dice-d6"></i>Save
+            </a>
         </div>
-        <div class="">
-          <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-          <i class="px-2 py-1 fas fa-dice-d6"></i>Save
-          </a>
+    
+        <!-- Send -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
+                data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="py-1 fas fa-share"></i>Send
+            </a>
         </div>
-        <div class="mx-1">
-          <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
-            data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
-            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="py-1 fas fa-share"></i>Send
-          </a>
+    
+        <!-- Airtime -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a href="{{url_for('bills.display_service', service='airtime')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
+                <i class="py-1 fas fa-mobile"></i>Airtime
+            </a>
         </div>
-
-      </div>
+    
+        <!-- Data -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a href="{{url_for('bills.display_service', service='data')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
+                <i class="py-1 fas fa-mobile-alt"></i>Data
+            </a>
+        </div>
+    
+        <!-- Cable -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a href="{{url_for('bills.display_service', service='tv-subscription')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
+                <i class="py-1 fas fa-tv"></i>Cable
+            </a>
+        </div>
+    
+        <!-- Electricity -->
+        <div class="col-4 col-sm-3 col-md-4 mb-3">
+            <a href="{{url_for('bills.display_service', service='electricity-bill')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
+                <i class="py-1 fas fa-lightbulb"></i>Electricity
+            </a>
+        </div>
+    </div>
+    
 
       </div>
     </div>
@@ -121,11 +145,11 @@
             <div class="" style="width: 10%;">
             <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
             </div>
-            <div class='notf-detail'><span>Money received from {{ transaction.sender.lower() }}</span><span>{{
+            <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
                 transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
             <div class='value'>+ <del>N</del> {{ transaction.transaction_amount }} </div>
             <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
-      <td>@{{ transaction.sender.lower() }}</td>
+      <td>@{{ transaction.description }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
           </div>
           {% else %}
@@ -133,11 +157,11 @@
             <div class="" style="width: 10%;">
             <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
             </div>
-            <div class='notf-detail'><span>Money sent to {{ transaction.sender.lower() }}</span><span>{{
+            <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
                 transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
             <div class='value'>- <del>N</del> {{ transaction.transaction_amount }} </div>
             <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
-      <td>@{{ transaction.sender.lower() }}</td>
+      <td>@{{ transaction.description }}</td>
       <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
           </div>
           {% endif %}
