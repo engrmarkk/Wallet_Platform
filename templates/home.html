@@ -80,7 +80,7 @@
             <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
                 data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="py-1 fas fa-share"></i>Send
+                <i class="py-1 fas fa-share"></i>W2W
             </a>
         </div>
     
@@ -145,7 +145,7 @@
           <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
             <div class="notification  text-center text-light">
               <div class="" style="width: 10%;">
-              <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
+              <small class='credit' scope="credit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
               </div>
               <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
                   transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
@@ -156,7 +156,7 @@
           <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
             <div class="notification  text-center text-light">
               <div class="" style="width: 10%;">
-              <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
+              <small class='debit' scope=" debit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
               </div>
               <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
                   transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
