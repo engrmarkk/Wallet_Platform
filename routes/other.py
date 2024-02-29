@@ -113,24 +113,27 @@ def showtransaction():
     category_ = request.args.get("category")
     status_ = request.args.get("status")
     transaction_type = request.args.get("types")
+    ref = request.args.get("ref")
     page = request.args.get('page', 1, type=int)
     per_page = 10  # You can adjust the number of items per page as needed
     # print(category, status)
+    # print(ref, "reference")
     category = category_ if category_ else category
     status = status_ if status_ else status
     types = transaction_type if transaction_type else types
-    if category_ or status_ or transaction_type:
+    if category_ or status_ or transaction_type or ref:
         show = True
     transactions = Transaction.query.filter(
         Transaction.user_id == current_user.id,
         func.lower(Transaction.category) == category_.lower() if category else True,
         func.lower(Transaction.status) == status_.lower() if status else True,
-        func.lower(Transaction.transaction_type) == transaction_type.lower() if transaction_type else True
+        func.lower(Transaction.transaction_type) == transaction_type.lower() if transaction_type else True,
+        func.lower(Transaction.transaction_ref) == ref.lower() if ref else True
         ).order_by(Transaction.date_posted.desc()).paginate(page=page, per_page=per_page)
     # print(transactions.items, "transactions")
     return render_template("show-histories.html",
                            date=x, transactions=transactions,
-                           cats=cats, types=types, status=status, category=category
+                           cats=cats, types=types, status=status, category=category, ref=ref
                            , show=show)
 
 
