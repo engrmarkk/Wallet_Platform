@@ -105,6 +105,7 @@ Creating this project got me more exposed to:
 - Authentication
 - JavaScript
 - Authorization
+- Third Party Integratuon
 
 
 <p align="right"><a href="#readme-top">back to top</a></p>
