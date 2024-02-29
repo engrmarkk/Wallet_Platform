@@ -25,6 +25,8 @@
       <option value="DBT" {% if types == 'DBT' %} selected {% endif %}>Debit</option>
     </select>
 
+    <input type="text" name="ref" id="" class="form-control" placeholder="Reference" style="width: 6rem; margin-left: .8rem;" value="{% if ref %}{{ ref }}{% endif %}">
+
     <button type="submit" class="btn btn-info mx-2"><i class="fas fa-filter"></i></button>
     {% if show %}
     <a href="{{url_for('view.showtransaction')}}" class="btn btn-info mx-2 text-decoration-none"><i class="fas fa-undo"></i></a>
@@ -49,7 +51,7 @@
           <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
             <div class="notification  text-center text-light">
               <div class="" style="width: 10%;">
-              <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
+              <small class='credit' scope="credit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
               </div>
               <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
                   transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
@@ -60,7 +62,7 @@
           <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
             <div class="notification  text-center text-light">
               <div class="" style="width: 10%;">
-              <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
+              <small class='debit' scope=" debit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
               </div>
               <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
                   transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
