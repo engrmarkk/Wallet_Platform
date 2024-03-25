@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title">Transaction Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <!-- <p><strong style="color: #4caf50;">Transaction ID:</strong> {{ trans.id }}</p> -->
+                            <p class="{% if trans.transaction_type == 'CRT' %}text-success{% else %}text-danger{% endif %}"><strong style="color: #007bff;">Type:</strong> {% if trans.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</p>
+                            <p><strong style="color: #4caf50;">Date:</strong> {{ trans.date_posted.strftime("%Y-%m-%d %H:%M:%S") }}</p>
+                            <p><strong style="color: #4caf50;">Amount:</strong> <del style="text-decoration-style: double;">N</del>{{ "{:,.2f}".format(trans.transaction_amount) }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong style="color: #4caf50;">Balance:</strong> <del style="text-decoration-style: double;">N</del>{{ "{:,.2f}".format(trans.balance) }}</p>
+                            <p><strong style="color: #4caf50;">Reference:</strong> {{ trans.transaction_ref }}</p>
+                            <p><strong style="color: #4caf50;">Category:</strong> {{ trans.trans_category.category }}</p>
+                            <!-- Add more fields as needed -->
+                        </div>
+                    </div>
+                    <hr>
+                    <p><strong style="color: #4caf50;">Description:</strong> {{ trans.description }}</p>
+                    <p><strong style="color: #4caf50;">Status:</strong> <span class="badge {% if trans.status == 'Success' %}bg-success{% elif trans.status == 'Failed' %}text-danger{% elif trans.status == 'Pending' %}bg-warning{% elif trans.status == 'Refunded' %}bg-info{% endif %}"> {{ trans.status }} </span></p>
+                    {% if trans.phone_number %}
+                    <p><strong style="color: #4caf50;">Phone Number:</strong> {{ trans.phone_number }}</p>
+                    {% endif %}
+                    {% if trans.sender %}
+                    <p><strong style="color: #4caf50;">Sender:</strong> {{ trans.sender }}</p>
+                    {% endif %}
+                    {% if trans.token %}
+                    <p><strong style="color: #4caf50;">Token:</strong> {{ trans.token }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

@@ -9,8 +9,9 @@ from flask import redirect, url_for, flash, request, \
     render_template, Blueprint, make_response, jsonify
 from models import User, Transaction, Beneficiary, Card, Invitees
 from form import *
-from func import save_transaction_cat, get_cat
+from func import save_transaction_cat, get_cat, get_all_cats
 from werkzeug.security import generate_password_hash
+from sqlalchemy import func
 import random
 import datetime
 import cloudinary
@@ -104,7 +105,36 @@ def account():
 @view.route("/transaction-history")
 @login_required
 def showtransaction():
-    return render_template("show-histories.html", date=x)
+    cats = get_all_cats()
+    category = None
+    types = None
+    status = None
+    show = False
+    category_ = request.args.get("category")
+    status_ = request.args.get("status")
+    transaction_type = request.args.get("types")
+    ref = request.args.get("ref")
+    page = request.args.get('page', 1, type=int)
+    per_page = 10  # You can adjust the number of items per page as needed
+    # print(category, status)
+    # print(ref, "reference")
+    category = category_ if category_ else category
+    status = status_ if status_ else status
+    types = transaction_type if transaction_type else types
+    if category_ or status_ or transaction_type or ref:
+        show = True
+    transactions = Transaction.query.filter(
+        Transaction.user_id == current_user.id,
+        func.lower(Transaction.category) == category_.lower() if category else True,
+        func.lower(Transaction.status) == status_.lower() if status else True,
+        func.lower(Transaction.transaction_type) == transaction_type.lower() if transaction_type else True,
+        func.lower(Transaction.transaction_ref) == ref.lower() if ref else True
+        ).order_by(Transaction.date_posted.desc()).paginate(page=page, per_page=per_page)
+    # print(transactions.items, "transactions")
+    return render_template("show-histories.html",
+                           date=x, transactions=transactions,
+                           cats=cats, types=types, status=status, category=category, ref=ref
+                           , show=show)
 
 
 @view.route("/home/", methods=["GET", "POST"])
@@ -566,3 +596,11 @@ def withdraw_earnings():
     else:
         flash("No earnings to withdraw", "danger")
     return redirect(url_for("view.home"))
+
+
+# view one transaction
+@view.route("/transaction/<string:trans_id>")
+@login_required
+def view_transaction(trans_id):
+    trans = Transaction.query.filter_by(id=trans_id).first()
+    return render_template("view_transaction.html", date=x, trans=trans)

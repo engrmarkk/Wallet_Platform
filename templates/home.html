@@ -67,11 +67,11 @@
           </div>
         </div>
       </div>
-      <div class="mb-4 mt-2 row w-100">
+      <div class="mb-4 mt-2 row w-75">
         <!-- Save -->
         <div class="col-4 col-sm-3 col-md-4 mb-3">
             <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-                <i class="px-2 py-1 fas fa-dice-d6"></i>Save
+              <i class="fa-solid fa-piggy-bank"></i>Save
             </a>
         </div>
     
@@ -80,21 +80,21 @@
             <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
                 data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="py-1 fas fa-share"></i>Send
+                <i class="py-1 fas fa-share"></i>W2W
             </a>
         </div>
     
         <!-- Airtime -->
         <div class="col-4 col-sm-3 col-md-4 mb-3">
             <a href="{{url_for('bills.display_service', service='airtime')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-                <i class="py-1 fas fa-mobile"></i>Airtime
+              <i class="fa-solid fa-phone"></i>Airtime
             </a>
         </div>
     
         <!-- Data -->
         <div class="col-4 col-sm-3 col-md-4 mb-3">
             <a href="{{url_for('bills.display_service', service='data')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-                <i class="py-1 fas fa-mobile-alt"></i>Data
+              <i class="fa-solid fa-wifi"></i>Data
             </a>
         </div>
     
@@ -120,8 +120,8 @@
 
    
 
-    <hr style="border: 1px solid rgb(112, 112, 110);" class="mt-5">
-    <div>
+    <hr style="border: 1px solid rgb(112, 112, 110);" class="mt-5 w-75 m-auto">
+    <div class="w-75 mt-3 m-auto">
       <p class="text-center fw-bold text-muted">Recent transaction histories</p>
       {% if not current_user.transacts %}
       <p class="text-center h4 text-warning mt-3">NO RECORD</p>
@@ -133,7 +133,8 @@
         <div class="bg-mild">
           <header class="text-muted text-center">
             <span scope="col">Type</span>
-            <span scope="col">details</span>
+            <span scope="col">Details</span>
+            <span scope="col">Amount</span>
             <!-- <th scope="col">User</th>
       <th scope="col">Date</th> -->
           </header>
@@ -141,29 +142,27 @@
         <div>
           {% for transaction in current_user.transacts[::-1][:3] %}
           {% if transaction.transaction_type == 'CRT' %}
-          <div class="notification  text-center text-light">
-            <div class="" style="width: 10%;">
-            <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
+          <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
+            <div class="notification  text-center text-light">
+              <div class="" style="width: 10%;">
+              <small class='credit' scope="credit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
+              </div>
+              <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
+                  transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
+              <div class='value'>+ <del style="text-decoration-style: double;">N</del> {{ transaction.transaction_amount }} </div>
             </div>
-            <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
-                transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
-            <div class='value'>+ <del>N</del> {{ transaction.transaction_amount }} </div>
-            <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
-      <td>@{{ transaction.description }}</td>
-      <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
-          </div>
+          </a>
           {% else %}
-          <div class="notification  text-center text-light">
-            <div class="" style="width: 10%;">
-            <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
+          <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
+            <div class="notification  text-center text-light">
+              <div class="" style="width: 10%;">
+              <small class='debit' scope=" debit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
+              </div>
+              <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
+                  transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
+              <div class='value'>- <del style="text-decoration-style: double;">N</del> {{ transaction.transaction_amount }} </div>
             </div>
-            <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
-                transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
-            <div class='value'>- <del>N</del> {{ transaction.transaction_amount }} </div>
-            <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
-      <td>@{{ transaction.description }}</td>
-      <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
-          </div>
+          </a>
           {% endif %}
           {% endfor %}
           <div style="justify-content:flex-end;" class=" d-flex align-items-center">

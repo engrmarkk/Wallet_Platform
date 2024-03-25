@@ -35,7 +35,7 @@
     <select name="" id="variations_cd" class="form-control w-50">
         <option value="select" disabled selected>Select</option>
         {% for variation in variations %}
-        <option value="{{ variation['variation_code'] }}">{{ variation['variation_code'] }} - {{ variation['name'] }}
+        <option value="{{ variation['variation_code'] }}">{{ variation['name'] }}
         </option>
         {% endfor %}
     </select>

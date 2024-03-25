@@ -1,43 +1,108 @@
 {% extends 'base.html' %}
 {% block content %} 
 
+
+<div class="mt-5">
+  <form action="" class="d-flex">
+    <select name="status" id="" class="form-control" style="width: 6rem;">
+      <option value="" disabled {% if not status %} selected {% endif %}>Status</option>
+      <option value="Success" {% if status == 'Success' %} selected {% endif %}>Success</option>
+      <option value="Failed" {% if status == 'Failed' %} selected {% endif %}>Failed</option>
+      <option value="Pending" {% if status == 'Pending' %} selected {% endif %}>Pending</option>
+      <option value="Refunded" {% if status == 'Refunded' %} selected {% endif %}>Refunded</option>
+    </select>
+
+    <select name="category" id="" class="form-control" style="width: 6rem; margin-left: .7rem;">
+      <option value="" disabled {% if not category %} selected {% endif %}>Categories</option>
+      {% for cat in cats %}
+      <option value="{{ cat.id }}" {% if category == cat.id %} selected {% endif %}>{{ cat.category }}</option>
+      {% endfor %}
+    </select>
+
+    <select name="types" id="" class="form-control" style="width: 6rem; margin-left: .7rem;">
+      <option value="" disabled {% if not types %} selected {% endif %}>Types</option>
+      <option value="CRT" {% if types == 'CRT' %} selected {% endif %} >Credit</option>
+      <option value="DBT" {% if types == 'DBT' %} selected {% endif %}>Debit</option>
+    </select>
+
+    <input type="text" name="ref" id="" class="form-control" placeholder="Reference" style="width: 6rem; margin-left: .8rem;" value="{% if ref %}{{ ref }}{% endif %}">
+
+    <button type="submit" class="btn btn-info mx-2"><i class="fas fa-filter"></i></button>
+    {% if show %}
+    <a href="{{url_for('view.showtransaction')}}" class="btn btn-info mx-2 text-decoration-none"><i class="fas fa-undo"></i></a>
+    {% endif %}
+  </form>
+</div>
 <!-- Table -->
 
-<div class="transaction-container mt-5">
+<div class="transaction-container mt-1">
     <div class="bg-mild">
       <header class="text-muted text-center">
         <span scope="col">Type</span>
-        <span scope="col">details</span>
+        <span scope="col">Details</span>
+        <span scope="col">Amount</span>
         <!-- <th scope="col">User</th>
         <th scope="col">Date</th> -->
       </header>
     </div>
     <div>
-      {% for transaction in current_user.transacts[::-1] %}
-      {% if transaction.transaction_type == 'CRT' %}
-      <div class="notification  text-center text-light">
-        <div class="" style="width: 10%;">
-        <small class='credit' scope="credit">{{ transaction.transaction_type }}</small>
-        </div>
-        <div class='notf-detail'>Money received  from {{ transaction.sender.lower() }}  <div class='value'><del style="text-decoration-style: double;">N</del> {{ transaction.transaction_amount }}  {{ transaction.date_posted.strftime('%Y-%m-%d') }} {{ transaction.date_posted.strftime('%I:%M %p') }}</div></div>
-        <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
-        <td>@{{ transaction.sender.lower() }}</td>
-        <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
-      </div>
-      {% else %}
-      <div class="notification  text-center text-light">
-        <div class="" style="width: 10%;">
-        <small class='debit' scope=" debit">{{ transaction.transaction_type }}</small>
-        </div>
-        <div class='notf-detail'>Money sent  to {{ transaction.sender.lower() }} <div class='value'><del style="text-decoration-style: double;">N</del> {{ transaction.transaction_amount }}  {{ transaction.date_posted.strftime('%Y-%m-%d') }} {{ transaction.date_posted.strftime('%I:%M %p') }} </div></div>
-        <!-- <td><del style="text-decoration-style: double;">N</del>{{ transaction.transaction_amount }}</td>
-        <td>@{{ transaction.sender.lower() }}</td>
-        <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td> -->
-      </div>
-      {% endif %}
-      {% endfor %}
+      {% for transaction in transactions %}
+          {% if transaction.transaction_type == 'CRT' %}
+          <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
+            <div class="notification  text-center text-light">
+              <div class="" style="width: 10%;">
+              <small class='credit' scope="credit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
+              </div>
+              <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
+                  transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
+              <div class='value'>+ <del style="text-decoration-style: double;">N</del> {{ transaction.transaction_amount }} </div>
+            </div>
+          </a>
+          {% else %}
+          <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
+            <div class="notification  text-center text-light">
+              <div class="" style="width: 10%;">
+              <small class='debit' scope=" debit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
+              </div>
+              <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
+                  transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
+              <div class='value'>- <del style="text-decoration-style: double;">N</del> {{ transaction.transaction_amount }} </div>
+            </div>
+          </a>
+          {% endif %}
+          {% endfor %}
         </div>
       </div>
   <!-- ..........End of table.............. -->
+  <!-- Pagination -->
+<div class="pagination justify-content-center mt-4">
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      {% if transactions.has_prev %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('view.showtransaction', page=transactions.prev_num) }}" aria-label="Previous">
+            <span aria-hidden="true">&laquo;</span>
+          </a>
+        </li>
+      {% endif %}
+      {% for num in transactions.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+        {% if num %}
+          <li class="page-item {% if num == transactions.page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('view.showtransaction', page=num) }}">{{ num }}</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled"><span class="page-link">...</span></li>
+        {% endif %}
+      {% endfor %}
+      {% if transactions.has_next %}
+        <li class="page-item">
+          <a class="page-link" href="{{ url_for('view.showtransaction', page=transactions.next_num) }}" aria-label="Next">
+            <span aria-hidden="true">&raquo;</span>
+          </a>
+        </li>
+      {% endif %}
+    </ul>
+  </nav>
+</div>
 
   {% endblock content %}
