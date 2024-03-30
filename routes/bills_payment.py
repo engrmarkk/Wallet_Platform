@@ -27,7 +27,7 @@ def vtpass_payment():
     variation_code = request.form.get("variation_code")
     quantity = request.form.get("quantity")
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(current_user.id)
-
+    transaction_pin = request.form.get("transaction_pin")
     amount = float(amount)
 
     print("amount: ", amount, "phone_number: ", phone_number, "service_id: ", service_id,
@@ -36,6 +36,14 @@ def vtpass_payment():
 
     if not amount or not phone_number or not service_id:
         flash("All fields are required", "danger")
+        return redirect(url_for("view.home"))
+
+    if not transaction_pin:
+        flash("Transaction pin is required", "danger")
+        return redirect(url_for("view.home"))    
+    
+    if int(transaction_pin) != current_user.transaction_pin:
+        flash("Invalid transaction pin", "danger")
         return redirect(url_for("view.home"))
 
     purchase_type = determine_purchase_type(service_id)
