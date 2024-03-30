@@ -38,6 +38,10 @@ def vtpass_payment():
         flash("All fields are required", "danger")
         return redirect(url_for("view.home"))
 
+    if not phone_number.isdigit():
+        flash("Invalid phone number", "danger")
+        return redirect(url_for("bills.get_variation", service_id=service_id))
+
     purchase_type = determine_purchase_type(service_id)
 
     transact = deduct_history(amount, current_user, request_id, purchase_type, service_id, phone_number)
