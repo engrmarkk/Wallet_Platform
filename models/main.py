@@ -25,7 +25,7 @@ class User(db.Model, UserMixin):
     invite_earn = db.Column(db.Integer, nullable=False, default=0)
     invited_by = db.Column(db.BigInteger, nullable=False, default=0)
     photo = db.Column(db.Text, nullable=False, default='https://res.cloudinary.com/duwyopabr/image/upload/v1676162283/user_xz7o0f.png')
-    transaction_pin = db.Column(db.Integer, nullable=False, default=1)
+    transaction_pin = db.Column(db.Text, nullable=False, default="")
     secret_question = db.Column(db.Text, nullable=True)
     secret_answer = db.Column(db.String(50), nullable=True)
     pin_set = db.Column(db.Boolean, default=False)
