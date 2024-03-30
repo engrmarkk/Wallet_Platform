@@ -29,7 +29,7 @@ def vtpass_payment():
     quantity = request.form.get("quantity")
     pin = request.form.get("transaction_pin")
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(current_user.id)
-
+    transaction_pin = request.form.get("transaction_pin")
     amount = float(amount)
 
     print("amount: ", amount, "phone_number: ", phone_number, "service_id: ", service_id,
@@ -114,7 +114,7 @@ def vtpass_payment():
 @login_required
 def display_service(service):
     response = vtpass_service.service_identifier(service)
-    # print(response, "response")
+    print(response, "response")
     return render_template("display_serv.html", services=response['content'], date=datetime.datetime.utcnow(),
                            service=service)
 

@@ -80,7 +80,7 @@
 </form>
 {% else %}
 <form action="{{url_for('bills.vtpass_payment', service_id=service_id)}}" class="form-group" method="post">
-    <select name="" id="amount_select" class="form-control w-50">
+    <!-- <select name="" id="amount_select" class="form-control w-50">
         <option value="select" disabled selected>Select</option>
         <option value="100">100</option>
         <option value="200">200</option>
@@ -88,9 +88,9 @@
         <option value="400">400</option>
         <option value="500">500</option>
         <option value="600">600</option>
-    </select>
+    </select> -->
     <input type="number" class="form-control w-50 mt-4" id="amount" placeholder="Enter amount" name="amount">
-    <input type="tel" name="phone_number" id="telephone" class="form-control w-50 mt-4 d-none" placeholder="Enter telephone"
+    <input type="tel" name="phone_number" id="telephone" class="form-control w-50 mt-4" placeholder="Enter telephone"
         maxlength="11">
 
 
