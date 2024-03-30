@@ -8,7 +8,7 @@ from flask_mail import Message
 from random import randint
 from werkzeug.security import generate_password_hash, check_password_hash
 
-auth = Blueprint("auth", __name__, template_folder='../templates')
+auth = Blueprint("auth", __name__, template_folder="../templates")
 
 otp = randint(100000, 999999)
 
@@ -27,9 +27,11 @@ def validate(email):
             if user.invited_by:
                 user1 = User.query.filter_by(account_number=in_num).first()
                 user1.invite_earn += 100
-                invitee = Invitees(first_name=user.first_name,
-                                    last_name=user.last_name,
-                                    invited_by=user1.id)
+                invitee = Invitees(
+                    first_name=user.first_name,
+                    last_name=user.last_name,
+                    invited_by=user1.id,
+                )
                 db.session.add(invitee)
             db.session.commit()
             flash("Email verification successful", category="success")
@@ -64,15 +66,20 @@ def login():
                     )
                     msg.html = render_template("email_verification.html", otp=str(otp))
                     mail.send(msg)
-                except:
+                except Exception as e:
+                    print(e, "ERROR")
                     flash("failed to validate", "danger")
-                    return render_template("login.html", date=datetime.utcnow(), form=form)
+                    return render_template(
+                        "login.html", date=datetime.utcnow(), form=form
+                    )
 
                 return redirect(url_for("auth.validate", email=email))
-            # Check if the user exist in the database and if the inputted password is same with the one attached to the user on the database
+            # Check if the user exist in the database and if the inputted password is same with the one attached to
+            # the user on the database
             if user:
                 if check_password_hash(user.password, form.password.data):
-                    # If the check passed, login the user and flash a message to the user when redirected to the homepage
+                    # If the check passed, login the user and flash a message to the user when redirected to the
+                    # homepage
                     flash("Login Successful", "success")
                     login_user(user, remember=False)
                     return redirect(url_for("view.home"))
@@ -100,7 +107,6 @@ def register():
     form = RegistrationForm()
     # If the request is a post request and the form doesn't get validated, redirect the user to that same page
     if request.method == "POST":
-
         """not using this line anymore"""
         # if not form.validate_on_submit():
         #     flash("All fields are required", category="danger")
@@ -123,10 +129,14 @@ def register():
             if existing_email:
                 # Flash this message to the user and redirect the user to that same page
                 flash("User with this email already exist", category="danger")
-                return render_template("register.html", date=datetime.utcnow(), form=form)
+                return render_template(
+                    "register.html", date=datetime.utcnow(), form=form
+                )
 
             # Check if phone number exist
-            existing_phone = User.query.filter_by(account_number=form.phone_number.data[1:]).first()
+            existing_phone = User.query.filter_by(
+                account_number=form.phone_number.data[1:]
+            ).first()
             # if the phone number exist
             if existing_phone:
                 # Flash this message to the user and redirect the user to that same page
@@ -134,7 +144,9 @@ def register():
                 return redirect(url_for("auth.register"))
             if not form.phone_number.data.isnumeric():
                 flash("This is not a valid number", category="danger")
-                return render_template("register.html", date=datetime.utcnow(), form=form)
+                return render_template(
+                    "register.html", date=datetime.utcnow(), form=form
+                )
 
             first_name = form.first_name.data.lower()
             last_name = form.last_name.data.lower()
@@ -158,15 +170,24 @@ def register():
                     "Password should contain at least an uppercase, lowercase and a number",
                     "danger",
                 )
-                return render_template("register.html", date=datetime.utcnow(), form=form)
+                return render_template(
+                    "register.html", date=datetime.utcnow(), form=form
+                )
 
             if len(phone_number) != 11:
                 flash("Phone number must be 11 digits", "danger")
                 return redirect(url_for("auth.register"))
 
-            if form.invited_by.data and not User.query.filter_by(account_number=form.invited_by.data).first():
+            if (
+                form.invited_by.data
+                and not User.query.filter_by(
+                    account_number=form.invited_by.data
+                ).first()
+            ):
                 flash("Invalid referral code", "danger")
-                return render_template("register.html", date=datetime.utcnow(), form=form)
+                return render_template(
+                    "register.html", date=datetime.utcnow(), form=form
+                )
 
             if not form.invited_by.data:
                 invited_by = 0
@@ -196,7 +217,9 @@ def register():
             except Exception as e:
                 print(e)
                 flash("failed to verify email", "danger")
-                return render_template("register.html", date=datetime.utcnow(), form=form)
+                return render_template(
+                    "register.html", date=datetime.utcnow(), form=form
+                )
 
             # Add the 'new_user'
             db.session.add(new_user)
