@@ -7,6 +7,7 @@ from func import deduct_history, refund, update_transaction, update_status
 from services import VtpassService
 import datetime
 import pytz
+from passlib.hash import pbkdf2_sha256 as hasher
 from utils import determine_purchase_type
 
 bills = Blueprint("bills", __name__, template_folder='../templates')
@@ -26,6 +27,7 @@ def vtpass_payment():
     type_ = request.form.get("type")
     variation_code = request.form.get("variation_code")
     quantity = request.form.get("quantity")
+    pin = request.form.get("transaction_pin")
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(current_user.id)
 
     amount = float(amount)
@@ -40,6 +42,10 @@ def vtpass_payment():
 
     if not phone_number.isdigit():
         flash("Invalid phone number", "danger")
+        return redirect(url_for("bills.get_variation", service_id=service_id))
+
+    if not hasher.verify(pin, current_user.transaction_pin):
+        flash("Invalid transaction pin", "danger")
         return redirect(url_for("bills.get_variation", service_id=service_id))
 
     purchase_type = determine_purchase_type(service_id)
