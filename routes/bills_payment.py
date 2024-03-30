@@ -38,13 +38,9 @@ def vtpass_payment():
         flash("All fields are required", "danger")
         return redirect(url_for("view.home"))
 
-    if not transaction_pin:
-        flash("Transaction pin is required", "danger")
-        return redirect(url_for("view.home"))    
-    
-    if int(transaction_pin) != current_user.transaction_pin:
-        flash("Invalid transaction pin", "danger")
-        return redirect(url_for("view.home"))
+    if not phone_number.isdigit():
+        flash("Invalid phone number", "danger")
+        return redirect(url_for("bills.get_variation", service_id=service_id))
 
     purchase_type = determine_purchase_type(service_id)
 
