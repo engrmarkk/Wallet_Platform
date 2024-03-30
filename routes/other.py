@@ -20,6 +20,7 @@ import requests
 import cloudinary.uploader
 import cloudinary_config
 from routes.auth import login
+from passlib.hash import pbkdf2_sha256 as hasher
 import random
 import string
 
@@ -174,16 +175,19 @@ def home():
 @view.route("/create-transfer-pin/", methods=["GET", "POST"])
 @login_required
 def create_transfer_pin():
+    if current_user.pin_set:
+        flash("Transfer pin already set", "info")
+        return redirect(url_for("view.home"))
     form = CreateTransferPin()
     if request.method == "POST":
         if form.validate_on_submit():
             pin = int(form.transfer_pin.data)
             secret_question = request.form.get("secret_question")
             secret_answer = form.secret_answer.data.lower()
-            user = User.query.filter_by(id=current_user.id).first()
+            user = current_user
             user.secret_question = secret_question
             user.secret_answer = secret_answer
-            user.transaction_pin = pin
+            user.transaction_pin = hasher.hash(str(pin))
             user.pin_set = True
             db.session.commit()
             flash("Transfer pin created successfully", "success")
@@ -203,7 +207,7 @@ def change_transfer_pin():
             if secret_answer != current_user.secret_answer:
                 flash("Invalid answer", "danger")
                 return redirect(url_for("view.change_transfer_pin"))
-            user.transaction_pin = pin
+            user.transaction_pin = hasher.hash(str(pin))
             db.session.commit()
             flash("Transfer pin changed successfully", "success")
             return redirect(url_for("view.home"))
@@ -234,8 +238,8 @@ def pay(acct):
             if current_user.account_balance < amount:
                 flash("Insufficient Funds", "danger")
                 return redirect(url_for("view.pay", acct=acct))
-            if pin != transfer_pin:
-                flash("Invalid pin", "danger")
+            if not hasher.verify(str(pin), current_user.transaction_pin):
+                flash("Invalid transaction pin", "danger")
                 return redirect(url_for("view.pay", acct=acct))
             if form.add_beneficiary.data:
                 ben = Beneficiary(
