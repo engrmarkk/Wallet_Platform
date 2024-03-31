@@ -39,21 +39,21 @@ def vtpass_payment():
           "billers_code: ", billers_code, "type_: ", type_, "variation_code: ", variation_code, "quantity: ", quantity,
           "request_id: ", request_id)
 
-    if not amount or not phone_number or not service_id:
-        flash("All fields are required", "danger")
-        return redirect(url_for("view.home"))
+    # if not amount or not phone_number or not service_id:
+    #     flash("All fields are required", "danger")
+    #     return redirect(url_for("view.home"))
 
-    if not phone_number.isdigit():
-        flash("Invalid phone number", "danger")
-        return redirect(url_for("bills.get_variation", service_id=service_id))
+    # if not phone_number.isdigit():
+    #     flash("Invalid phone number", "danger")
+    #     return redirect(url_for("bills.get_variation", service_id=service_id))
     
-    if not smartcard_number.isdigit():
-        flash("Invalid smartcard number", "danger")
-        return redirect(url_for("bills.get_variation", service_id=service_id))
+    # if not smartcard_number.isdigit():
+    #     flash("Invalid smartcard number", "danger")
+    #     return redirect(url_for("bills.get_variation", service_id=service_id))
     
-    if not prepaid_number.isdigit():
-        flash("Invalid prepaid number", "danger")
-        return redirect(url_for("bills.get_variation", service_id=service_id))
+    # if not prepaid_number.isdigit():
+    #     flash("Invalid prepaid number", "danger")
+    #     return redirect(url_for("bills.get_variation", service_id=service_id))
 
     if not hasher.verify(pin, current_user.transaction_pin):
         flash("Invalid transaction pin", "danger")
