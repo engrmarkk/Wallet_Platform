@@ -31,6 +31,9 @@ def vtpass_payment():
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(current_user.id)
     transaction_pin = request.form.get("transaction_pin")
     amount = float(amount)
+    prepaid_number = request.form.get("prepaid_number")
+    smartcard_number = request.form.get("smartcard_number")
+
 
     print("amount: ", amount, "phone_number: ", phone_number, "service_id: ", service_id,
           "billers_code: ", billers_code, "type_: ", type_, "variation_code: ", variation_code, "quantity: ", quantity,
@@ -42,6 +45,14 @@ def vtpass_payment():
 
     if not phone_number.isdigit():
         flash("Invalid phone number", "danger")
+        return redirect(url_for("bills.get_variation", service_id=service_id))
+    
+    if not smartcard_number.isdigit():
+        flash("Invalid smartcard number", "danger")
+        return redirect(url_for("bills.get_variation", service_id=service_id))
+    
+    if not prepaid_number.isdigit():
+        flash("Invalid prepaid number", "danger")
         return redirect(url_for("bills.get_variation", service_id=service_id))
 
     if not hasher.verify(pin, current_user.transaction_pin):
