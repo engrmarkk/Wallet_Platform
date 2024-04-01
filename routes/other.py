@@ -5,8 +5,16 @@ from werkzeug.exceptions import RequestEntityTooLarge
 from extensions import mail, db
 from flask_mail import Message
 from flask_login import current_user, login_required
-from flask import redirect, url_for, flash, request, \
-    render_template, Blueprint, make_response, jsonify
+from flask import (
+    redirect,
+    url_for,
+    flash,
+    request,
+    render_template,
+    Blueprint,
+    make_response,
+    jsonify,
+)
 from models import User, Transaction, Beneficiary, Card, Invitees
 from form import *
 from func import save_transaction_cat, get_cat, get_all_cats
@@ -24,7 +32,7 @@ from passlib.hash import pbkdf2_sha256 as hasher
 import random
 import string
 
-view = Blueprint("view", __name__, template_folder='../templates')
+view = Blueprint("view", __name__, template_folder="../templates")
 
 
 def send_reset_email(user):
@@ -86,9 +94,9 @@ def account():
             if f.content_length > request.max_content_length:  # check file size
                 flash("File is too large. Maximum file size is 1MB.", "danger")
                 return redirect(url_for("view.account"))
-            result = cloudinary.uploader.upload(f, transformation=[
-                {"width": 176, "height": 176, "crop": "fill"}
-            ])
+            result = cloudinary.uploader.upload(
+                f, transformation=[{"width": 176, "height": 176, "crop": "fill"}]
+            )
             image_url = result["secure_url"]
             current_user.photo = image_url
             db.session.commit()
@@ -115,7 +123,7 @@ def showtransaction():
     status_ = request.args.get("status")
     transaction_type = request.args.get("types")
     ref = request.args.get("ref")
-    page = request.args.get('page', 1, type=int)
+    page = request.args.get("page", 1, type=int)
     per_page = 10  # You can adjust the number of items per page as needed
     # print(category, status)
     # print(ref, "reference")
@@ -124,18 +132,31 @@ def showtransaction():
     types = transaction_type if transaction_type else types
     if category_ or status_ or transaction_type or ref:
         show = True
-    transactions = Transaction.query.filter(
-        Transaction.user_id == current_user.id,
-        func.lower(Transaction.category) == category_.lower() if category else True,
-        func.lower(Transaction.status) == status_.lower() if status else True,
-        func.lower(Transaction.transaction_type) == transaction_type.lower() if transaction_type else True,
-        func.lower(Transaction.transaction_ref) == ref.lower() if ref else True
-        ).order_by(Transaction.date_posted.desc()).paginate(page=page, per_page=per_page)
+    transactions = (
+        Transaction.query.filter(
+            Transaction.user_id == current_user.id,
+            func.lower(Transaction.category) == category_.lower() if category else True,
+            func.lower(Transaction.status) == status_.lower() if status else True,
+            func.lower(Transaction.transaction_type) == transaction_type.lower()
+            if transaction_type
+            else True,
+            func.lower(Transaction.transaction_ref) == ref.lower() if ref else True,
+        )
+        .order_by(Transaction.date_posted.desc())
+        .paginate(page=page, per_page=per_page)
+    )
     # print(transactions.items, "transactions")
-    return render_template("show-histories.html",
-                           date=x, transactions=transactions,
-                           cats=cats, types=types, status=status, category=category, ref=ref
-                           , show=show)
+    return render_template(
+        "show-histories.html",
+        date=x,
+        transactions=transactions,
+        cats=cats,
+        types=types,
+        status=status,
+        category=category,
+        ref=ref,
+        show=show,
+    )
 
 
 @view.route("/home/", methods=["GET", "POST"])
@@ -291,13 +312,14 @@ def pay(acct):
                     sender="EasyTransact <easytransact.send@gmail.com>",
                     recipients=[current_user.email],
                 )
-                msg.html = render_template("debit.html",
-                                           amount=f"{amount:,}",
-                                           user=user1,
-                                           balance=f"{current_user.account_balance:,}",
-                                           date=x,
-                                           acct=str(current_user.account_number)
-                                           )
+                msg.html = render_template(
+                    "debit.html",
+                    amount=f"{amount:,}",
+                    user=user1,
+                    balance=f"{current_user.account_balance:,}",
+                    date=x,
+                    acct=str(current_user.account_number),
+                )
                 mail.send(msg)
             except Exception as e:
                 print(e, "ERROR")
@@ -310,23 +332,27 @@ def pay(acct):
                     sender="EasyTransact <easytransact.send@gmail.com>",
                     recipients=[user1.email],
                 )
-                msg.html = render_template("credit.html",
-                                           user=user1,
-                                           amount=f"{amount:,}",
-                                           balance=f"{user1.account_balance:,}",
-                                           date=x,
-                                           acct=str(user1.account_number)
-                                           )
+                msg.html = render_template(
+                    "credit.html",
+                    user=user1,
+                    amount=f"{amount:,}",
+                    balance=f"{user1.account_balance:,}",
+                    date=x,
+                    acct=str(user1.account_number),
+                )
                 mail.send(msg)
             except Exception as e:
                 print(e, "ERROR")
                 flash("Network error", "danger")
-            return redirect(url_for("view.transaction_successful",
-                                    amount=f"{amount:,}",
-                                    user_name=user1.first_name,
-                                    user_name2=user1.last_name,
-                                    user_acct=str(user1.account_number),
-                                    ))
+            return redirect(
+                url_for(
+                    "view.transaction_successful",
+                    amount=f"{amount:,}",
+                    user_name=user1.first_name,
+                    user_name2=user1.last_name,
+                    user_acct=str(user1.account_number),
+                )
+            )
     return render_template(
         "pay.html", date=x, form=form, user1=user, beneficial=beneficial
     )
@@ -403,7 +429,6 @@ def card():
 def contact():
     form = ContactForm()
     if request.method == "POST":
-
         """not using this block again"""
         # if not form.validate_on_submit():
         #     flash("All fields are required", "danger")
@@ -439,31 +464,36 @@ def team():
     return render_template("team.html", date=x)
 
 
-@view.route('/download_pdf', methods=['GET'])
+@view.route("/download_pdf", methods=["GET"])
 def download_pdf():
     if not current_user.transacts:
         flash("You have no transaction history", "danger")
         return redirect(url_for("view.account"))
     try:
         # render the Jinja2 template with the desired context
-        html = render_template('statement.html')
+        html = render_template("statement.html")
 
         # convert the HTML to PDF using pdfshift.io
         response = requests.post(
-            'https://api.pdfshift.io/v3/convert/pdf',
-            auth=('api', f'{os.environ.get(random.choice(["PDF_KEY", "PDF_KEY2", "PDF_KEY3", "PDF_KEY4"]))}'),
-            json={
-                'source': html,
-                'landscape': False,
-                'use_print': False
-            })
+            "https://api.pdfshift.io/v3/convert/pdf",
+            auth=(
+                "api",
+                f'{os.environ.get(random.choice(["PDF_KEY", "PDF_KEY2", "PDF_KEY3", "PDF_KEY4"]))}',
+            ),
+            json={"source": html, "landscape": False, "use_print": False},
+        )
 
         response.raise_for_status()
 
         # return the PDF as a Flask response
-        return response.content, 200, \
-            {'Content-Type': 'application/pdf',
-             'Content-Disposition': f'attachment; filename={current_user.last_name.title() + " " + current_user.first_name.title()}.pdf'}
+        return (
+            response.content,
+            200,
+            {
+                "Content-Type": "application/pdf",
+                "Content-Disposition": f'attachment; filename={current_user.last_name.title() + " " + current_user.first_name.title()}.pdf',
+            },
+        )
     except Exception as e:
         print(e, "error from pdfshift.io")
         flash("Cannot generate your account's statement", "danger")
@@ -477,8 +507,14 @@ def faq():
 
 @view.route("/completed/<amount>/<user_name>/<user_name2>/<user_acct>")
 def transaction_successful(user_name, amount, user_name2, user_acct):
-    return render_template("trans_success.html", date=x, amount=amount,
-                           user1=user_name, user2=user_name2, user_acct=user_acct)
+    return render_template(
+        "trans_success.html",
+        date=x,
+        amount=amount,
+        user1=user_name,
+        user2=user_name2,
+        user_acct=user_acct,
+    )
 
 
 @view.route("/coming-soon")
@@ -529,7 +565,7 @@ def savings():
                     category=get_cat("Savings"),
                     description="Savings",
                     status="Success",
-                    sender=current_user.username + ' ' + 'savings',
+                    sender=current_user.username + " " + "savings",
                     user_id=current_user.id,
                 )
                 db.session.add(transact2)
@@ -560,13 +596,13 @@ def withdraw():
         category=get_cat("Savings"),
         description="Savings withdrawal",
         status="Success",
-        sender=current_user.username + ' ' + 'savings',
+        sender=current_user.username + " " + "savings",
         user_id=current_user.id,
     )
     db.session.add(transact1)
     db.session.commit()
     flash("Withdraw successful", "success")
-    return redirect(url_for('view.home'))
+    return redirect(url_for("view.home"))
 
 
 @view.route("/invite_and_earn", methods=["GET", "POST"])
@@ -591,7 +627,7 @@ def withdraw_earnings():
             description="Referral earnings",
             status="Success",
             category=get_cat("Referral"),
-            sender=current_user.username + ' ' + 'invite earning',
+            sender=current_user.username + " " + "invite earning",
             user_id=current_user.id,
         )
         db.session.add(transact1)
