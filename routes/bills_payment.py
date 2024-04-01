@@ -30,6 +30,7 @@ def vtpass_payment():
     pin = request.form.get("transaction_pin")
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(current_user.id)
     transaction_pin = request.form.get("transaction_pin")
+    print("amount: ", amount)
     amount = float(amount)
     prepaid_number = request.form.get("prepaid_number")
     smartcard_number = request.form.get("smartcard_number")
@@ -79,9 +80,14 @@ def vtpass_payment():
         )
     elif purchase_type == "data":
         payload["phone"] = "08011111111"
-        response, status_code = vtpass_service.purchase_data(
-            payload
-        )
+        #  Implement error handling to gracefully handle situations where None is returned
+        try:
+            response, status_code = vtpass_service.purchase_data(
+                payload
+            )
+        except Exception as e:
+            flash("An error occurred", "danger")
+            return redirect(url_for("view.home"))
     elif purchase_type == "electricity":
         payload["billers_code"] = "1111111111111" if type_.lower() == "prepaid" else "1010101010101"
         response, status_code = vtpass_service.purchase_electricity(
