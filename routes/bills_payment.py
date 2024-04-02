@@ -109,6 +109,7 @@ def vtpass_payment():
         try:
             response, status_code = vtpass_service.purchase_data(payload)
         except Exception as e:
+            print(e, "Error occurred")
             flash("An error occurred", "danger")
             return redirect(url_for("view.home"))
     elif purchase_type == "electricity":
