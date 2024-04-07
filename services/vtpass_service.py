@@ -15,7 +15,13 @@ class VtpassService(VtpassBase):
         return response.json(), response.status_code
 
     def purchase_data(self, payload):
-        pass
+        url = self.base_url + "/api/pay"
+        headers = self.set_headers()
+        response = requests.post(url, headers=headers, data=json.dumps(payload))
+        response.raise_for_status()
+        print(response.status_code)
+        print(response.json())
+        return response.json(), response.status_code
 
     def purchase_electricity(self, payload):
         pass

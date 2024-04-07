@@ -148,6 +148,68 @@ def vtpass_payment():
         flash("Payment failed", "danger")
         return redirect(url_for("view.home"))
 
+@bills.route("/purchase_data", methods=["POST"])
+@login_required
+def purchase_data():
+    tz = pytz.timezone("Africa/Lagos")
+    service_id = request.args.get("service_id", "")
+    amount = request.form.get("amount")
+    phone_number = "08011111111"
+    billers_code = "08011111111"
+    # get the variation code via backend from the api response using the service_id
+    variation_code = vtpass_service.variation_codes(service_id)["content"]["varations"][0]["variation_code"]
+    pin = request.form.get("transaction_pin")
+    request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(
+        current_user.id
+    )
+    amount = float(amount)
+
+    if not phone_number.isdigit():
+        flash("Invalid phone number", "danger")
+        return redirect(url_for("bills.get_variation", service_id=service_id))
+    
+    if not hasher.verify(pin, current_user.transaction_pin):
+        flash("Invalid transaction pin", "danger")
+        return redirect(url_for("bills.get_variation", service_id=service_id))
+    
+    purchase_type = "data"
+    
+    transact = deduct_history(
+        amount, current_user, request_id, purchase_type, service_id=service_id, phone=phone_number
+    )
+
+    payload = dict(
+        amount=amount,
+        phone=phone_number,
+        serviceID=service_id,
+        request_id=request_id,
+        billersCode=billers_code,
+        variation_code=variation_code
+    )
+
+    print(payload, "payload")
+
+    try:
+        response, status_code = vtpass_service.purchase_data(payload)
+    except Exception as e:
+        print(e, "Error occurred")
+        flash("There is an error occurred", "danger")
+        return redirect(url_for("view.home"))
+    
+    if status_code == 200 and response["code"] == "000":
+        token = response["token"] if "token" in response else ""
+        update_transaction(token, transact)
+        update_status(transact, "Success")
+        flash("Payment successful", "success")
+        return redirect(url_for("view.home"))
+    else:
+        update_status(transact, "Failed")
+        refund(amount, current_user, request_id, purchase_type, phone_number)
+        flash("Payment failed", "danger")
+        return redirect(url_for("view.home"))
+    
+
+
 
 @bills.route("/display_service/<string:service>")
 @login_required
