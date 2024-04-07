@@ -123,6 +123,9 @@ def showtransaction():
     status_ = request.args.get("status")
     transaction_type = request.args.get("types")
     ref = request.args.get("ref")
+
+    # remove the spaces that might come with the ref
+    ref = ref.strip() if ref else ref
     page = request.args.get("page", 1, type=int)
     per_page = 10  # You can adjust the number of items per page as needed
     # print(category, status)
