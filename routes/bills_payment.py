@@ -148,17 +148,20 @@ def vtpass_payment():
         flash("Payment failed", "danger")
         return redirect(url_for("view.home"))
 
+
 @bills.route("/purchase_data", methods=["POST"])
 @login_required
 def purchase_data():
     tz = pytz.timezone("Africa/Lagos")
     service_id = request.args.get("service_id", "")
     amount = request.form.get("amount")
-    phone_number = "08011111111"
+    phone_number = request.form.get("phone_number")
     billers_code = "08011111111"
     # get the variation code via backend from the api response using the service_id
     variation_code = vtpass_service.variation_codes(service_id)["content"]["varations"][0]["variation_code"]
     pin = request.form.get("transaction_pin")
+
+    print(amount, "AMOUNTT")
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(
         current_user.id
     )
@@ -180,7 +183,7 @@ def purchase_data():
 
     payload = dict(
         amount=amount,
-        phone=phone_number,
+        phone="08011111111",
         serviceID=service_id,
         request_id=request_id,
         billersCode=billers_code,
@@ -207,8 +210,6 @@ def purchase_data():
         refund(amount, current_user, request_id, purchase_type, phone_number)
         flash("Payment failed", "danger")
         return redirect(url_for("view.home"))
-    
-
 
 
 @bills.route("/display_service/<string:service>")
