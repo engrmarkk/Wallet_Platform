@@ -161,7 +161,7 @@ def purchase_data():
     variation_code = vtpass_service.variation_codes(service_id)["content"]["varations"][0]["variation_code"]
     pin = request.form.get("transaction_pin")
 
-    print(amount, "AMOUNTT")
+    # print(amount, "AMOUNTT")
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(
         current_user.id
     )
@@ -216,7 +216,7 @@ def purchase_data():
 @login_required
 def display_service(service):
     response = vtpass_service.service_identifier(service)
-    print(response, "response")
+    # print(response, "response")
     return render_template(
         "display_serv.html",
         services=response["content"],
@@ -233,7 +233,7 @@ def get_variation(service_id):
         if service_id.lower() not in ["mtn", "glo", "etisalat", "airtel"]
         else True
     )
-    print(response, "response")
+    # print(response, "response")
     return render_template(
         "display_serv.html",
         variations=response["content"]["varations"]
