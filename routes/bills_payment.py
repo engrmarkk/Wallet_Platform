@@ -253,9 +253,9 @@ def set_img_and_redirect(service_id):
     return redirect(url_for("bills.get_variation", service_id=service_id))
 
 
-@bills.route("/verify_number", methods=["GET"])
+@bills.route("/verify_number", methods=["POST"])
 def verify_number():
-    data = request.json()
+    data = request.json
     billers_code = data.get("billers_code", "")
     service_id = data.get("service_id", "")
     type_ = data.get("type", "")
@@ -271,6 +271,8 @@ def verify_number():
 
     purchase_type = determine_purchase_type(service_id)
 
+    print(purchase_type, "purchase type")
+
     payload = dict(
         billersCode="1111111111111" if purchase_type == "electricity" else "1212121212",
         serviceID=service_id,
@@ -279,5 +281,7 @@ def verify_number():
     if type_:
         payload["type"] = type_
     response = vtpass_service.verify_meter_and_smartcard_number(payload)
+    if not response:
+        return jsonify({"status": "failed", "msg": "Network Error", "customer_name": "network failure"})
     print(response, "response")
     return jsonify({"customer_name": response["content"]["Customer_Name"]}), 200
