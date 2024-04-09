@@ -282,6 +282,6 @@ def verify_number():
         payload["type"] = type_
     response = vtpass_service.verify_meter_and_smartcard_number(payload)
     if not response:
-        return jsonify({"status": "failed", "msg": "Network Error", "customer_name": "network failure"})
+        return jsonify({"status": "failed", "msg": "Network Error", "customer_name": "network failure"}), 502
     print(response, "response")
     return jsonify({"customer_name": response["content"]["Customer_Name"]}), 200
