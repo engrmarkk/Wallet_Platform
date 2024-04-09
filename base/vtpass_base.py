@@ -1,5 +1,8 @@
 import os
 from base64 import b64encode
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class VtpassBase:
@@ -9,6 +12,8 @@ class VtpassBase:
     pub_key = os.getenv("VTPASS_PUBLIC_KEY")
     secret_key = os.getenv("VTPASS_SECRET_KEY")
     base_url = os.getenv("VTPASS_BASE_URL")
+
+    # print(email, password, api_key, pub_key, secret_key, base_url)
 
     # print("email: ", email, "password: ", password, "api_key: ", api_key, "pub_key: ",
     #       pub_key, "secret_key: ", secret_key, "base_url: ", base_url)
@@ -23,7 +28,7 @@ class VtpassBase:
     def set_headers(self):
         headers = {
             "Content-Type": "application/json",
-            # "Authorization": self.test_auth,
+            "Authorization": self.test_auth,
             "api-key": self.api_key,
             "secret-key": self.secret_key
         }
