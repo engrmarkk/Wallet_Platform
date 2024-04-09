@@ -259,9 +259,12 @@ def verify_number():
     billers_code = data.get("billers_code", "")
     service_id = data.get("service_id", "")
     type_ = data.get("type", "")
+    
+
+    purchase_type = determine_purchase_type(service_id)
 
     payload = dict(
-        billersCode=billers_code,
+        billersCode="1111111111111" if purchase_type == "electricity" else "1212121212",
         serviceID=service_id,
     )
 
