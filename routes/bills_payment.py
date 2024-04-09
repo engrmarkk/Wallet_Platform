@@ -259,7 +259,15 @@ def verify_number():
     billers_code = data.get("billers_code", "")
     service_id = data.get("service_id", "")
     type_ = data.get("type", "")
-    
+
+    if not billers_code:
+        return jsonify({"status": "failed", "msg": "please provide the number you want to verify"}), 400
+
+    if not service_id:
+        return jsonify({"status": "failed", "msg": "service id is required"}), 400
+
+    if not type_:
+        return jsonify({"status": "failed", "msg": "type is required"}), 400
 
     purchase_type = determine_purchase_type(service_id)
 
