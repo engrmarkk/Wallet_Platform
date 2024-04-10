@@ -8,7 +8,7 @@ load_dotenv()
 
 
 class VtpassService(VtpassBase):
-    def purchase_airtime(self, payload):
+    def purchase_product(self, payload):
 
         url = self.base_url + "/api/pay"
         headers = self.set_headers()
