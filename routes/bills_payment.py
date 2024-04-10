@@ -37,14 +37,15 @@ def vtpass_payment():
     variation_code = request.form.get("variation_code")
     quantity = request.form.get("quantity")
     pin = request.form.get("transaction_pin")
+    customer_name = request.form.get("customer_name")
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(
         current_user.id
     )
     transaction_pin = request.form.get("transaction_pin")
     print("amount: ", amount)
     amount = float(amount)
-    prepaid_number = request.form.get("prepaid_number")
-    smartcard_number = request.form.get("smartcard_number")
+    prepaid_number = request.form.get("prepaid_number", "")
+    smartcard_number = request.form.get("smartcard_number", "")
 
     print(
         "amount: ",
@@ -63,6 +64,12 @@ def vtpass_payment():
         quantity,
         "request_id: ",
         request_id,
+        "customer_name",
+        customer_name,
+        "prepaid_number",
+        prepaid_number,
+        "smartcard_number",
+        smartcard_number
     )
 
     # if not amount or not phone_number or not service_id:
@@ -88,7 +95,7 @@ def vtpass_payment():
     purchase_type = determine_purchase_type(service_id)
 
     transact = deduct_history(
-        amount, current_user, request_id, purchase_type, service_id, phone_number
+        amount, current_user, request_id, purchase_type, service_id, phone_number, customer_name
     )
 
     payload = dict(
@@ -102,7 +109,7 @@ def vtpass_payment():
 
     if purchase_type == "airtime":
         payload["phone"] = "08011111111"
-        response, status_code = vtpass_service.purchase_airtime(payload)
+        response, status_code = vtpass_service.purchase_product(payload)
     elif purchase_type == "data":
         payload["phone"] = "08011111111"
         #  Implement error handling to gracefully handle situations where None is returned
@@ -128,7 +135,7 @@ def vtpass_payment():
             "subscription_type": type_,
             "quantity": quantity,
         }
-        response, status_code = vtpass_service.purchase_cable(payload)
+        response, status_code = vtpass_service.purchase_product(payload)
     else:
         flash("Invalid service ID", "danger")
         return redirect(url_for("view.home"))
