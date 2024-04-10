@@ -30,6 +30,7 @@ class Transaction(db.Model, UserMixin):
     category = db.Column(db.String(100), db.ForeignKey("transaction_categories.id"))
     token = db.Column(db.String(200))
     description = db.Column(db.String(200))
+    customer_name = db.Column(db.String(200))
     status = db.Column(db.String(100))
     phone_number = db.Column(db.String(100))
     sender = db.Column(db.String(100))
