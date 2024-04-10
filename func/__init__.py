@@ -66,7 +66,7 @@ def return_cat_type(purchase_type):
         return 'Internet-Data'
 
 
-def deduct_history(amount, current_user, request_id, purchase_type, service_id, phone=""):
+def deduct_history(amount, current_user, request_id, purchase_type, service_id, phone="", customer_name=""):
     print("got here@deduct")
     current_user.account_balance -= amount
     db.session.commit()
@@ -83,6 +83,7 @@ def deduct_history(amount, current_user, request_id, purchase_type, service_id, 
         status="Pending",
         category=get_cat(cat),
         user_id=current_user.id,
+        customer_name=customer_name
     )
     db.session.add(transact)
     db.session.commit()
