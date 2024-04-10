@@ -1,6 +1,10 @@
 from base import VtpassBase
 import requests
 import json
+from dotenv import load_dotenv
+
+
+load_dotenv()
 
 
 class VtpassService(VtpassBase):
@@ -55,7 +59,9 @@ class VtpassService(VtpassBase):
 
     def verify_meter_and_smartcard_number(self, payload):
         try:
-            url = self.base_url + f"/api/merchant-verify"
+            print(payload, "payload")
+            print(self.set_headers(), "headers")
+            url = "https://sandbox.vtpass.com/api/merchant-verify"
             response = requests.post(
                 url, self.set_headers(), json=payload
             )
