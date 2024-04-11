@@ -67,6 +67,7 @@ def return_cat_type(purchase_type):
 
 
 def deduct_history(amount, current_user, request_id, purchase_type, service_id, phone="", customer_name=""):
+    print(purchase_type, "purchase type")
     print("got here@deduct")
     current_user.account_balance -= amount
     db.session.commit()
