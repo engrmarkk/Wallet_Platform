@@ -43,13 +43,13 @@
         {% endfor %}
     </select>
     {% if "electric" in service_id %}
-    <input type="text" name="prepaid_number" id="prepaid_number" class="form-control w-50 mt-4"
+    <input type="text" name="verify_number" id="prepaid_number" class="form-control w-50 mt-4"
         placeholder="Enter your Prepaid Number" required maxlength="13">
         <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
         maxlength="11" required>
     <span class="reveal1"></span>
     {% elif "dstv" in service_id or "gotv" in service_id or "startimes" in service_id or "showmax" in service_id %}
-    <input type="text" name="smartcard_number" id="smartcard_number" class="form-control w-50 mt-4"
+    <input type="text" name="verify_number" id="smartcard_number" class="form-control w-50 mt-4"
         placeholder="Enter your SmartCard Number" required maxlength="13">
         <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
         maxlength="11" required>
@@ -59,7 +59,8 @@
         maxlength="11" required>
     {% endif %}
     <input type="text" class="form-control w-50 mt-4 d-none" id="get_service_id" value="{{service_id}}">
-    <input type="text" class="form-control w-50 mt-4 d-none" id="customer_name" value="">
+    <input type="text" class="form-control w-50 mt-4 d-none" id="customer_name" value="" name="">
+    <input type="hidden" id="hidden_input" name="customer_name" value="">
     <br>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModall">
             Continue
@@ -260,6 +261,7 @@
 let prepaidInput = document.getElementById("prepaid_number");
 let smartcardInput = document.getElementById("smartcard_number");
 let customer_name = document.getElementById("customer_name");
+let hidden_input = document.getElementById("hidden_input");
 let service_id = document.getElementById("get_service_id").value;
 // let type_ = document.getElementById("variation_cd").value;
 
@@ -307,6 +309,7 @@ function fetchResponse(type, number) {
         // set the disabled attribute to false
         customer_name.disabled = true;
         customer_name.value = data['customer_name']
+        hidden_input.value = data['customer_name']
         // remove the d-none class from the element
     })
     .catch(error => {
