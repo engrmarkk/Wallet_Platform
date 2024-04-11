@@ -31,7 +31,9 @@
 <img src="{{ img }}" class="card-img-top img-thumbnail m-auto d-flex justify-content-center" alt="image"
     style="width: 10rem;">
 {% if variations %}
-<form action="{{url_for('bills.purchase_data', service_id=service_id)}}" class="form-group" method="post">
+<form action="
+{% if 'mtn-data' in service_id or 'glo-data' in service_id or 'etisalat-data' in service_id or 'airtel-data' in service_id or 'smiles' in service_id or 'spectranet' in service_id %}
+{{url_for('bills.purchase_data', service_id=service_id)}} {% else %} {{url_for('bills.vtpass_payment', service_id=service_id)}} {% endif %}" class="form-group" method="post">
     <select name="amount" id="variations_cd" class="form-control w-50">
         <option value="select" disabled selected>Select</option>
         {% for variation in variations %}
