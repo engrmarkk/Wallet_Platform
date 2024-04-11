@@ -95,6 +95,10 @@ def vtpass_payment():
 
     purchase_type = determine_purchase_type(service_id)
 
+    print(purchase_type, "oekej")
+
+    # return jsonify({"s": "dd"})
+
     transact = deduct_history(
         amount, current_user, request_id, purchase_type, service_id, phone_number, customer_name
     )
