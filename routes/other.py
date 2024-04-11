@@ -167,7 +167,7 @@ def showtransaction():
 def home():
     form = ConfirmAccount()
     beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
-    balance = f"{current_user.account_balance:,}"
+    balance = f"{current_user.account_balance:,.2f}"
     pinset = current_user.pin_set
     if request.method == "POST":
         try:
