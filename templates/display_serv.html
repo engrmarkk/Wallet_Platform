@@ -31,7 +31,9 @@
 <img src="{{ img }}" class="card-img-top img-thumbnail m-auto d-flex justify-content-center" alt="image"
     style="width: 10rem;">
 {% if variations %}
-<form action="{{url_for('bills.purchase_data', service_id=service_id)}}" class="form-group" method="post">
+<form action="
+{% if 'mtn-data' in service_id or 'glo-data' in service_id or 'etisalat-data' in service_id or 'airtel-data' in service_id or 'smiles' in service_id or 'spectranet' in service_id %}
+{{url_for('bills.purchase_data', service_id=service_id)}} {% else %} {{url_for('bills.vtpass_payment', service_id=service_id)}} {% endif %}" class="form-group" method="post">
     <select name="amount" id="variations_cd" class="form-control w-50">
         <option value="select" disabled selected>Select</option>
         {% for variation in variations %}
@@ -41,17 +43,24 @@
         {% endfor %}
     </select>
     {% if "electric" in service_id %}
-    <input type="text" name="prepaid_number" id="prepaid_number" class="form-control w-50 mt-4"
+    <input type="text" name="verify_number" id="prepaid_number" class="form-control w-50 mt-4"
         placeholder="Enter your Prepaid Number" required maxlength="13">
+        <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
+        maxlength="11" required>
     <span class="reveal1"></span>
     {% elif "dstv" in service_id or "gotv" in service_id or "startimes" in service_id or "showmax" in service_id %}
-    <input type="text" name="smartcard_number" id="smartcard_number" class="form-control w-50 mt-4"
+    <input type="text" name="verify_number" id="smartcard_number" class="form-control w-50 mt-4"
         placeholder="Enter your SmartCard Number" required maxlength="13">
-    <span class="reveal1"></span>
+        <span class="reveal1 badge bg-success p-1" id="reveal1"></span>
+        <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
+        maxlength="11" required>
     {% elif "mtn-data" in service_id or "glo-data" in service_id or "etisalat-data" in service_id or "airtel-data" in service_id or "smiles" in service_id or "spectranet" in service_id %}
     <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
         maxlength="11" required>
     {% endif %}
+    <input type="text" class="form-control w-50 mt-4 d-none" id="get_service_id" value="{{service_id}}">
+    <input type="text" class="form-control w-50 mt-4 d-none" id="customer_name" value="" name="">
+    <input type="hidden" id="hidden_input" name="customer_name" value="">
     <br>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModall">
             Continue
@@ -65,7 +74,7 @@
               <div class="modal-content">
                 <div class="modal-header">
                 {% if current_user.pin_set %}
-                  <h5 class="modal-title" id="exampleModalLabel">Completee Transaction</h5>
+                  <h5 class="modal-title" id="exampleModalLabel">Complete Transaction</h5>
                 {% else %}
                 <h5 class="modal-title" id="exampleModalLabel">Set your pin</h5>
                 {% endif %}
@@ -243,6 +252,74 @@
 
 
     }
+
+
+
+
+
+    // Assuming you have input fields with IDs "prepaid_number" and "smartcard_number"
+let prepaidInput = document.getElementById("prepaid_number");
+let smartcardInput = document.getElementById("smartcard_number");
+let customer_name = document.getElementById("customer_name");
+let hidden_input = document.getElementById("hidden_input");
+let service_id = document.getElementById("get_service_id").value;
+// let type_ = document.getElementById("variation_cd").value;
+
+let type_ = "prepaid"
+// let service_id = "dstv"
+
+// Event listener for prepaid meter number input
+if (prepaidInput) {
+    prepaidInput.addEventListener("input", function () {
+        let prepaidNumber = prepaidInput.value;
+        if (prepaidNumber.length === 13) {
+            fetchResponse("prepaid", prepaidNumber);
+        }
+    });
+}
+
+// Event listener for smartcard number input
+if (smartcardInput) {
+    smartcardInput.addEventListener("input", function () {
+        let smartcardNumber = smartcardInput.value;
+        if (smartcardNumber.length === 13) {
+            fetchResponse(type_, smartcardNumber);
+        }
+    });
+}
+
+// Function to fetch response from the endpoint
+function fetchResponse(type, number) {
+    fetch("/verify_number", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            type: type,
+            billers_code: number,
+            service_id: service_id
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log(data, "response"); // Handle the response data as needed
+
+        // customer_name.classList.remove("d-none");
+        // set the disabled attribute to false
+        // customer_name.disabled = true;
+        // customer_name.value = data['customer_name']
+
+        // beleow is a span tag
+        document.getElementById("reveal1").textContent = data['customer_name'];
+        hidden_input.value = data['customer_name']
+        // remove the d-none class from the element
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+
 </script>
 
 {% endblock %}

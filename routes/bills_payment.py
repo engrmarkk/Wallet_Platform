@@ -37,14 +37,14 @@ def vtpass_payment():
     variation_code = request.form.get("variation_code")
     quantity = request.form.get("quantity")
     pin = request.form.get("transaction_pin")
+    customer_name = request.form.get("customer_name")
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(
         current_user.id
     )
     transaction_pin = request.form.get("transaction_pin")
     print("amount: ", amount)
     amount = float(amount)
-    prepaid_number = request.form.get("prepaid_number")
-    smartcard_number = request.form.get("smartcard_number")
+    verify_number = request.form.get("verify_number", "")
 
     print(
         "amount: ",
@@ -63,6 +63,10 @@ def vtpass_payment():
         quantity,
         "request_id: ",
         request_id,
+        "customer_name",
+        customer_name,
+        "verify_number",
+        verify_number
     )
 
     # if not amount or not phone_number or not service_id:
@@ -82,13 +86,14 @@ def vtpass_payment():
     #     return redirect(url_for("bills.get_variation", service_id=service_id))
 
     if not hasher.verify(pin, current_user.transaction_pin):
+        print("invalid pin")
         flash("Invalid transaction pin", "danger")
         return redirect(url_for("bills.get_variation", service_id=service_id))
 
     purchase_type = determine_purchase_type(service_id)
 
     transact = deduct_history(
-        amount, current_user, request_id, purchase_type, service_id, phone_number
+        amount, current_user, request_id, purchase_type, service_id, phone_number, customer_name, verify_number
     )
 
     payload = dict(
@@ -102,7 +107,7 @@ def vtpass_payment():
 
     if purchase_type == "airtime":
         payload["phone"] = "08011111111"
-        response, status_code = vtpass_service.purchase_airtime(payload)
+        response, status_code = vtpass_service.purchase_product(payload)
     elif purchase_type == "data":
         payload["phone"] = "08011111111"
         #  Implement error handling to gracefully handle situations where None is returned
@@ -128,7 +133,7 @@ def vtpass_payment():
             "subscription_type": type_,
             "quantity": quantity,
         }
-        response, status_code = vtpass_service.purchase_cable(payload)
+        response, status_code = vtpass_service.purchase_product(payload)
     else:
         flash("Invalid service ID", "danger")
         return redirect(url_for("view.home"))
@@ -226,8 +231,12 @@ def display_service(service):
 
 
 @bills.route("/display_variation/<string:service_id>", methods=["GET"])
+@login_required
 def get_variation(service_id):
-    img = session.get("img")
+    img = session.get("img", "")
+    if not img:
+        flash("Session timed out", "info")
+        return redirect(url_for("view.home"))
     response = (
         vtpass_service.variation_codes(service_id)
         if service_id.lower() not in ["mtn", "glo", "etisalat", "airtel"]
@@ -253,20 +262,35 @@ def set_img_and_redirect(service_id):
     return redirect(url_for("bills.get_variation", service_id=service_id))
 
 
-@bills.route("/verify_number", methods=["GET"])
+@bills.route("/verify_number", methods=["POST"])
 def verify_number():
-    data = request.json()
+    data = request.json
     billers_code = data.get("billers_code", "")
     service_id = data.get("service_id", "")
     type_ = data.get("type", "")
 
+    if not billers_code:
+        return jsonify({"status": "failed", "msg": "please provide the number you want to verify"}), 400
+
+    if not service_id:
+        return jsonify({"status": "failed", "msg": "service id is required"}), 400
+
+    if not type_:
+        return jsonify({"status": "failed", "msg": "type is required"}), 400
+
+    purchase_type = determine_purchase_type(service_id)
+
+    print(purchase_type, "purchase type")
+
     payload = dict(
-        billersCode=billers_code,
+        billersCode="1111111111111" if purchase_type == "electricity" else "1212121212",
         serviceID=service_id,
     )
 
     if type_:
         payload["type"] = type_
     response = vtpass_service.verify_meter_and_smartcard_number(payload)
+    if not response:
+        return jsonify({"status": "failed", "msg": "Network Error", "customer_name": current_user.last_name.title() + " " + current_user.first_name.title()}), 502
     print(response, "response")
     return jsonify({"customer_name": response["content"]["Customer_Name"]}), 200

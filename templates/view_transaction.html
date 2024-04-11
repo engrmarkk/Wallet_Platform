@@ -33,6 +33,9 @@
                     {% if trans.sender %}
                     <p><strong style="color: #4caf50;">Sender:</strong> {{ trans.sender }}</p>
                     {% endif %}
+                    {% if trans.customer_name %}
+                    <p><strong style="color: #4caf50;">Customer name:</strong> {{ trans.customer_name }}</p>
+                    {% endif %}
                     {% if trans.token %}
                     <p><strong style="color: #4caf50;">Token:</strong> {{ trans.token }}</p>
                     {% endif %}

@@ -66,12 +66,17 @@ def return_cat_type(purchase_type):
         return 'Internet-Data'
 
 
-def deduct_history(amount, current_user, request_id, purchase_type, service_id, phone=""):
+def deduct_history(amount, current_user, request_id, purchase_type, service_id, phone="", customer_name="", verify_number=""):
+    print(purchase_type, "purchase type")
     print("got here@deduct")
     current_user.account_balance -= amount
     db.session.commit()
 
     cat = return_cat_type(purchase_type)
+
+    description = "Purchase for " + cat + "/" + service_id
+    if verify_number:
+        description = description + "/" + verify_number
 
     transact = Transaction(
         transaction_type="DBT",
@@ -79,10 +84,11 @@ def deduct_history(amount, current_user, request_id, purchase_type, service_id, 
         balance=current_user.account_balance,
         transaction_ref=cat + "-" + request_id,
         phone_number=phone,
-        description="Purchase for " + cat + "/" + service_id,
+        description=description,
         status="Pending",
         category=get_cat(cat),
         user_id=current_user.id,
+        customer_name=customer_name
     )
     db.session.add(transact)
     db.session.commit()
