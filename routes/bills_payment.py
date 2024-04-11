@@ -233,9 +233,10 @@ def display_service(service):
 @bills.route("/display_variation/<string:service_id>", methods=["GET"])
 @login_required
 def get_variation(service_id):
-    img = session.get("img")
+    img = session.get("img", "")
     if not img:
-        return redirect(url_for("display_service", service=service_id))
+        flash("Session timed out", "info")
+        return redirect(url_for("view.home"))
     response = (
         vtpass_service.variation_codes(service_id)
         if service_id.lower() not in ["mtn", "glo", "etisalat", "airtel"]
