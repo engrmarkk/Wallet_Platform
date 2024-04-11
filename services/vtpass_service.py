@@ -61,9 +61,10 @@ class VtpassService(VtpassBase):
         try:
             print(payload, "payload")
             print(self.set_headers(), "headers")
-            url = "https://sandbox.vtpass.com/api/merchant-verify"
+            url = self.base_url + "/api/merchant-verify"
+            # url = "https://sandbox.vtpass.com/api/merchant-verify"
             response = requests.post(
-                url, self.set_headers(), json=payload
+                url, headers=self.set_headers(), data=json.dumps(payload)
             )
             response.raise_for_status()
             return response.json()
