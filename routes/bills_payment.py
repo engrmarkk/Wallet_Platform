@@ -44,8 +44,7 @@ def vtpass_payment():
     transaction_pin = request.form.get("transaction_pin")
     print("amount: ", amount)
     amount = float(amount)
-    prepaid_number = request.form.get("prepaid_number", "")
-    smartcard_number = request.form.get("smartcard_number", "")
+    verify_number = request.form.get("verify_number", "")
 
     print(
         "amount: ",
@@ -66,10 +65,8 @@ def vtpass_payment():
         request_id,
         "customer_name",
         customer_name,
-        "prepaid_number",
-        prepaid_number,
-        "smartcard_number",
-        smartcard_number
+        "verify_number",
+        verify_number
     )
 
     # if not amount or not phone_number or not service_id:
@@ -95,12 +92,8 @@ def vtpass_payment():
 
     purchase_type = determine_purchase_type(service_id)
 
-    print(purchase_type, "oekej")
-
-    # return jsonify({"s": "dd"})
-
     transact = deduct_history(
-        amount, current_user, request_id, purchase_type, service_id, phone_number, customer_name
+        amount, current_user, request_id, purchase_type, service_id, phone_number, customer_name, verify_number
     )
 
     payload = dict(
