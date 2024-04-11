@@ -51,9 +51,9 @@
     {% elif "dstv" in service_id or "gotv" in service_id or "startimes" in service_id or "showmax" in service_id %}
     <input type="text" name="verify_number" id="smartcard_number" class="form-control w-50 mt-4"
         placeholder="Enter your SmartCard Number" required maxlength="13">
+        <span class="reveal1 badge bg-success p-1" id="reveal1"></span>
         <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
         maxlength="11" required>
-    <span class="reveal1"></span>
     {% elif "mtn-data" in service_id or "glo-data" in service_id or "etisalat-data" in service_id or "airtel-data" in service_id or "smiles" in service_id or "spectranet" in service_id %}
     <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
         maxlength="11" required>
@@ -305,10 +305,13 @@ function fetchResponse(type, number) {
     .then(data => {
         console.log(data, "response"); // Handle the response data as needed
 
-        customer_name.classList.remove("d-none");
+        // customer_name.classList.remove("d-none");
         // set the disabled attribute to false
-        customer_name.disabled = true;
-        customer_name.value = data['customer_name']
+        // customer_name.disabled = true;
+        // customer_name.value = data['customer_name']
+
+        // beleow is a span tag
+        document.getElementById("reveal1").textContent = data['customer_name'];
         hidden_input.value = data['customer_name']
         // remove the d-none class from the element
     })
