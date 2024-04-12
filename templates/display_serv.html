@@ -34,7 +34,9 @@
 <form action="
 {% if 'mtn-data' in service_id or 'glo-data' in service_id or 'etisalat-data' in service_id or 'airtel-data' in service_id or 'smiles' in service_id or 'spectranet' in service_id %}
 {{url_for('bills.purchase_data', service_id=service_id)}} {% else %} {{url_for('bills.vtpass_payment', service_id=service_id)}} {% endif %}" class="form-group" method="post">
-    <select name="amount" id="variations_cd" class="form-control w-50">
+
+{% if not "electric" in service_id %}
+<select name="amount" id="variations_cd" class="form-control w-50">
         <option value="select" disabled selected>Select</option>
         {% for variation in variations %}
         <option value="{{ variation['variation_amount'] }}"
@@ -42,12 +44,22 @@
         </option>
         {% endfor %}
     </select>
+    {% endif %}
     {% if "electric" in service_id %}
+    <select name="type" id="variations_cd" class="form-control w-50">
+        <option value="select" disabled selected>Select</option>
+        {% for variation in variations %}
+        <option value="{{ variation['name'] }}"
+        >{{ variation['name'] }}
+        </option>
+        {% endfor %}
+    </select>
     <input type="text" name="verify_number" id="prepaid_number" class="form-control w-50 mt-4"
         placeholder="Enter your Prepaid Number" required maxlength="13">
+        <span class="reveal1 badge bg-success p-1" id="reveal1"></span>
+        <input type="number" class="form-control w-50 mt-4" id="amount" placeholder="Enter amount" name="amount">
         <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
         maxlength="11" required>
-    <span class="reveal1"></span>
     {% elif "dstv" in service_id or "gotv" in service_id or "startimes" in service_id or "showmax" in service_id %}
     <input type="text" name="verify_number" id="smartcard_number" class="form-control w-50 mt-4"
         placeholder="Enter your SmartCard Number" required maxlength="13">
@@ -114,7 +126,6 @@
     <input type="number" class="form-control w-50 mt-4" id="amount" placeholder="Enter amount" name="amount">
     <input type="tel" name="phone_number" id="telephone" class="form-control w-50 mt-4" placeholder="Enter telephone"
         maxlength="11">
-
 
 
     <button type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
