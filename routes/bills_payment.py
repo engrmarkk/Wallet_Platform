@@ -41,7 +41,6 @@ def vtpass_payment():
     request_id = f"{datetime.datetime.now(tz).strftime('%Y%m%d%H%M')}" + str(
         current_user.id
     )
-    transaction_pin = request.form.get("transaction_pin")
     print("amount: ", amount)
     amount = float(amount)
     verify_number = request.form.get("verify_number", "")
@@ -118,10 +117,22 @@ def vtpass_payment():
             flash("An error occurred", "danger")
             return redirect(url_for("view.home"))
     elif purchase_type == "electricity":
-        payload["billers_code"] = (
-            "1111111111111" if type_.lower() == "prepaid" else "1010101010101"
-        )
-        response, status_code = vtpass_service.purchase_electricity(payload)
+        variation_code = vtpass_service.variation_codes(service_id)["content"]["varations"][0]["variation_code"]
+        payload["variation_code"] = variation_code
+        if variation_code == "prepaid":
+            billers_code = "1111111111111"
+        else:
+            billers_code = "1010101010101"
+        payload = {
+            "serviceID": service_id,
+            "request_id": request_id,
+            "billersCode": billers_code,
+            "variation_code": variation_code,
+            "amount": amount,
+            "phone": phone_number,
+            "type": type_,
+        }
+        response, status_code = vtpass_service.purchase_product(payload)
     elif purchase_type == "cable":
         payload = {
             "serviceID": service_id,
@@ -269,6 +280,8 @@ def verify_number():
     service_id = data.get("service_id", "")
     type_ = data.get("type", "")
 
+    print(billers_code, service_id, type_)
+
     if not billers_code:
         return jsonify({"status": "failed", "msg": "please provide the number you want to verify"}), 400
 
@@ -282,8 +295,13 @@ def verify_number():
 
     print(purchase_type, "purchase type")
 
+    if purchase_type == "electricity":
+        billersCode = "1111111111111" if type_.lower() == "prepaid" else "1010101010101"
+    else:
+        billersCode = "1212121212"
+
     payload = dict(
-        billersCode="1111111111111" if purchase_type == "electricity" else "1212121212",
+        billersCode=billersCode,
         serviceID=service_id,
     )
 

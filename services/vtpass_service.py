@@ -9,7 +9,7 @@ load_dotenv()
 
 class VtpassService(VtpassBase):
     def purchase_product(self, payload):
-
+        print(payload, "payload")
         url = self.base_url + "/api/pay"
         headers = self.set_headers()
         response = requests.post(url, headers=headers, data=json.dumps(payload))
