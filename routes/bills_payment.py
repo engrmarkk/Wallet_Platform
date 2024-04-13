@@ -119,9 +119,19 @@ def vtpass_payment():
     elif purchase_type == "electricity":
         variation_code = vtpass_service.variation_codes(service_id)["content"]["varations"][0]["variation_code"]
         payload["variation_code"] = variation_code
-        payload["billersCode"] = (
-            "1111111111111" if type_.lower() == "prepaid" else "1010101010101"
-        )
+        if variation_code == "prepaid":
+            billers_code = "1111111111111"
+        else:
+            billers_code = "1010101010101"
+        payload = {
+            "serviceID": service_id,
+            "request_id": request_id,
+            "billersCode": billers_code,
+            "variation_code": variation_code,
+            "amount": amount,
+            "phone": phone_number,
+            "type": type_,
+        }
         response, status_code = vtpass_service.purchase_product(payload)
     elif purchase_type == "cable":
         payload = {
