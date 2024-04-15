@@ -317,9 +317,9 @@ def pay(acct):
                 )
                 msg.html = render_template(
                     "debit.html",
-                    amount=f"{amount:,}",
+                    amount=f"{amount:,.2f}",
                     user=user1,
-                    balance=f"{current_user.account_balance:,}",
+                    balance=f"{current_user.account_balance:,.2f}",
                     date=x,
                     acct=str(current_user.account_number),
                 )
@@ -338,8 +338,8 @@ def pay(acct):
                 msg.html = render_template(
                     "credit.html",
                     user=user1,
-                    amount=f"{amount:,}",
-                    balance=f"{user1.account_balance:,}",
+                    amount=f"{amount:,.2f}",
+                    balance=f"{user1.account_balance:,.2f}",
                     date=x,
                     acct=str(user1.account_number),
                 )
