@@ -40,3 +40,25 @@ def send_notification(current_user, amount, description, x, phone):
     except Exception as e:
         print(e, "ERROR")
         flash("Network Error", "danger")
+
+
+def send_credit_notification(subject, current_user, amount, description, x, phone):
+    try:
+        msg = Message(
+            subject=subject,
+            sender="EasyTransact <easytransact.send@gmail.com>",
+            recipients=[current_user.email],
+        )
+        msg.html = render_template(
+            "credit.html",
+            amount=f"{amount:,.2f}",
+            balance=f"{current_user.account_balance:,}",
+            description=description,
+            phone=phone,
+            date=x,
+            acct=str(current_user.account_number),
+        )
+        mail.send(msg)
+    except Exception as e:
+        print(e, "ERROR")
+        flash("Network error", "danger")
