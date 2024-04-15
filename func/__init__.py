@@ -10,7 +10,7 @@ from flask_login import logout_user
 import pytz
 import random
 import string
-from utils import send_notification
+from utils import send_notification, send_credit_notification
 
 
 def generate_reference():
@@ -117,6 +117,7 @@ def refund(amount, current_user, request_id, purchase_type, service_id, phone=""
     )
     db.session.add(transact)
     db.session.commit()
+    send_credit_notification("REFUND", current_user, amount, transact.description, transact.date_posted, phone)
     return transact
 
 
