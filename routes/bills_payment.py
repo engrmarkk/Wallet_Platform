@@ -17,7 +17,7 @@ from services import VtpassService
 import datetime
 import pytz
 from passlib.hash import pbkdf2_sha256 as hasher
-from utils import determine_purchase_type
+from utils import determine_purchase_type, send_notification
 
 bills = Blueprint("bills", __name__, template_folder="../templates")
 
