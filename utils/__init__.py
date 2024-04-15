@@ -32,7 +32,7 @@ def send_notification(current_user, amount, description, x, phone):
             amount=f"{amount:,.2f}",
             description=description,
             phone=phone,
-            balance=f"{current_user.account_balance:,}",
+            balance=f"{current_user.account_balance:,.2f}",
             date=x,
             acct=str(current_user.account_number),
         )
