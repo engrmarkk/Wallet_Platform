@@ -10,6 +10,7 @@ from flask_login import logout_user
 import pytz
 import random
 import string
+from utils import send_notification
 
 
 def generate_reference():
@@ -92,6 +93,7 @@ def deduct_history(amount, current_user, request_id, purchase_type, service_id, 
     )
     db.session.add(transact)
     db.session.commit()
+    send_notification(current_user, amount, description, transact.date_posted, phone)
     return transact
 
 
