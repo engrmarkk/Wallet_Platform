@@ -50,11 +50,12 @@ def send_credit_notification(subject, current_user, amount, description, x, phon
             recipients=[current_user.email],
         )
         msg.html = render_template(
-            "credit.html",
+            "credit_bills.html",
             amount=f"{amount:,.2f}",
             balance=f"{current_user.account_balance:,}",
             description=description,
             phone=phone,
+            user=current_user,
             date=x,
             acct=str(current_user.account_number),
         )
