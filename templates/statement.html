@@ -67,6 +67,17 @@
         >
           Credit
         </th>
+
+        <th
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f2f2f2;
+          "
+        >
+          Balance
+        </th>
       </tr>
       {% for transaction in current_user.transacts %}
       <tr>
@@ -120,6 +131,20 @@
             border-bottom: 1px solid #ddd;
           "
         ></td>
+
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+        <del style="text-decoration-style: double">N</del>
+        {{ "{:,.2f}".format(transaction.balance) }}
+        </td>
         {% elif transaction.transaction_type == 'CRT' %}
         <td
           style="
@@ -168,6 +193,20 @@
         >
         <del style="text-decoration-style: double">N</del>
           {{ "{:,.2f}".format(transaction.transaction_amount) }}
+        </td>
+
+        <td
+          style="
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+          "
+        >
+        <del style="text-decoration-style: double">N</del>
+        {{ "{:,.2f}".format(transaction.balance) }}
         </td>
         {% endif %}
       </tr>
