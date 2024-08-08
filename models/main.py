@@ -24,7 +24,8 @@ class User(db.Model, UserMixin):
     savings = db.Column(db.Integer, default=0)
     invite_earn = db.Column(db.Integer, nullable=False, default=0)
     invited_by = db.Column(db.BigInteger, nullable=False, default=0)
-    photo = db.Column(db.Text, nullable=False, default='https://res.cloudinary.com/duwyopabr/image/upload/v1676162283/user_xz7o0f.png')
+    photo = db.Column(db.Text, nullable=False,
+                      default='https://res.cloudinary.com/duwyopabr/image/upload/v1676162283/user_xz7o0f.png')
     transaction_pin = db.Column(db.Text, nullable=False, default="")
     secret_question = db.Column(db.Text, nullable=True)
     secret_answer = db.Column(db.String(50), nullable=True)
@@ -50,3 +51,7 @@ class User(db.Model, UserMixin):
             print(e, "error in token verification")
             return None
         return User.query.get(id)
+
+
+def get_account_number_details(acct_number):
+    return User.query.filter_by(account_number=acct_number).first()
