@@ -1,6 +1,7 @@
 from flask_mail import Message
 from extensions import mail
 from flask import render_template, flash
+import random
 
 
 def determine_purchase_type(service_id):
@@ -63,3 +64,11 @@ def send_credit_notification(subject, current_user, amount, description, x, phon
     except Exception as e:
         print(e, "ERROR")
         flash("Network error", "danger")
+
+
+def generate_session_id():
+    return f"000011{str(random.randint(1000000000, 9999999999))}"
+
+
+def generate_transaction_ref():
+    return f"TopUp-{str(random.randint(1000000000, 9999999999))}"
