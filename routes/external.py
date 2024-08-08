@@ -79,8 +79,8 @@ def transfer_in():
                                                   description=description or "TopUp",
                                                   category=get_cat("Wallet-Topup"),
                                                   transaction_ref=trans_ref, session_id=sess_id,
-                                                  sender_account=sender_account,
-                                                  receiver_account=account_number, sender=sender_name,
+                                                  sender_account=str(sender_account),
+                                                  receiver_account=str(account_number), sender=sender_name,
                                                   receiver=f"{details.last_name} {details.first_name}",
                                                   status="Success", bank_name=bank_name)
             details.account_balance = balance
