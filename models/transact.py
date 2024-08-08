@@ -31,9 +31,14 @@ class Transaction(db.Model, UserMixin):
     token = db.Column(db.String(200))
     description = db.Column(db.String(200))
     customer_name = db.Column(db.String(200))
+    bank_name = db.Column(db.String(200))
+    session_id = db.Column(db.String(100))
     status = db.Column(db.String(100))
     phone_number = db.Column(db.String(100))
     sender = db.Column(db.String(100))
+    sender_account = db.Column(db.String(100))
+    receiver_account = db.Column(db.String(100))
+    receiver = db.Column(db.String(100))
     user_id = db.Column(db.String(100), db.ForeignKey("user.id"), nullable=False)
 
     def __repr__(self):
@@ -50,3 +55,27 @@ class Card(db.Model):
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.date_posted}')"
+
+
+def save_transfer_in_transactions(transaction_type, transaction_amount, user_id, balance, description, category,
+                                  transaction_ref, session_id, sender_account, receiver_account, sender, receiver,
+                                  status, bank_name):
+    trans = Transaction(
+        transaction_type=transaction_type,
+        transaction_amount=transaction_amount,
+        user_id=user_id,
+        balance=balance,
+        description=description,
+        category=category,
+        transaction_ref=transaction_ref,
+        session_id=session_id,
+        sender_account=sender_account,
+        receiver_account=receiver_account,
+        sender=sender,
+        receiver=receiver,
+        status=status,
+        bank_name=bank_name
+    )
+    db.session.add(trans)
+    db.session.commit()
+    return trans
