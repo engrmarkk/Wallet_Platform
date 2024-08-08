@@ -100,7 +100,7 @@ def transfer_in():
                     date=trans.date_posted,
                     acct=str(details.account_number),
                     sender=sender_name,
-                    sender_acct=sender_account,
+                    sender_acct=str(sender_account),
                     bank_name=bank_name,
                 )
                 mail.send(msg)
