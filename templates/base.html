@@ -144,10 +144,13 @@
                  class="rounded" alt="{{ current_user.first_name }}"></i> &nbsp; {{ current_user.last_name.title() + ' ' + current_user.first_name.title() }}
                 </div>
                 </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item text-decoration-none text-dark small" href="{{ url_for('view.account') }}">Account</a>
-                  <a class="dropdown-item text-decoration-none text-dark small" href="{{ url_for('view.user_profile') }}">Profile</a>
-                  <a class="dropdown-item text-decoration-none text-dark small" href="{{ url_for('auth.logout') }}">Logout</a>
+                <div class="dropdown-menu px-2" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item text-decoration-none text-muted small text-center fw-bold">Notification
+                  <span class="badge rounded-pill bg-danger position-absolute">9+</span>
+                  </a>
+                  <a class="dropdown-item text-decoration-none text-muted small text-center fw-bold" href="{{ url_for('view.account') }}">Account</a>
+                  <a class="dropdown-item text-decoration-none text-muted small text-center fw-bold" href="{{ url_for('view.user_profile') }}">Profile</a>
+                  <a class="dropdown-item text-decoration-none text-white rounded small bg-danger text-center" href="{{ url_for('auth.logout') }}">Logout</a>
                 </div>
               </div>
   
