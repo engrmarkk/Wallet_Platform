@@ -39,6 +39,15 @@
                     {% if trans.token %}
                     <p><strong style="color: #4caf50;">Token:</strong> {{ trans.token }}</p>
                     {% endif %}
+                    {% if trans.sender_account %}
+                    <p><strong style="color: #4caf50;">Sender Account:</strong> {{ trans.sender_account[:3] }}****{{ trans.sender_account[-4:] }}</p>
+                    {% endif %}
+                    {% if trans.bank_name %}
+                    <p><strong style="color: #4caf50;">Bank Name:</strong> {{ trans.bank_name }}</p>
+                    {% endif %}
+                    {% if trans.session_id %}
+                    <p><strong style="color: #4caf50;">Session Id:</strong> {{ trans.session_id }}</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
