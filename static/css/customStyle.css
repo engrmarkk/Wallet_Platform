@@ -886,7 +886,7 @@ select {
 }
 .head-text {
     background: linear-gradient(158deg,#1edf00 -45%,  #2e8bb6);
-    width: 75%;
+    width: 85%;
     display: flex;
     padding: 3rem 2rem;
     border-radius: 60px 10px 60px 10px;
@@ -894,10 +894,14 @@ select {
     align-items: flex-end;
     justify-content: space-between;
 }
+
+.table_head{
+  background: linear-gradient(158deg,#1edf00 -45%,  #2e8bb6);
+}
 .head-text-head{
     display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 @media (max-width: 768px) {
