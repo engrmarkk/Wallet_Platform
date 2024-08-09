@@ -67,46 +67,54 @@
           </div>
         </div>
       </div>
-      <div class="mb-4 mt-2 row w-75">
+      <div class="mb-4 mt-2 row w-100">
         <!-- Save -->
-        <div class="col-4 col-sm-3 col-md-4 mb-3">
+        <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
               <i class="fa-solid fa-piggy-bank"></i>Save
             </a>
         </div>
     
         <!-- Send -->
-        <div class="col-4 col-sm-3 col-md-4 mb-3">
+        <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
                 data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="py-1 fas fa-share"></i>W2W
             </a>
         </div>
+
+        <div class="col-4 col-sm-3 col-md-3 mb-3">
+          <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
+              data-bs-target="#bankModal" style="border: none;" type="button" id="dropdownMenuButton"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="py-1 fa-solid fa-building-columns"></i>Bank
+          </a>
+      </div>
     
         <!-- Airtime -->
-        <div class="col-4 col-sm-3 col-md-4 mb-3">
+        <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a href="{{url_for('bills.display_service', service='airtime')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
               <i class="fa-solid fa-phone"></i>Airtime
             </a>
         </div>
     
         <!-- Data -->
-        <div class="col-4 col-sm-3 col-md-4 mb-3">
+        <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a href="{{url_for('bills.display_service', service='data')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
               <i class="fa-solid fa-wifi"></i>Data
             </a>
         </div>
     
         <!-- Cable -->
-        <div class="col-4 col-sm-3 col-md-4 mb-3">
+        <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a href="{{url_for('bills.display_service', service='tv-subscription')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
                 <i class="py-1 fas fa-tv"></i>Cable
             </a>
         </div>
     
         <!-- Electricity -->
-        <div class="col-4 col-sm-3 col-md-4 mb-3">
+        <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a href="{{url_for('bills.display_service', service='electricity-bill')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
                 <i class="py-1 fas fa-lightbulb"></i>Electricity
             </a>
@@ -117,64 +125,67 @@
       </div>
     </div>
 
-
-   
-
-    <hr style="border: 1px solid rgb(112, 112, 110);" class="mt-5 w-75 m-auto">
     <div class="w-75 mt-3 m-auto">
       <p class="text-center fw-bold text-muted">Recent transaction histories</p>
       {% if not current_user.transacts %}
       <p class="text-center h4 text-warning mt-3">NO RECORD</p>
       {% else %}
 
-      <!-- Table -->
-
-      <div class="transaction-container">
-        <div class="bg-mild">
-          <header class="text-muted text-center">
-            <span scope="col">Type</span>
-            <span scope="col">Details</span>
-            <span scope="col">Amount</span>
-            <!-- <th scope="col">User</th>
-      <th scope="col">Date</th> -->
-          </header>
-        </div>
-        <div>
-          {% for transaction in current_user.transacts[::-1][:3] %}
-          {% if transaction.transaction_type == 'CRT' %}
-          <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
-            <div class="notification  text-center text-light">
-              <div class="" style="width: 10%;">
-              <small class='credit' scope="credit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
-              </div>
-              <div class='notf-detail'><span>{{ transaction.trans_category.category }}</span><span>{{
-                  transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
-              <div class='value'>+ <del style="text-decoration-style: double;">N</del> {{ "{:,.2f}".format(transaction.transaction_amount) }} </div>
-            </div>
-          </a>
-          {% else %}
-          <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none">
-            <div class="notification  text-center text-light">
-              <div class="" style="width: 10%;">
-              <small class='debit' scope=" debit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
-              </div>
-              <div class='notf-detail'><span>{{ transaction.trans_category.category }}</span><span>{{
-                  transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
-              <div class='value'>- <del style="text-decoration-style: double;">N</del> {{ "{:,.2f}".format(transaction.transaction_amount) }} </div>
-            </div>
-          </a>
-          {% endif %}
-          {% endfor %}
-          <div style="justify-content:flex-end;" class=" d-flex align-items-center">
-            <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content; background: linear-gradient(158deg,#1edf00 -45%,  #2e8bb6);"
-              class="see-more d-flex align-items-center text-decoration-none btn primary-btn">See more
-              <i class="fa fa-plus-circle mx-2"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-      <!-- ..........End of table.............. -->
       {% endif %}
+    </div>
+
+    <!-- TESTING THIS -->
+    <div class="container">
+        <div class="row">
+            <div class="col-12 mb-3 mb-lg-5">
+                <div class="position-relative card table-nowrap table-card">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="small text-uppercase table_head text-white">
+                                <tr class="">
+                                    <th class="py-3">Transaction Type</th>
+                                    <th class="py-3">Date</th>
+                                    <th class="py-3">Category</th>
+                                    <th class="py-3">Amount</th>
+                                    <th class="py-3">Status</th>
+                                    <th class="py-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                              {% for transaction in current_user.transacts[::-1][:3] %}
+                              <tr class="align-middle">
+                                    <td class="fw-normal {% if transaction.transaction_type == 'DBT' %}text-danger{% else %}text-success{% endif %}">
+                                      {% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}
+                                    </td>
+                                    <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td>
+                                    <td class="notf-detail">{{ transaction.trans_category.category }}</td>
+                                    <td>
+                                        {% if transaction.transaction_type == "DBT" %}-{% else %}+{% endif %}<del style="text-decoration-style: double;">N</del> {{ "{:,.2f}".format(transaction.transaction_amount) }}
+                                    </td>
+                                    <td class="{% if transaction.status == 'Pending' %}text-warning{% else %}text-success{% endif %}">
+                                        {{ transaction.status }}
+                                    </td>
+                                    <td>
+                                <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none btn primary-btn">
+                                      View
+                                      </a>
+                                    </td>
+                                  </tr>
+                              {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer text-end bg-white">
+                        <div style="justify-content:flex-end;" class=" d-flex align-items-center">
+                          <a href="{{ url_for('view.showtransaction') }}" style="width: fit-content; background: linear-gradient(158deg,#1edf00 -45%,  #2e8bb6);"
+                            class="see-more d-flex align-items-center text-decoration-none btn primary-btn">See more
+                            <i class="fa fa-plus-circle mx-2"></i>
+                          </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
   </div>
 
@@ -187,7 +198,7 @@
   <!-- Modal -->
   <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="staticBackdropLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable"">
+    <div class="modal-dialog modal-dialog-scrollable">
     <div class=" modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirm Account</h1>
@@ -249,6 +260,41 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
 
         <button type="submit" class="btn primary-btn">Confirm account</button>
+      </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+
+
+<!-- bank modal -->
+
+<div class="modal fade" id="bankModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="bankModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+    <div class=" modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="bankModalLabel">Select Bank</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <form action="/transfer-to-bank" method="get">
+
+          <select name="bank_code" id="" class="form-control shadow-none py-3">
+            <option disabled selected>Select Bank</option>
+            {% for bank in banks %}
+            <option class="text-dark" value="{{ bank['code'] }}">{{ bank['name'] }}</option>
+            {% endfor %}
+          </select>
+          <!-- For account number validations -->
+          <input type="text" name="account_number" id="" class="form-control mt-2 py-3 shadow-none bg-white" placeholder="Enter account number" required>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+
+        <button type="submit" class="btn primary-btn">Confirm account</button> 
       </div>
       </form>
 
