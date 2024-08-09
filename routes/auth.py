@@ -7,6 +7,7 @@ from form import *
 from flask_mail import Message
 from random import randint
 from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.exc import OperationalError
 
 auth = Blueprint("auth", __name__, template_folder="../templates")
 
@@ -44,58 +45,70 @@ def validate(email):
 
 @auth.route("/login/", methods=["GET", "POST"])
 def login():
-    # If the logged-in user is trying to access the login url, redirects the user to the homepage
-    if current_user.is_authenticated:
-        return redirect(url_for("view.home"))
-    # Assign the LoginForm created in the form.py file to a variable 'form'
     form = LoginForm()
-    if request.method == "POST":
-        # If the form gets validated on submit
-        if form.validate_on_submit():
-            # Query the User model and assign the queried data to the variable 'user'
-            user = User.query.filter_by(email=form.email.data.lower()).first()
-            email = form.email.data
-            if user and not user.confirmed:
-                try:
-                    flash("First validate your email", category="danger")
+    try:
+        # If the logged-in user is trying to access the login url, redirects the user to the homepage
+        if current_user.is_authenticated:
+            return redirect(url_for("view.home"))
+        # Assign the LoginForm created in the form.py file to a variable 'form'
+        form = LoginForm()
+        if request.method == "POST":
+            # If the form gets validated on submit
+            if form.validate_on_submit():
+                # Query the User model and assign the queried data to the variable 'user'
+                user = User.query.filter_by(email=form.email.data.lower()).first()
+                email = form.email.data
+                if user and not user.confirmed:
+                    try:
+                        flash("First validate your email", category="danger")
 
-                    msg = Message(
-                        subject="Email Verification",
-                        sender="Easytransact <easytransact.send@gmail.com>",
-                        recipients=[email],
-                    )
-                    msg.html = render_template("email_verification.html", otp=str(otp))
-                    mail.send(msg)
-                except Exception as e:
-                    print(e, "ERROR")
-                    flash("failed to validate", "danger")
-                    return render_template(
-                        "login.html", date=datetime.utcnow(), form=form
-                    )
+                        msg = Message(
+                            subject="Email Verification",
+                            sender="Easytransact <easytransact.send@gmail.com>",
+                            recipients=[email],
+                        )
+                        msg.html = render_template("email_verification.html", otp=str(otp))
+                        mail.send(msg)
+                    except Exception as e:
+                        print(e, "ERROR")
+                        flash("failed to validate", "danger")
+                        return render_template(
+                            "login.html", date=datetime.utcnow(), form=form
+                        )
 
-                return redirect(url_for("auth.validate", email=email))
-            # Check if the user exist in the database and if the inputted password is same with the one attached to
-            # the user on the database
-            if user:
-                if check_password_hash(user.password, form.password.data):
-                    # If the check passed, login the user and flash a message to the user when redirected to the
-                    # homepage
-                    flash("Login Successful", "success")
-                    login_user(user, remember=False)
-                    return redirect(url_for("view.home"))
+                    return redirect(url_for("auth.validate", email=email))
+                # Check if the user exist in the database and if the inputted password is same with the one attached to
+                # the user on the database
+                if user:
+                    if check_password_hash(user.password, form.password.data):
+                        # If the check passed, login the user and flash a message to the user when redirected to the
+                        # homepage
+                        flash("Login Successful", "success")
+                        login_user(user, remember=False)
+                        return redirect(url_for("view.home"))
+                    else:
+                        # If the check failed, flash a message to the user while still on the same page
+                        flash("Check your Password", "danger")
                 else:
-                    # If the check failed, flash a message to the user while still on the same page
-                    flash("Check your Password", "danger")
-            else:
-                # If the user doesn't exist, flash a message to the user while still on the same page
-                flash("User doesn't exist", "danger")
+                    # If the user doesn't exist, flash a message to the user while still on the same page
+                    flash("User doesn't exist", "danger")
 
-                """not using this"""
-                # return redirect(url_for("auth.login"))
-                """end of block"""
+                    """not using this"""
+                    # return redirect(url_for("auth.login"))
+                    """end of block"""
 
-    # This for a get request, if u click on the link that leads to the login page, this return statement get called upon
-    return render_template("login.html", date=datetime.utcnow(), form=form)
+        # This for a get request, if u click on the link that leads to the login page, this return statement get
+        # called upon
+        return render_template("login.html", date=datetime.utcnow(), form=form)
+
+    except OperationalError:
+        flash("Please check your internet connection", "danger")
+        return render_template("login.html", date=datetime.utcnow(), form=form)
+
+    except Exception as e:
+        print(e, "ERROR")
+        flash("Something went wrong", "danger")
+        return render_template("login.html", date=datetime.utcnow(), form=form)
 
 
 @auth.route("/register/", methods=["GET", "POST"])
