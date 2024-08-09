@@ -31,7 +31,7 @@
                     <p><strong style="color: #4caf50;">Phone Number:</strong> {{ trans.phone_number }}</p>
                     {% endif %}
                     {% if trans.sender %}
-                    <p><strong style="color: #4caf50;">Sender:</strong> {{ trans.sender }}</p>
+                    <p><strong style="color: #4caf50;">{% if trans.transaction_type == 'DBT' %}Receiver{% else %}Sender{% endif %}:</strong> {{ trans.sender }}</p>
                     {% endif %}
                     {% if trans.customer_name %}
                     <p><strong style="color: #4caf50;">Customer name:</strong> {{ trans.customer_name }}</p>
