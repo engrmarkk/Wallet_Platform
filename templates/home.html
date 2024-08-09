@@ -147,7 +147,7 @@
               <div class="" style="width: 10%;">
               <small class='credit' scope="credit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
               </div>
-              <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
+              <div class='notf-detail'><span>{{ transaction.trans_category.category }}</span><span>{{
                   transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
               <div class='value'>+ <del style="text-decoration-style: double;">N</del> {{ "{:,.2f}".format(transaction.transaction_amount) }} </div>
             </div>
@@ -158,7 +158,7 @@
               <div class="" style="width: 10%;">
               <small class='debit' scope=" debit">{% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</small>
               </div>
-              <div class='notf-detail'><span>{{ transaction.description }}</span><span>{{
+              <div class='notf-detail'><span>{{ transaction.trans_category.category }}</span><span>{{
                   transaction.date_posted.strftime('%Y-%m-%d') }}</span> </div>
               <div class='value'>- <del style="text-decoration-style: double;">N</del> {{ "{:,.2f}".format(transaction.transaction_amount) }} </div>
             </div>
