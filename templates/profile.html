@@ -10,8 +10,8 @@
     </style>
 
     <div class="m-auto mt-5" style="max-width: 600px;">
-        <p class="text-center h4 bg-success rounded text-light py-2">MY PROFILE</p>
-        <table class="table m-auto border">
+        <p class="text-center h4 table_head rounded text-light py-2">MY PROFILE</p>
+        <!-- <table class="table m-auto border">
             <tbody>
                 <tr>
                   <td class="fw-bold text-muted py-3">Last Name :</td>
@@ -47,6 +47,88 @@
                     <td class="fw-bold text-muted py-3">0{{ current_user.phone_number }}</td>
                   </tr>
               </tbody>
-        </table>
+        </table> -->
     </div>
+
+
+
+<section>
+  <div class="container py-3">
+    <div class="row">
+      <div class="col">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="card mb-4">
+          <div class="card-body text-center table_head">
+            <img src="{{ current_user.photo }}" alt="avatar"
+              class="rounded-circle img-fluid img-thumbnail" style="width: 310px; height: 310px;">
+            <!-- <h5 class="my-3">{{ current_user.last_name.title() }} {{ current_user.first_name.title() }}</h5> -->
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Full Name</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ current_user.last_name.title() }} {{ current_user.first_name.title() }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Email</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ current_user.email }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Phone</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">0{{ current_user.phone_number }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Account Number</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ current_user.account_number }}</p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Account Status</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">Active <i class="fa fa-check-circle text-success"></i></p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-sm-3">
+                <p class="mb-0">Username</p>
+              </div>
+              <div class="col-sm-9">
+                <p class="text-muted mb-0">{{ current_user.username }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock content %}
