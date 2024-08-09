@@ -31,9 +31,11 @@ from routes.auth import login
 from passlib.hash import pbkdf2_sha256 as hasher
 import random
 import string
+from paystack.paystack_endpoint import PaystackEndpoints
 
 view = Blueprint("view", __name__, template_folder="../templates")
 
+pay_stack = PaystackEndpoints()
 
 def send_reset_email(user):
     token = user.get_reset_token()
@@ -166,6 +168,7 @@ def showtransaction():
 @login_required
 def home():
     form = ConfirmAccount()
+    banks = pay_stack.list_banks()
     beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
     balance = f"{current_user.account_balance:,.2f}"
     pinset = current_user.pin_set
@@ -193,6 +196,7 @@ def home():
         balance=balance,
         form=form,
         pinset=pinset,
+        banks=banks["data"],
     )
 
 
@@ -242,6 +246,21 @@ def change_transfer_pin():
         form=form,
         secret_question=current_user.secret_question,
     )
+
+
+# transfer to bank
+@view.route("/transfer-to-bank", methods=["GET", "POST"])
+@login_required
+def transfer_to_bank():
+    bank_code = request.args.get("bank_code")
+    account_number = request.args.get("account_number")
+
+    res, status_code = pay_stack.resolve_account(account_number, bank_code)
+    if status_code != 200:
+        flash("Invalid account number", "danger")
+        return redirect(url_for("view.home")) 
+    account_name = res["data"]["account_name"]
+    return render_template("transfer_to_bank.html", date=x, account_name=account_name)
 
 
 @view.route("/pay/<acct>/", methods=["GET", "POST"])
