@@ -26,7 +26,7 @@ def account_lookup():
         if details:
             return jsonify({"success": True, "message": "Account number found", "code": 1,
                             "account_details": {
-                                "account_name": f"{details.last_name} {details.first_name}",
+                                "account_name": f"{details.last_name} {details.first_name}".title(),
                                 "account_number": details.account_number
                             }})
         else:
@@ -80,9 +80,9 @@ def transfer_in():
                                                   category=get_cat("Wallet-Topup"),
                                                   transaction_ref=trans_ref, session_id=sess_id,
                                                   sender_account=str(sender_account),
-                                                  receiver_account=str(account_number), sender=sender_name,
-                                                  receiver=f"{details.last_name} {details.first_name}",
-                                                  status="Success", bank_name=bank_name)
+                                                  receiver_account=str(account_number), sender=sender_name.title(),
+                                                  receiver=f"{details.last_name} {details.first_name}".title(),
+                                                  status="Success", bank_name=bank_name.title())
             details.account_balance = balance
             db.session.commit()
 
