@@ -258,7 +258,7 @@ def transfer_to_bank():
     res, status_code = pay_stack.resolve_account(account_number, bank_code)
     if status_code != 200:
         flash("Invalid account number", "danger")
-        return redirect(url_for("view.home")) 
+        return redirect(url_for("view.home"))
     account_name = res["data"]["account_name"]
     return render_template("transfer_to_bank.html", date=x, account_name=account_name)
 
