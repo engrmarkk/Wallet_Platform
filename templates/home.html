@@ -282,12 +282,13 @@
       <div class="modal-body">
         <form action="/transfer-to-bank" method="get">
 
-          <select name="bank_code" id="" class="form-control shadow-none py-3">
+          <select name="bank_code" id="bankSelect" class="form-control shadow-none py-3">
             <option disabled selected>Select Bank</option>
             {% for bank in banks %}
             <option class="text-dark" value="{{ bank['code'] }}">{{ bank['name'] }}</option>
             {% endfor %}
           </select>
+          <input type="hidden" name="bank_name" id="bankNameInput">
           <!-- For account number validations -->
           <input type="text" name="account_number" id="" class="form-control mt-2 py-3 shadow-none bg-white" placeholder="Enter account number" required>
       </div>
@@ -302,4 +303,17 @@
   </div>
 </div>
 
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const bankSelect = document.getElementById('bankSelect');
+    bankSelect.addEventListener('change', updateBankName);
+
+    function updateBankName() {
+      const selectedBankName = bankSelect.options[bankSelect.selectedIndex].text;
+      const bankNameInput = document.getElementById('bankNameInput');
+      bankNameInput.value = selectedBankName;
+    }
+  });
+</script>
 {% endblock content %}
