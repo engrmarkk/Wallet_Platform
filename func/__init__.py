@@ -32,7 +32,8 @@ def save_image(form_picture):
     return picture_fn
 
 
-trans_cats = ["Transfer", "Airtime", "Electricity", "Tv-Subscription", "Internet-Data", "W2W", "Savings", "Referral"]
+trans_cats = ["Transfer", "Airtime", "Electricity", "Tv-Subscription",
+              "Internet-Data", "W2W", "Savings", "Referral", "Wallet-Topup", "Transfer"]
 
 # W2W stands for wallet to wallet
 
