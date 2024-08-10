@@ -16,6 +16,7 @@ from flask import (
     jsonify,
 )
 from models import User, Transaction, Beneficiary, Card, Invitees
+from models.transact import save_transfer_in_transactions
 from form import *
 from func import save_transaction_cat, get_cat, get_all_cats
 from werkzeug.security import generate_password_hash
@@ -31,6 +32,7 @@ from routes.auth import login
 from passlib.hash import pbkdf2_sha256 as hasher
 import random
 import string
+from utils import generate_session_id, generate_transaction_ref
 from paystack.paystack_endpoint import PaystackEndpoints
 
 view = Blueprint("view", __name__, template_folder="../templates")
@@ -261,6 +263,74 @@ def transfer_to_bank():
         flash("Invalid account number", "danger")
         return redirect(url_for("view.home"))
     account_name = res["data"]["account_name"]
+
+    if request.method == "POST":
+        transaction_pin = request.form.get("pin")
+        narration = request.form.get("narration")
+        amount = request.form.get("amount")
+
+        if not amount:
+            flash("Please enter amount", "danger")
+            return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
+                                    account_number=account_number, bank_name=bank_name))
+        if not transaction_pin:
+            flash("Please enter your transaction pin", "danger")
+            return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
+                                    account_number=account_number, bank_name=bank_name))
+
+        if not hasher.verify(transaction_pin, current_user.transaction_pin):
+            flash("Invalid transaction pin", "danger")
+            return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
+                                    account_number=account_number, bank_name=bank_name))
+
+        if float(amount) > current_user.account_balance:
+            flash("Insufficient funds", "danger")
+            return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
+                                    account_number=account_number, bank_name=bank_name))
+
+        trans_ref = generate_transaction_ref("Transfer")
+        sess_id = generate_session_id()
+
+        # remove from user balance
+        balance = current_user.account_balance
+        balance -= float(amount)
+
+        trans = save_transfer_in_transactions(transaction_type="DBT", transaction_amount=amount,
+                                              user_id=current_user.id, balance=balance,
+                                              description=narration or "Transfer",
+                                              category=get_cat("Transfer"),
+                                              transaction_ref=trans_ref, session_id=sess_id,
+                                              sender_account=str(current_user.account_number),
+                                              receiver_account=str(account_number),
+                                              sender=f"{current_user.last_name} {current_user.first_name}".title(),
+                                              receiver=account_name.title(),
+                                              status="Success", bank_name=bank_name.title())
+        current_user.account_balance = balance
+        db.session.commit()
+
+        try:
+            msg = Message(
+                subject="DEBIT ALERT",
+                sender="EasyTransact <easytransact.send@gmail.com>",
+                recipients=[current_user.email],
+            )
+            msg.html = render_template(
+                "transfer.html",
+                user=current_user,
+                amount=f"{float(amount):,.2f}",
+                balance=f"{current_user.account_balance:,.2f}",
+                date=trans.date_posted,
+                acct=str(current_user.account_number),
+                receiver=account_name,
+                receiver_acct=str(account_number),
+                bank_name=bank_name,
+            )
+            mail.send(msg)
+        except Exception as e:
+            print(e, "ERROR")
+
+        flash("Transfer in successful", "success")
+        return redirect(url_for("view.home"))
     return render_template("transfer_to_bank.html", date=x, account_name=account_name,
                            bank_name=bank_name, account_number=account_number)
 
