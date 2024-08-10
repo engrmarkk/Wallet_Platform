@@ -70,5 +70,5 @@ def generate_session_id():
     return f"000011{str(random.randint(1000000000, 9999999999))}"
 
 
-def generate_transaction_ref():
-    return f"TopUp-{str(random.randint(1000000000, 9999999999))}"
+def generate_transaction_ref(tr_type):
+    return f"{tr_type}-{str(random.randint(1000000000, 9999999999))}"
