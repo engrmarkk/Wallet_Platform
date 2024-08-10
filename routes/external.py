@@ -69,7 +69,7 @@ def transfer_in():
             return jsonify({"success": False, "message": "Bank name is required", "code": 0})
 
         details = get_account_number_details(account_number)
-        trans_ref = generate_transaction_ref()
+        trans_ref = generate_transaction_ref("TopUp")
         sess_id = generate_session_id()
         if details:
             balance_before_topup = details.account_balance
