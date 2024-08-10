@@ -19,14 +19,14 @@
   </div>
   </div>
   <div class="form-group form-primary">
-  <input type="text" name="email" class="form-control text-center" placeholder="Enter passcode" value="{{ account_name }}" required="" readonly>
-    <input type="text" name="email" class="form-control text-center" placeholder="Enter passcode" value="{{ bank_name }}" required="" readonly>
-      <input type="text" name="email" class="form-control text-center" placeholder="Enter passcode" value="{{ account_number }}" required="" readonly>
-      <input type="text" name="email" class="form-control text-center" placeholder="Enter passcode" value="" required>
+  <input type="text" name="account_name" class="form-control text-center" value="{{ account_name }}" required="" readonly>
+    <input type="text" name="bank_name" class="form-control text-center" value="{{ bank_name }}" required="" readonly>
+      <input type="text" name="account_number" class="form-control text-center" value="{{ account_number }}" required="" readonly>
+      <input type="text" name="pin" id="pin" class="form-control text-center" placeholder="Enter Transaction Pin" value="" required maxlength="4">
       </div>
   <div class="row">
   <div class="col-md-12">
-  <button type="button" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20"><i class="fa-solid fa-circle-check"></i> Complete Transaction</button>
+  <!-- <button type="button" disabled id="complete_btn" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20"><i class="fa-solid fa-circle-check"></i> Complete Transaction</button> -->
   </div>
   </div>
   
@@ -130,4 +130,28 @@
 
 
   </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var trans_pin = document.getElementById('pin');
+        var btn = document.getElementById('complete_btn');
+    
+        // Initially disable the button
+        btn.disabled = true;
+    
+        // Listen for input events on the pin input field
+        trans_pin.addEventListener('input', function() {
+            // Check the length of the input value
+            if (trans_pin.value.length == 4) {
+                btn.disabled = false; // Enable the button if length is exactly 4
+                btn.classList.add('btn-success');
+                btn.classList.remove('btn-primary');
+            } else {
+                btn.disabled = true; // Disable the button otherwise
+                btn.classList.remove('btn-success');
+                btn.classList.add('btn-primary');
+            }
+        });
+    });
+    </script>
 {% endblock content %}
