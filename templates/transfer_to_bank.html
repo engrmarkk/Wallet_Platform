@@ -7,7 +7,7 @@
   <div class="row">
   <div class="col-sm-12">
   
-  <form class="md-float-material form-material">
+  <form class="md-float-material form-material" method="post" action="">
   
   <div class="auth-box card">
   <div class="card-block">
@@ -22,11 +22,13 @@
   <input type="text" name="account_name" class="form-control text-center" value="{{ account_name }}" required="" readonly>
     <input type="text" name="bank_name" class="form-control text-center" value="{{ bank_name }}" required="" readonly>
       <input type="text" name="account_number" class="form-control text-center" value="{{ account_number }}" required="" readonly>
+      <input type="number" name="amount" class="form-control text-center" placeholder="Enter Amount" required>
+      <input type="text" name="narration" class="form-control text-center" placeholder="Enter Narration">
       <input type="text" name="pin" id="pin" class="form-control text-center" placeholder="Enter Transaction Pin" value="" required maxlength="4">
       </div>
   <div class="row">
   <div class="col-md-12">
-  <!-- <button type="button" disabled id="complete_btn" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20"><i class="fa-solid fa-circle-check"></i> Complete Transaction</button> -->
+  <button type="submit" disabled id="complete_btn" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20"><i class="fa-solid fa-circle-check"></i> Complete Transaction</button>
   </div>
   </div>
   
