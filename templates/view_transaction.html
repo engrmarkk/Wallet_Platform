@@ -31,7 +31,10 @@
                     <p><strong style="color: #4caf50;">Phone Number:</strong> {{ trans.phone_number }}</p>
                     {% endif %}
                     {% if trans.sender %}
-                    <p><strong style="color: #4caf50;">{% if trans.transaction_type == 'DBT' %}Receiver{% else %}Sender{% endif %}:</strong> {{ trans.sender }}</p>
+                    <p><strong style="color: #4caf50;">Sender:</strong> {{ trans.sender }}</p>
+                    {% endif %}
+                    {% if trans.receiver %}
+                    <p><strong style="color: #4caf50;">Receiver:</strong> {{ trans.receiver }}</p>
                     {% endif %}
                     {% if trans.customer_name %}
                     <p><strong style="color: #4caf50;">Customer name:</strong> {{ trans.customer_name }}</p>
@@ -41,6 +44,9 @@
                     {% endif %}
                     {% if trans.sender_account %}
                     <p><strong style="color: #4caf50;">Sender Account:</strong> {{ trans.sender_account[:3] }}****{{ trans.sender_account[-4:] }}</p>
+                    {% endif %}
+                    {% if trans.receiver_account %}
+                    <p><strong style="color: #4caf50;">Receiver Account:</strong> {{ trans.receiver_account[:3] }}****{{ trans.receiver_account[-4:] }}</p>
                     {% endif %}
                     {% if trans.bank_name %}
                     <p><strong style="color: #4caf50;">Bank Name:</strong> {{ trans.bank_name }}</p>
