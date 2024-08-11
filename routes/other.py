@@ -329,8 +329,18 @@ def transfer_to_bank():
         except Exception as e:
             print(e, "ERROR")
 
-        flash("Transfer in successful", "success")
-        return redirect(url_for("view.home"))
+        return redirect(
+            url_for(
+                "view.transaction_successful",
+                amount=f"{float(amount):,.2f}",
+                sender=f"{current_user.last_name} {current_user.first_name}".title(),
+                receiver=account_name.title(),
+                sender_acct=str(current_user.account_number),
+                bank_name=bank_name.title(),
+                receiver_acct=str(account_number),
+                date=trans.date_posted,
+            )
+        )
     return render_template("transfer_to_bank.html", date=x, account_name=account_name,
                            bank_name=bank_name, account_number=account_number)
 
@@ -375,7 +385,10 @@ def pay(acct):
                 category=get_cat("W2W"),
                 description="W2W Transfer from " + current_user.username,
                 status="Success",
-                sender=current_user.username,
+                sender=f"{current_user.last_name} {current_user.first_name}".title(),
+                receiver=f"{user1.last_name} {user1.first_name}".title(),
+                sender_account=str(current_user.account_number),
+                receiver_account=str(acct),
                 user_id=user1.id,
             )
             db.session.add(transact1)
@@ -391,12 +404,15 @@ def pay(acct):
                 category=get_cat("W2W"),
                 description="W2W Transfer to " + user1.username,
                 status="Success",
-                sender=user1.username,
+                receiver=f"{user1.last_name} {user1.first_name}".title(),
+                sender=f"{current_user.last_name} {current_user.first_name}".title(),
+                sender_account=str(current_user.account_number),
+                receiver_account=str(acct),
                 user_id=current_user.id,
             )
             db.session.add(transact2)
             db.session.commit()
-            flash(f"{amount} Naira has been sent to {user1.username}", "success")
+            flash(f"{amount} Naira has been sent to {user1.last_name.title()} {user1.first_name.title()}", "success")
 
             # ALERTS WHEN FUNDS HAS BEEN SENT
             # alert for debit transaction
@@ -441,10 +457,13 @@ def pay(acct):
             return redirect(
                 url_for(
                     "view.transaction_successful",
-                    amount=f"{amount:,}",
-                    user_name=user1.first_name,
-                    user_name2=user1.last_name,
-                    user_acct=str(user1.account_number),
+                    amount=f"{amount:,.2f}",
+                    sender=f"{current_user.last_name} {current_user.first_name}".title(),
+                    receiver=f"{user1.last_name} {user1.first_name}".title(),
+                    sender_acct=str(current_user.account_number),
+                    bank_name="EasyTransact",
+                    receiver_acct=str(acct),
+                    date=transact1.date_posted,
                 )
             )
     return render_template(
@@ -599,15 +618,18 @@ def faq():
     return render_template("faq.html", date=x)
 
 
-@view.route("/completed/<amount>/<user_name>/<user_name2>/<user_acct>")
-def transaction_successful(user_name, amount, user_name2, user_acct):
+@view.route("/completed/<amount>/<receiver>/<sender>/<sender_acct>/<bank_name>/<receiver_acct>/<date>")
+def transaction_successful(amount, receiver,
+                           sender, sender_acct, bank_name, receiver_acct, date):
     return render_template(
         "trans_success.html",
-        date=x,
+        date=date,
         amount=amount,
-        user1=user_name,
-        user2=user_name2,
-        user_acct=user_acct,
+        receiver=receiver,
+        sender=sender,
+        sender_acct=sender_acct,
+        bank_name=bank_name,
+        receiver_acct=receiver_acct,
     )
 
 
