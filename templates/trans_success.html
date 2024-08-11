@@ -61,14 +61,19 @@
                   <tr>
                     <td style="color: #333333b3;" class=" fw-bold">Sender</td>
                     <td class="text-info fw-bold">
-                        {{current_user.last_name.title() + ' ' + current_user.first_name.title()}}
+                        {{ sender }} | {{ sender_acct }}
                     </td>
                   </tr>
                   <tr>
-                    <td style="color: #333333b3;" class=" fw-bold">Beneficiary</td>
-                    <td class="text-info fw-bold">{{user1.title() + " " + user2.title()}} <br>
-                        {{user_acct}} <br>
-                        EasyTransact NG
+                    <td style="color: #333333b3;" class=" fw-bold">Receiver</td>
+                    <td class="text-info fw-bold">
+                        {{ receiver }} | {{ receiver_acct }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="color: #333333b3;" class=" fw-bold">Bank Name</td>
+                    <td class="text-info fw-bold">
+                        {{bank_name}}
                     </td>
                   </tr>
                   <tr>
