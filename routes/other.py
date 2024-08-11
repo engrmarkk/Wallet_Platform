@@ -338,7 +338,7 @@ def transfer_to_bank():
                 sender_acct=str(current_user.account_number),
                 bank_name=bank_name.title(),
                 receiver_acct=str(account_number),
-                date=trans.date_posted,
+                date=trans.date_posted.strftime("%d %b, %Y %H:%M:%S"),
             )
         )
     return render_template("transfer_to_bank.html", date=x, account_name=account_name,
@@ -463,7 +463,7 @@ def pay(acct):
                     sender_acct=str(current_user.account_number),
                     bank_name="EasyTransact",
                     receiver_acct=str(acct),
-                    date=transact1.date_posted,
+                    date=transact1.date_posted.strftime("%d %b, %Y %H:%M:%S"),
                 )
             )
     return render_template(
