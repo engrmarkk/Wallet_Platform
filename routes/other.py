@@ -10,6 +10,7 @@ from flask import (
     url_for,
     flash,
     request,
+session,
     render_template,
     Blueprint,
     make_response,
@@ -79,9 +80,11 @@ expiration = create_expiry_date(912)
 @view.route("/")
 def front_page():
     save_transaction_cat()
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     if current_user.is_authenticated:
         return redirect(url_for("view.home"))
-    return render_template("front.html", date=x)
+    return render_template("front.html", date=x, alert=alert, bg_color=bg_color)
 
 
 @view.route("/account/", methods=["GET", "POST"])
@@ -89,14 +92,21 @@ def front_page():
 def account():
     form = PhotoForm()
     pinset = current_user.pin_set
+
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     if request.method == "POST":
         try:
             f = form.image.data
             if not f:
-                flash("Nothing to upload", "danger")
+                # flash("Nothing to upload", "danger")
+                session["alert"] = "Nothing to upload"
+                session["bg_color"] = "danger"
                 return redirect(url_for("view.display_profile"))
             if f.content_length > request.max_content_length:  # check file size
-                flash("File is too large. Maximum file size is 1MB.", "danger")
+                # flash("File is too large. Maximum file size is 1MB.", "danger")
+                session["alert"] = "File is too large. Maximum file size is 1MB."
+                session["bg_color"] = "danger"
                 return redirect(url_for("view.account"))
             result = cloudinary.uploader.upload(
                 f, transformation=[{"width": 176, "height": 176, "crop": "fill"}]
@@ -104,15 +114,22 @@ def account():
             image_url = result["secure_url"]
             current_user.photo = image_url
             db.session.commit()
-            flash("Profile photo uploaded successfully", "success")
+            # flash("Profile photo uploaded successfully", "success")
+            session["alert"] = "Profile photo uploaded successfully"
+            session["bg_color"] = "success"
             return redirect(url_for("view.account"))
         except ValidationError as e:
-            flash(str(e), "danger")
+            # flash(str(e), "danger")
+            session["alert"] = str(e)
+            session["bg_color"] = "danger"
             return redirect(url_for("view.account"))
         except RequestEntityTooLarge:
-            flash("File is too large. Maximum file size is 1MB.", "danger")
+            # flash("File is too large. Maximum file size is 1MB.", "danger")
+            session["alert"] = "File is too large. Maximum file size is 1MB."
+            session["bg_color"] = "danger"
             return redirect(url_for("view.account"))
-    return render_template("account.html", pinset=pinset, date=x, form=form)
+    return render_template("account.html", pinset=pinset, date=x, form=form,
+                           alert=alert, bg_color=bg_color)
 
 
 @view.route("/transaction-history")
@@ -174,20 +191,29 @@ def home():
     beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
     balance = f"{current_user.account_balance:,.2f}"
     pinset = current_user.pin_set
+
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     if request.method == "POST":
         try:
             if form.validate_on_submit():
                 account_num = int(form.account_number.data)
                 user1 = User.query.filter_by(account_number=account_num).first()
                 if not user1:
-                    flash("Invalid account number", "danger")
+                    # flash("Invalid account number", "danger")
+                    session["alert"] = "Invalid account number"
+                    session["bg_color"] = "danger"
                     return redirect(url_for("view.home"))
                 if account_num == current_user.account_number:
-                    flash("You can't send money to yourself", "info")
+                    # flash("You can't send money to yourself", "info")
+                    session["alert"] = "You can't send money to yourself"
+                    session["bg_color"] = "info"
                     return redirect(url_for("view.home"))
                 return redirect(url_for("view.pay", acct=account_num))
         except ValueError:
-            flash("Invalid account number", "danger")
+            # flash("Invalid account number", "danger")
+            session["alert"] = "Invalid account number"
+            session["bg_color"] = "danger"
             return redirect(url_for("view.home"))
 
     return render_template(
@@ -199,14 +225,20 @@ def home():
         form=form,
         pinset=pinset,
         banks=banks["data"],
+        alert=alert,
+        bg_color=bg_color
     )
 
 
 @view.route("/create-transfer-pin/", methods=["GET", "POST"])
 @login_required
 def create_transfer_pin():
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     if current_user.pin_set:
-        flash("Transfer pin already set", "info")
+        # flash("Transfer pin already set", "info")
+        session["alert"] = "Transfer pin already set"
+        session["bg_color"] = "info"
         return redirect(url_for("view.home"))
     form = CreateTransferPin()
     if request.method == "POST":
@@ -220,9 +252,12 @@ def create_transfer_pin():
             user.transaction_pin = hasher.hash(str(pin))
             user.pin_set = True
             db.session.commit()
-            flash("Transfer pin created successfully", "success")
+            # flash("Transfer pin created successfully", "success")
+            session["alert"] = "Transfer pin created successfully"
+            session["bg_color"] = "success"
             return redirect(url_for("view.home"))
-    return render_template("create_transfer_pin.html", date=x, form=form)
+    return render_template("create_transfer_pin.html", date=x, form=form,
+                           alert=alert, bg_color=bg_color)
 
 
 @view.route("/change-transfer-pin/", methods=["GET", "POST"])
