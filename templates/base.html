@@ -206,6 +206,18 @@
     <section class="container">
       {% block content %} {% endblock content %}
 
+      {% if alert %}
+  <div class="toast align-items-center show fade text-white {% if bg_color %} bg-{{bg_color}} {% else %} bg-info {% endif %} border-0 position-fixed top-0 end-0" role="alert"
+  data-bs-autohide="true" aria-live="polite" aria-atomic="true" data-bs-animation="true" style="z-index: 99; margin-top: 5rem; transform: translateX(100%); transition: transform 4s ease-in-out;">
+    <div class="d-flex">
+      <div class="toast-body" style="font-size: 1rem;">
+        {{alert}}
+      </div>
+      <!-- <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button> -->
+    </div>
+  </div>
+{% endif %}
+
       <!-- footer -->
       <!-- <hr style="border: 1px solid rgb(124, 120, 120); margin-top: 7rem"/> -->
     {% if current_user.is_authenticated %}
@@ -262,6 +274,19 @@
 
         <!-- Icon for the dark mode -->
         <i class="dntoggle fas fa-moon" id="dark-mode-toggle"></i>
+
+
+    <script>
+    var myToast = new bootstrap.Toast(document.querySelector('.toast'));
+
+    document.querySelector('.toast').style.transform = 'translateX(-0%)';
+
+    setTimeout(function() {
+        // fade the toast away
+        document.querySelector('.toast').style.transition = '4s ease-in-out';
+        myToast.hide();
+    }, 2000);
+    </script>
 
     <!-- BOOTSTRAP -->
 
