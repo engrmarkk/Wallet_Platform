@@ -1,5 +1,5 @@
 from extensions import db, login_manager, mail, migrate, moment
-from flask import redirect, flash, url_for, session, render_template, Flask
+from flask import redirect, url_for, session, render_template, Flask, sessions
 from routes import AuthenticationBlueprint, ViewBlueprint, BillsBlueprint, ExternalBlueprint
 from models import User, Transaction, Beneficiary, Card, Invitees, TransactionCategories
 from datetime import timedelta
@@ -51,7 +51,8 @@ def create_app():
     # redirect page to the login
     @login_manager.unauthorized_handler
     def unauthorized_handler():
-        flash("Login to access this page", category="info")
+        session["alert"] = "Login to access this page"
+        session["bg_color"] = "info"
         return redirect(url_for("auth.login"))
 
     with app.app_context():
@@ -59,7 +60,8 @@ def create_app():
 
     @app.errorhandler(413)
     def too_large(e):
-        flash("File too large, max size is 1MB", category="danger")
+        session["alert"] = "File too large, max size is 1MB"
+        session["bg_color"] = "danger"
         return redirect(url_for("view.account"))
 
     @app.errorhandler(404)
