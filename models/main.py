@@ -34,6 +34,7 @@ class User(db.Model, UserMixin):
     beneficiaries = db.relationship("Beneficiary", backref="user_account", lazy=True)
     card = db.relationship("Card", backref="card_owner", cascade="all, delete", lazy=True)
     invitees = db.relationship('Invitees', backref='inviter', cascade="all, delete", lazy=True)
+    user_session = db.relationship('UserSession', backref='user', lazy=True, uselist=False)
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
 
     # Define a representation with two attribute 'username' and 'email'
@@ -53,5 +54,22 @@ class User(db.Model, UserMixin):
         return User.query.get(id)
 
 
+class UserSession(db.Model):
+    id = db.Column(db.String(100), default=hexid, primary_key=True)
+    user_id = db.Column(db.String(100), db.ForeignKey("user.id"), nullable=False)
+    otp = db.Column(db.String(6), nullable=False)
+
+
 def get_account_number_details(acct_number):
     return User.query.filter_by(account_number=acct_number).first()
+
+
+def create_user_session(user_id, otp):
+    user_session = UserSession.query.filter_by(user_id=user_id).first()
+    if user_session:
+        user_session.otp = otp
+    else:
+        user_session = UserSession(user_id=user_id, otp=otp)
+        db.session.add(user_session)
+    db.session.commit()
+    return user_session
