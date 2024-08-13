@@ -14,6 +14,24 @@
   integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
   crossorigin="anonymous"
 />
+
+      <!-- Load Bootstrap -->
+<link
+  rel="stylesheet"
+  href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+  integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I"
+  crossorigin="anonymous"
+/>
+<script
+  src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+  integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+  integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
+  crossorigin="anonymous"
+></script>
 <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/customStyle.css') }}"
@@ -25,10 +43,10 @@
 
   <!-- Js -->
 
-  <script
-    src="{{ url_for('static', filename='javascript/script.js') }}"
-    defer
-  ></script>
+<!--  <script-->
+<!--    src="{{ url_for('static', filename='javascript/script.js') }}"-->
+<!--    defer-->
+<!--  ></script>-->
   <link
       rel="icon"
       href="{{ url_for('static', filename='images/logo-normal.png') }}"
@@ -180,7 +198,46 @@
     > to access your account
   </p>
 </form>
+
+  {% if alert %}
+<div class="toast align-items-center show fade text-white {% if bg_color %} bg-{{bg_color}} {% else %} bg-info {% endif %} border-0 position-fixed top-0 end-0" role="alert"
+data-bs-autohide="true" aria-live="polite" aria-atomic="true" data-bs-animation="true" style="z-index: 99; margin-top: 5rem; transform: translateX(100%); transition: transform 4s ease-in-out;">
+<div class="d-flex">
+  <div class="toast-body" style="font-size: 1rem;">
+    {{alert}}
+  </div>
+  <!-- <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button> -->
 </div>
 </div>
+{% endif %}
+</div>
+</div>
+
+ <script>
+    var myToast = new bootstrap.Toast(document.querySelector('.toast'));
+
+    document.querySelector('.toast').style.transform = 'translateX(-0%)';
+
+    setTimeout(function() {
+        // fade the toast away
+        document.querySelector('.toast').style.transition = '4s ease-in-out';
+        myToast.hide();
+    }, 2000);
+    </script>
+
+
+<!-- BOOTSTRAP -->
+
+<!-- Bootsrap popper -->
+<script
+  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+  integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
+  integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
+  crossorigin="anonymous"
+></script>
 </body>
 </html>
