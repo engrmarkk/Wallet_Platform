@@ -8,9 +8,8 @@ from flask_login import current_user, login_required
 from flask import (
     redirect,
     url_for,
-    flash,
     request,
-session,
+    session,
     render_template,
     Blueprint,
     make_response,
@@ -99,12 +98,10 @@ def account():
         try:
             f = form.image.data
             if not f:
-                # flash("Nothing to upload", "danger")
                 session["alert"] = "Nothing to upload"
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.display_profile"))
             if f.content_length > request.max_content_length:  # check file size
-                # flash("File is too large. Maximum file size is 1MB.", "danger")
                 session["alert"] = "File is too large. Maximum file size is 1MB."
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.account"))
@@ -114,17 +111,14 @@ def account():
             image_url = result["secure_url"]
             current_user.photo = image_url
             db.session.commit()
-            # flash("Profile photo uploaded successfully", "success")
             session["alert"] = "Profile photo uploaded successfully"
             session["bg_color"] = "success"
             return redirect(url_for("view.account"))
         except ValidationError as e:
-            # flash(str(e), "danger")
             session["alert"] = str(e)
             session["bg_color"] = "danger"
             return redirect(url_for("view.account"))
         except RequestEntityTooLarge:
-            # flash("File is too large. Maximum file size is 1MB.", "danger")
             session["alert"] = "File is too large. Maximum file size is 1MB."
             session["bg_color"] = "danger"
             return redirect(url_for("view.account"))
@@ -200,18 +194,15 @@ def home():
                 account_num = int(form.account_number.data)
                 user1 = User.query.filter_by(account_number=account_num).first()
                 if not user1:
-                    # flash("Invalid account number", "danger")
                     session["alert"] = "Invalid account number"
                     session["bg_color"] = "danger"
                     return redirect(url_for("view.home"))
                 if account_num == current_user.account_number:
-                    # flash("You can't send money to yourself", "info")
                     session["alert"] = "You can't send money to yourself"
                     session["bg_color"] = "info"
                     return redirect(url_for("view.home"))
                 return redirect(url_for("view.pay", acct=account_num))
         except ValueError:
-            # flash("Invalid account number", "danger")
             session["alert"] = "Invalid account number"
             session["bg_color"] = "danger"
             return redirect(url_for("view.home"))
@@ -236,7 +227,6 @@ def create_transfer_pin():
     alert = session.pop("alert", None)
     bg_color = session.pop("bg_color", None)
     if current_user.pin_set:
-        # flash("Transfer pin already set", "info")
         session["alert"] = "Transfer pin already set"
         session["bg_color"] = "info"
         return redirect(url_for("view.home"))
@@ -252,7 +242,6 @@ def create_transfer_pin():
             user.transaction_pin = hasher.hash(str(pin))
             user.pin_set = True
             db.session.commit()
-            # flash("Transfer pin created successfully", "success")
             session["alert"] = "Transfer pin created successfully"
             session["bg_color"] = "success"
             return redirect(url_for("view.home"))
@@ -270,11 +259,13 @@ def change_transfer_pin():
             user = User.query.filter_by(id=current_user.id).first()
             secret_answer = form.secret_answer.data.lower()
             if secret_answer != current_user.secret_answer:
-                flash("Invalid answer", "danger")
+                session["alert"] = "Invalid answer"
+                session["bg_color"] = "danger"
                 return redirect(url_for("view.change_transfer_pin"))
             user.transaction_pin = hasher.hash(str(pin))
             db.session.commit()
-            flash("Transfer pin changed successfully", "success")
+            session["alert"] = "Transfer pin changed successfully"
+            session["bg_color"] = "success"
             return redirect(url_for("view.home"))
 
     return render_template(
@@ -293,9 +284,13 @@ def transfer_to_bank():
     account_number = request.args.get("account_number")
     bank_name = request.args.get("bank_name")
 
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
+
     res, status_code = pay_stack.resolve_account(account_number, bank_code)
     if status_code != 200:
-        flash("Invalid account number", "danger")
+        session["alert"] = "Invalid account number"
+        session["bg_color"] = "danger"
         return redirect(url_for("view.home"))
     account_name = res["data"]["account_name"]
 
@@ -305,23 +300,31 @@ def transfer_to_bank():
         amount = request.form.get("amount")
 
         if not amount:
-            flash("Please enter amount", "danger")
+            alert = "Please enter amount"
+            bg_color = "danger"
             return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                    account_number=account_number, bank_name=bank_name))
+                                    account_number=account_number, bank_name=bank_name,
+                                    alert=alert, bg_color=bg_color))
         if not transaction_pin:
-            flash("Please enter your transaction pin", "danger")
+            alert = "Please enter your transaction pin"
+            bg_color = "danger"
             return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                    account_number=account_number, bank_name=bank_name))
+                                    account_number=account_number, bank_name=bank_name,
+                                    alert=alert, bg_color=bg_color))
 
         if not hasher.verify(transaction_pin, current_user.transaction_pin):
-            flash("Invalid transaction pin", "danger")
+            alert = "Invalid transaction pin"
+            bg_color = "danger"
             return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                    account_number=account_number, bank_name=bank_name))
+                                    account_number=account_number, bank_name=bank_name,
+                                    alert=alert, bg_color=bg_color))
 
         if float(amount) > current_user.account_balance:
-            flash("Insufficient funds", "danger")
+            alert = "Insufficient funds"
+            bg_color = "danger"
             return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                    account_number=account_number, bank_name=bank_name))
+                                    account_number=account_number, bank_name=bank_name,
+                                    alert=alert, bg_color=bg_color))
 
         trans_ref = generate_transaction_ref("Transfer")
         sess_id = generate_session_id()
@@ -377,13 +380,16 @@ def transfer_to_bank():
             )
         )
     return render_template("transfer_to_bank.html", date=x, account_name=account_name,
-                           bank_name=bank_name, account_number=account_number)
+                           bank_name=bank_name, account_number=account_number,
+                           alert=alert, bg_color=bg_color)
 
 
 @view.route("/pay/<acct>/", methods=["GET", "POST"])
 @login_required
 def pay(acct):
     form = SendMoneyForm()
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     beneficial = []
     user = User.query.filter_by(account_number=acct).first()
     beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
@@ -396,10 +402,12 @@ def pay(acct):
             pin = int(form.transfer_pin.data)
             user1 = User.query.filter_by(account_number=acct).first()
             if current_user.account_balance < amount:
-                flash("Insufficient Funds", "danger")
+                session["alert"] = "Insufficient Funds"
+                session["bg_color"] = "danger"
                 return redirect(url_for("view.pay", acct=acct))
             if not hasher.verify(str(pin), current_user.transaction_pin):
-                flash("Invalid transaction pin", "danger")
+                session["alert"] = "Invalid transaction pin"
+                session["bg_color"] = "danger"
                 return redirect(url_for("view.pay", acct=acct))
             if form.add_beneficiary.data:
                 ben = Beneficiary(
@@ -447,7 +455,8 @@ def pay(acct):
             )
             db.session.add(transact2)
             db.session.commit()
-            flash(f"{amount} Naira has been sent to {user1.last_name.title()} {user1.first_name.title()}", "success")
+            session["alert"] = f"{amount} Naira has been sent to {user1.last_name.title()} {user1.first_name.title()}"
+            session["bg_color"] = "success"
 
             # ALERTS WHEN FUNDS HAS BEEN SENT
             # alert for debit transaction
@@ -468,7 +477,8 @@ def pay(acct):
                 mail.send(msg)
             except Exception as e:
                 print(e, "ERROR")
-                flash("Network Error", "danger")
+                session["alert"] = "Network Error"
+                session["bg_color"] = "danger"
 
             # alert for credit transaction
             try:
@@ -488,7 +498,8 @@ def pay(acct):
                 mail.send(msg)
             except Exception as e:
                 print(e, "ERROR")
-                flash("Network error", "danger")
+                session["alert"] = "Network Error"
+                session["bg_color"] = "danger"
             return redirect(
                 url_for(
                     "view.transaction_successful",
@@ -502,51 +513,63 @@ def pay(acct):
                 )
             )
     return render_template(
-        "pay.html", date=x, form=form, user1=user, beneficial=beneficial
+        "pay.html", date=x, form=form, user1=user, beneficial=beneficial,
+        alert=alert, bg_color=bg_color
     )
 
 
 @view.route("/reset-password/", methods=["GET", "POST"])
 def reset_password():
     form = ResetForm()
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     if request.method == "POST":
         if form.validate_on_submit():
             email = form.email.data
             user = User.query.filter_by(email=email).first()
             if not user:
-                flash("Provide valid email please", "danger")
+                session["alert"] = "Provide valid email please"
+                session["bg_color"] = "danger"
                 return redirect(url_for("view.reset_password"))
             else:
                 send_reset_email(user)
-                flash("An email has been sent to you", "success")
+                session["alert"] = "An email has been sent to you"
+                session["bg_color"] = "success"
                 return redirect(url_for("view.reset_password"))
 
-    return render_template("reset.html", date=x, form=form)
+    return render_template("reset.html", date=x, form=form,
+                           alert=alert, bg_color=bg_color)
 
 
 @view.route("/reset-password-verified/<token>", methods=["GET", "POST"])
 def reset_password_verified(token):
     form = ResetPasswordForm()
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     if request.method == "POST":
         if form.validate_on_submit():
             password = generate_password_hash(form.password.data)
             user = User.verify_reset_token(token)
             if not user:
-                flash("Invalid token", "danger")
+                session["alert"] = "Invalid token"
+                session["bg_color"] = "danger"
                 return redirect(url_for("view.reset_password"))
             else:
                 user.password = password
                 db.session.commit()
-                flash("Password changed successfully", "success")
+                session["alert"] = "Password changed successfully"
+                session["bg_color"] = "success"
                 return redirect(url_for("auth.login"))
-    return render_template("reset_verified.html", date=x, form=form)
+    return render_template("reset_verified.html", date=x, form=form,
+                           alert=alert, bg_color=bg_color)
 
 
 @view.route("/create-card/", methods=["GET", "POST"])
 @login_required
 def create_card():
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     if current_user.card:
-        flash("You already have a card", "success")
         return redirect(url_for("view.card"))
     if request.method == "POST":
         card_number = "".join([str(random.randint(0, 9)) for i in range(16)])
@@ -561,9 +584,11 @@ def create_card():
 
         db.session.add(card)
         db.session.commit()
-        flash("Card created successfully", "success")
+        session["alert"] = "Card created successfully"
+        session["bg_color"] = "success"
         return redirect(url_for("view.card"))
-    return render_template("create_card.html", date=x)
+    return render_template("create_card.html", date=x,
+                           alert=alert, bg_color=bg_color)
 
 
 @view.route("/card/", methods=["GET", "POST"])
@@ -576,13 +601,9 @@ def card():
 @view.route("/contact/", methods=["GET", "POST"])
 def contact():
     form = ContactForm()
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     if request.method == "POST":
-        """not using this block again"""
-        # if not form.validate_on_submit():
-        #     flash("All fields are required", "danger")
-        #     return redirect(url_for("view.contact"))
-        """end of block"""
-
         if form.validate_on_submit():
             try:
                 name = form.name.data.title()
@@ -599,12 +620,16 @@ def contact():
                 )
                 msg.body = f"{message}\nMy email address is: {email}"
                 mail.send(msg)
-                flash("Message Sent", "success")
+                session["alert"] = "Message Sent"
+                session["bg_color"] = "success"
                 return redirect(url_for("view.contact"))
-            except:
-                flash("Your data connection is off", category="danger")
+            except Exception as e:
+                print(e)
+                session["alert"] = "Your data connection is off"
+                session["bg_color"] = "danger"
+                return redirect(url_for("view.contact"))
 
-    return render_template("contact.html", form=form, date=x)
+    return render_template("contact.html", form=form, date=x, alert=alert, bg_color=bg_color)
 
 
 @view.route("/team")
@@ -615,7 +640,8 @@ def team():
 @view.route("/download_pdf", methods=["GET"])
 def download_pdf():
     if not current_user.transacts:
-        flash("You have no transaction history", "danger")
+        session["alert"] = "You have no transaction history"
+        session["bg_color"] = "danger"
         return redirect(url_for("view.account"))
     try:
         # render the Jinja2 template with the desired context
@@ -644,7 +670,8 @@ def download_pdf():
         )
     except Exception as e:
         print(e, "error from pdfshift.io")
-        flash("Cannot generate your account's statement", "danger")
+        session["alert"] = "Cannot generate your account's statement"
+        session["bg_color"] = "danger"
         return redirect(url_for("view.account"))
 
 
@@ -695,6 +722,8 @@ def savings_interest():
 @view.route("/savings", methods=["GET", "POST"])
 @login_required
 def savings():
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     form = SaveMoneyForm()
     n = 0
     if request.method == "POST":
@@ -702,7 +731,9 @@ def savings():
         n += 1
         if form.validate_on_submit():
             if current_user.account_balance < amount:
-                flash("Insufficient Amount", "danger")
+                session["alert"] = "Insufficient Amount"
+                session["bg_color"] = "danger"
+                return redirect(url_for("view.savings"))
             else:
                 current_user.account_balance -= amount
                 current_user.savings += amount
@@ -721,10 +752,13 @@ def savings():
                 )
                 db.session.add(transact2)
                 db.session.commit()
-                flash("Saved successfully", "success")
+                alert = "Saved successfully"
+                bg_color = "success"
                 savings_interest()
-            return render_template("savings.html", date=x, form=form, n=n)
-    return render_template("savings.html", date=x, form=form, n=n)
+            return render_template("savings.html", date=x, form=form, n=n,
+                                   alert=alert, bg_color=bg_color)
+    return render_template("savings.html", date=x, form=form, n=n,
+                           alert=alert, bg_color=bg_color)
 
 
 @view.route("/withdraw", methods=["GET", "POST"])
@@ -733,7 +767,8 @@ def withdraw():
     form = SaveMoneyForm()
     amount = current_user.savings
     if not current_user.savings:
-        flash("No savings to withdraw", "danger")
+        session["alert"] = "No savings to withdraw"
+        session["bg_color"] = "danger"
         return redirect(url_for("view.home"))
     current_user.account_balance += current_user.savings
     current_user.savings -= current_user.savings
@@ -752,7 +787,8 @@ def withdraw():
     )
     db.session.add(transact1)
     db.session.commit()
-    flash("Withdraw successful", "success")
+    session["alert"] = "Withdraw successful"
+    session["bg_color"] = "success"
     return redirect(url_for("view.home"))
 
 
@@ -783,9 +819,11 @@ def withdraw_earnings():
         )
         db.session.add(transact1)
         db.session.commit()
-        flash(f"Withdrawal of N{amount} successful", "success")
+        session["alert"] = f"Withdrawal of N{amount} successful"
+        session["bg_color"] = "success"
     else:
-        flash("No earnings to withdraw", "danger")
+        session["alert"] = "No earnings to withdraw"
+        session["bg_color"] = "danger"
     return redirect(url_for("view.home"))
 
 
