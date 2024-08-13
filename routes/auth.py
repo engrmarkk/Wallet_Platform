@@ -1,7 +1,7 @@
 from datetime import datetime
 from extensions import db, mail
 from flask_login import current_user, login_user, logout_user, login_required
-from flask import redirect, url_for, flash, request, render_template, Blueprint
+from flask import redirect, url_for, flash, request, render_template, Blueprint, session
 from models import User, Invitees
 from form import *
 from flask_mail import Message
@@ -50,6 +50,9 @@ def login():
         # If the logged-in user is trying to access the login url, redirects the user to the homepage
         if current_user.is_authenticated:
             return redirect(url_for("view.home"))
+
+        alert = session.pop("alert", None)
+        bg_color = session.pop("bg_color", None)
         # Assign the LoginForm created in the form.py file to a variable 'form'
         form = LoginForm()
         if request.method == "POST":
@@ -60,7 +63,9 @@ def login():
                 email = form.email.data
                 if user and not user.confirmed:
                     try:
-                        flash("First validate your email", category="danger")
+                        # flash("First validate your email", category="danger")
+                        session["alert"] = "First validate your email"
+                        session["bg_color"] = "danger"
 
                         msg = Message(
                             subject="Email Verification",
@@ -71,9 +76,11 @@ def login():
                         mail.send(msg)
                     except Exception as e:
                         print(e, "ERROR")
-                        flash("failed to validate", "danger")
+                        # flash("failed to validate", "danger")
+                        alert = "Failed to validate"
+                        bg_color = "danger"
                         return render_template(
-                            "login.html", date=datetime.utcnow(), form=form
+                            "login.html", date=datetime.utcnow(), form=form, alert=alert, bg_color=bg_color
                         )
 
                     return redirect(url_for("auth.validate", email=email))
@@ -83,15 +90,23 @@ def login():
                     if check_password_hash(user.password, form.password.data):
                         # If the check passed, login the user and flash a message to the user when redirected to the
                         # homepage
-                        flash("Login Successful", "success")
+                        # flash("Login Successful", "success")
+                        session["alert"] = "Login Successful"
+                        session["bg_color"] = "success"
                         login_user(user, remember=False)
                         return redirect(url_for("view.home"))
                     else:
                         # If the check failed, flash a message to the user while still on the same page
-                        flash("Check your Password", "danger")
+                        # flash("Check your Password", "danger")
+                        session["alert"] = "Check your password"
+                        session["bg_color"] = "danger"
+                        return redirect(url_for("auth.login"))
                 else:
                     # If the user doesn't exist, flash a message to the user while still on the same page
-                    flash("User doesn't exist", "danger")
+                    # flash("User doesn't exist", "danger")
+                    session["alert"] = "User doesn't exist"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("auth.login"))
 
                     """not using this"""
                     # return redirect(url_for("auth.login"))
@@ -99,16 +114,23 @@ def login():
 
         # This for a get request, if u click on the link that leads to the login page, this return statement get
         # called upon
-        return render_template("login.html", date=datetime.utcnow(), form=form)
+        return render_template("login.html", date=datetime.utcnow(),
+                               form=form, alert=alert, bg_color=bg_color)
 
     except OperationalError:
-        flash("Please check your internet connection", "danger")
-        return render_template("login.html", date=datetime.utcnow(), form=form)
+        # flash("Please check your internet connection", "danger")
+        alert = "Please check your internet connection"
+        bg_color = "danger"
+        return render_template("login.html", date=datetime.utcnow(), form=form,
+                               alert=alert, bg_color=bg_color)
 
     except Exception as e:
         print(e, "ERROR")
-        flash("Something went wrong", "danger")
-        return render_template("login.html", date=datetime.utcnow(), form=form)
+        # flash("Something went wrong", "danger")
+        alert = "Something went wrong"
+        bg_color = "danger"
+        return render_template("login.html", date=datetime.utcnow(), form=form,
+                               alert=alert, bg_color=bg_color)
 
 
 @auth.route("/register/", methods=["GET", "POST"])
@@ -116,6 +138,9 @@ def register():
     # If the logged-in user is trying to access the login url, redirects the user to the homepage
     if current_user.is_authenticated:
         return redirect(url_for("view.home"))
+
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     # Assign the RegistrationForm created in the form.py file to a variable 'form'
     form = RegistrationForm()
     # If the request is a post request and the form doesn't get validated, redirect the user to that same page
@@ -133,7 +158,9 @@ def register():
             # if the username exist
             if user:
                 # Flash this message to the user and redirect the user to that same page
-                flash("User with this username already exist", category="danger")
+                # flash("User with this username already exist", category="danger")
+                session["alert"] = "User with this username already exist"
+                session["bg_color"] = "danger"
                 return redirect(url_for("auth.register"))
 
             # Check if email exist
@@ -141,9 +168,12 @@ def register():
             # if the email exist
             if existing_email:
                 # Flash this message to the user and redirect the user to that same page
-                flash("User with this email already exist", category="danger")
+                # flash("User with this email already exist", category="danger")
+                alert = "User with this email already exist"
+                bg_color = "danger"
                 return render_template(
-                    "register.html", date=datetime.utcnow(), form=form
+                    "register.html", date=datetime.utcnow(), form=form,
+                    alert=alert, bg_color=bg_color
                 )
 
             # Check if phone number exist
@@ -153,12 +183,17 @@ def register():
             # if the phone number exist
             if existing_phone:
                 # Flash this message to the user and redirect the user to that same page
-                flash("User with this phone number already exist", category="danger")
+                # flash("User with this phone number already exist", category="danger")
+                session["alert"] = "User with this phone number already exist"
+                session["bg_color"] = "danger"
                 return redirect(url_for("auth.register"))
             if not form.phone_number.data.isnumeric():
-                flash("This is not a valid number", category="danger")
+                alert = "This is not a valid number"
+                bg_color = "danger"
+                # flash("This is not a valid number", category="danger")
                 return render_template(
-                    "register.html", date=datetime.utcnow(), form=form
+                    "register.html", date=datetime.utcnow(), form=form,
+                    alert=alert, bg_color=bg_color
                 )
 
             first_name = form.first_name.data.lower()
@@ -179,16 +214,21 @@ def register():
                 and any(letter.isdigit() for letter in letters)
             )
             if not mixed:
-                flash(
-                    "Password should contain at least an uppercase, lowercase and a number",
-                    "danger",
-                )
+                # flash(
+                #     "Password should contain at least an uppercase, lowercase and a number",
+                #     "danger"
+                # )
+                alert = "Password should contain at least an uppercase, lowercase and a number"
+                bg_color = "danger"
                 return render_template(
-                    "register.html", date=datetime.utcnow(), form=form
+                    "register.html", date=datetime.utcnow(), form=form,
+                    alert=alert, bg_color=bg_color
                 )
 
             if len(phone_number) != 11:
-                flash("Phone number must be 11 digits", "danger")
+                # flash("Phone number must be 11 digits", "danger")
+                session["alert"] = "Phone number must be 11 digits"
+                session["bg_color"] = "danger"
                 return redirect(url_for("auth.register"))
 
             if (
@@ -197,9 +237,12 @@ def register():
                     account_number=form.invited_by.data
                 ).first()
             ):
-                flash("Invalid referral code", "danger")
+                # flash("Invalid referral code", "danger")
+                alert = "Invalid referral code"
+                bg_color = "danger"
                 return render_template(
-                    "register.html", date=datetime.utcnow(), form=form
+                    "register.html", date=datetime.utcnow(), form=form,
+                    alert=alert, bg_color=bg_color
                 )
 
             if not form.invited_by.data:
@@ -229,27 +272,35 @@ def register():
                 mail.send(msg)
             except Exception as e:
                 print(e)
-                flash("failed to verify email", "danger")
+                # flash("failed to verify email", "danger")
+                alert = "Failed to verify email"
+                bg_color = "danger"
                 return render_template(
-                    "register.html", date=datetime.utcnow(), form=form
+                    "register.html", date=datetime.utcnow(), form=form,
+                    alert=alert, bg_color=bg_color
                 )
 
             # Add the 'new_user'
             db.session.add(new_user)
             db.session.commit()
 
-            flash(
-                "A confirmation email has been sent to you via email",
-                category="success",
-            )
+            # flash(
+            #     "A confirmation email has been sent to you via email",
+            #     category="success",
+            # )
+            session["alert"] = "A confirmation email has been sent to you via email"
+            session["bg_color"] = "success"
             return redirect(url_for("auth.validate", email=email))
 
-    return render_template("register.html", date=datetime.utcnow(), form=form)
+    return render_template("register.html", date=datetime.utcnow(), form=form,
+                           alert=alert, bg_color=bg_color)
 
 
 @auth.route("/logout/")
 @login_required
 def logout():
     logout_user()
-    flash("You've been logged out successfully", "success")
+    # flash("You've been logged out successfully", "success")
+    session["alert"] = "You've been logged out successfully"
+    session["bg_color"] = "success"
     return redirect(url_for("view.front_page"))
