@@ -189,11 +189,13 @@ def purchase_data():
     amount = float(amount)
 
     if not phone_number.isdigit():
-        flash("Invalid phone number", "danger")
+        session["alert"] = "Invalid phone number"
+        session["bg_color"] = "danger"
         return redirect(url_for("bills.get_variation", service_id=service_id))
     
     if not hasher.verify(pin, current_user.transaction_pin):
-        flash("Invalid transaction pin", "danger")
+        session["alert"] = "Invalid transaction pin"
+        session["bg_color"] = "danger"
         return redirect(url_for("bills.get_variation", service_id=service_id))
     
     purchase_type = "data"
@@ -217,19 +219,22 @@ def purchase_data():
         response, status_code = vtpass_service.purchase_data(payload)
     except Exception as e:
         print(e, "Error occurred")
-        flash("There is an error occurred", "danger")
+        session["alert"] = "An error occurred"
+        session["bg_color"] = "danger"
         return redirect(url_for("view.home"))
     
     if status_code == 200 and response["code"] == "000":
         token = response["token"] if "token" in response else ""
         update_transaction(token, transact)
         update_status(transact, "Success")
-        flash("Payment successful", "success")
+        session["alert"] = "Payment successful"
+        session["bg_color"] = "success"
         return redirect(url_for("view.home"))
     else:
         update_status(transact, "Failed")
         refund(amount, current_user, request_id, purchase_type, phone_number)
-        flash("Payment failed", "danger")
+        session["alert"] = "Payment failed"
+        session["bg_color"] = "danger"
         return redirect(url_for("view.home"))
 
 
@@ -249,9 +254,12 @@ def display_service(service):
 @bills.route("/display_variation/<string:service_id>", methods=["GET"])
 @login_required
 def get_variation(service_id):
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     img = session.get("img", "")
     if not img:
-        flash("Session timed out", "info")
+        session["alert"] = "Session timed out"
+        session["bg_color"] = "info"
         return redirect(url_for("view.home"))
     response = (
         vtpass_service.variation_codes(service_id)
@@ -268,6 +276,8 @@ def get_variation(service_id):
         service_id=service_id,
         variations_code=1,
         img=img,
+        alert=alert,
+        bg_color=bg_color,
     )
 
 
