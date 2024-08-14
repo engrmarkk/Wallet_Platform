@@ -86,7 +86,8 @@ def vtpass_payment():
 
     if not hasher.verify(pin, current_user.transaction_pin):
         print("invalid pin")
-        flash("Invalid transaction pin", "danger")
+        session["alert"] = "Invalid transaction pin"
+        session["bg_color"] = "danger"
         return redirect(url_for("bills.get_variation", service_id=service_id))
 
     purchase_type = determine_purchase_type(service_id)
@@ -114,7 +115,8 @@ def vtpass_payment():
             response, status_code = vtpass_service.purchase_data(payload)
         except Exception as e:
             print(e, "Error occurred")
-            flash("An error occurred", "danger")
+            session["alert"] = "An error occurred"
+            session["bg_color"] = "danger"
             return redirect(url_for("view.home"))
     elif purchase_type == "electricity":
         variation_code = vtpass_service.variation_codes(service_id)["content"]["varations"][0]["variation_code"]
@@ -146,7 +148,8 @@ def vtpass_payment():
         }
         response, status_code = vtpass_service.purchase_product(payload)
     else:
-        flash("Invalid service ID", "danger")
+        session["alert"] = "Invalid service ID"
+        session["bg_color"] = "danger"
         return redirect(url_for("view.home"))
     if status_code == 200 and response["code"] == "000":
         # Payment was successful
@@ -155,13 +158,15 @@ def vtpass_payment():
             token = response["token"] if "token" in response else ""
             update_transaction(token, transact)
         update_status(transact, "Success")
-        flash("Payment successful", "success")
+        session["alert"] = "Payment successful"
+        session["bg_color"] = "success"
         return redirect(url_for("view.home"))
     else:
         update_status(transact, "Failed")
         refund(amount, current_user, request_id, purchase_type, phone_number)
+        session["alert"] = "Payment failed"
+        session["bg_color"] = "danger"
         # Payment failed
-        flash("Payment failed", "danger")
         return redirect(url_for("view.home"))
 
 
