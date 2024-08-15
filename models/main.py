@@ -36,6 +36,7 @@ class User(db.Model, UserMixin):
     invitees = db.relationship('Invitees', backref='inviter', cascade="all, delete", lazy=True)
     user_session = db.relationship('UserSession', backref='user', lazy=True, uselist=False)
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
+    enabled_2fa = db.Column(db.Boolean, default=False)
 
     # Define a representation with two attribute 'username' and 'email'
     def __repr__(self):
