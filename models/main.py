@@ -30,6 +30,7 @@ class User(db.Model, UserMixin):
     secret_question = db.Column(db.Text, nullable=True)
     secret_answer = db.Column(db.String(50), nullable=True)
     pin_set = db.Column(db.Boolean, default=False)
+    secret_2fa = db.Column(db.Text)
     transacts = db.relationship("Transaction", backref="author", lazy=True)
     beneficiaries = db.relationship("Beneficiary", backref="user_account", lazy=True)
     card = db.relationship("Card", backref="card_owner", cascade="all, delete", lazy=True)
