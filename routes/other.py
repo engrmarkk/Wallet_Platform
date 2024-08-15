@@ -32,7 +32,7 @@ from routes.auth import login
 from passlib.hash import pbkdf2_sha256 as hasher
 import random
 import string
-from utils import generate_session_id, generate_transaction_ref
+from utils import generate_session_id, generate_transaction_ref, get_uri, authenticate_auth_code
 from paystack.paystack_endpoint import PaystackEndpoints
 
 view = Blueprint("view", __name__, template_folder="../templates")
@@ -92,6 +92,14 @@ def account():
     form = PhotoForm()
     pinset = current_user.pin_set
 
+    if not current_user.enabled_2fa:
+        qr_data = get_uri(current_user)
+        uri = qr_data["uri"]
+    else:
+        uri = ""
+
+    print(uri, "URI")
+
     alert = session.pop("alert", None)
     bg_color = session.pop("bg_color", None)
     if request.method == "POST":
@@ -123,7 +131,7 @@ def account():
             session["bg_color"] = "danger"
             return redirect(url_for("view.account"))
     return render_template("account.html", pinset=pinset, date=x, form=form,
-                           alert=alert, bg_color=bg_color)
+                           alert=alert, bg_color=bg_color, uri=uri)
 
 
 @view.route("/transaction-history")
@@ -833,3 +841,31 @@ def withdraw_earnings():
 def view_transaction(trans_id):
     trans = Transaction.query.filter_by(id=trans_id).first()
     return render_template("view_transaction.html", date=x, trans=trans)
+
+
+# toggle enabled_2fa
+@view.route("/toggle_2fa", methods=["POST"])
+@login_required
+def toggle_2fa():
+    auth_code = request.form["auth_code"]
+
+    if not auth_code:
+        session["alert"] = "Please enter the authentication code"
+        session["bg_color"] = "danger"
+        return redirect(url_for("view.account"))
+
+    if not authenticate_auth_code(current_user, auth_code):
+        session["alert"] = "Invalid authentication code"
+        session["bg_color"] = "danger"
+        return redirect(url_for("view.account"))
+
+    current_user.enabled_2fa = not current_user.enabled_2fa
+    db.session.commit()
+    if current_user.enabled_2fa:
+        session["alert"] = "2FA enabled"
+        session["bg_color"] = "success"
+    else:
+        session["alert"] = "2FA disabled"
+        session["bg_color"] = "success"
+
+    return redirect(url_for("view.account"))
