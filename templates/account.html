@@ -176,7 +176,7 @@
 style="background: rgba(0, 0, 0, 0.669);"
 >
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" style="height: fit-content !important;">
+    <div class="modal-content">
       <div class="modal-header">
         <p class="modal-title" id="exampleModalLabel">
           {% if current_user.enabled_2fa %}
@@ -187,15 +187,15 @@ style="background: rgba(0, 0, 0, 0.669);"
         </p>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form class="form-group">
-      <div class="modal-body" style="height: fit-content !important;">
+      <form class="form-group h-100" method="post" action="{{ url_for('view.toggle_2fa') }}">
+      <div class="modal-body">
         {% if not current_user.enabled_2fa %}
         <!-- qr code -->
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ current_user.id }}" class="mx-auto img-thumbnail mb-3 d-flex justify-content-center">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ uri }}" class="mx-auto img-thumbnail mb-3 d-flex justify-content-center">
         {% endif %}
-        <input type="text" class="form-control shadow-none w-100 text-center border-2" maxlength="6" placeholder="Enter 6 digit code">
+        <input type="text" name="auth_code" class="form-control shadow-none w-100 text-center border-2" maxlength="6" placeholder="Enter 6 digit code">
         <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
-        <button type="button" class="btn btn-primary mt-3 mx-auto d-flex justify-content-center">
+        <button type="submit" class="btn btn-primary mt-3 shadow-none mx-auto d-flex justify-content-center">
           {% if current_user.enabled_2fa %}
           Disable
           {% else %}
