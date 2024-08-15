@@ -5,6 +5,7 @@ from flask import redirect, url_for, flash, request, render_template, Blueprint,
 from models import User, Invitees
 from form import *
 from flask_mail import Message
+from utils import authenticate_auth_code
 from random import randint
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import OperationalError
@@ -66,7 +67,7 @@ def login():
             if form.validate_on_submit():
                 # Query the User model and assign the queried data to the variable 'user'
                 user = User.query.filter_by(email=form.email.data.lower()).first()
-                email = form.email.data
+                email = form.email.data.lower()
                 if user and not user.confirmed:
                     try:
                         session["alert"] = "First validate your email"
@@ -92,6 +93,10 @@ def login():
                 # the user on the database
                 if user:
                     if check_password_hash(user.password, form.password.data):
+                        if user.enabled_2fa:
+                            return render_template("login.html", date=datetime.utcnow(),
+                                                   form=form, alert=alert, bg_color=bg_color,
+                                                   email=email, open_modal=True)
                         # If the check passed, login the user and flash a message to the user when redirected to the
                         # homepage
                         session["alert"] = "Login Successful"
@@ -116,7 +121,7 @@ def login():
         # This for a get request, if u click on the link that leads to the login page, this return statement get
         # called upon
         return render_template("login.html", date=datetime.utcnow(),
-                               form=form, alert=alert, bg_color=bg_color)
+                               form=form, alert=alert, bg_color=bg_color, open_modal=False)
 
     except OperationalError:
         alert = "Please check your internet connection"
@@ -130,6 +135,31 @@ def login():
         bg_color = "danger"
         return render_template("login.html", date=datetime.utcnow(), form=form,
                                alert=alert, bg_color=bg_color)
+
+
+# verify_2fa
+@auth.route("/verify_2fa", methods=["POST"])
+def verify_2fa():
+    form = LoginForm()
+    auth_code = request.form.get("auth_code")
+    email = request.form.get("email")
+    if not auth_code:
+        alert = "Please enter the authentication code"
+        bg_color = "danger"
+        return render_template("login.html", date=datetime.utcnow(),
+                               form=form, alert=alert, bg_color=bg_color,
+                               email=email, open_modal=True)
+    user = User.query.filter_by(email=email).first()
+    if not authenticate_auth_code(user, auth_code):
+        alert = "Invalid authentication code"
+        bg_color = "danger"
+        return render_template("login.html", date=datetime.utcnow(),
+                               form=form, alert=alert, bg_color=bg_color,
+                               email=email, open_modal=True)
+    session["alert"] = "Login Successful"
+    session["bg_color"] = "success"
+    login_user(user, remember=False)
+    return redirect(url_for("view.home"))
 
 
 @auth.route("/register/", methods=["GET", "POST"])
