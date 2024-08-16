@@ -1,6 +1,6 @@
 from flask_mail import Message
 from extensions import mail
-from flask import render_template, flash
+from flask import render_template, flash, session
 import random
 import pyotp
 from extensions import db
@@ -42,7 +42,8 @@ def send_notification(current_user, amount, description, x, phone):
         mail.send(msg)
     except Exception as e:
         print(e, "ERROR")
-        flash("Network Error", "danger")
+        session["alert"] = "Network Error"
+        session["bg_color"] = "danger"
 
 
 def send_credit_notification(subject, current_user, amount, description, x, phone):
@@ -65,7 +66,8 @@ def send_credit_notification(subject, current_user, amount, description, x, phon
         mail.send(msg)
     except Exception as e:
         print(e, "ERROR")
-        flash("Network error", "danger")
+        session["alert"] = "Network Error"
+        session["bg_color"] = "danger"
 
 
 def generate_session_id():
@@ -92,16 +94,12 @@ def get_uri(user):
     user.secret_2fa = secret_for_user
     db.session.commit()
 
-    print(user.secret_2fa, "after")
-
     res = {
         'uri': uri,
         'secret': user.secret_2fa,
         'issuer_name': 'EasyTransact',
         'account_name': user.email
     }
-
-    print(res, "res")
 
     return res
 
@@ -111,5 +109,4 @@ def verify_totp_factor(user, auth_code):
 
 
 def authenticate_auth_code(user, auth_code):
-    is_approved = verify_totp_factor(user, auth_code)
-    return is_approved
+    return verify_totp_factor(user, auth_code)
