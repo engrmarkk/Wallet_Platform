@@ -394,10 +394,11 @@ span.navbar-toggler-ico.three {
   gap: 1rem;
 }
 .home .badge {
-  cursor: pointer;
+  /* cursor: pointer; */
   font-size: 1rem;
   display: flex;
   justify-content: center;
+  width: fit-content;
   align-items: center;
   flex-direction: column;
   transition: 0.3s ease-in-out;
@@ -406,19 +407,57 @@ span.navbar-toggler-ico.three {
 .home .badge:hover {color: #016341 !important;}
 .home .badge i{
     height: 6rem;
-    background: #ffffff !important;
+    /* background: #87da8f !important; */
     width: 6rem;
-    border-radius: 50%;
+    border-radius: 10%;
     cursor: pointer;
     font-size: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 5px #777;
+    box-shadow: 0 0 2px #777;
     margin-bottom: 1rem;
   transition: 0.3s ease-in-out;
 
 }
+
+
+.airtime{
+  background-color: #baf0bf7c;
+  color: #016341 !important;
+}
+
+.electricity{
+  background-color: #cac4f59c;
+  color: #011863 !important;
+}
+
+.cable{
+  background-color: #f4e4a889;
+  color: #a64d00 !important;
+}
+
+.data{
+  background-color: #cac4f59c;
+  color: #011863 !important;
+}
+
+.bank{
+  background-color: #f4e4a889;
+  color: #a64d00 !important;
+}
+
+.wallet{
+  background-color: #baf0bf7c;
+  color: #016341 !important;
+}
+
+.save{
+  background-color: #eebbbb89;
+  color: #630101 !important;
+}
+
+
 .badge-text-color {
   color: #777777;
   transition: 0.3s ease-in-out;
