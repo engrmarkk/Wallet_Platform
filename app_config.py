@@ -46,7 +46,12 @@ def create_app():
     # The decorator that loads the user using the user's id
     @login_manager.user_loader
     def user_loader(id):
-        return User.query.get(id)
+        try:
+            return User.query.get(id)
+        except Exception as e:
+            print(e, "error in user loader")
+            db.session.rollback()
+            return None
 
     # If the user isn't logged in and tries to access a login required route, this decorator allows the page to
     # redirect page to the login
