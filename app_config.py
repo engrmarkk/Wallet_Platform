@@ -7,6 +7,7 @@ import os
 import flask
 from flask_login import current_user
 from decouple import config
+from sqlalchemy.exc import OperationalError
 
 db_name = 'wallet'
 default_uri = "postgres://{}:{}@{}/{}".format('postgres', 'password', 'localhost:5432', db_name)
@@ -70,6 +71,11 @@ def create_app():
 
     # 500
     @app.errorhandler(500)
+    def internal_server_error(e):
+        return render_template('500.html'), 500
+
+    # operational error
+    @app.errorhandler(OperationalError)
     def internal_server_error(e):
         return render_template('500.html'), 500
 
