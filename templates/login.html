@@ -181,16 +181,6 @@ style="background: rgba(0, 0, 0, 0.669);"
 </div>
 </div>
 
-{% if open_modal %}
-<script>
-  // Automatically show the modal when the page loads
-  document.addEventListener('DOMContentLoaded', function() {
-      var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
-      myModal.show();
-  });
-</script>
-{% endif %}
-
  <script>
     var myToast = new bootstrap.Toast(document.querySelector('.toast'));
 
@@ -202,6 +192,16 @@ style="background: rgba(0, 0, 0, 0.669);"
         myToast.hide();
     }, 2000);
     </script>
+
+{% if open_modal %}
+<script>
+  // Automatically show the modal when the page loads
+  document.addEventListener('DOMContentLoaded', function() {
+      var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+      myModal.show();
+  });
+</script>
+{% endif %}
 
 
 <!-- BOOTSTRAP -->
