@@ -67,11 +67,11 @@
           </div>
         </div>
       </div>
-      <div class="mb-4 mt-2 row w-100">
+      <div class="mb-4 mt-2 row w-100" style="max-width: 900px;">
         <!-- Save -->
         <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a href="{{ url_for('view.savings') }}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-              <i class="fa-solid fa-piggy-bank"></i>Save
+              <i class="fa-solid fa-piggy-bank save"></i>Save
             </a>
         </div>
     
@@ -80,7 +80,7 @@
             <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
                 data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="py-1 fas fa-share"></i>W2W
+                <i class="fa-solid fa-wallet wallet"></i>W2W
             </a>
         </div>
 
@@ -88,35 +88,35 @@
           <a class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss" data-bs-toggle="modal"
               data-bs-target="#bankModal" style="border: none;" type="button" id="dropdownMenuButton"
               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="py-1 fa-solid fa-building-columns"></i>Bank
+              <i class="py-1 fa-solid fa-building-columns bank"></i>Bank
           </a>
       </div>
     
         <!-- Airtime -->
         <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a href="{{url_for('bills.display_service', service='airtime')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-              <i class="fa-solid fa-phone"></i>Airtime
+              <i class="fa-solid fa-mobile airtime"></i>Airtime
             </a>
         </div>
     
         <!-- Data -->
         <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a href="{{url_for('bills.display_service', service='data')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-              <i class="fa-solid fa-wifi"></i>Data
+              <i class="fa-solid fa-wifi data"></i>Data
             </a>
         </div>
     
         <!-- Cable -->
         <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a href="{{url_for('bills.display_service', service='tv-subscription')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-                <i class="py-1 fas fa-tv"></i>Cable
+                <i class="py-1 fas fa-tv cable"></i>Cable
             </a>
         </div>
     
         <!-- Electricity -->
         <div class="col-4 col-sm-3 col-md-3 mb-3">
             <a href="{{url_for('bills.display_service', service='electricity-bill')}}" class="badge badge-pill badge-text-color bg-accent text-decoration-none thiss">
-                <i class="py-1 fas fa-lightbulb"></i>Electricity
+                <i class="py-1 fas fa-lightbulb electricity"></i>Electricity
             </a>
         </div>
     </div>
