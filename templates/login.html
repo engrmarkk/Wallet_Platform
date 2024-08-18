@@ -141,29 +141,6 @@
   </p>
 </form>
 
-<!-- Modal -->
-<div class="modal fade show" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"
-style="background: rgba(0, 0, 0, 0.669);"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <p>Enter Authenticator Code</p>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form class="form-group h-100" method="post" action="{{ url_for('auth.verify_2fa') }}">
-      <div class="modal-body">
-        <input type="text" name="email" class="form-control shadow-none w-100 text-center border-2" value="{{ email }}" hidden>
-        <input type="text" name="auth_code" class="form-control shadow-none w-100 text-center border-2" maxlength="6" placeholder="Enter 6 digit code">
-        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
-        <button type="submit" class="btn btn-primary mt-3 shadow-none mx-auto d-flex justify-content-center">
-          Continue
-        </button>
-      </form>
-    </div>
-    </div>
-  </div>
-
 
     {% if alert %}
   <div class="toast align-items-center show fade text-white {% if bg_color %} bg-{{bg_color}} {% else %} bg-info {% endif %} border-0 position-fixed top-0 end-0" role="alert"
@@ -194,6 +171,28 @@ style="background: rgba(0, 0, 0, 0.669);"
     </script>
 
 {% if open_modal %}
+<!-- Modal -->
+<div class="modal fade show" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"
+style="background: rgba(0, 0, 0, 0.669);"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <p>Enter Authenticator Code</p>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form class="form-group h-100" method="post" action="{{ url_for('auth.verify_2fa') }}">
+      <div class="modal-body">
+        <input type="text" name="email" class="form-control shadow-none w-100 text-center border-2" value="{{ email }}" hidden>
+        <input type="text" name="auth_code" class="form-control shadow-none w-100 text-center border-2" maxlength="6" placeholder="Enter 6 digit code">
+        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
+        <button type="submit" class="btn btn-primary mt-3 shadow-none mx-auto d-flex justify-content-center">
+          Continue
+        </button>
+      </form>
+    </div>
+    </div>
+  </div>
 <script>
   // Automatically show the modal when the page loads
   document.addEventListener('DOMContentLoaded', function() {
