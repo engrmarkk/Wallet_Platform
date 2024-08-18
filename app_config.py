@@ -79,6 +79,13 @@ def create_app():
     def internal_server_error(e):
         return render_template('500.html'), 500
 
+    # teardown request
+    @app.teardown_request
+    def shutdown_session(exception=None):
+        db.session.remove()
+        if exception and db.session.is_active:
+            db.session.rollback()
+
     @app.before_request
     def before_request():
         session.permanent = True
