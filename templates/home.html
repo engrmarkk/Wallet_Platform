@@ -273,7 +273,7 @@
 <div class="modal fade" id="bankModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="bankModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
-    <div class=" modal-content">
+    <div class=" modal-content bank_modal">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="bankModalLabel">Select Bank</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -282,7 +282,7 @@
       <div class="modal-body">
         <form action="/transfer-to-bank" method="get">
 
-          <select name="bank_code" id="bankSelect" class="form-control shadow-none py-3">
+          <select name="bank_code" id="bankSelect" class="form-control shadow-none py-3 bank_modal_form">
             <option disabled selected>Select Bank</option>
             {% for bank in banks %}
             <option class="text-dark" value="{{ bank['code'] }}">{{ bank['name'] }}</option>
@@ -290,10 +290,10 @@
           </select>
           <input type="hidden" name="bank_name" id="bankNameInput">
           <!-- For account number validations -->
-          <input type="text" name="account_number" id="" class="form-control mt-2 py-3 shadow-none bg-white" placeholder="Enter account number" required>
+          <input type="text" name="account_number" id="" class="form-control mt-2 py-3 shadow-none bank_modal_form" placeholder="Enter account number" required>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
 
         <button type="submit" class="btn primary-btn">Confirm account</button> 
       </div>
