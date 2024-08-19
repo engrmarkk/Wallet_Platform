@@ -457,6 +457,19 @@ span.navbar-toggler-ico.three {
   color: #630101 !important;
 }
 
+.bank_modal{
+  background: linear-gradient(158deg,#23c00b -45%,  #2e8bb6) !important;
+  color: white !important;
+}
+
+.bank_modal:focus{
+  background: #baf0bf7c !important;
+}
+
+.bank_modal_form{
+  background: #baf0bf7c !important;
+}
+
 
 .badge-text-color {
   color: #777777;
