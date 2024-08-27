@@ -17,7 +17,7 @@ if uri.startswith('postgres://'):
 
 
 def create_app():
-    base_dir = os.path.dirname(os.path.realpath(__file__))
+    # base_dir = os.path.dirname(os.path.realpath(__file__))
 
     app = Flask(__name__)
 
