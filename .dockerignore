@@ -1,0 +1,27 @@
+# Exclude node_modules and other dependencies
+node_modules/
+npm-debug.log
+
+# Exclude local configuration files
+*.env
+*.local
+
+# Exclude source control directories
+.git/
+.gitignore
+
+# Exclude build artifacts
+dist/
+build/
+
+# Exclude temporary and editor files
+*.tmp
+*.swp
+*.swo
+.DS_Store
+
+# Exclude Dockerfile and other local scripts
+Dockerfile
+docker-compose.yml
+env
+migrations
