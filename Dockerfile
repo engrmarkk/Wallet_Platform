@@ -12,11 +12,14 @@ RUN apk update && apk add --no-cache \
 # Set the working directory
 WORKDIR /app
 
-# Copy the local directory contents into the container at /app
-COPY . .
+# Copy only the requirements.txt first
+COPY requirements.txt .
 
 # Install Python dependencies from requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
+
+# Now copy the rest of the application files
+COPY . .
 
 # Expose port 4000
 EXPOSE 4000
