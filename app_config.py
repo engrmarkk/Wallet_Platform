@@ -77,6 +77,7 @@ def create_app():
     # 500
     @app.errorhandler(500)
     def internal_server_error(e):
+        print(e, "error in 500")
         return render_template('500.html'), 500
 
     # operational error
