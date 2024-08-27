@@ -39,6 +39,7 @@ view = Blueprint("view", __name__, template_folder="../templates")
 
 pay_stack = PaystackEndpoints()
 
+
 def send_reset_email(user):
     token = user.get_reset_token()
     msg = Message(
@@ -78,12 +79,15 @@ expiration = create_expiry_date(912)
 
 @view.route("/")
 def front_page():
-    save_transaction_cat()
-    alert = session.pop("alert", None)
-    bg_color = session.pop("bg_color", None)
-    if current_user.is_authenticated:
-        return redirect(url_for("view.home"))
-    return render_template("front.html", date=x, alert=alert, bg_color=bg_color)
+    try:
+        # save_transaction_cat()
+        alert = session.pop("alert", None)
+        bg_color = session.pop("bg_color", None)
+        if current_user.is_authenticated:
+            return redirect(url_for("view.home"))
+        return render_template("front.html", date=x, alert=alert, bg_color=bg_color)
+    except Exception as e:
+        print(e, "error in front page")
 
 
 @view.route("/account/", methods=["GET", "POST"])
