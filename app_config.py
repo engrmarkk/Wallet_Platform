@@ -47,7 +47,12 @@ def create_app():
     @login_manager.user_loader
     def user_loader(id):
         try:
-            return User.query.get(id)
+            user = User.query.get(id)
+            if user:
+                return user
+            else:
+                print(f"User with id {id} not found")
+                return None
         except Exception as e:
             print(e, "error in user loader")
             db.session.rollback()
