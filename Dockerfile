@@ -1,4 +1,6 @@
 FROM python:3-alpine3.15
+ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1
 
 # Install dependencies needed to build psycopg2
 RUN apk update && apk add --no-cache \
@@ -20,4 +22,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 4000
 
 # Specify the command to run on container startup
-CMD ["python3", "app.py"]
+CMD ["gunicorn", "--bind", "0.0.0.0:4000", "-w", "4", "app:app"]
