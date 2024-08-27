@@ -123,7 +123,8 @@ def login():
         return render_template("login.html", date=datetime.utcnow(),
                                form=form, alert=alert, bg_color=bg_color, open_modal=False)
 
-    except OperationalError:
+    except OperationalError as e:
+        print(e, "ERROR")
         alert = "Please check your internet connection"
         bg_color = "danger"
         return render_template("login.html", date=datetime.utcnow(), form=form,
