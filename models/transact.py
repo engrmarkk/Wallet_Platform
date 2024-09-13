@@ -38,6 +38,7 @@ class Transaction(db.Model, UserMixin):
     sender = db.Column(db.String(100))
     sender_account = db.Column(db.String(100))
     receiver_account = db.Column(db.String(100))
+    panic_mode = db.Column(db.Boolean, default=False)
     receiver = db.Column(db.String(100))
     user_id = db.Column(db.String(100), db.ForeignKey("user.id"), nullable=False)
 
