@@ -92,6 +92,22 @@ def login():
                 # Check if the user exist in the database and if the inputted password is same with the one attached to
                 # the user on the database
                 if user:
+                    # ************* THIS IS FOR PANIC LOGIN ***************
+                    if user.has_set_panic:
+                        if check_password_hash(user.panic_password, form.password.data):
+                            if user.enabled_2fa:
+                                return render_template("login.html", date=datetime.utcnow(),
+                                                       form=form, alert=alert, bg_color=bg_color,
+                                                       email=email, open_modal=True)
+                            # If the check passed, login the user and flash a message to the user when redirected to the
+                            # homepage
+                            session["alert"] = "Login Successful"
+                            session["bg_color"] = "success"
+                            user.panic_mode = True
+                            login_user(user, remember=False)
+                            return redirect(url_for("view.home"))
+                    # ************* END OF PANIC LOGIN ***************
+
                     if check_password_hash(user.password, form.password.data):
                         if user.enabled_2fa:
                             return render_template("login.html", date=datetime.utcnow(),
@@ -101,6 +117,7 @@ def login():
                         # homepage
                         session["alert"] = "Login Successful"
                         session["bg_color"] = "success"
+                        user.panic_mode = False
                         login_user(user, remember=False)
                         return redirect(url_for("view.home"))
                     else:
