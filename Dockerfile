@@ -25,4 +25,5 @@ COPY . .
 EXPOSE 4000
 
 # Specify the command to run on container startup
-CMD ["gunicorn", "--bind", "0.0.0.0:4000", "-w", "4", "--log-level", "debug", "app:app"]
+# CMD ["gunicorn", "--bind", "0.0.0.0:4000", "-w", "4", "--log-level", "debug", "app:app"]
+CMD ["python", "app.py"]
