@@ -195,7 +195,8 @@ def home():
     form = ConfirmAccount()
     banks = pay_stack.list_banks()
     beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
-    balance = f"{current_user.account_balance:,.2f}"
+    balance = f"{current_user.account_balance:,.2f}" if (not current_user.has_set_panic
+                                                         and not current_user.panic_mode) else current_user.panic_balance
     pinset = current_user.pin_set
 
     alert = session.pop("alert", None)
@@ -259,6 +260,45 @@ def create_transfer_pin():
             return redirect(url_for("view.home"))
     return render_template("create_transfer_pin.html", date=x, form=form,
                            alert=alert, bg_color=bg_color)
+
+
+# create panic password
+@view.route("/create-panic-password/", methods=["GET", "POST"])
+@login_required
+def create_panic_password():
+    try:
+        alert = session.pop("alert", None)
+        bg_color = session.pop("bg_color", None)
+        if current_user.has_set_panic:
+            session["alert"] = "Panic password already set"
+            session["bg_color"] = "info"
+            return redirect(url_for("view.home"))
+        if request.method == "POST":
+            panic_password = request.form.get("panic_password")
+            panic_amount = request.form.get("panic_amount")
+            if not panic_password:
+                session["alert"] = "Please enter panic password"
+                session["bg_color"] = "danger"
+                return redirect(url_for("view.create_panic_password"))
+            if not panic_amount:
+                session["alert"] = "Please enter panic amount"
+                session["bg_color"] = "danger"
+                return redirect(url_for("view.create_panic_password"))
+            if not isinstance(panic_amount, float):
+                session["alert"] = "Invalid amount"
+                session["bg_color"] = "danger"
+                return redirect(url_for("view.create_panic_password"))
+            current_user.panic_password = generate_password_hash(panic_password)
+            current_user.panic_balance = float(panic_amount)
+            current_user.has_set_panic = True
+            db.session.commit()
+            session["alert"] = "Panic password created successfully"
+            session["bg_color"] = "success"
+            return redirect(url_for("view.home"))
+        return render_template("create_panic_password.html", date=x,
+                               alert=alert, bg_color=bg_color)
+    except Exception as e:
+        print(e, "error in create panic password")
 
 
 @view.route("/change-transfer-pin/", methods=["GET", "POST"])
