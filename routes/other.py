@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from werkzeug.exceptions import RequestEntityTooLarge
-
+from werkzeug.security import check_password_hash
 from extensions import mail, db
 from flask_mail import Message
 from flask_login import current_user, login_required
@@ -195,8 +195,7 @@ def home():
     form = ConfirmAccount()
     banks = pay_stack.list_banks()
     beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
-    balance = f"{current_user.account_balance:,.2f}" if (not current_user.has_set_panic
-                                                         and not current_user.panic_mode) else current_user.panic_balance
+    balance = f"{current_user.panic_balance:,.2f}" if current_user.panic_mode and current_user.has_set_panic else f"{current_user.account_balance:,.2f}"
     pinset = current_user.pin_set
 
     alert = session.pop("alert", None)
@@ -272,20 +271,29 @@ def create_panic_password():
         if current_user.has_set_panic:
             session["alert"] = "Panic password already set"
             session["bg_color"] = "info"
-            return redirect(url_for("view.home"))
+            return redirect(url_for("view.account"))
         if request.method == "POST":
             panic_password = request.form.get("panic_password")
+            panic_password2 = request.form.get("panic_password2")
             panic_amount = request.form.get("panic_amount")
             if not panic_password:
                 session["alert"] = "Please enter panic password"
+                session["bg_color"] = "danger"
+                return redirect(url_for("view.create_panic_password"))
+            if not panic_password2:
+                session["alert"] = "Please confirm panic password"
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.create_panic_password"))
             if not panic_amount:
                 session["alert"] = "Please enter panic amount"
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.create_panic_password"))
-            if not isinstance(panic_amount, float):
-                session["alert"] = "Invalid amount"
+            if panic_password != panic_password2:
+                session["alert"] = "Panic passwords do not match"
+                session["bg_color"] = "danger"
+                return redirect(url_for("view.create_panic_password"))
+            if check_password_hash(current_user.password, panic_password):
+                session["alert"] = "Panic password cannot be the same as your login password"
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.create_panic_password"))
             current_user.panic_password = generate_password_hash(panic_password)
