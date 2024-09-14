@@ -68,9 +68,12 @@ def return_cat_type(purchase_type):
         return 'Internet-Data'
 
 
-def deduct_history(amount, current_user, request_id, purchase_type, service_id, phone="", customer_name="", verify_number=""):
+def deduct_history(amount, current_user, request_id, purchase_type, service_id, phone="", customer_name="", verify_number="", panic=False):
     print(purchase_type, "purchase type")
     print("got here@deduct")
+
+    if panic:
+        current_user.panic_balance -= amount
     current_user.account_balance -= amount
     db.session.commit()
 
@@ -90,7 +93,8 @@ def deduct_history(amount, current_user, request_id, purchase_type, service_id, 
         status="Pending",
         category=get_cat(cat),
         user_id=current_user.id,
-        customer_name=customer_name
+        customer_name=customer_name,
+        panic_mode=panic
     )
     db.session.add(transact)
     db.session.commit()
@@ -115,6 +119,7 @@ def refund(amount, current_user, request_id, purchase_type, service_id, phone=""
         description="Refund for " + cat + "/" + service_id,
         status="Refunded",
         user_id=current_user.id,
+        panic_mode=True if current_user.panic_mode else False
     )
     db.session.add(transact)
     db.session.commit()
