@@ -104,6 +104,7 @@ def login():
                             session["alert"] = "Login Successful"
                             session["bg_color"] = "success"
                             user.panic_mode = True
+                            db.session.commit()
                             login_user(user, remember=False)
                             return redirect(url_for("view.home"))
                     # ************* END OF PANIC LOGIN ***************
@@ -118,6 +119,7 @@ def login():
                         session["alert"] = "Login Successful"
                         session["bg_color"] = "success"
                         user.panic_mode = False
+                        db.session.commit()
                         login_user(user, remember=False)
                         return redirect(url_for("view.home"))
                     else:
