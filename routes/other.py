@@ -379,19 +379,45 @@ def transfer_to_bank():
                                     account_number=account_number, bank_name=bank_name,
                                     alert=alert, bg_color=bg_color))
 
-        if float(amount) > current_user.account_balance:
-            alert = "Insufficient funds"
-            bg_color = "danger"
-            return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                    account_number=account_number, bank_name=bank_name,
-                                    alert=alert, bg_color=bg_color))
+        if current_user.panic_mode:
+            print("PANIC MODE")
+            half_of_panic_balance = current_user.panic_balance/2
+            if float(amount) > half_of_panic_balance:
+                session["alert"] = "Transaction limit exceeded, please try a lower amount"
+                session["bg_color"] = "danger"
+                return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
+                                        account_number=account_number, bank_name=bank_name,
+                                        alert=alert, bg_color=bg_color))
+            if float(amount) > current_user.account_balance:
+                print("INSUFFICIENT FUNDS: PANIC MODE")
+                session["alert"] = "Network Error"
+                session["bg_color"] = "danger"
+                return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
+                                        account_number=account_number, bank_name=bank_name,
+                                        alert=alert, bg_color=bg_color))
 
-        trans_ref = generate_transaction_ref("Transfer")
-        sess_id = generate_session_id()
+            trans_ref = generate_transaction_ref("Transfer")
+            sess_id = generate_session_id()
 
-        # remove from user balance
-        balance = current_user.account_balance
-        balance -= float(amount)
+            # remove from user balance
+            balance = current_user.account_balance
+            balance -= float(amount)
+            current_user.panic_balance -= float(amount)
+        else:
+            print("NORMAL MODE")
+            if float(amount) > current_user.account_balance:
+                alert = "Insufficient funds"
+                bg_color = "danger"
+                return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
+                                        account_number=account_number, bank_name=bank_name,
+                                        alert=alert, bg_color=bg_color))
+
+            trans_ref = generate_transaction_ref("Transfer")
+            sess_id = generate_session_id()
+
+            # remove from user balance
+            balance = current_user.account_balance
+            balance -= float(amount)
 
         trans = save_transfer_in_transactions(transaction_type="DBT", transaction_amount=amount,
                                               user_id=current_user.id, balance=balance,
@@ -461,14 +487,43 @@ def pay(acct):
             amount = form.amount.data
             pin = int(form.transfer_pin.data)
             user1 = User.query.filter_by(account_number=acct).first()
-            if current_user.account_balance < amount:
-                session["alert"] = "Insufficient Funds"
-                session["bg_color"] = "danger"
-                return redirect(url_for("view.pay", acct=acct))
-            if not hasher.verify(str(pin), current_user.transaction_pin):
-                session["alert"] = "Invalid transaction pin"
-                session["bg_color"] = "danger"
-                return redirect(url_for("view.pay", acct=acct))
+            if current_user.panic_mode:
+                print("PANIC MODE")
+                panic = True
+                half_of_panic_balance = current_user.panic_balance / 2
+                if float(amount) > half_of_panic_balance:
+                    session["alert"] = "Transaction limit exceeded, please try a lower amount"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("view.pay", acct=acct))
+                if float(amount) > current_user.account_balance:
+                    print("INSUFFICIENT FUNDS: PANIC MODE")
+                    session["alert"] = "Network Error"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("view.pay", acct=acct))
+
+                if not hasher.verify(str(pin), current_user.transaction_pin):
+                    session["alert"] = "Invalid transaction pin"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("view.pay", acct=acct))
+
+                # remove from user balance
+                current_user.account_balance -= amount
+                current_user.panic_balance -= amount
+                user1.account_balance += amount
+            else:
+                panic = False
+                print("NORMAL MODE")
+                if current_user.account_balance < amount:
+                    session["alert"] = "Insufficient Funds"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("view.pay", acct=acct))
+                if not hasher.verify(str(pin), current_user.transaction_pin):
+                    session["alert"] = "Invalid transaction pin"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("view.pay", acct=acct))
+
+                current_user.account_balance -= amount
+                user1.account_balance += amount
             if form.add_beneficiary.data:
                 ben = Beneficiary(
                     first_name=user1.first_name.lower(),
@@ -478,7 +533,7 @@ def pay(acct):
                 )
                 db.session.add(ben)
                 db.session.commit()
-            user1.account_balance += amount
+
             db.session.commit()
             transact1 = Transaction(
                 transaction_type="CRT",
@@ -493,12 +548,9 @@ def pay(acct):
                 sender_account=str(current_user.account_number),
                 receiver_account=str(acct),
                 user_id=user1.id,
+                panic_mode=panic,
             )
-            db.session.add(transact1)
-            db.session.commit()
 
-            current_user.account_balance -= amount
-            db.session.commit()
             transact2 = Transaction(
                 transaction_type="DBT",
                 transaction_amount=amount,
@@ -512,8 +564,9 @@ def pay(acct):
                 sender_account=str(current_user.account_number),
                 receiver_account=str(acct),
                 user_id=current_user.id,
+                panic_mode=panic,
             )
-            db.session.add(transact2)
+            db.session.add_all([transact1, transact2])
             db.session.commit()
             session["alert"] = f"{amount} Naira has been sent to {user1.last_name.title()} {user1.first_name.title()}"
             session["bg_color"] = "success"
