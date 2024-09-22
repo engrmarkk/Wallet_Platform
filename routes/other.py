@@ -309,6 +309,25 @@ def create_panic_password():
         print(e, "error in create panic password")
 
 
+# delete panic password
+@view.route("/delete-panic-password/")
+@login_required
+def delete_panic_password():
+    try:
+        current_user.panic_password = ""
+        current_user.panic_balance = 0
+        current_user.has_set_panic = False
+        db.session.commit()
+        session["alert"] = "Panic password deactivated successfully"
+        session["bg_color"] = "success"
+        return redirect(url_for("view.account"))
+    except Exception as e:
+        print(e, "error in delete panic password")
+        session["alert"] = "Network Error"
+        session["bg_color"] = "danger"
+        return redirect(url_for("view.account"))
+
+
 @view.route("/change-transfer-pin/", methods=["GET", "POST"])
 @login_required
 def change_transfer_pin():
