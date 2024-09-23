@@ -88,6 +88,7 @@ def create_app():
     # operational error
     @app.errorhandler(OperationalError)
     def internal_server_error(e):
+        print(e, "error in 500, OperationalError")
         return render_template('500.html'), 500
 
     # teardown request
