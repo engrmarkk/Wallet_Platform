@@ -36,6 +36,7 @@ def create_app():
     app.config["MAIL_PASSWORD"] = os.getenv("EMAIL_PASS")
     app.config["MAIL_USE_TLS"] = False
     app.config["MAIL_USE_SSL"] = True
+    app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {"pool_pre_ping": True}
 
     db.init_app(app)
     mail.init_app(app)
