@@ -129,12 +129,13 @@
       <p class="text-center fw-bold text-muted">Recent transaction histories</p>
       {% if not current_user.transacts %}
       <p class="text-center h4 text-warning mt-3">NO RECORD</p>
-      {% else %}
+        {% endif %}
 
-      {% endif %}
+
     </div>
 
     <!-- TESTING THIS -->
+    {% if current_user.transacts %}
     <div class="container">
         <div class="row">
             <div class="col-12 mb-3 mb-lg-5">
@@ -188,6 +189,8 @@
         </div>
     </div>
   </div>
+
+  {% endif %}
 
 
   <!-- Button trigger modal -->
