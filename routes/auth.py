@@ -124,7 +124,7 @@ def login():
                         return redirect(url_for("view.home"))
                     else:
                         # If the check failed, flash a message to the user while still on the same page
-                        session["alert"] = "Check your password"
+                        session["alert"] = "Incorrect password"
                         session["bg_color"] = "danger"
                         return redirect(url_for("auth.login"))
                 else:
