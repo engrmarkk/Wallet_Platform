@@ -15,6 +15,7 @@ class Admin(db.Model, UserMixin):
     last_name = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(70), unique=True, nullable=False)
     password = db.Column(db.Text, nullable=False)
+    active = db.Column(db.Boolean, default=True)
     phone_number = db.Column(db.String(30), unique=True, nullable=True)
     is_super_admin = db.Column(db.Boolean, default=False)
     date = db.Column(db.DateTime, nullable=False, default=datetime.now)
