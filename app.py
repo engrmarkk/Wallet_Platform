@@ -1,6 +1,6 @@
 from app_config import create_app, db
 from extensions import sess
-from models import User, Invitees, Beneficiary, Transaction, Card, TransactionCategories, UserSession
+from models import User, Invitees, Beneficiary, Transaction, Card, TransactionCategories, UserSession, Admin
 from dotenv import load_dotenv
 
 
@@ -12,7 +12,8 @@ load_dotenv()
 @app.shell_context_processor
 def make_shell_context():
     return {'db': db, 'User': User, 'Invitees': Invitees, 'Beneficiary': Beneficiary, 'Transaction': Transaction,
-            'Card': Card, 'TransactionCategories': TransactionCategories, 'UserSession': UserSession}
+            'Card': Card, 'TransactionCategories': TransactionCategories, 'UserSession': UserSession,
+            'Admin': Admin}
 
 
 if __name__ == "__main__":
