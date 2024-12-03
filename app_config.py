@@ -1,7 +1,7 @@
 from extensions import db, login_manager, mail, migrate, moment
 from flask import redirect, url_for, session, render_template, Flask, sessions
-from routes import AuthenticationBlueprint, ViewBlueprint, BillsBlueprint, ExternalBlueprint
-from models import User, Transaction, Beneficiary, Card, Invitees, TransactionCategories
+from routes import AuthenticationBlueprint, ViewBlueprint, BillsBlueprint, ExternalBlueprint, AdminBlueprint
+from models import User, Transaction, Beneficiary, Card, Invitees, TransactionCategories, Admin
 from datetime import timedelta
 import os
 import flask
@@ -51,9 +51,12 @@ def create_app():
             user = User.query.get(id)
             if user:
                 return user
-            else:
-                print(f"User with id {id} not found")
-                return None
+            print(f"User with id {id} not found in the User table")
+            user = Admin.query.get(id)
+            if user:
+                return user
+            print(f"User with id {id} not found in the Admin table")
+            return None
         except Exception as e:
             print(e, "error in user loader")
             db.session.rollback()
@@ -109,6 +112,7 @@ def create_app():
     app.register_blueprint(AuthenticationBlueprint)
     app.register_blueprint(ViewBlueprint)
     app.register_blueprint(BillsBlueprint)
+    app.register_blueprint(AdminBlueprint)
     app.register_blueprint(ExternalBlueprint, url_prefix="/api/v1")
 
     return app
