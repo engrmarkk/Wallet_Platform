@@ -1,6 +1,6 @@
 import os
 import secrets
-from models import TransactionCategories, Transaction
+from models import TransactionCategories, Transaction, Admin
 from flask import current_app, session, redirect, url_for, flash
 from PIL import Image
 from extensions import db
@@ -138,3 +138,40 @@ def update_status(transact, status):
     transact.status = status
     db.session.commit()
     return True
+
+
+#  create admin
+def create_admin(first_name, last_name, email, password, is_super_admin=False):
+    try:
+        admin = Admin(first_name=first_name, last_name=last_name, email=email,
+                      password=password, is_super_admin=is_super_admin)
+        db.session.add(admin)
+        db.session.commit()
+        return admin
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return None
+
+
+# create super admin
+def create_super_admin(first_name, last_name, email, password):
+    return create_admin(first_name, last_name, email, password, is_super_admin=True)
+
+
+# get all admins
+def get_all_admins(page, per_page, email, is_super_admin, fullname):
+    try:
+        admins = Admin.query
+        if email:
+            admins = admins.filter(Admin.email.ilike(f"%{email}%"))
+        if is_super_admin:
+            admins = admins.filter(Admin.is_super_admin == True)
+        if fullname:
+            admins = admins.filter(Admin.first_name.ilike(f"%{fullname}%") | Admin.last_name.ilike(f"%{fullname}%"))
+        paginated_admins = admins.order_by(Admin.date.desc()).paginate(page=page, per_page=per_page, error_out=False)
+        return paginated_admins
+    except Exception as e:
+        print(e, "error in get_all_admins")
+        db.session.rollback()
+        return None
