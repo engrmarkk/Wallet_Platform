@@ -4,6 +4,7 @@ from flask import render_template, flash, session
 import random
 import pyotp
 from extensions import db
+import re
 
 
 def determine_purchase_type(service_id):
@@ -110,3 +111,25 @@ def verify_totp_factor(user, auth_code):
 
 def authenticate_auth_code(user, auth_code):
     return verify_totp_factor(user, auth_code)
+
+
+def validate_email(email):
+    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    if re.fullmatch(regex, email):
+        return True
+    else:
+        return False
+
+
+def validate_password(password):
+    if len(password) < 8:
+        return "Password must be at least 8 characters"
+    if not re.search("[A-Z]", password):
+        return "Password must contain at least one uppercase letter"
+    if not re.search("[a-z]", password):
+        return "Password must contain at least one lowercase letter"
+    if not re.search("[0-9]", password):
+        return "Password must contain at least one digit"
+    if not re.search("[!@#$%^&*(),.?\":{}|<>]", password):
+        return "Password must contain at least one special character."
+    return None
