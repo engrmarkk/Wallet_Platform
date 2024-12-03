@@ -26,6 +26,10 @@ def validate(email):
             session["bg_color"] = "danger"
             return redirect(url_for("auth.validate", email=email))
         user = User.query.filter_by(email=email).first_or_404()
+        if user and not user.active:
+            session["alert"] = "Account is inactive"
+            session["bg_color"] = "danger"
+            return redirect(url_for("auth.login"))
         in_num = int(user.invited_by)
         if int(user_otp) == otp:
             user.confirmed = True
@@ -68,6 +72,10 @@ def login():
                 # Query the User model and assign the queried data to the variable 'user'
                 user = User.query.filter_by(email=form.email.data.lower()).first()
                 email = form.email.data.lower()
+                if user and not user.active:
+                    session["alert"] = "Account is inactive"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("auth.login"))
                 if user and not user.confirmed:
                     try:
                         session["alert"] = "First validate your email"
