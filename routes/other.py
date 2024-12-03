@@ -664,6 +664,10 @@ def reset_password():
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.reset_password"))
             else:
+                if not user.active:
+                    session["alert"] = "Account is inactive"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("view.home"))
                 send_reset_email(user)
                 session["alert"] = "An email has been sent to you"
                 session["bg_color"] = "success"
