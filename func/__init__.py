@@ -1,6 +1,6 @@
 import os
 import secrets
-from models import TransactionCategories, Transaction, Admin
+from models import TransactionCategories, Transaction, Admin, User
 from flask import current_app, session, redirect, url_for, flash
 from PIL import Image
 from extensions import db
@@ -173,5 +173,50 @@ def get_all_admins(page, per_page, email, is_super_admin, fullname):
         return paginated_admins
     except Exception as e:
         print(e, "error in get_all_admins")
+        db.session.rollback()
+        return None
+
+
+def get_all_users(page, per_page, email, fullname, phone_number, user_name, account_number, has_set_panic):
+    try:
+        users = User.query
+        if email:
+            users = users.filter(User.email.ilike(f"%{email}%"))
+        if fullname:
+            users = users.filter(User.first_name.ilike(f"%{fullname}%")) | users.filter(
+                User.last_name.ilike(f"%{fullname}%"))
+        if phone_number:
+            users = users.filter(User.phone_number.ilike(f"%{phone_number}%"))
+        if user_name:
+            users = users.filter(User.username.ilike(f"%{user_name}%"))
+        if account_number:
+            users = users.filter(User.account_number.ilike(f"%{account_number}%"))
+        if has_set_panic:
+            users = users.filter(User.has_set_panic == True)
+        paginated_users = users.order_by(User.date_joined.desc()).paginate(page=page, per_page=per_page, error_out=False)
+        return paginated_users
+    except Exception as e:
+        print(e, "error in get_all_users")
+        db.session.rollback()
+        return None
+
+
+# get one user
+def get_one_user(user_id):
+    try:
+        user = User.query.get(user_id)
+        return user
+    except Exception as e:
+        print(e, "error in get_one_user")
+        db.session.rollback()
+        return None
+
+
+def get_one_admin(admin_id):
+    try:
+        admin = Admin.query.get(admin_id)
+        return admin
+    except Exception as e:
+        print(e, "error in get_one_admin")
         db.session.rollback()
         return None
