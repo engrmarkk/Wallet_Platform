@@ -101,15 +101,18 @@ def get_users():
 def one_user(user_id):
     try:
         user = get_one_user(user_id)
+        deactivate = request.args.get("deactivate", None)
         if not user:
             session["alert"] = "User not found"
             session["bg_color"] = "danger"
             return redirect(url_for("admin_blp.get_users"))
-        user.active = not user.active
-        db.session.commit()
-        session["alert"] = "User updated successfully"
-        session["bg_color"] = "success"
-        return redirect(url_for("admin_blp.get_users"))
+        if deactivate:
+            user.active = not user.active
+            db.session.commit()
+            session["alert"] = "User updated successfully"
+            session["bg_color"] = "success"
+            return redirect(url_for("admin_blp.get_users"))
+        return render_template("admin_temp/one_user.html", user=user)
     except Exception as e:
         print(e, "error in one user")
         print(traceback.format_exc(), "TraceBack")
