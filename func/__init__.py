@@ -180,6 +180,9 @@ def get_all_admins(page, per_page, email, is_super_admin, fullname):
 def get_all_users(page, per_page, email, fullname, phone_number, user_name, account_number, has_set_panic):
     try:
         users = User.query
+        user_count = users.count()
+        completed_user = users.filter(User.confirmed == True).count()
+        active_users = users.filter(User.active == True).count()
         if email:
             users = users.filter(User.email.ilike(f"%{email}%"))
         if fullname:
@@ -194,11 +197,11 @@ def get_all_users(page, per_page, email, fullname, phone_number, user_name, acco
         if has_set_panic:
             users = users.filter(User.has_set_panic == True)
         paginated_users = users.order_by(User.date_joined.desc()).paginate(page=page, per_page=per_page, error_out=False)
-        return paginated_users
+        return paginated_users, user_count, completed_user, active_users
     except Exception as e:
         print(e, "error in get_all_users")
         db.session.rollback()
-        return None
+        return None, None, None, None
 
 
 # get one user
@@ -220,3 +223,25 @@ def get_one_admin(admin_id):
         print(e, "error in get_one_admin")
         db.session.rollback()
         return None
+
+def get_user_transactions(page, per_page, transaction_type, status, category, user):
+    try:
+        transactions = Transaction.query.filter(Transaction.user_id == user.id)
+        all_transactions = transactions.count()
+        successful_transactions = transactions.filter(Transaction.status == "Success").count()
+        pending_transactions = transactions.filter(Transaction.status == "Pending").count()
+        failed_transactions = transactions.filter(Transaction.status == "Failed").count()
+        inflow_transactions = transactions.filter(Transaction.transaction_type == "CRT").count()
+        outflow_transactions = transactions.filter(Transaction.transaction_type == "DBT").count()
+        if transaction_type:
+            transactions = transactions.filter(Transaction.transaction_type == transaction_type)
+        if status:
+            transactions = transactions.filter(Transaction.status == status)
+        if category:
+            transactions = transactions.filter(Transaction.category == category)
+        paginated_transactions = transactions.order_by(Transaction.date_posted.desc()).paginate(page=page, per_page=per_page, error_out=False)
+        return paginated_transactions, all_transactions, successful_transactions, pending_transactions, failed_transactions, inflow_transactions, outflow_transactions
+    except Exception as e:
+        print(e, "error in get_user_transactions")
+        db.session.rollback()
+        return None, None, None, None, None, None, None
