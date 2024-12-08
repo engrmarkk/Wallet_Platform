@@ -1,10 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'admin_temp/admin_layout.html' %}
+{% block content %}
+<div>
+    <h1 class="text-center">All Admins</h1>
 
-</body>
-</html>
+    <div>
+        <button type="button" class="btn btn-info text-white mb-3" >
+        Create Admin
+        </button>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered text-center table-sm">
+          <thead>
+            <tr class="bg-info text-white fw-normal" style="font-size: .9rem;">
+              <th scope="col" class="fw-normal">S/N</th>
+              <th scope="col" class="fw-normal">Last Name</th>
+              <th scope="col" class="fw-normal">First Name</th>
+              <th scope="col" class="fw-normal">SuperAdmin</th>
+              <th scope="col" class="fw-normal">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for admin in admins %}
+            <tr class="text-muted fw-normal" style="font-size: .9rem;">
+              <td>{{loop.index}}</td>
+              <td>
+                {{admin.last_name.title()}}
+              </td>
+              <td>
+                {{admin.first_name.title()}}
+              </td>
+              <td>{% if admin.is_superadmin == True %} <i class="fa fa-check-circle text-success"></i> {% else %} <i class="fa fa-times-circle text-danger"></i> {% endif %}</td>
+              <td>{% if admin.is_active == True %} <i class="fa fa-check-circle text-success"></i> {% else %} <i class="fa fa-times-circle text-danger"></i> {% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+</div>
+{% endblock content %}
