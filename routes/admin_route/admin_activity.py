@@ -23,8 +23,10 @@ def get_admins():
             email = request.args.get("email")
             is_super_admin = request.args.get("is_super_admin")
             fullname = request.args.get("fullname")
-            admins = get_all_admins(page, per_page, email, is_super_admin, fullname)
-            return render_template("admin_temp/all_admins.html", admins=admins, alert=alert, bg_color=bg_color)
+            phone = request.args.get("phone")
+            admins = get_all_admins(page, per_page, email, is_super_admin, fullname, phone)
+            return render_template("admin_temp/all_admins.html",
+                                   admins=admins, alert=alert, bg_color=bg_color, all_admins=True)
 
         # This is for post request
         email = request.form.get("email")
