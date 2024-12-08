@@ -1,0 +1,170 @@
+{% extends 'admin_temp/admin_layout.html' %}
+{% block content %}
+
+<div class="container mt-3">
+  <div>
+    <!-- User Icon -->
+    <div class="user-icon d-flex align-items-center mb-3">
+      <span>
+      <i class="fa fa-user-circle me-3 h3 text-muted" aria-hidden="true"></i>
+      </span>
+      <span>
+      {{user.last_name.title()}} {{user.first_name.title()}}
+      </span>
+    </div>
+  </div>
+  <div class="row">
+
+      <!-- Card for Completed Users -->
+      <div class="col-md-4 mb-3">
+          <div class="card text-white bg-info">
+              <div class="card-header text-center">Total Transactions</div>
+              <div class="card-body">
+                  <h5 class="card-title text-center fw-bold">{{all_transactions_count}}</h5>
+              </div>
+          </div>
+      </div>
+
+      <!-- Card for Uncompleted Users -->
+      <div class="col-md-4 mb-3">
+          <div class="card text-white bg-info">
+              <div class="card-header text-center">Successful Transactions</div>
+              <div class="card-body">
+                  <h5 class="card-title text-center fw-bold">{{successful_transactions}}</h5>
+              </div>
+          </div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+          <div class="card text-white bg-info">
+              <div class="card-header text-center">Pending Transactions</div>
+              <div class="card-body">
+                  <h5 class="card-title text-center fw-bold">{{pending_transactions}}</h5>
+              </div>
+          </div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+          <div class="card text-white bg-info">
+              <div class="card-header text-center">Failed Transactions</div>
+              <div class="card-body">
+                  <h5 class="card-title text-center fw-bold">{{failed_transactions}}</h5>
+              </div>
+          </div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <div class="card text-white bg-info">
+            <div class="card-header text-center">Money In</div>
+            <div class="card-body">
+                <h5 class="card-title text-center fw-bold">{{inflow_transactions}}</h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+      <div class="card text-white bg-info">
+          <div class="card-header text-center">Money Out</div>
+          <div class="card-body">
+              <h5 class="card-title text-center fw-bold">{{outflow_transactions}}</h5>
+          </div>
+      </div>
+  </div>
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-hover table-bordered text-center table-sm">
+    <thead>
+      <tr class="bg-info text-white fw-normal" style="font-size: .9rem;">
+        <th scope="col" class="fw-normal">Type</th>
+        <th scope="col" class="fw-normal">Amount</th>
+        <th scope="col" class="fw-normal">Balance</th>
+        <th scope="col" class="fw-normal">Category</th>
+        <th scope="col" class="fw-normal">Status</th>
+        <th scope="col" class="fw-normal">Tranx Ref</th>
+        <th scope="col" class="fw-normal">Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for trans in paginated_transactions %}
+      <tr class="text-muted fw-normal" style="font-size: .9rem;">
+        <td>{% if trans.transaction_type.title() == "Crt" %}
+          Credit
+          {% else %}
+          Debit
+          {% endif %}
+        </td>
+        <td>
+          {% if trans.transaction_amount is not none and trans.transaction_amount is number %}
+          {{ "{:,.2f}".format(trans.transaction_amount) }}
+          {% else %}
+          N/A
+          {% endif %}
+        </td>
+        <td>
+          {% if trans.balance is not none and trans.balance is number %}
+          {{ "{:,.2f}".format(trans.balance) }}
+          {% else %}
+          N/A
+          {% endif %}
+        </td>
+        <td>{{trans.trans_category.category.title()}}</td>
+        <td>{{trans.status.title()}}</td>
+        <td>{{trans.transaction_ref|truncate(10)}}</td>
+        <td>
+          {{trans.date_posted.strftime("%Y-%m-%d %H:%M:%S")}}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination -->
+<div>
+  <nav aria-label="Page navigation example">
+      <ul class="pagination justify-content-center mb-0">
+          <!-- First Button -->
+          <li class="page-item {{ 'disabled' if paginated_transactions.page == 1 }}">
+              <a class="page-link bg-info shadow-none border-0 text-white" href="?page=1" aria-label="First" {{ 'tabindex="-1"' if paginated_transactions.page == 1 }}>
+                  <span aria-hidden="true">&laquo;&laquo;</span>
+              </a>
+          </li>
+
+          <!-- Previous Button -->
+          <li class="page-item {{ 'disabled' if paginated_transactions.page == 1 }}">
+              <a class="page-link shadow-none border-0 text-white" href="?page={{ paginated_transactions.page - 1 }}" aria-label="Previous" {{ 'tabindex="-1"' if paginated_transactions.page == 1 }}>
+                  <span aria-hidden="true">&laquo;</span>
+              </a>
+          </li>
+
+          <!-- Page Numbers -->
+          {% for i in range(1, (paginated_transactions.total // paginated_transactions.per_page) + 2) %}
+              <!-- Add a margin to page 1 and 2 -->
+              <li class="page-item {{ 'active' if paginated_transactions.page == i }}" style="{{ 'margin-right: 10px;' if i == 1 or i == 2 }}">
+                  <a class="page-link shadow-none {{ 'bg-light text-muted' if paginated_transactions.page == i else 'bg-info text-white' }} border-0" href="?page={{ i }}" {{ 'tabindex="-1"' if paginated_transactions.page == i }}>
+                      {{ i }}
+                  </a>
+              </li>
+          {% endfor %}
+
+          <!-- Next Button -->
+          <li class="page-item {{ 'disabled' if paginated_transactions.page == (paginated_transactions.total // paginated_transactions.per_page) + 1 }}">
+              <a class="page-link shadow-none border-0 text-white" href="?page={{ paginated_transactions.page + 1 }}" aria-label="Next" {{ 'tabindex="-1"' if paginated_transactions.page == (paginated_transactions.total // paginated_transactions.per_page) + 1 }}>
+                  <span aria-hidden="true">&raquo;</span>
+              </a>
+          </li>
+
+          <!-- Last Button -->
+          <li class="page-item {{ 'disabled' if paginated_transactions.page == (paginated_transactions.total // paginated_transactions.per_page) + 1 }}">
+              <a class="page-link bg-info shadow-none border-0 text-white" href="?page={{ (paginated_transactions.total // paginated_transactions.per_page) + 1 }}" aria-label="Last" {{ 'tabindex="-1"' if paginated_transactions.page == (paginated_transactions.total // paginated_transactions.per_page) + 1 }}>
+                  <span aria-hidden="true">&raquo;&raquo;</span>
+              </a>
+          </li>
+      </ul>
+  </nav>
+</div>
+
+
+{% endblock %}
