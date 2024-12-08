@@ -4,7 +4,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADMIN</title>
+    <title>Easy Transact Admin</title>
+
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/logo-yellow.png') }}"
+    />
 
     <!-- fontAwesome -->
     <link
@@ -81,12 +86,12 @@
     <div class="sidebar bg-info" id="sidebar">
         <div class="p-3">
             <div class="mb-3 d-flex align-items-center">
-<!--                <img-->
-<!--            src="{{ url_for('static', filename='logo2.png') }}"-->
-<!--            alt="company's logo"-->
-<!--            style="width: 2.7rem;"-->
-<!--          />-->
-          <!-- <span class='logo-text text-white' style="font-size: 1.2rem;">&nbsp;ACA<span class="text-white">DEMIA</span></span> -->
+               <img
+            src="{{ url_for('static', filename='images/logo-black.png') }}"
+            alt="company's logo"
+            style="width: 2.0rem;"
+          /> 
+          <span class='logo-text text-white' style="font-size: .9rem;">&nbsp;Easy<span class="text-white">Transact</span></span>
             </div>
             <!-- LINKS -->
             <div class="d-flex flex-column">
@@ -95,7 +100,7 @@
 
 
                 <!-- for courses -->
-            <a href="" class="p-3 sidemenu_link {% if all_users %} bg-white text-dark {% endif %}">
+            <a href="{{ url_for('admin_blp.get_users') }}" class="p-3 sidemenu_link {% if all_users %} bg-white text-dark {% endif %}">
                 <i class="fas fa-book"></i> Users</a>
 
             <a href="" class="p-3 sidemenu_link {% if all_transactions %} bg-white text-dark {% endif %}">
