@@ -4,7 +4,7 @@ from func import get_all_admins, create_admin, create_super_admin, get_all_users
     get_user_transactions
 import traceback
 from extensions import db
-from decorators import super_admin_required, admin_required
+from decorators import super_admin_required, admin_required, user_admin_required
 
 
 admin_blp = Blueprint("admin_blp", __name__, template_folder="../templates")
@@ -13,6 +13,7 @@ admin_blp = Blueprint("admin_blp", __name__, template_folder="../templates")
 # get admins
 @admin_blp.route("/admins", methods=["GET", "POST"])
 @login_required
+@user_admin_required
 def get_admins():
     try:
         alert = session.pop("alert", None)
@@ -169,5 +170,19 @@ def admin_dashboard():
         return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True)
     except Exception as e:
         print(e, "error in admin dashboard")
+        print(traceback.format_exc(), "TraceBack")
+        return redirect(url_for("view.home"))
+
+
+# message user
+@admin_blp.route("/message-user", methods=["GET", "POST"])
+@login_required
+def message_user():
+    try:
+        if not current_user.is_admin:
+            return redirect(url_for("view.home"))
+        return render_template("admin_temp/message_user.html", admin_dashboard=True)
+    except Exception as e:
+        print(e, "error in message user")
         print(traceback.format_exc(), "TraceBack")
         return redirect(url_for("view.home"))
