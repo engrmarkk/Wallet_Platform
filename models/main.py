@@ -44,6 +44,7 @@ class User(db.Model, UserMixin):
     user_session = db.relationship('UserSession', backref='user', lazy=True, uselist=False)
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
     enabled_2fa = db.Column(db.Boolean, default=False)
+    is_admin = db.Column(db.Boolean, default=False)
     date_joined = db.Column(db.DateTime, nullable=True, default=datetime.now)
 
     # Define a representation with two attribute 'username' and 'email'
