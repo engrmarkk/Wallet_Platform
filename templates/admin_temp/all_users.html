@@ -1,10 +1,132 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'admin_temp/admin_layout.html' %}
+{% block content %}
+<div class="container mt-3">
+    <div class="row">
+        <!-- Card for Total Users -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-header text-center">Total Users</div>
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">{{user_count}}</h5>
+                </div>
+            </div>
+        </div>
 
-</body>
-</html>
+        <!-- Card for Completed Users -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-header text-center">Completed Users</div>
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">{{completed_user}}</h5>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Uncompleted Users -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-header text-center">Uncompleted Users</div>
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">{{uncompleted_user}}</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-header text-center">Active Users</div>
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">{{active_users}}</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-header text-center">Inactive Users</div>
+                <div class="card-body">
+                    <h5 class="card-title text-center fw-bold">{{inactive_users}}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover table-bordered text-center table-sm">
+        <thead>
+          <tr class="bg-info text-white fw-normal">
+            <th scope="col">S/N</th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Email</th>
+            <th scope="col">Pin Set</th>
+            <th scope="col">Active</th>
+            <th scope="col">Email Confirmed</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+          <tr class="text-muted fw-normal" style="font-size: .9rem;">
+            <th scope="row">{{loop.index}}</th>
+            <td>{{user.first_name.title()}}</td>
+            <td>{{user.last_name.title()}}</td>
+            <td>{{user.email}}</td>
+            <td>
+                {% if user.pin_set == True %}
+                <i class="fa fa-check-circle text-success"></i>
+                {% else %}
+                <i class="fa fa-times-circle text-danger"></i>
+                {% endif %}
+            </td>
+            <td>
+                {% if user.is_active == True %}
+                <i class="fa fa-check-circle text-success"></i>
+                {% else %}
+                <i class="fa fa-times-circle text-danger"></i>
+                {% endif %}
+            </td>
+            <td>
+                {% if user.confirmed == True %}
+                <i class="fa fa-check-circle text-success"></i>
+                {% else %}
+                <i class="fa fa-times-circle text-danger"></i>
+                {% endif %}
+            </td>
+            <td><a href="{{ url_for('admin_blp.one_user', user_id=user.id) }}" class="btn btn-info text-white shadow-none" style="font-size: .9rem;">View</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+</div>
+<!-- Pagination -->
+<div>
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center mb-0">
+            <!-- Previous Button -->
+            <li class="page-item {{ 'disabled' if users.page == 1 }}">
+                <a class="page-link border-0 text-white" href="?page={{ users.page - 1 }}" aria-label="Previous" {{ 'tabindex="-1"' if users.page == 1 }}>
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+
+            <!-- Page Numbers -->
+            {% for i in range(1, (users.total // users.per_page) + 2) %}
+                <li class="page-item {{ 'active' if users.page == i }}">
+                    <a class="page-link bg-info border-0 text-white" href="?page={{ i }}">{{ i }}</a>
+                </li>
+            {% endfor %}
+
+            <!-- Next Button -->
+            <li class="page-item {{ 'disabled' if users.page == (users.total // users.per_page) + 1 }}">
+                <a class="page-link border-0 text-white" href="?page={{ users.page + 1 }}" aria-label="Next" {{ 'tabindex="-1"' if users.page == (users.total // users.per_page) + 1 }}>
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+
+
+{% endblock content %}
