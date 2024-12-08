@@ -160,13 +160,15 @@ def create_super_admin(first_name, last_name, email, password):
 
 
 # get all admins
-def get_all_admins(page, per_page, email, is_super_admin, fullname):
+def get_all_admins(page, per_page, email, is_super_admin, fullname, phone):
     try:
         admins = Admin.query
         if email:
             admins = admins.filter(Admin.email.ilike(f"%{email}%"))
         if is_super_admin:
             admins = admins.filter(Admin.is_super_admin == True)
+        if phone:
+            admins = admins.filter(Admin.phone_number.ilike(f"%{phone}%"))
         if fullname:
             admins = admins.filter(Admin.first_name.ilike(f"%{fullname}%") | Admin.last_name.ilike(f"%{fullname}%"))
         paginated_admins = admins.order_by(Admin.date.desc()).paginate(page=page, per_page=per_page, error_out=False)
