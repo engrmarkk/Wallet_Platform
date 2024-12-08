@@ -60,15 +60,18 @@ def get_admins():
 def one_admin(admin_id):
     try:
         admin = get_one_admin(admin_id)
+        deactivate = request.args.get("deactivate", None)
         if not admin:
             session["alert"] = "Admin not found"
             session["bg_color"] = "danger"
             return redirect(url_for("admin_blp.get_admins"))
-        admin.active = not admin.active
-        db.session.commit()
-        session["alert"] = "Admin updated successfully"
-        session["bg_color"] = "success"
-        return redirect(url_for("admin_blp.get_admins"))
+        if deactivate:
+            admin.active = not admin.active
+            db.session.commit()
+            session["alert"] = "Admin updated successfully"
+            session["bg_color"] = "success"
+            return redirect(url_for("admin_blp.get_admins"))
+        return render_template("admin_temp/one_admin.html", admin=admin, all_admins=True)
     except Exception as e:
         print(e, "error in one admin")
         print(traceback.format_exc(), "TraceBack")
