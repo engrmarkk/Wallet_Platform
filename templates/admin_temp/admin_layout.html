@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN</title>
+
+    <!-- fontAwesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <link rel="icon" href="{{ url_for('static', filename='logo.png') }}" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <style>
+
+
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Custom CSS for sidebar sliding animation */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 250px;
+            background-color: #333;
+            color: white;
+            transition: 0.3s;
+            z-index: 999;
+            box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+        }
+
+        .content {
+            margin-left: 250px;
+            transition: 0.3s;
+        }
+
+        a{
+            text-decoration: none;
+            color: white;
+        }
+
+        .sidemenu_link{
+            font-size: .9rem;
+            text-transform: uppercase;
+            border-radius: 5px;
+            /* font-family: 'Poppins', sans-serif; */
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .sidemenu_link:hover{
+            color: black;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -250px;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidebar bg-info" id="sidebar">
+        <div class="p-3">
+            <div class="mb-3 d-flex align-items-center">
+<!--                <img-->
+<!--            src="{{ url_for('static', filename='logo2.png') }}"-->
+<!--            alt="company's logo"-->
+<!--            style="width: 2.7rem;"-->
+<!--          />-->
+          <!-- <span class='logo-text text-white' style="font-size: 1.2rem;">&nbsp;ACA<span class="text-white">DEMIA</span></span> -->
+            </div>
+            <!-- LINKS -->
+            <div class="d-flex flex-column">
+            <a href="{{url_for('admin_blp.admin_dashboard')}}" class="{% if admin_dashboard %} bg-white text-dark {% endif %} p-3 sidemenu_link">
+                <i class="fas fa-user"></i> Dashboard</a>
+
+
+                <!-- for courses -->
+            <a href="" class="p-3 sidemenu_link {% if all_users %} bg-white text-dark {% endif %}">
+                <i class="fas fa-book"></i> Users</a>
+
+            <a href="" class="p-3 sidemenu_link {% if all_transactions %} bg-white text-dark {% endif %}">
+                <i class="fas fa-book"></i> Transactions</a>
+
+            <a href="" class="p-3 sidemenu_link {% if all_admins %} bg-white text-dark {% endif %}">
+                <i class="fas fa-users-cog icon-fa"></i> Admins</a>
+            </div>
+
+            <div>
+
+                <div class="d-flex position-fixed bottom-0 mb-5 h5">
+                <a class="p-2 sidemenu_link text-white" data-bs-toggle="modal"
+                data-bs-target="#exampleModall" style="font-size: .75rem; cursor: pointer; background: rgb(227, 107, 107);">
+                <!-- logout icon -->
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+            <a href="" class="p-2 sidemenu_link badge text-dark fw-normal" style="margin-left: .8rem; background: rgb(251, 251, 251); font-size: .8rem;">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+            </div>
+        </div>
+            <button class="btn btn-info d-md-none position-absolute top-0 end-0 mx-2" id="closeSidebar"><i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <div class="content" id="content">
+        <div class="p-3">
+            <button class="btn btn-info d-md-none" id="openSidebar"><i class="fas fa-bars"></i></button>
+            <!-- Profile and Academic Details -->
+            {% block content %}{% endblock content %}
+        </div>
+    </div>
+
+
+
+    {% if alert %}
+    <div class="toast align-items-center show fade text-white {% if bg_color %} bg-{{bg_color}} {% else %} bg-info {% endif %} border-0 position-fixed top-0 end-0"
+        role="alert" data-bs-autohide="true" aria-live="polite" aria-atomic="true" data-bs-animation="true"
+        style="z-index: 99; margin-top: 5rem; transform: translateX(100%); transition: transform 2s ease-in-out;">
+        <div class="d-flex">
+            <div class="toast-body" style="font-size: 1rem;">
+                {{alert}}
+            </div>
+            <!-- <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button> -->
+        </div>
+    </div>
+    {% endif %}
+
+
+    <!-- Modal -->
+<div class="modal fade" id="exampleModall" data-bs-backdrop="static" tabindex="-1" aria-labelledby="exampleModalLabell" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-body">
+          <h5 class="modal-title text-center mb-2" id="exampleModalLabell" style="font-size: .8rem;">You want to logout?</h5>
+          <div class="d-flex justify-content-center">
+          <a href="{{ url_for('auth.logout') }}" class="btn btn-danger text-decoration-none shadow-none"><i class="fas fa-check text-white"></i></a>
+          <a class="btn btn-info mx-1 text-decoration-none" data-bs-dismiss="modal"><i class="fas fa-times text-white"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+
+        // var myToast = new bootstrap.Toast(document.querySelector('.toast'));
+
+        // document.querySelector('.toast').style.transform = 'translateX(-0%)';
+
+        // setTimeout(function () {
+        //     // fade the toast away
+        //     document.querySelector('.toast').style.transition = '2s ease-in-out';
+        //     myToast.hide();
+        // }, 2000);
+        const sidebar = document.getElementById('sidebar');
+        const openSidebarBtn = document.getElementById('openSidebar');
+        const closeSidebarBtn = document.getElementById('closeSidebar');
+
+        openSidebarBtn.addEventListener('click', function () {
+            sidebar.style.left = '0';
+        });
+
+        closeSidebarBtn.addEventListener('click', function () {
+            sidebar.style.left = '-250px';
+        });
+
+        window.addEventListener('resize', function () {
+            if (window.innerWidth >= 768) {
+                sidebar.style.left = '0';
+            } else {
+                sidebar.style.left = '-250px';
+            }
+        });
+
+        if (window.innerWidth >= 768) {
+            sidebar.style.left = '0';
+        } else {
+            sidebar.style.left = '-250px';
+        }
+
+
+
+
+        var myToast = new bootstrap.Toast(document.querySelector('.toast'));
+
+        document.querySelector('.toast').style.transform = 'translateX(-0%)';
+
+        setTimeout(function () {
+            // fade the toast away
+            document.querySelector('.toast').style.transition = '2s ease-in-out';
+            myToast.hide();
+        }, 2000);
+    </script>
+</body>
+
+</html>
