@@ -1,12 +1,20 @@
 from flask import Blueprint, render_template, request, url_for, session, redirect
-from flask_login import login_required
+from flask_login import login_required, current_user
 from func import get_all_admins, create_admin, create_super_admin, get_all_users, get_one_user, get_one_admin
 import traceback
 from extensions import db
 from decorators import super_admin_required, admin_required
+import string
+import random
 
 
 admin_blp = Blueprint("admin_blp", __name__, template_folder="../templates")
+
+def generate_ran_str():
+    return ''.join(random.choices(string.ascii_letters + string.digits, k=5))
+
+strin = generate_ran_str()
+check_str = strin
 
 # get admins
 @admin_blp.route("/admins", methods=["GET", "POST"])
@@ -115,5 +123,26 @@ def one_user(user_id):
         return render_template("admin_temp/one_user.html", user=user)
     except Exception as e:
         print(e, "error in one user")
+        print(traceback.format_exc(), "TraceBack")
+        return redirect(url_for("view.home"))
+
+
+# admin dashboard
+@admin_blp.route(f"/dashboard?s={strin}", methods=["GET"])
+@login_required
+def admin_dashboard():
+    try:
+        print(strin, "strin")
+        print(check_str, "check_str")
+        sess = 0
+        print(sess, "sess")
+        if strin != check_str and not sess:
+            return redirect(url_for("view.home"))
+        if not current_user.is_admin:
+            return redirect(url_for("view.home"))
+        sess += 1
+        return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True)
+    except Exception as e:
+        print(e, "error in admin dashboard")
         print(traceback.format_exc(), "TraceBack")
         return redirect(url_for("view.home"))
