@@ -106,7 +106,7 @@
             <a href="" class="p-3 sidemenu_link {% if all_transactions %} bg-white text-dark {% endif %}">
                 <i class="fas fa-book"></i> Transactions</a>
 
-            <a href="" class="p-3 sidemenu_link {% if all_admins %} bg-white text-dark {% endif %}">
+            <a href="{{ url_for('admin_blp.get_admins') }}" class="p-3 sidemenu_link {% if all_admins %} bg-white text-dark {% endif %}">
                 <i class="fas fa-users-cog icon-fa"></i> Admins</a>
             </div>
 
