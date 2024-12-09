@@ -1,10 +1,12 @@
 from flask import Blueprint, render_template, request, url_for, session, redirect
 from flask_login import login_required, current_user
 from func import get_all_admins, create_admin, create_super_admin, get_all_users, get_one_user, get_one_admin,\
-    get_user_transactions
+    get_user_transactions, get_all_transactions
 import traceback
 from extensions import db
 from decorators import super_admin_required, admin_required, user_admin_required
+from passlib.hash import pbkdf2_sha256 as hasher
+from sqlalchemy.exc import IntegrityError
 
 
 admin_blp = Blueprint("admin_blp", __name__, template_folder="../templates")
@@ -39,6 +41,7 @@ def get_admins():
             session["alert"] = "Please fill all the fields"
             session["bg_color"] = "danger"
             return redirect(url_for("admin_blp.get_admins"))
+        print("is super admin", is_super_admin)
         resp = create_admin(first_name, last_name, email, password) if not is_super_admin \
             else create_super_admin(first_name, last_name, email, password)
         if not resp:
@@ -51,32 +54,55 @@ def get_admins():
     except Exception as e:
         print(e, "error in get admins")
         print(traceback.format_exc(), "TraceBack")
-        return redirect(url_for("view.home"))
+        return redirect(url_for("admin_blp.get_admins"))
 
 
 # update admin
-@admin_blp.route("/admin/<admin_id>", methods=["GET"])
+@admin_blp.route("/admin/<admin_id>", methods=["GET", "POST"])
 @login_required
-@super_admin_required
+# @super_admin_required
 def one_admin(admin_id):
     try:
         admin = get_one_admin(admin_id)
-        deactivate = request.args.get("deactivate", None)
+        delete = request.args.get("delete", None)
+        update = request.args.get("update", None)
+        active_status = request.form.get("is_active", None)
+        is_super_admin_status = request.form.get("is_super_admin", None)
+        print(request.form)
         if not admin:
             session["alert"] = "Admin not found"
             session["bg_color"] = "danger"
             return redirect(url_for("admin_blp.get_admins"))
-        if deactivate:
-            admin.active = not admin.active
+        if delete:
+            print("deleting admin")
+            admin.delete()
+            session["alert"] = "Admin deleted successfully"
+            session["bg_color"] = "success"
+            return redirect(url_for("admin_blp.get_admins"))
+        if update:
+            admin.first_name = request.form.get("first_name", admin.first_name)
+            admin.last_name = request.form.get("last_name", admin.last_name)
+            admin.email = request.form.get("email", admin.email)
+            if request.form.get("password"):
+                admin.password = hasher.hash(request.form.get("password"))
+            admin.is_super_admin = True if is_super_admin_status else False
+            admin.active = True if active_status else False
             db.session.commit()
             session["alert"] = "Admin updated successfully"
             session["bg_color"] = "success"
             return redirect(url_for("admin_blp.get_admins"))
         return render_template("admin_temp/one_admin.html", admin=admin, all_admins=True)
+    # except integrityerror:
+    except IntegrityError as e:
+        print(e, "error in one admin")
+        print(traceback.format_exc(), "TraceBack")
+        session["alert"] = "Email already exists"
+        session["bg_color"] = "danger"
+        return redirect(url_for("admin_blp.get_admins"))
     except Exception as e:
         print(e, "error in one admin")
         print(traceback.format_exc(), "TraceBack")
-        return redirect(url_for("view.home"))
+        return redirect(url_for("admin_blp.get_admins"))
 
 
 # get users
@@ -173,6 +199,35 @@ def admin_dashboard():
         print(traceback.format_exc(), "TraceBack")
         return redirect(url_for("view.home"))
 
+
+# get all user transaction
+@admin_blp.route("/transactions", methods=["GET"])
+@login_required
+def get_all_user_transactions():
+    try:
+        if not current_user.is_admin:
+            return redirect(url_for("view.home"))
+        page = int(request.args.get("page", 1))
+        per_page = int(request.args.get("per_page", 10))
+        status = request.args.get("status")
+        transaction_type = request.args.get("transaction_type")
+        category = request.args.get("category")
+        bank_name = request.args.get("bank_name")
+        receiver = request.args.get("receiver")
+
+        transactions, all_trans_count, success_counts, pending_counts, failed_counts, inflow, outflow = get_all_transactions(page, per_page, status, transaction_type, category, bank_name, receiver)
+        return render_template("admin_temp/all_transactions.html",
+                               all_transactions=True, paginated_transactions=transactions,
+                               all_transactions_count=all_trans_count,
+                               successful_transactions=success_counts,
+                               pending_transactions=pending_counts,
+                               failed_transactions=failed_counts,
+                               inflow_transactions=inflow,
+                               outflow_transactions=outflow)
+    except Exception as e:
+        print(e, "error in get all user transactions")
+        print(traceback.format_exc(), "TraceBack")
+        return redirect(url_for("admin_blp.admin_dashboard"))
 
 # message user
 @admin_blp.route("/message-user", methods=["GET", "POST"])
