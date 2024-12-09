@@ -1,4 +1,171 @@
 {% extends 'admin_temp/admin_layout.html' %}
 {% block content %}
+<div class="container mt-3">
+    <div class="row">
+  
+        <!-- Card for Total Transactions -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Total Transactions</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['all_transactions_count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['all_transactions_amount']) }}</span>
+                </div>
+            </div>
+        </div>
+  
+        <!-- Card for Successful Transactions -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Successful Transactions</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['success_count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['success_amount']) }}</span>
+                </div>
+            </div>
+        </div>
+  
+        <!-- Card for Pending Transactions -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Pending Transactions</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['pending_count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['pending_amount']) }}</span>
+                </div>
+            </div>
+        </div>
+  
+        <!-- Card for Failed Transactions -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Failed Transactions</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['failed_count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['failed_amount']) }}</span>
+                </div>
+            </div>
+        </div>
+  
+        <!-- Card for Money In -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Money In</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['inflow_count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['inflow_amount']) }}</span>
+                </div>
+            </div>
+        </div>
+  
+        <!-- Card for Money Out -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Money Out</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['outflow_count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['outflow_amount']) }}</span>
+                </div>
+            </div>
+        </div>
 
+        <!-- Card for Transactions Today -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Transaction Today</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['transactions_today_count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['transactions_today_amount']) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Airtime -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Airtime</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Airtime']['count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Airtime']['amount']) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Electricity -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Electricity</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Electricity']['count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Electricity']['amount']) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Internet-Data -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Internet-Data</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Internet-Data']['count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Internet-Data']['amount']) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for TV Subscription -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">TV Subscription</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['TV Subscription']['count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['TV Subscription']['amount']) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Transfer -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Transfer</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Transfer']['count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Transfer']['amount']) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for W2W -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">W2W</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['W2W']['count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['W2W']['amount']) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Wallet-Topup -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Wallet-Topup</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Wallet-Topup']['count']) }}</h5>
+                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Wallet-Topup']['amount']) }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Card for Total Users -->
+        <div class="col-md-4 mb-3">
+            <div class="card text-dark bg-accent">
+                <div class="card-header text-center">Users</div>
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['all_users']) }}</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock content %}
