@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, session, redirect
 from flask_login import login_required, current_user
 from func import get_all_admins, create_admin, create_super_admin, get_all_users, get_one_user, get_one_admin,\
-    get_user_transactions, get_all_transactions
+    get_user_transactions, get_all_transactions, statistics
 import traceback
 from extensions import db
 from decorators import super_admin_required, admin_required, user_admin_required
@@ -44,12 +44,18 @@ def get_admins():
         print("is super admin", is_super_admin)
         resp = create_admin(first_name, last_name, email, password) if not is_super_admin \
             else create_super_admin(first_name, last_name, email, password)
-        if not resp:
-            session["alert"] = "Admin creation failed"
+        if not resp or isinstance(resp, str):
+            session["alert"] = "Admin creation failed" if not isinstance(resp, str) else resp
             session["bg_color"] = "danger"
             return redirect(url_for("admin_blp.get_admins"))
         session["alert"] = "Admin created successfully"
         session["bg_color"] = "success"
+        return redirect(url_for("admin_blp.get_admins"))
+    except IntegrityError as e:
+        print(e, "error in get admins")
+        print(traceback.format_exc(), "TraceBack")
+        session["alert"] = "Email already exists"
+        session["bg_color"] = "danger"
         return redirect(url_for("admin_blp.get_admins"))
     except Exception as e:
         print(e, "error in get admins")
@@ -185,7 +191,7 @@ def user_transactions(user_id):
         print(traceback.format_exc(), "TraceBack")
         return redirect(url_for("admin_blp.one_user", user_id=user_id))
 
-
+import pprint
 # admin dashboard
 @admin_blp.route(f"/dashboard", methods=["GET"])
 @login_required
@@ -193,7 +199,16 @@ def admin_dashboard():
     try:
         if not current_user.is_admin:
             return redirect(url_for("view.home"))
-        return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True)
+        # get from sesssion
+        if "stats" in session:
+            stats = session["stats"]
+            return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True,
+                                   stats=stats)
+        stats = statistics()
+        # store in session
+        session["stats"] = stats
+        return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True,
+                               stats=stats)
     except Exception as e:
         print(e, "error in admin dashboard")
         print(traceback.format_exc(), "TraceBack")
@@ -208,7 +223,7 @@ def get_all_user_transactions():
         if not current_user.is_admin:
             return redirect(url_for("view.home"))
         page = int(request.args.get("page", 1))
-        per_page = int(request.args.get("per_page", 10))
+        per_page = int(request.args.get("per_page", 15))
         status = request.args.get("status")
         transaction_type = request.args.get("transaction_type")
         category = request.args.get("category")
