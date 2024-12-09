@@ -15,7 +15,7 @@ admin_blp = Blueprint("admin_blp", __name__, template_folder="../templates")
 # get admins
 @admin_blp.route("/admins", methods=["GET", "POST"])
 @login_required
-@user_admin_required
+@admin_required
 def get_admins():
     try:
         alert = session.pop("alert", None)
@@ -66,7 +66,7 @@ def get_admins():
 # update admin
 @admin_blp.route("/admin/<admin_id>", methods=["GET", "POST"])
 @login_required
-# @super_admin_required
+@admin_required
 def one_admin(admin_id):
     try:
         admin = get_one_admin(admin_id)
@@ -81,6 +81,10 @@ def one_admin(admin_id):
             return redirect(url_for("admin_blp.get_admins"))
         if delete:
             print("deleting admin")
+            if admin.id == current_user.id:
+                session["alert"] = "You cannot delete yourself"
+                session["bg_color"] = "danger"
+                return redirect(url_for("admin_blp.get_admins"))
             admin.delete()
             session["alert"] = "Admin deleted successfully"
             session["bg_color"] = "success"
@@ -114,6 +118,7 @@ def one_admin(admin_id):
 # get users
 @admin_blp.route("/users", methods=["GET"])
 @login_required
+@admin_required
 def get_users():
     try:
         alert = session.pop("alert", None)
@@ -140,7 +145,7 @@ def get_users():
 # update user
 @admin_blp.route("/user/<user_id>", methods=["GET"])
 @login_required
-# @super_admin_required
+@admin_required
 def one_user(user_id):
     try:
         alert = session.pop("alert", None)
@@ -168,6 +173,7 @@ def one_user(user_id):
 # user transaction
 @admin_blp.route("/user/<user_id>/transactions", methods=["GET"])
 @login_required
+@admin_required
 def user_transactions(user_id):
     try:
         page = int(request.args.get("page", 1))
@@ -191,37 +197,37 @@ def user_transactions(user_id):
         print(traceback.format_exc(), "TraceBack")
         return redirect(url_for("admin_blp.one_user", user_id=user_id))
 
-import pprint
+
 # admin dashboard
 @admin_blp.route(f"/dashboard", methods=["GET"])
 @login_required
+@admin_required
 def admin_dashboard():
     try:
-        if not current_user.is_admin:
-            return redirect(url_for("view.home"))
+        alert = session.pop("alert", None)
+        bg_color = session.pop("bg_color", None)
         # get from sesssion
         if "stats" in session:
             stats = session["stats"]
             return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True,
-                                   stats=stats)
+                                   stats=stats, alert=alert, bg_color=bg_color)
         stats = statistics()
         # store in session
         session["stats"] = stats
         return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True,
-                               stats=stats)
+                               stats=stats, alert=alert, bg_color=bg_color)
     except Exception as e:
         print(e, "error in admin dashboard")
         print(traceback.format_exc(), "TraceBack")
-        return redirect(url_for("view.home"))
+        return redirect(url_for("admin_blp.admin_dashboard"))
 
 
 # get all user transaction
 @admin_blp.route("/transactions", methods=["GET"])
 @login_required
+@admin_required
 def get_all_user_transactions():
     try:
-        if not current_user.is_admin:
-            return redirect(url_for("view.home"))
         page = int(request.args.get("page", 1))
         per_page = int(request.args.get("per_page", 15))
         status = request.args.get("status")
@@ -244,15 +250,15 @@ def get_all_user_transactions():
         print(traceback.format_exc(), "TraceBack")
         return redirect(url_for("admin_blp.admin_dashboard"))
 
+
 # message user
 @admin_blp.route("/message-user", methods=["GET", "POST"])
 @login_required
+@admin_required
 def message_user():
     try:
-        if not current_user.is_admin:
-            return redirect(url_for("view.home"))
         return render_template("admin_temp/message_user.html", admin_dashboard=True)
     except Exception as e:
         print(e, "error in message user")
         print(traceback.format_exc(), "TraceBack")
-        return redirect(url_for("view.home"))
+        return redirect(url_for("admin_blp.admin_dashboard"))
