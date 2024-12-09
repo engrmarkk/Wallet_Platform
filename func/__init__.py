@@ -13,6 +13,7 @@ import string
 from utils import send_notification, send_credit_notification
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
+from passlib.hash import pbkdf2_sha256 as hasher
 
 
 def generate_reference():
@@ -147,7 +148,7 @@ def create_admin(first_name, last_name, email, password, is_super_admin=False):
     try:
         print("creating admin with is super admin", is_super_admin)
         admin = Admin(first_name=first_name, last_name=last_name, email=email,
-                      password=password, is_super_admin=is_super_admin)
+                      password=hasher.hash(password), is_super_admin=is_super_admin)
         db.session.add(admin)
         db.session.commit()
         return admin
