@@ -90,7 +90,7 @@
       {% for trans in paginated_transactions %}
       <tr class="text-muted fw-normal" style="font-size: .9rem;">
         <td>{% if trans.transaction_type.title() == "Crt" %}
-          Credit
+          <span class="bg-success">Credit</span>
           {% else %}
           Debit
           {% endif %}
