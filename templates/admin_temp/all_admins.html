@@ -4,9 +4,47 @@
     <h1 class="text-center">All Admins</h1>
 
     <div>
-        <button type="button" class="btn btn-info text-white mb-3" >
+        <button type="button" class="btn btn-info text-white mb-3 shadow-none hover" data-bs-toggle="modal" data-bs-target="#createAdmin" >
         Create Admin
         </button>
+    </div>
+
+    <!-- modal -->
+    <div class="modal fade" id="createAdmin" tabindex="-1" aria-labelledby="createAdminLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="createAdminLabel">Create Admin</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="POST" action="{{ url_for('admin_blp.get_admins') }}">
+              <div class="mb-3">
+                <label for="first_name" class="form-label">First Name</label>
+                <input type="text" name="first_name" class="form-control shadow-none" id="first_name" placeholder="First Name" required>
+              </div>
+              <div class="mb-3">
+                <label for="last_name" class="form-label">Last Name</label>
+                <input type="text" name="last_name" class="form-control shadow-none" id="last_name" placeholder="Last Name" required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" name="email" class="form-control shadow-none" id="email" placeholder="Email" required>
+              </div>
+              <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" name="password" class="form-control shadow-none" id="password" placeholder="Password" required>
+              </div>
+              <!-- is super admin tick -->
+              <div class="mb-3 form-check">
+                <input type="checkbox" name="is_super_admin" class="form-check-input shadow-none" id="is_super_admin">
+                <label class="form-check-label" for="is_super_admin">Super Admin</label>
+              </div>
+              <button type="submit" class="btn btn-primary shadow-none">Create</button>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="table-responsive">
@@ -16,8 +54,10 @@
               <th scope="col" class="fw-normal">S/N</th>
               <th scope="col" class="fw-normal">Last Name</th>
               <th scope="col" class="fw-normal">First Name</th>
+              <th scope="col" class="fw-normal">Email</th>
               <th scope="col" class="fw-normal">SuperAdmin</th>
               <th scope="col" class="fw-normal">Status</th>
+              <th scope="col" class="fw-normal">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -30,9 +70,63 @@
               <td>
                 {{admin.first_name.title()}}
               </td>
-              <td>{% if admin.is_superadmin == True %} <i class="fa fa-check-circle text-success"></i> {% else %} <i class="fa fa-times-circle text-danger"></i> {% endif %}</td>
-              <td>{% if admin.is_active == True %} <i class="fa fa-check-circle text-success"></i> {% else %} <i class="fa fa-times-circle text-danger"></i> {% endif %}</td>
+              <td>{{admin.email}}</td>
+              <td>{% if admin.is_super_admin == True %} <i class="fa fa-check-circle text-success"></i> {% else %} <i class="fa fa-times-circle text-danger"></i> {% endif %}</td>
+              <td>{% if admin.active == True %} <i class="fa fa-check-circle text-success"></i> {% else %} <i class="fa fa-times-circle text-danger"></i> {% endif %}</td>
+              <td>
+                <button type="button" class="btn btn-info text-white shadow-none" style="font-size: .9rem;" data-bs-toggle="modal" data-bs-target="#updateAdmin{{admin.id}}">Update</button>
+                <a href="{{ url_for('admin_blp.one_admin', admin_id=admin.id, delete=True) }}" class="btn btn-danger text-white shadow-none" style="font-size: .9rem;">Delete</a>
+            </td>
+            
             </tr>
+
+
+            <!-- MODAL -->
+            <!-- MODAL -->
+<div class="modal fade" id="updateAdmin{{admin.id}}" tabindex="-1" aria-labelledby="updateAdminModal{{admin.id}}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateAdminModal{{admin.id}}">Create Admin</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('admin_blp.one_admin', admin_id=admin.id, update=True) }}">
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" value="{{admin.first_name}}" name="first_name" class="form-control shadow-none" id="first_name" placeholder="First Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" value="{{admin.last_name}}" name="last_name" class="form-control shadow-none" id="last_name" placeholder="Last Name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" value="{{admin.email}}" name="email" class="form-control shadow-none" id="email" placeholder="Email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control shadow-none" id="password" placeholder="Password">
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" {% if admin.is_super_admin == True %} checked {% endif %} name="is_super_admin" class="form-check-input shadow-none" id="is_super_admin">
+                        <label class="form-check-label" for="is_super_admin">Super Admin</label>
+                    </div>
+                    <!-- active -->
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" {% if admin.active == True %} checked {% endif %} name="is_active" class="form-check-input shadow-none" id="is_active">
+                        <label class="form-check-label" for="is_active">
+                            {% if admin.active == True %} Active {% else %} Inactive {% endif %}
+                        </label>
+                    </div>
+                    <button type="submit" class="btn btn-primary shadow-none">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END MODAL -->
+
             {% endfor %}
           </tbody>
         </table>
