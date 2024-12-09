@@ -88,9 +88,9 @@
     </thead>
     <tbody>
       {% for trans in paginated_transactions %}
-      <tr class="text-muted fw-normal" style="font-size: .9rem;">
-        <td>{% if trans.transaction_type.title() == "Crt" %}
-          <span class="bg-success">Credit</span>
+      <tr class="text-muted fw-normal" style="font-size: .8rem;">
+        <td class="{% if trans.transaction_type.title() == 'Crt' %}text-white bg-success{% else %}bg-danger text-white{% endif %}">{% if trans.transaction_type.title() == "Crt" %}
+          Credit
           {% else %}
           Debit
           {% endif %}
