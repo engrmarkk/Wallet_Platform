@@ -143,6 +143,7 @@ def update_status(transact, status):
 #  create admin
 def create_admin(first_name, last_name, email, password, is_super_admin=False):
     try:
+        print("creating admin with is super admin", is_super_admin)
         admin = Admin(first_name=first_name, last_name=last_name, email=email,
                       password=password, is_super_admin=is_super_admin)
         db.session.add(admin)
@@ -156,6 +157,7 @@ def create_admin(first_name, last_name, email, password, is_super_admin=False):
 
 # create super admin
 def create_super_admin(first_name, last_name, email, password):
+    print("I am creating super admin")
     return create_admin(first_name, last_name, email, password, is_super_admin=True)
 
 
@@ -226,6 +228,7 @@ def get_one_admin(admin_id):
         db.session.rollback()
         return None
 
+
 def get_user_transactions(page, per_page, transaction_type, status, category, user):
     try:
         transactions = Transaction.query.filter(Transaction.user_id == user.id)
@@ -247,3 +250,31 @@ def get_user_transactions(page, per_page, transaction_type, status, category, us
         print(e, "error in get_user_transactions")
         db.session.rollback()
         return None, None, None, None, None, None, None
+
+
+def get_all_transactions(page, per_page, status, transaction_type, category, bank_name, receiver):
+    try:
+        transactions = Transaction.query
+        all_trans_count = transactions.count()
+        success_counts = transactions.filter(Transaction.status == "Success").count()
+        pending_counts = transactions.filter(Transaction.status == "Pending").count()
+        failed_counts = transactions.filter(Transaction.status == "Failed").count()
+        inflow = transactions.filter(Transaction.transaction_type == "CRT").count()
+        outflow = transactions.filter(Transaction.transaction_type == "DBT").count()
+        if status:
+            transactions = transactions.filter(Transaction.status.ilike(status))
+        if transaction_type:
+            transactions = transactions.filter(Transaction.transaction_type.ilike(transaction_type))
+        if category:
+            transactions = transactions.filter(Transaction.category == category)
+        if bank_name:
+            transactions = transactions.filter(Transaction.bank_name.ilike(f"%{bank_name}%"))
+        if receiver:
+            transactions = transactions.filter(Transaction.receiver.ilike(f"%{receiver}%"))
+        paginated_transactions = transactions.order_by(Transaction.date_posted.desc()).paginate(page=page,
+                                                                                                per_page=per_page, error_out=False)
+        return paginated_transactions, all_trans_count, success_counts, pending_counts, failed_counts, inflow, outflow
+    except Exception as e:
+        print(e, "error in get_all_transactions")
+        db.session.rollback()
+        return None, None, None, None, None, None
