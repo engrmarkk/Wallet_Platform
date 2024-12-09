@@ -5,12 +5,14 @@ from flask import current_app, session, redirect, url_for, flash
 from PIL import Image
 from extensions import db
 from functools import wraps
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from flask_login import logout_user
 import pytz
 import random
 import string
 from utils import send_notification, send_credit_notification
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy import func
 
 
 def generate_reference():
@@ -149,6 +151,9 @@ def create_admin(first_name, last_name, email, password, is_super_admin=False):
         db.session.add(admin)
         db.session.commit()
         return admin
+    except IntegrityError:
+        db.session.rollback()
+        return "Email already exists"
     except Exception as e:
         print(e)
         db.session.rollback()
@@ -278,3 +283,93 @@ def get_all_transactions(page, per_page, status, transaction_type, category, ban
         print(e, "error in get_all_transactions")
         db.session.rollback()
         return None, None, None, None, None, None
+
+
+def statistics():
+    """
+    Collect various statistics regarding users and transactions.
+    """
+    try:
+        all_users = User.query.count()
+
+        # Helper function to handle None values
+        def safe_first(query_result):
+            return query_result if query_result is not None else (0, 0)
+
+        # Aggregate transactions
+        transaction_stats = {
+            "all": safe_first(Transaction.query.with_entities(
+                func.count(), func.sum(Transaction.transaction_amount)
+            ).first()),
+            "success": safe_first(Transaction.query.filter(Transaction.status == "Success").with_entities(
+                func.count(), func.sum(Transaction.transaction_amount)
+            ).first()),
+            "pending": safe_first(Transaction.query.filter(Transaction.status == "Pending").with_entities(
+                func.count(), func.sum(Transaction.transaction_amount)
+            ).first()),
+            "failed": safe_first(Transaction.query.filter(Transaction.status == "Failed").with_entities(
+                func.count(), func.sum(Transaction.transaction_amount)
+            ).first()),
+            "inflow": safe_first(Transaction.query.filter(Transaction.transaction_type == "CRT").with_entities(
+                func.count(), func.sum(Transaction.transaction_amount)
+            ).first()),
+            "outflow": safe_first(Transaction.query.filter(Transaction.transaction_type == "DBT").with_entities(
+                func.count(), func.sum(Transaction.transaction_amount)
+            ).first()),
+        }
+
+        # Transaction counts and amounts by category
+        categories = [
+            "Electricity", "Airtime", "Internet-Data",
+            "TV Subscription", "W2W", "Transfer", "Wallet-Topup"
+        ]
+
+        category_stats = {}
+        for category in categories:
+            count, amount = (
+                db.session.query(
+                    func.count(),
+                    func.sum(Transaction.transaction_amount)
+                )
+                .join(TransactionCategories, Transaction.category == TransactionCategories.id)
+                .filter(TransactionCategories.category == category)
+                .first() or (0, 0)
+            )
+            category_stats[category] = {
+                "count": count,
+                "amount": amount or 0
+            }
+
+        # Transactions per day
+        current_date = date.today()
+        transactions_today = safe_first(
+            Transaction.query.filter(func.date(Transaction.date_posted) == current_date)
+            .with_entities(func.count(), func.sum(Transaction.transaction_amount))
+            .first()
+        )
+
+        # Prepare results
+        results = {
+            "all_users": all_users,
+            "all_transactions_count": transaction_stats["all"][0],
+            "all_transactions_amount": transaction_stats["all"][1] or 0,
+            "success_count": transaction_stats["success"][0],
+            "success_amount": transaction_stats["success"][1] or 0,
+            "pending_count": transaction_stats["pending"][0],
+            "pending_amount": transaction_stats["pending"][1] or 0,
+            "failed_count": transaction_stats["failed"][0],
+            "failed_amount": transaction_stats["failed"][1] or 0,
+            "inflow_count": transaction_stats["inflow"][0],
+            "inflow_amount": transaction_stats["inflow"][1] or 0,
+            "outflow_count": transaction_stats["outflow"][0],
+            "outflow_amount": transaction_stats["outflow"][1] or 0,
+            **category_stats,
+            "transactions_today_count": transactions_today[0],
+            "transactions_today_amount": transactions_today[1] or 0
+        }
+
+        return results
+    except Exception as e:
+        print(e, "error in statistics")
+        db.session.rollback()
+        return {}
