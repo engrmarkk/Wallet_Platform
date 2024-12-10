@@ -207,10 +207,10 @@ def admin_dashboard():
         alert = session.pop("alert", None)
         bg_color = session.pop("bg_color", None)
         # get from sesssion
-        if "stats" in session:
-            stats = session["stats"]
-            return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True,
-                                   stats=stats, alert=alert, bg_color=bg_color)
+        # if "stats" in session:
+        #     stats = session["stats"]
+        #     return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True,
+        #                            stats=stats, alert=alert, bg_color=bg_color)
         stats = statistics()
         # store in session
         session["stats"] = stats
