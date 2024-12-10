@@ -322,7 +322,7 @@ def statistics():
         # Transaction counts and amounts by category
         categories = [
             "Electricity", "Airtime", "Internet-Data",
-            "TV Subscription", "W2W", "Transfer", "Wallet-Topup"
+            "Tv-Subscription", "W2W", "Transfer", "Wallet-Topup"
         ]
 
         category_stats = {}
