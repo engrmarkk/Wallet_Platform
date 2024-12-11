@@ -213,7 +213,7 @@ def admin_dashboard():
         #                            stats=stats, alert=alert, bg_color=bg_color)
         stats = statistics()
         # store in session
-        session["stats"] = stats
+        # session["stats"] = stats
         return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True,
                                stats=stats, alert=alert, bg_color=bg_color)
     except Exception as e:
