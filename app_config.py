@@ -51,11 +51,11 @@ def create_app():
             user = User.query.get(id)
             if user:
                 return user
-            print(f"User with id {id} not found in the User table")
+            # print(f"User with id {id} not found in the User table")
             user = Admin.query.get(id)
             if user:
                 return user
-            print(f"User with id {id} not found in the Admin table")
+            # print(f"User with id {id} not found in the Admin table")
             return None
         except Exception as e:
             print(e, "error in user loader")
