@@ -58,9 +58,22 @@ class Card(db.Model):
         return f"Post('{self.title}', '{self.date_posted}')"
 
 
-def save_transfer_in_transactions(transaction_type, transaction_amount, user_id, balance, description, category,
-                                  transaction_ref, session_id, sender_account, receiver_account, sender, receiver,
-                                  status, bank_name):
+def save_transfer_in_transactions(
+    transaction_type,
+    transaction_amount,
+    user_id,
+    balance,
+    description,
+    category,
+    transaction_ref,
+    session_id,
+    sender_account,
+    receiver_account,
+    sender,
+    receiver,
+    status,
+    bank_name,
+):
     trans = Transaction(
         transaction_type=transaction_type,
         transaction_amount=transaction_amount,
@@ -75,7 +88,7 @@ def save_transfer_in_transactions(transaction_type, transaction_amount, user_id,
         sender=sender,
         receiver=receiver,
         status=status,
-        bank_name=bank_name
+        bank_name=bank_name,
     )
     db.session.add(trans)
     db.session.commit()
