@@ -29,8 +29,11 @@ class User(db.Model, UserMixin):
     savings = db.Column(db.Integer, default=0)
     invite_earn = db.Column(db.Integer, nullable=False, default=0)
     invited_by = db.Column(db.BigInteger, nullable=False, default=0)
-    photo = db.Column(db.Text, nullable=False,
-                      default='https://res.cloudinary.com/duwyopabr/image/upload/v1676162283/user_xz7o0f.png')
+    photo = db.Column(
+        db.Text,
+        nullable=False,
+        default="https://res.cloudinary.com/duwyopabr/image/upload/v1676162283/user_xz7o0f.png",
+    )
     transaction_pin = db.Column(db.Text, nullable=False, default="")
     secret_question = db.Column(db.Text, nullable=True)
     secret_answer = db.Column(db.String(50), nullable=True)
@@ -39,9 +42,15 @@ class User(db.Model, UserMixin):
     active = db.Column(db.Boolean, default=True)
     transacts = db.relationship("Transaction", backref="author", lazy=True)
     beneficiaries = db.relationship("Beneficiary", backref="user_account", lazy=True)
-    card = db.relationship("Card", backref="card_owner", cascade="all, delete", lazy=True)
-    invitees = db.relationship('Invitees', backref='inviter', cascade="all, delete", lazy=True)
-    user_session = db.relationship('UserSession', backref='user', lazy=True, uselist=False)
+    card = db.relationship(
+        "Card", backref="card_owner", cascade="all, delete", lazy=True
+    )
+    invitees = db.relationship(
+        "Invitees", backref="inviter", cascade="all, delete", lazy=True
+    )
+    user_session = db.relationship(
+        "UserSession", backref="user", lazy=True, uselist=False
+    )
     confirmed = db.Column(db.Boolean, nullable=False, default=False)
     enabled_2fa = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
@@ -52,12 +61,17 @@ class User(db.Model, UserMixin):
         return f"User('{self.username}', '{self.email}')"
 
     def get_reset_token(self, expires_sec=1800):
-        return jwt.encode({'reset_password': self.id, 'exp': time() + expires_sec}, key=os.getenv("SECRET_KEY"))
+        return jwt.encode(
+            {"reset_password": self.id, "exp": time() + expires_sec},
+            key=os.getenv("SECRET_KEY"),
+        )
 
     @staticmethod
     def verify_reset_token(token):
         try:
-            id = jwt.decode(token, app.config['SECRET_KEY'], algorithms=['HS256'])['reset_password']
+            id = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])[
+                "reset_password"
+            ]
         except Exception as e:
             print(e, "error in token verification")
             return None
