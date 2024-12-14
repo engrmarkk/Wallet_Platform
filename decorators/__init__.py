@@ -10,6 +10,7 @@ def admin_required(f):
         if not Admin.query.filter_by(id=current_user.id).first():
             return redirect(url_for("view.home"))
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -20,6 +21,7 @@ def super_admin_required(f):
         if not admin or not admin.is_super_admin:
             return redirect(url_for("view.home"))
         return f(*args, **kwargs)
+
     return decorated_function
 
 
@@ -29,4 +31,5 @@ def user_admin_required(f):
         if not current_user.is_admin:
             return redirect(url_for("view.home"))
         return f(*args, **kwargs)
+
     return decorated_function
