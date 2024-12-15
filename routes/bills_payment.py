@@ -67,7 +67,7 @@ def vtpass_payment():
             "customer_name",
             customer_name,
             "verify_number",
-            verify_number
+            verify_number,
         )
 
         # if not amount or not phone_number or not service_id:
@@ -91,7 +91,9 @@ def vtpass_payment():
 
             half_of_panic_balance = current_user.panic_balance / 2
             if float(amount) > half_of_panic_balance:
-                session["alert"] = "Transaction limit exceeded, please try a lower amount"
+                session["alert"] = (
+                    "Transaction limit exceeded, please try a lower amount"
+                )
                 session["bg_color"] = "danger"
                 return redirect(url_for("bills.get_variation", service_id=service_id))
             if float(amount) > current_user.account_balance:
@@ -114,8 +116,15 @@ def vtpass_payment():
         purchase_type = determine_purchase_type(service_id)
 
         transact = deduct_history(
-            amount, current_user, request_id, purchase_type, service_id, phone_number,
-            customer_name, verify_number, panic
+            amount,
+            current_user,
+            request_id,
+            purchase_type,
+            service_id,
+            phone_number,
+            customer_name,
+            verify_number,
+            panic,
         )
 
         payload = dict(
@@ -141,7 +150,9 @@ def vtpass_payment():
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.home"))
         elif purchase_type == "electricity":
-            variation_code = vtpass_service.variation_codes(service_id)["content"]["varations"][0]["variation_code"]
+            variation_code = vtpass_service.variation_codes(service_id)["content"][
+                "varations"
+            ][0]["variation_code"]
             payload["variation_code"] = variation_code
             if variation_code == "prepaid":
                 billers_code = "1111111111111"
@@ -209,7 +220,9 @@ def purchase_data():
         phone_number = request.form.get("phone_number")
         billers_code = "08011111111"
         # get the variation code via backend from the api response using the service_id
-        variation_code = vtpass_service.variation_codes(service_id)["content"]["varations"][0]["variation_code"]
+        variation_code = vtpass_service.variation_codes(service_id)["content"][
+            "varations"
+        ][0]["variation_code"]
         pin = request.form.get("transaction_pin")
 
         # print(amount, "AMOUNTT")
@@ -228,7 +241,9 @@ def purchase_data():
 
             half_of_panic_balance = current_user.panic_balance / 2
             if float(amount) > half_of_panic_balance:
-                session["alert"] = "Transaction limit exceeded, please try a lower amount"
+                session["alert"] = (
+                    "Transaction limit exceeded, please try a lower amount"
+                )
                 session["bg_color"] = "danger"
                 return redirect(url_for("bills.get_variation", service_id=service_id))
             if float(amount) > current_user.account_balance:
@@ -251,7 +266,13 @@ def purchase_data():
         purchase_type = "data"
 
         transact = deduct_history(
-            amount, current_user, request_id, purchase_type, service_id=service_id, phone=phone_number, panic=panic
+            amount,
+            current_user,
+            request_id,
+            purchase_type,
+            service_id=service_id,
+            phone=phone_number,
+            panic=panic,
         )
 
         payload = dict(
@@ -260,7 +281,7 @@ def purchase_data():
             serviceID=service_id,
             request_id=request_id,
             billersCode=billers_code,
-            variation_code=variation_code
+            variation_code=variation_code,
         )
 
         print(payload, "payload")
@@ -334,9 +355,9 @@ def get_variation(service_id):
         # print(response, "response")
         return render_template(
             "display_serv.html",
-            variations=response["content"]["varations"]
-            if isinstance(response, dict)
-            else [],
+            variations=(
+                response["content"]["varations"] if isinstance(response, dict) else []
+            ),
             date=datetime.datetime.utcnow(),
             service_id=service_id,
             variations_code=1,
@@ -370,7 +391,15 @@ def verify_number():
         print(billers_code, service_id, type_)
 
         if not billers_code:
-            return jsonify({"status": "failed", "msg": "please provide the number you want to verify"}), 400
+            return (
+                jsonify(
+                    {
+                        "status": "failed",
+                        "msg": "please provide the number you want to verify",
+                    }
+                ),
+                400,
+            )
 
         if not service_id:
             return jsonify({"status": "failed", "msg": "service id is required"}), 400
@@ -383,7 +412,9 @@ def verify_number():
         print(purchase_type, "purchase type")
 
         if purchase_type == "electricity":
-            billersCode = "1111111111111" if type_.lower() == "prepaid" else "1010101010101"
+            billersCode = (
+                "1111111111111" if type_.lower() == "prepaid" else "1010101010101"
+            )
         else:
             billersCode = "1212121212"
 
@@ -396,7 +427,18 @@ def verify_number():
             payload["type"] = type_
         response = vtpass_service.verify_meter_and_smartcard_number(payload)
         if not response:
-            return jsonify({"status": "failed", "msg": "Network Error", "customer_name": current_user.last_name.title() + " " + current_user.first_name.title()}), 502
+            return (
+                jsonify(
+                    {
+                        "status": "failed",
+                        "msg": "Network Error",
+                        "customer_name": current_user.last_name.title()
+                        + " "
+                        + current_user.first_name.title(),
+                    }
+                ),
+                502,
+            )
         print(response, "response")
         return jsonify({"customer_name": response["content"]["Customer_Name"]}), 200
     except Exception as e:
