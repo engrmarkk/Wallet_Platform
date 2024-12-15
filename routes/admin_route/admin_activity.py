@@ -1,7 +1,16 @@
 from flask import Blueprint, render_template, request, url_for, session, redirect
 from flask_login import login_required, current_user
-from func import get_all_admins, create_admin, create_super_admin, get_all_users, get_one_user, get_one_admin,\
-    get_user_transactions, get_all_transactions, statistics
+from func import (
+    get_all_admins,
+    create_admin,
+    create_super_admin,
+    get_all_users,
+    get_one_user,
+    get_one_admin,
+    get_user_transactions,
+    get_all_transactions,
+    statistics,
+)
 import traceback
 from extensions import db
 from decorators import super_admin_required, admin_required, user_admin_required
@@ -27,9 +36,16 @@ def get_admins():
             is_super_admin = request.args.get("is_super_admin")
             fullname = request.args.get("fullname")
             phone = request.args.get("phone")
-            admins = get_all_admins(page, per_page, email, is_super_admin, fullname, phone)
-            return render_template("admin_temp/all_admins.html",
-                                   admins=admins, alert=alert, bg_color=bg_color, all_admins=True)
+            admins = get_all_admins(
+                page, per_page, email, is_super_admin, fullname, phone
+            )
+            return render_template(
+                "admin_temp/all_admins.html",
+                admins=admins,
+                alert=alert,
+                bg_color=bg_color,
+                all_admins=True,
+            )
 
         # This is for post request
         email = request.form.get("email")
@@ -42,10 +58,15 @@ def get_admins():
             session["bg_color"] = "danger"
             return redirect(url_for("admin_blp.get_admins"))
         print("is super admin", is_super_admin)
-        resp = create_admin(first_name, last_name, email, password) if not is_super_admin \
+        resp = (
+            create_admin(first_name, last_name, email, password)
+            if not is_super_admin
             else create_super_admin(first_name, last_name, email, password)
+        )
         if not resp or isinstance(resp, str):
-            session["alert"] = "Admin creation failed" if not isinstance(resp, str) else resp
+            session["alert"] = (
+                "Admin creation failed" if not isinstance(resp, str) else resp
+            )
             session["bg_color"] = "danger"
             return redirect(url_for("admin_blp.get_admins"))
         session["alert"] = "Admin created successfully"
@@ -101,7 +122,9 @@ def one_admin(admin_id):
             session["alert"] = "Admin updated successfully"
             session["bg_color"] = "success"
             return redirect(url_for("admin_blp.get_admins"))
-        return render_template("admin_temp/one_admin.html", admin=admin, all_admins=True)
+        return render_template(
+            "admin_temp/one_admin.html", admin=admin, all_admins=True
+        )
     # except integrityerror:
     except IntegrityError as e:
         print(e, "error in one admin")
@@ -131,11 +154,28 @@ def get_users():
         user_name = request.args.get("user_name")
         account_number = request.args.get("account_number")
         has_set_panic = request.args.get("has_set_panic")
-        users, user_count, completed_user, active_users = get_all_users(page, per_page, email, fullname, phone_number, user_name, account_number, has_set_panic)
-        return render_template("admin_temp/all_users.html", users=users, alert=alert, bg_color=bg_color,
-                               user_count=user_count, all_users=True, completed_user=completed_user,
-                               uncompleted_user=user_count - completed_user, active_users=active_users,
-                               inactive_users=user_count - active_users)
+        users, user_count, completed_user, active_users = get_all_users(
+            page,
+            per_page,
+            email,
+            fullname,
+            phone_number,
+            user_name,
+            account_number,
+            has_set_panic,
+        )
+        return render_template(
+            "admin_temp/all_users.html",
+            users=users,
+            alert=alert,
+            bg_color=bg_color,
+            user_count=user_count,
+            all_users=True,
+            completed_user=completed_user,
+            uncompleted_user=user_count - completed_user,
+            active_users=active_users,
+            inactive_users=user_count - active_users,
+        )
     except Exception as e:
         print(e, "error in get users")
         print(traceback.format_exc(), "TraceBack")
@@ -159,11 +199,20 @@ def one_user(user_id):
         if deactivate:
             user.active = not user.active
             db.session.commit()
-            session["alert"] = "User deactivated successfully" if not user.active else "User activated successfully"
+            session["alert"] = (
+                "User deactivated successfully"
+                if not user.active
+                else "User activated successfully"
+            )
             session["bg_color"] = "success"
             return redirect(url_for("admin_blp.one_user", user_id=user.id))
-        return render_template("admin_temp/one_user.html", user=user, all_users=True,
-                               alert=alert, bg_color=bg_color)
+        return render_template(
+            "admin_temp/one_user.html",
+            user=user,
+            all_users=True,
+            alert=alert,
+            bg_color=bg_color,
+        )
     except Exception as e:
         print(e, "error in one user")
         print(traceback.format_exc(), "TraceBack")
@@ -186,12 +235,29 @@ def user_transactions(user_id):
             session["alert"] = "User not found"
             session["bg_color"] = "danger"
             return redirect(url_for("admin_blp.one_user", user_id=user_id))
-        paginated_transactions, all_transactions, successful_transactions, pending_transactions, failed_transactions, inflow_transactions, outflow_transactions = get_user_transactions(page, per_page, transaction_type, status, category, user)
-        return render_template("admin_temp/user_transactions.html", user=user, all_users=True,
-                               paginated_transactions=paginated_transactions, all_transactions_count=all_transactions,
-                               successful_transactions=successful_transactions, pending_transactions=pending_transactions,
-                               failed_transactions=failed_transactions, inflow_transactions=inflow_transactions,
-                               outflow_transactions=outflow_transactions)
+        (
+            paginated_transactions,
+            all_transactions,
+            successful_transactions,
+            pending_transactions,
+            failed_transactions,
+            inflow_transactions,
+            outflow_transactions,
+        ) = get_user_transactions(
+            page, per_page, transaction_type, status, category, user
+        )
+        return render_template(
+            "admin_temp/user_transactions.html",
+            user=user,
+            all_users=True,
+            paginated_transactions=paginated_transactions,
+            all_transactions_count=all_transactions,
+            successful_transactions=successful_transactions,
+            pending_transactions=pending_transactions,
+            failed_transactions=failed_transactions,
+            inflow_transactions=inflow_transactions,
+            outflow_transactions=outflow_transactions,
+        )
     except Exception as e:
         print(e, "error in user transactions")
         print(traceback.format_exc(), "TraceBack")
@@ -214,8 +280,13 @@ def admin_dashboard():
         stats = statistics()
         # store in session
         # session["stats"] = stats
-        return render_template("admin_temp/admin_dashboard.html", admin_dashboard=True,
-                               stats=stats, alert=alert, bg_color=bg_color)
+        return render_template(
+            "admin_temp/admin_dashboard.html",
+            admin_dashboard=True,
+            stats=stats,
+            alert=alert,
+            bg_color=bg_color,
+        )
     except Exception as e:
         print(e, "error in admin dashboard")
         print(traceback.format_exc(), "TraceBack")
@@ -236,15 +307,28 @@ def get_all_user_transactions():
         bank_name = request.args.get("bank_name")
         receiver = request.args.get("receiver")
 
-        transactions, all_trans_count, success_counts, pending_counts, failed_counts, inflow, outflow = get_all_transactions(page, per_page, status, transaction_type, category, bank_name, receiver)
-        return render_template("admin_temp/all_transactions.html",
-                               all_transactions=True, paginated_transactions=transactions,
-                               all_transactions_count=all_trans_count,
-                               successful_transactions=success_counts,
-                               pending_transactions=pending_counts,
-                               failed_transactions=failed_counts,
-                               inflow_transactions=inflow,
-                               outflow_transactions=outflow)
+        (
+            transactions,
+            all_trans_count,
+            success_counts,
+            pending_counts,
+            failed_counts,
+            inflow,
+            outflow,
+        ) = get_all_transactions(
+            page, per_page, status, transaction_type, category, bank_name, receiver
+        )
+        return render_template(
+            "admin_temp/all_transactions.html",
+            all_transactions=True,
+            paginated_transactions=transactions,
+            all_transactions_count=all_trans_count,
+            successful_transactions=success_counts,
+            pending_transactions=pending_counts,
+            failed_transactions=failed_counts,
+            inflow_transactions=inflow,
+            outflow_transactions=outflow,
+        )
     except Exception as e:
         print(e, "error in get all user transactions")
         print(traceback.format_exc(), "TraceBack")
