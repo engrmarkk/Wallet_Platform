@@ -20,18 +20,35 @@ def account_lookup():
         data = request.get_json()
         account_number = data.get("account_number")
         if not account_number:
-            return jsonify({"success": False, "message": "Account number is required", "code": 0})
+            return jsonify(
+                {"success": False, "message": "Account number is required", "code": 0}
+            )
 
         details = get_account_number_details(account_number)
         if details:
-            return jsonify({"success": True, "message": "Account number found", "code": 1,
-                            "account_details": {
-                                "account_name": f"{details.last_name} {details.first_name}".title(),
-                                "account_number": details.account_number
-                            }})
+            return jsonify(
+                {
+                    "success": True,
+                    "message": "Account number found",
+                    "code": 1,
+                    "account_details": {
+                        "account_name": f"{details.last_name} {details.first_name}".title(),
+                        "account_number": details.account_number,
+                    },
+                }
+            )
         else:
-            return jsonify({"success": False, "message": "Account number not found", "code": 0,
-                            "account_details": {}}), 400
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Account number not found",
+                        "code": 0,
+                        "account_details": {},
+                    }
+                ),
+                400,
+            )
 
     except Exception as e:
         print(e)
@@ -51,22 +68,38 @@ def transfer_in():
         description = data.get("narration")
         bank_name = data.get("bank_name")
         if not account_number:
-            return jsonify({"success": False, "message": "Account number is required", "code": 0})
+            return jsonify(
+                {"success": False, "message": "Account number is required", "code": 0}
+            )
 
         if not amount:
-            return jsonify({"success": False, "message": "Amount is required", "code": 0})
+            return jsonify(
+                {"success": False, "message": "Amount is required", "code": 0}
+            )
 
         if not sender_account:
-            return jsonify({"success": False, "message": "Sender account number is required", "code": 0})
+            return jsonify(
+                {
+                    "success": False,
+                    "message": "Sender account number is required",
+                    "code": 0,
+                }
+            )
 
         if not sender_name:
-            return jsonify({"success": False, "message": "Sender name is required", "code": 0})
+            return jsonify(
+                {"success": False, "message": "Sender name is required", "code": 0}
+            )
 
         if not account_name:
-            return jsonify({"success": False, "message": "Account name is required", "code": 0})
+            return jsonify(
+                {"success": False, "message": "Account name is required", "code": 0}
+            )
 
         if not bank_name:
-            return jsonify({"success": False, "message": "Bank name is required", "code": 0})
+            return jsonify(
+                {"success": False, "message": "Bank name is required", "code": 0}
+            )
 
         details = get_account_number_details(account_number)
         trans_ref = generate_transaction_ref("TopUp")
@@ -74,15 +107,22 @@ def transfer_in():
         if details:
             balance_before_topup = details.account_balance
             balance = balance_before_topup + amount
-            trans = save_transfer_in_transactions(transaction_type="CRT", transaction_amount=amount,
-                                                  user_id=details.id, balance=balance,
-                                                  description=description or "TopUp",
-                                                  category=get_cat("Wallet-Topup"),
-                                                  transaction_ref=trans_ref, session_id=sess_id,
-                                                  sender_account=str(sender_account),
-                                                  receiver_account=str(account_number), sender=sender_name.title(),
-                                                  receiver=f"{details.last_name} {details.first_name}".title(),
-                                                  status="Success", bank_name=bank_name.title())
+            trans = save_transfer_in_transactions(
+                transaction_type="CRT",
+                transaction_amount=amount,
+                user_id=details.id,
+                balance=balance,
+                description=description or "TopUp",
+                category=get_cat("Wallet-Topup"),
+                transaction_ref=trans_ref,
+                session_id=sess_id,
+                sender_account=str(sender_account),
+                receiver_account=str(account_number),
+                sender=sender_name.title(),
+                receiver=f"{details.last_name} {details.first_name}".title(),
+                status="Success",
+                bank_name=bank_name.title(),
+            )
             details.account_balance = balance
             db.session.commit()
 
@@ -107,19 +147,37 @@ def transfer_in():
             except Exception as e:
                 print(e, "ERROR")
 
-            return jsonify({"success": True, "message": "Transfer in successful", "code": 1,
-                            "transaction": {
-                                "receiver_account_name": f"{details.last_name} {details.first_name}",
-                                "receiver_account_number": details.account_number,
-                                "sender_account_name": sender_name,
-                                "sender_account_number": sender_account,
-                                "session_id": sess_id,
-                                "amount": amount,
-                                "date": trans.date_posted.strftime("%d-%m-%Y %H:%M:%S"),
-                            }}), 200
+            return (
+                jsonify(
+                    {
+                        "success": True,
+                        "message": "Transfer in successful",
+                        "code": 1,
+                        "transaction": {
+                            "receiver_account_name": f"{details.last_name} {details.first_name}",
+                            "receiver_account_number": details.account_number,
+                            "sender_account_name": sender_name,
+                            "sender_account_number": sender_account,
+                            "session_id": sess_id,
+                            "amount": amount,
+                            "date": trans.date_posted.strftime("%d-%m-%Y %H:%M:%S"),
+                        },
+                    }
+                ),
+                200,
+            )
         else:
-            return jsonify({"success": False, "message": "Transfer in failed", "code": 0,
-                            "transaction": {}}), 400
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Transfer in failed",
+                        "code": 0,
+                        "transaction": {},
+                    }
+                ),
+                400,
+            )
 
     except Exception as e:
         print(e)
