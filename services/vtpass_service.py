@@ -36,9 +36,7 @@ class VtpassService(VtpassBase):
     def service_identifier(self, service_id):
         try:
             url = self.base_url + f"/api/services?identifier={service_id}"
-            response = requests.get(
-                url, self.set_headers()
-            )
+            response = requests.get(url, self.set_headers())
             response.raise_for_status()
             return response.json()
         except Exception as e:
@@ -48,9 +46,7 @@ class VtpassService(VtpassBase):
     def variation_codes(self, service_id):
         try:
             url = self.base_url + f"/api/service-variations?serviceID={service_id}"
-            response = requests.get(
-                url, self.set_headers()
-            )
+            response = requests.get(url, self.set_headers())
             response.raise_for_status()
             return response.json()
         except Exception as e:
