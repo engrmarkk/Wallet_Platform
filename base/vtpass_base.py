@@ -30,7 +30,7 @@ class VtpassBase:
             "Content-Type": "application/json",
             "Authorization": self.test_auth,
             "api-key": self.api_key,
-            "secret-key": self.secret_key
+            "secret-key": self.secret_key,
         }
 
         return headers
