@@ -32,7 +32,12 @@ from routes.auth import login
 from passlib.hash import pbkdf2_sha256 as hasher
 import random
 import string
-from utils import generate_session_id, generate_transaction_ref, get_uri, authenticate_auth_code
+from utils import (
+    generate_session_id,
+    generate_transaction_ref,
+    get_uri,
+    authenticate_auth_code,
+)
 from paystack.paystack_endpoint import PaystackEndpoints
 
 view = Blueprint("view", __name__, template_folder="../templates")
@@ -134,8 +139,15 @@ def account():
             session["alert"] = "File is too large. Maximum file size is 1MB."
             session["bg_color"] = "danger"
             return redirect(url_for("view.account"))
-    return render_template("account.html", pinset=pinset, date=x, form=form,
-                           alert=alert, bg_color=bg_color, uri=uri)
+    return render_template(
+        "account.html",
+        pinset=pinset,
+        date=x,
+        form=form,
+        alert=alert,
+        bg_color=bg_color,
+        uri=uri,
+    )
 
 
 @view.route("/transaction-history")
@@ -167,9 +179,11 @@ def showtransaction():
             Transaction.user_id == current_user.id,
             func.lower(Transaction.category) == category_.lower() if category else True,
             func.lower(Transaction.status) == status_.lower() if status else True,
-            func.lower(Transaction.transaction_type) == transaction_type.lower()
-            if transaction_type
-            else True,
+            (
+                func.lower(Transaction.transaction_type) == transaction_type.lower()
+                if transaction_type
+                else True
+            ),
             func.lower(Transaction.transaction_ref) == ref.lower() if ref else True,
         )
         .order_by(Transaction.date_posted.desc())
@@ -195,7 +209,11 @@ def home():
     form = ConfirmAccount()
     banks = pay_stack.list_banks()
     beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
-    balance = f"{current_user.panic_balance:,.2f}" if current_user.panic_mode and current_user.has_set_panic else f"{current_user.account_balance:,.2f}"
+    balance = (
+        f"{current_user.panic_balance:,.2f}"
+        if current_user.panic_mode and current_user.has_set_panic
+        else f"{current_user.account_balance:,.2f}"
+    )
     pinset = current_user.pin_set
 
     alert = session.pop("alert", None)
@@ -229,7 +247,7 @@ def home():
         pinset=pinset,
         banks=banks["data"],
         alert=alert,
-        bg_color=bg_color
+        bg_color=bg_color,
     )
 
 
@@ -257,8 +275,9 @@ def create_transfer_pin():
             session["alert"] = "Transfer pin created successfully"
             session["bg_color"] = "success"
             return redirect(url_for("view.home"))
-    return render_template("create_transfer_pin.html", date=x, form=form,
-                           alert=alert, bg_color=bg_color)
+    return render_template(
+        "create_transfer_pin.html", date=x, form=form, alert=alert, bg_color=bg_color
+    )
 
 
 # create panic password
@@ -293,7 +312,9 @@ def create_panic_password():
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.create_panic_password"))
             if check_password_hash(current_user.password, panic_password):
-                session["alert"] = "Panic password cannot be the same as your login password"
+                session["alert"] = (
+                    "Panic password cannot be the same as your login password"
+                )
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.create_panic_password"))
             current_user.panic_password = generate_password_hash(panic_password)
@@ -303,8 +324,9 @@ def create_panic_password():
             session["alert"] = "Panic password created successfully"
             session["bg_color"] = "success"
             return redirect(url_for("view.home"))
-        return render_template("create_panic_password.html", date=x,
-                               alert=alert, bg_color=bg_color)
+        return render_template(
+            "create_panic_password.html", date=x, alert=alert, bg_color=bg_color
+        )
     except Exception as e:
         print(e, "error in create panic password")
 
@@ -381,39 +403,76 @@ def transfer_to_bank():
         if not amount:
             alert = "Please enter amount"
             bg_color = "danger"
-            return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                    account_number=account_number, bank_name=bank_name,
-                                    alert=alert, bg_color=bg_color))
+            return redirect(
+                url_for(
+                    "view.transfer_to_bank",
+                    bank_code=bank_code,
+                    account_number=account_number,
+                    bank_name=bank_name,
+                    alert=alert,
+                    bg_color=bg_color,
+                )
+            )
         if not transaction_pin:
             alert = "Please enter your transaction pin"
             bg_color = "danger"
-            return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                    account_number=account_number, bank_name=bank_name,
-                                    alert=alert, bg_color=bg_color))
+            return redirect(
+                url_for(
+                    "view.transfer_to_bank",
+                    bank_code=bank_code,
+                    account_number=account_number,
+                    bank_name=bank_name,
+                    alert=alert,
+                    bg_color=bg_color,
+                )
+            )
 
         if not hasher.verify(transaction_pin, current_user.transaction_pin):
             alert = "Invalid transaction pin"
             bg_color = "danger"
-            return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                    account_number=account_number, bank_name=bank_name,
-                                    alert=alert, bg_color=bg_color))
+            return redirect(
+                url_for(
+                    "view.transfer_to_bank",
+                    bank_code=bank_code,
+                    account_number=account_number,
+                    bank_name=bank_name,
+                    alert=alert,
+                    bg_color=bg_color,
+                )
+            )
 
         if current_user.panic_mode:
             print("PANIC MODE")
-            half_of_panic_balance = current_user.panic_balance/2
+            half_of_panic_balance = current_user.panic_balance / 2
             if float(amount) > half_of_panic_balance:
-                session["alert"] = "Transaction limit exceeded, please try a lower amount"
+                session["alert"] = (
+                    "Transaction limit exceeded, please try a lower amount"
+                )
                 session["bg_color"] = "danger"
-                return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                        account_number=account_number, bank_name=bank_name,
-                                        alert=alert, bg_color=bg_color))
+                return redirect(
+                    url_for(
+                        "view.transfer_to_bank",
+                        bank_code=bank_code,
+                        account_number=account_number,
+                        bank_name=bank_name,
+                        alert=alert,
+                        bg_color=bg_color,
+                    )
+                )
             if float(amount) > current_user.account_balance:
                 print("INSUFFICIENT FUNDS: PANIC MODE")
                 session["alert"] = "Network Error"
                 session["bg_color"] = "danger"
-                return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                        account_number=account_number, bank_name=bank_name,
-                                        alert=alert, bg_color=bg_color))
+                return redirect(
+                    url_for(
+                        "view.transfer_to_bank",
+                        bank_code=bank_code,
+                        account_number=account_number,
+                        bank_name=bank_name,
+                        alert=alert,
+                        bg_color=bg_color,
+                    )
+                )
 
             trans_ref = generate_transaction_ref("Transfer")
             sess_id = generate_session_id()
@@ -427,9 +486,16 @@ def transfer_to_bank():
             if float(amount) > current_user.account_balance:
                 alert = "Insufficient funds"
                 bg_color = "danger"
-                return redirect(url_for("view.transfer_to_bank", bank_code=bank_code,
-                                        account_number=account_number, bank_name=bank_name,
-                                        alert=alert, bg_color=bg_color))
+                return redirect(
+                    url_for(
+                        "view.transfer_to_bank",
+                        bank_code=bank_code,
+                        account_number=account_number,
+                        bank_name=bank_name,
+                        alert=alert,
+                        bg_color=bg_color,
+                    )
+                )
 
             trans_ref = generate_transaction_ref("Transfer")
             sess_id = generate_session_id()
@@ -438,16 +504,22 @@ def transfer_to_bank():
             balance = current_user.account_balance
             balance -= float(amount)
 
-        trans = save_transfer_in_transactions(transaction_type="DBT", transaction_amount=amount,
-                                              user_id=current_user.id, balance=balance,
-                                              description=narration or "Transfer",
-                                              category=get_cat("Transfer"),
-                                              transaction_ref=trans_ref, session_id=sess_id,
-                                              sender_account=str(current_user.account_number),
-                                              receiver_account=str(account_number),
-                                              sender=f"{current_user.last_name} {current_user.first_name}".title(),
-                                              receiver=account_name.title(),
-                                              status="Success", bank_name=bank_name.title())
+        trans = save_transfer_in_transactions(
+            transaction_type="DBT",
+            transaction_amount=amount,
+            user_id=current_user.id,
+            balance=balance,
+            description=narration or "Transfer",
+            category=get_cat("Transfer"),
+            transaction_ref=trans_ref,
+            session_id=sess_id,
+            sender_account=str(current_user.account_number),
+            receiver_account=str(account_number),
+            sender=f"{current_user.last_name} {current_user.first_name}".title(),
+            receiver=account_name.title(),
+            status="Success",
+            bank_name=bank_name.title(),
+        )
         current_user.account_balance = balance
         db.session.commit()
 
@@ -484,9 +556,15 @@ def transfer_to_bank():
                 date=trans.date_posted.strftime("%d %b, %Y %H:%M:%S"),
             )
         )
-    return render_template("transfer_to_bank.html", date=x, account_name=account_name,
-                           bank_name=bank_name, account_number=account_number,
-                           alert=alert, bg_color=bg_color)
+    return render_template(
+        "transfer_to_bank.html",
+        date=x,
+        account_name=account_name,
+        bank_name=bank_name,
+        account_number=account_number,
+        alert=alert,
+        bg_color=bg_color,
+    )
 
 
 @view.route("/pay/<acct>/", methods=["GET", "POST"])
@@ -511,7 +589,9 @@ def pay(acct):
                 panic = True
                 half_of_panic_balance = current_user.panic_balance / 2
                 if float(amount) > half_of_panic_balance:
-                    session["alert"] = "Transaction limit exceeded, please try a lower amount"
+                    session["alert"] = (
+                        "Transaction limit exceeded, please try a lower amount"
+                    )
                     session["bg_color"] = "danger"
                     return redirect(url_for("view.pay", acct=acct))
                 if float(amount) > current_user.account_balance:
@@ -587,7 +667,9 @@ def pay(acct):
             )
             db.session.add_all([transact1, transact2])
             db.session.commit()
-            session["alert"] = f"{amount} Naira has been sent to {user1.last_name.title()} {user1.first_name.title()}"
+            session["alert"] = (
+                f"{amount} Naira has been sent to {user1.last_name.title()} {user1.first_name.title()}"
+            )
             session["bg_color"] = "success"
 
             # ALERTS WHEN FUNDS HAS BEEN SENT
@@ -645,8 +727,13 @@ def pay(acct):
                 )
             )
     return render_template(
-        "pay.html", date=x, form=form, user1=user, beneficial=beneficial,
-        alert=alert, bg_color=bg_color
+        "pay.html",
+        date=x,
+        form=form,
+        user1=user,
+        beneficial=beneficial,
+        alert=alert,
+        bg_color=bg_color,
     )
 
 
@@ -673,8 +760,9 @@ def reset_password():
                 session["bg_color"] = "success"
                 return redirect(url_for("view.reset_password"))
 
-    return render_template("reset.html", date=x, form=form,
-                           alert=alert, bg_color=bg_color)
+    return render_template(
+        "reset.html", date=x, form=form, alert=alert, bg_color=bg_color
+    )
 
 
 @view.route("/reset-password-verified/<token>", methods=["GET", "POST"])
@@ -696,8 +784,9 @@ def reset_password_verified(token):
                 session["alert"] = "Password changed successfully"
                 session["bg_color"] = "success"
                 return redirect(url_for("auth.login"))
-    return render_template("reset_verified.html", date=x, form=form,
-                           alert=alert, bg_color=bg_color)
+    return render_template(
+        "reset_verified.html", date=x, form=form, alert=alert, bg_color=bg_color
+    )
 
 
 @view.route("/create-card/", methods=["GET", "POST"])
@@ -723,8 +812,7 @@ def create_card():
         session["alert"] = "Card created successfully"
         session["bg_color"] = "success"
         return redirect(url_for("view.card"))
-    return render_template("create_card.html", date=x,
-                           alert=alert, bg_color=bg_color)
+    return render_template("create_card.html", date=x, alert=alert, bg_color=bg_color)
 
 
 @view.route("/card/", methods=["GET", "POST"])
@@ -765,7 +853,9 @@ def contact():
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.contact"))
 
-    return render_template("contact.html", form=form, date=x, alert=alert, bg_color=bg_color)
+    return render_template(
+        "contact.html", form=form, date=x, alert=alert, bg_color=bg_color
+    )
 
 
 @view.route("/team")
@@ -816,9 +906,12 @@ def faq():
     return render_template("faq.html", date=x)
 
 
-@view.route("/completed/<amount>/<receiver>/<sender>/<sender_acct>/<bank_name>/<receiver_acct>/<date>")
-def transaction_successful(amount, receiver,
-                           sender, sender_acct, bank_name, receiver_acct, date):
+@view.route(
+    "/completed/<amount>/<receiver>/<sender>/<sender_acct>/<bank_name>/<receiver_acct>/<date>"
+)
+def transaction_successful(
+    amount, receiver, sender, sender_acct, bank_name, receiver_acct, date
+):
     return render_template(
         "trans_success.html",
         date=date,
@@ -891,10 +984,12 @@ def savings():
                 alert = "Saved successfully"
                 bg_color = "success"
                 savings_interest()
-            return render_template("savings.html", date=x, form=form, n=n,
-                                   alert=alert, bg_color=bg_color)
-    return render_template("savings.html", date=x, form=form, n=n,
-                           alert=alert, bg_color=bg_color)
+            return render_template(
+                "savings.html", date=x, form=form, n=n, alert=alert, bg_color=bg_color
+            )
+    return render_template(
+        "savings.html", date=x, form=form, n=n, alert=alert, bg_color=bg_color
+    )
 
 
 @view.route("/withdraw", methods=["GET", "POST"])
