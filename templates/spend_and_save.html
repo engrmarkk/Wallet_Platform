@@ -1,0 +1,141 @@
+{% extends 'base.html' %} {% block content %}
+<div>
+  <!-- Flash messages -->
+  {% with messages = get_flashed_messages(with_categories=true) %} {% if
+  messages %} {% for category, message in messages %}
+  <div
+    class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
+    role="alert"
+    style="height: 3.5rem; transition: 0.6s"
+  >
+    {% if category=='success' %}
+    <div class="small text-center">
+      <i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}
+    </div>
+    {% else %}
+    <div class="small text-center">
+      <i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}
+    </div>
+    {% endif %}
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="alert"
+      aria-label="Close"
+    ></button>
+  </div>
+  {% endfor %} {% endif %} {% endwith %}
+
+  <div
+    class="card rounded-circle p-4 mt-5"
+    style="
+      max-width: 14rem;
+      height: 14rem;
+      margin: auto;
+      background: linear-gradient(158deg, #1edf00 -45%, #2e8bb6);
+    "
+  >
+    <p class="m-auto text-white text-center">
+      Savings<br />
+      <span class="h4 fw-bold"
+        ><del style="text-decoration-style: double">N</del> 
+        {{ current_user.savings }} </span>
+    </p>
+  </div>
+
+  <a href="{{ url_for('view.enable_spend_and_save') }}" class="btn mt-2 btn-{% if current_user.enabled_spend_save %}danger{% else %}success{% endif %} m-auto d-flex" style="width: fit-content;">
+    {% if current_user.enabled_spend_save %}Disable{% else %}Enable{% endif %}
+  </a>
+  <button class="text-center btn btn-success d-flex m-auto mt-2" id="openform"
+  data-bs-toggle="modal"
+  data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
+  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+  >
+    Withdraw
+  </button>
+
+  
+
+  <!-- end of form -->
+
+  <!-- overlay -->
+  {% if not n %}
+  <div class="savealert-container">
+    <div class="savealert">
+      <div>10% of your spendings on transfers will be saved</div>
+      <button class="btn btn-info mr-auto mt-3" id="savebtn" autofocus>OK</button>
+    </div>
+  </div>
+  {% endif %}
+
+
+
+
+
+
+      <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+  <div class=" modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title fs-5" id="staticBackdropLabel">Amount</h1>
+      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+      <!-- form -->
+  <form
+      action=""
+      method="post"
+      class="p-3 mt-3 m-auto"
+    >
+      {{ form.hidden_tag() }}
+      <!-- For Amount validations -->
+      {{ form.amount(class="form-control p-2 ", required=False, placeholder='Enter amount') }}
+      
+      {% if form.amount.errors %}
+      {% for error in form.amount.errors %}
+      <small class="text-danger mt-1"
+        ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
+        }}</small
+      ><br>
+      {% endfor %} 
+      {% endif %}
+            <!-- For submit button -->
+      {{ form.submit(size=20, class='pay-btn btn btn-success mt-4 w-100 p-1')}}
+    </form>
+
+  </div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  <script>
+    const disapearBtn = document.querySelector("#savebtn");
+    const disapearMenu = document.querySelector(".savealert-container");
+
+    disapearBtn.addEventListener("click", () => {
+      disapearMenu.classList.add("disappear");
+    });
+  </script>
+</div>
+
+{% endblock content %}
