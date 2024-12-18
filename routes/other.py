@@ -992,6 +992,29 @@ def savings():
     )
 
 
+# spend and save
+@view.route("/spend", methods=["GET", "POST"])
+@login_required
+def spend_and_save():
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
+    form = SaveMoneyForm()
+    return render_template("spend_and_save.html",
+                           date=x, form=form,
+                           alert=alert, bg_color=bg_color)
+
+
+# enable or disable spend and save
+@view.route("/enable_spend_and_save", methods=["GET", "POST"])
+@login_required
+def enable_spend_and_save():
+    current_user.enabled_spend_save = not current_user.enabled_spend_save
+    db.session.commit()
+    session["alert"] = "Spend and save " + ("enabled" if current_user.enabled_spend_save else "disabled")
+    session["bg_color"] = "success"
+    return redirect(url_for("view.spend_and_save"))
+
+
 @view.route("/withdraw", methods=["GET", "POST"])
 @login_required
 def withdraw():
