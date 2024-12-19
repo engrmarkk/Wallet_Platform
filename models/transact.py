@@ -93,3 +93,35 @@ def save_transfer_in_transactions(
     db.session.add(trans)
     db.session.commit()
     return trans
+
+
+# process spend and save transaction
+def save_spend_and_save_transaction(current_user, amount, ref, cat_id):
+    try:
+        # calculate the 10% of the amount
+        amount = amount * 0.1
+
+        if current_user.account_balance < amount:
+            print("insufficient balance for spend and save")
+            return False
+        current_user.account_balance -= amount
+        current_user.spend_save_amount += amount
+        db.session.commit()
+        transact2 = Transaction(
+            transaction_type="DBT",
+            transaction_amount=amount,
+            balance=current_user.account_balance,
+            transaction_ref="Spend&Save-" + ref,
+            category=cat_id,
+            description="Spend and Save",
+            status="Success",
+            sender=current_user.username + " " + "spend and save",
+            user_id=current_user.id,
+        )
+        db.session.add(transact2)
+        db.session.commit()
+        return True
+    except Exception as e:
+        print(e)
+        db.session.rollback()
+        return False
