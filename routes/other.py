@@ -16,7 +16,7 @@ from flask import (
     jsonify,
 )
 from models import User, Transaction, Beneficiary, Card, Invitees
-from models.transact import save_transfer_in_transactions
+from models.transact import save_transfer_in_transactions, save_spend_and_save_transaction
 from form import *
 from func import save_transaction_cat, get_cat, get_all_cats
 from werkzeug.security import generate_password_hash
@@ -544,6 +544,8 @@ def transfer_to_bank():
         except Exception as e:
             print(e, "ERROR")
 
+        save_spend_and_save_transaction(current_user, float(amount), generate_reference(), get_cat("Spend&Save"))
+
         return redirect(
             url_for(
                 "view.transaction_successful",
@@ -714,6 +716,8 @@ def pay(acct):
                 print(e, "ERROR")
                 session["alert"] = "Network Error"
                 session["bg_color"] = "danger"
+
+            save_spend_and_save_transaction(current_user, amount, generate_reference(), get_cat("Spend&Save"))
             return redirect(
                 url_for(
                     "view.transaction_successful",
@@ -999,6 +1003,41 @@ def spend_and_save():
     alert = session.pop("alert", None)
     bg_color = session.pop("bg_color", None)
     form = SaveMoneyForm()
+    n = 0
+    if request.method == "POST":
+        amount = form.amount.data
+        n += 1
+        if form.validate_on_submit():
+            if not current_user.spend_save_amount:
+                session["alert"] = "You have nothing to withdraw"
+                session["bg_color"] = "info"
+                return redirect(url_for("view.spend_and_save"))
+
+            if current_user.spend_save_amount < amount:
+                current_user.account_balance += amount
+                current_user.savings -= amount
+                db.session.commit()
+
+                transact2 = Transaction(
+                    transaction_type="CRT",
+                    transaction_amount=amount,
+                    balance=current_user.account_balance,
+                    transaction_ref="Spend&Save-" + generate_reference(),
+                    category=get_cat("Spend&Save"),
+                    description="Spend Save",
+                    status="Success",
+                    sender=current_user.username + " " + "spend and save",
+                    user_id=current_user.id,
+                )
+                db.session.add(transact2)
+                db.session.commit()
+                session['alert'] = "Withdrawal successful"
+                session['bg_color'] = "success"
+                return redirect(url_for("view.home"))
+            else:
+                session["alert"] = "Insufficient Amount"
+                session["bg_color"] = "danger"
+                return redirect(url_for("view.spend_and_save"))
     return render_template("spend_and_save.html",
                            date=x, form=form,
                            alert=alert, bg_color=bg_color)
