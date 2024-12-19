@@ -26,7 +26,8 @@ class User(db.Model, UserMixin):
     panic_balance = db.Column(db.Float, default=0)
     panic_mode = db.Column(db.Boolean, default=False)
     has_set_panic = db.Column(db.Boolean, default=False)
-    savings = db.Column(db.Integer, default=0)
+    savings = db.Column(db.Float, default=0)
+    spend_save_amount = db.Column(db.Float, default=0)
     invite_earn = db.Column(db.Integer, nullable=False, default=0)
     invited_by = db.Column(db.BigInteger, nullable=False, default=0)
     photo = db.Column(
