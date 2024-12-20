@@ -113,7 +113,7 @@ def save_spend_and_save_transaction(current_user, amount, ref, cat_id):
             balance=current_user.account_balance,
             transaction_ref="Spend&Save-" + ref,
             category=cat_id,
-            description="Spend and Save",
+            description="Spend and Save on Transfers",
             status="Success",
             sender=current_user.username + " " + "spend and save",
             user_id=current_user.id,
