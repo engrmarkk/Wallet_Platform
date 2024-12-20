@@ -1015,7 +1015,7 @@ def spend_and_save():
 
             if current_user.spend_save_amount < amount:
                 current_user.account_balance += amount
-                current_user.savings -= amount
+                current_user.spend_save_amount -= amount
                 db.session.commit()
 
                 transact2 = Transaction(
@@ -1024,7 +1024,7 @@ def spend_and_save():
                     balance=current_user.account_balance,
                     transaction_ref="Spend&Save-" + generate_reference(),
                     category=get_cat("Spend&Save"),
-                    description="Spend Save",
+                    description="Spend Save Withdrawal",
                     status="Success",
                     sender=current_user.username + " " + "spend and save",
                     user_id=current_user.id,
@@ -1047,6 +1047,26 @@ def spend_and_save():
 @view.route("/enable_spend_and_save", methods=["GET", "POST"])
 @login_required
 def enable_spend_and_save():
+    # If the user has enabled spend and save wants to disable, send his money into his account
+    if current_user.enabled_spend_save and current_user.spend_save_amount:
+        amount = current_user.spend_save_amount
+        current_user.account_balance += amount
+        current_user.spend_save_amount -= amount
+        db.session.commit()
+
+        transact2 = Transaction(
+            transaction_type="CRT",
+            transaction_amount=amount,
+            balance=current_user.account_balance,
+            transaction_ref="Spend&Save-" + generate_reference(),
+            category=get_cat("Spend&Save"),
+            description="Spend Save Disabled Withdrawal",
+            status="Success",
+            sender=current_user.username + " " + "spend and save",
+            user_id=current_user.id,
+        )
+        db.session.add(transact2)
+        db.session.commit()
     current_user.enabled_spend_save = not current_user.enabled_spend_save
     db.session.commit()
     session["alert"] = "Spend and save " + ("enabled" if current_user.enabled_spend_save else "disabled")
