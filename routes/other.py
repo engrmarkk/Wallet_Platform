@@ -544,7 +544,8 @@ def transfer_to_bank():
         except Exception as e:
             print(e, "ERROR")
 
-        save_spend_and_save_transaction(current_user, float(amount), generate_reference(), get_cat("Spend&Save"))
+        if current_user.enabled_spend_save:
+            save_spend_and_save_transaction(current_user, float(amount), generate_reference(), get_cat("Spend&Save"))
 
         return redirect(
             url_for(
@@ -717,7 +718,8 @@ def pay(acct):
                 session["alert"] = "Network Error"
                 session["bg_color"] = "danger"
 
-            save_spend_and_save_transaction(current_user, amount, generate_reference(), get_cat("Spend&Save"))
+            if current_user.enabled_spend_save:
+                save_spend_and_save_transaction(current_user, amount, generate_reference(), get_cat("Spend&Save"))
             return redirect(
                 url_for(
                     "view.transaction_successful",
