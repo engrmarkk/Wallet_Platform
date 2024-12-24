@@ -46,7 +46,7 @@
   <a href="{{ url_for('view.enable_spend_and_save') }}" class="btn mt-2 btn-{% if current_user.enabled_spend_save %}danger{% else %}success{% endif %} m-auto d-flex" style="width: fit-content;">
     {% if current_user.enabled_spend_save %}Disable{% else %}Enable{% endif %}
   </a>
-  {% if not current_user.enabled_spend_save %}
+  {% if current_user.enabled_spend_save and current_user.spend_save_amount %}
   <button class="text-center btn btn-success d-flex m-auto mt-2" id="openform"
   data-bs-toggle="modal"
   data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
