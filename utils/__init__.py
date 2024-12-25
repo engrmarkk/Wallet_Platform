@@ -10,13 +10,29 @@ import re
 def determine_purchase_type(service_id):
     if service_id.lower() in ["mtn", "glo", "etisalat", "airtel"]:
         return "airtime"
-    elif service_id.lower() in ["mtn-data", "glo-data", "etisalat-data", "airtel-data", "smiles", "spectranet"]:
+    elif service_id.lower() in [
+        "mtn-data",
+        "glo-data",
+        "etisalat-data",
+        "airtel-data",
+        "smiles",
+        "spectranet",
+    ]:
         return "data"
-    elif service_id.lower() in ["ikeja-electric", "eko-electric", "abuja-electric", "kano-electric",
-                                "portharcourt-electric",
-                                "jos-electric", "kaduna-electric", "enugu-electric", "ibadan-electric",
-                                "benin-electric",
-                                "aba-electric", "yola-electric"]:
+    elif service_id.lower() in [
+        "ikeja-electric",
+        "eko-electric",
+        "abuja-electric",
+        "kano-electric",
+        "portharcourt-electric",
+        "jos-electric",
+        "kaduna-electric",
+        "enugu-electric",
+        "ibadan-electric",
+        "benin-electric",
+        "aba-electric",
+        "yola-electric",
+    ]:
         return "electricity"
     elif service_id.lower() in ["dstv", "gotv", "startimes", "showmax"]:
         return "cable"
@@ -84,7 +100,9 @@ def generate_secret_key():
 
 
 def generate_uri(secret_key, user, issuer_name="EasyTransact"):
-    return pyotp.totp.TOTP(secret_key).provisioning_uri(name=user.email, issuer_name=issuer_name)
+    return pyotp.totp.TOTP(secret_key).provisioning_uri(
+        name=user.email, issuer_name=issuer_name
+    )
 
 
 def get_uri(user):
@@ -96,10 +114,10 @@ def get_uri(user):
     db.session.commit()
 
     res = {
-        'uri': uri,
-        'secret': user.secret_2fa,
-        'issuer_name': 'EasyTransact',
-        'account_name': user.email
+        "uri": uri,
+        "secret": user.secret_2fa,
+        "issuer_name": "EasyTransact",
+        "account_name": user.email,
     }
 
     return res
@@ -114,7 +132,7 @@ def authenticate_auth_code(user, auth_code):
 
 
 def validate_email(email):
-    regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+    regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
     if re.fullmatch(regex, email):
         return True
     else:
@@ -130,6 +148,6 @@ def validate_password(password):
         return "Password must contain at least one lowercase letter"
     if not re.search("[0-9]", password):
         return "Password must contain at least one digit"
-    if not re.search("[!@#$%^&*(),.?\":{}|<>]", password):
+    if not re.search('[!@#$%^&*(),.?":{}|<>]', password):
         return "Password must contain at least one special character."
     return None
