@@ -9,6 +9,7 @@ from models import (
     TransactionCategories,
     UserSession,
     Admin,
+    BankBeneficiary
 )
 from dotenv import load_dotenv
 
@@ -30,6 +31,7 @@ def make_shell_context():
         "TransactionCategories": TransactionCategories,
         "UserSession": UserSession,
         "Admin": Admin,
+        "BankBeneficiary": BankBeneficiary
     }
 
 
