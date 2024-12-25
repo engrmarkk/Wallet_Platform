@@ -15,8 +15,19 @@ from flask import (
     make_response,
     jsonify,
 )
-from models import User, Transaction, Beneficiary, Card, Invitees, save_bank_beneficiary, get_one_bank_beneficiary
-from models.transact import save_transfer_in_transactions, save_spend_and_save_transaction
+from models import (
+    User,
+    Transaction,
+    Beneficiary,
+    Card,
+    Invitees,
+    save_bank_beneficiary,
+    get_one_bank_beneficiary,
+)
+from models.transact import (
+    save_transfer_in_transactions,
+    save_spend_and_save_transaction,
+)
 from form import *
 from func import save_transaction_cat, get_cat, get_all_cats
 from werkzeug.security import generate_password_hash
@@ -556,10 +567,14 @@ def transfer_to_bank():
             print(e, "ERROR")
 
         if current_user.enabled_spend_save:
-            save_spend_and_save_transaction(current_user, float(amount), generate_reference(), get_cat("Spend&Save"))
+            save_spend_and_save_transaction(
+                current_user, float(amount), generate_reference(), get_cat("Spend&Save")
+            )
         if add_ben:
             print("ADD BENEFICIARY")
-            save_bank_beneficiary(account_name, account_number, bank_name, bank_code, current_user.id)
+            save_bank_beneficiary(
+                account_name, account_number, bank_name, bank_code, current_user.id
+            )
 
         return redirect(
             url_for(
@@ -734,7 +749,9 @@ def pay(acct):
                 session["bg_color"] = "danger"
 
             if current_user.enabled_spend_save:
-                save_spend_and_save_transaction(current_user, amount, generate_reference(), get_cat("Spend&Save"))
+                save_spend_and_save_transaction(
+                    current_user, amount, generate_reference(), get_cat("Spend&Save")
+                )
             return redirect(
                 url_for(
                     "view.transaction_successful",
@@ -1048,16 +1065,16 @@ def spend_and_save():
                 )
                 db.session.add(transact2)
                 db.session.commit()
-                session['alert'] = "Withdrawal successful"
-                session['bg_color'] = "success"
+                session["alert"] = "Withdrawal successful"
+                session["bg_color"] = "success"
                 return redirect(url_for("view.home"))
             else:
                 session["alert"] = "Insufficient Amount"
                 session["bg_color"] = "danger"
                 return redirect(url_for("view.spend_and_save"))
-    return render_template("spend_and_save.html",
-                           date=x, form=form,
-                           alert=alert, bg_color=bg_color)
+    return render_template(
+        "spend_and_save.html", date=x, form=form, alert=alert, bg_color=bg_color
+    )
 
 
 # enable or disable spend and save
@@ -1086,7 +1103,9 @@ def enable_spend_and_save():
         db.session.commit()
     current_user.enabled_spend_save = not current_user.enabled_spend_save
     db.session.commit()
-    session["alert"] = "Spend and save " + ("enabled" if current_user.enabled_spend_save else "disabled")
+    session["alert"] = "Spend and save " + (
+        "enabled" if current_user.enabled_spend_save else "disabled"
+    )
     session["bg_color"] = "success"
     return redirect(url_for("view.spend_and_save"))
 
