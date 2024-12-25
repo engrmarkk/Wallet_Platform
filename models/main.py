@@ -43,6 +43,9 @@ class User(db.Model, UserMixin):
     active = db.Column(db.Boolean, default=True)
     transacts = db.relationship("Transaction", backref="author", lazy=True)
     beneficiaries = db.relationship("Beneficiary", backref="user_account", lazy=True)
+    bank_beneficiaries = db.relationship(
+        "BankBeneficiary", backref="user_account", lazy=True
+    )
     card = db.relationship(
         "Card", backref="card_owner", cascade="all, delete", lazy=True
     )
