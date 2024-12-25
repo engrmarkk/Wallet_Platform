@@ -1,7 +1,7 @@
 from extensions import db, login_manager, mail, migrate, moment
 from flask import redirect, url_for, session, render_template, Flask, sessions
 from routes import AuthenticationBlueprint, ViewBlueprint, BillsBlueprint, ExternalBlueprint, AdminBlueprint
-from models import User, Transaction, Beneficiary, Card, Invitees, TransactionCategories, Admin
+from models import User, Transaction, Beneficiary, Card, Invitees, TransactionCategories, Admin, BankBeneficiary
 from datetime import timedelta
 import os
 import flask
