@@ -39,7 +39,7 @@
       Savings<br />
       <span class="h4 fw-bold"
         ><del style="text-decoration-style: double">N</del> 
-        {{ current_user.spend_save_amount }} </span>
+        {{ "{:,.2f}".format(current_user.spend_save_amount) }}</span>
     </p>
   </div>
 
