@@ -1,7 +1,22 @@
 from extensions import db, login_manager, mail, migrate, moment
 from flask import redirect, url_for, session, render_template, Flask, sessions
-from routes import AuthenticationBlueprint, ViewBlueprint, BillsBlueprint, ExternalBlueprint, AdminBlueprint
-from models import User, Transaction, Beneficiary, Card, Invitees, TransactionCategories, Admin, BankBeneficiary
+from routes import (
+    AuthenticationBlueprint,
+    ViewBlueprint,
+    BillsBlueprint,
+    ExternalBlueprint,
+    AdminBlueprint,
+)
+from models import (
+    User,
+    Transaction,
+    Beneficiary,
+    Card,
+    Invitees,
+    TransactionCategories,
+    Admin,
+    BankBeneficiary,
+)
 from datetime import timedelta
 import os
 import flask
@@ -9,11 +24,13 @@ from flask_login import current_user
 from decouple import config
 from sqlalchemy.exc import OperationalError
 
-db_name = 'wallet'
-default_uri = "postgres://{}:{}@{}/{}".format('postgres', 'password', 'localhost:5432', db_name)
-uri = config('DATABASE_URL')  # or other relevant config var
-if uri.startswith('postgres://'):
-    uri = uri.replace('postgres://', 'postgresql://', 1)
+db_name = "wallet"
+default_uri = "postgres://{}:{}@{}/{}".format(
+    "postgres", "password", "localhost:5432", db_name
+)
+uri = config("DATABASE_URL")  # or other relevant config var
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
 
 
 def create_app():
@@ -28,8 +45,8 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = uri
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["SECRET_KEY"] = "4f557e8e5eb51bfb7c42"
-    app.config['DEBUG'] = False
-    app.config['MAX_CONTENT_LENGTH'] = 1 * 1024 * 1024
+    app.config["DEBUG"] = False
+    app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024
     app.config["MAIL_SERVER"] = "smtp.gmail.com"
     app.config["MAIL_PORT"] = 465
     app.config["MAIL_USERNAME"] = os.getenv("EMAIL_USER")
@@ -90,19 +107,19 @@ def create_app():
 
     @app.errorhandler(404)
     def page_not_found(e):
-        return render_template('404.html'), 404
+        return render_template("404.html"), 404
 
     # 500
     @app.errorhandler(500)
     def internal_server_error(e):
         print(e, "error in 500")
-        return render_template('500.html'), 500
+        return render_template("500.html"), 500
 
     # operational error
     @app.errorhandler(OperationalError)
     def internal_server_error(e):
         print(e, "error in 500, OperationalError")
-        return render_template('500.html'), 500
+        return render_template("500.html"), 500
 
     # teardown request
     @app.teardown_request
