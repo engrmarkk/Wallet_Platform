@@ -50,17 +50,19 @@ class BankBeneficiary(db.Model, UserMixin):
 # save bank beneficiary
 def save_bank_beneficiary(full_name, account_number, bank_name, bank_code, user_id):
     try:
-        if BankBeneficiary.query.filter(BankBeneficiary.account_number==account_number,
-                                       BankBeneficiary.user_id==user_id,
-                                       BankBeneficiary.bank_code==bank_code,
-                                       BankBeneficiary.bank_name.ilike(f"%{bank_name}%")).first():
+        if BankBeneficiary.query.filter(
+            BankBeneficiary.account_number == account_number,
+            BankBeneficiary.user_id == user_id,
+            BankBeneficiary.bank_code == bank_code,
+            BankBeneficiary.bank_name.ilike(f"%{bank_name}%"),
+        ).first():
             return None
         bank_ben = BankBeneficiary(
             full_name=full_name,
             account_number=account_number,
             bank_name=bank_name,
             bank_code=bank_code,
-            user_id=user_id
+            user_id=user_id,
         )
         bank_ben.save()
 
