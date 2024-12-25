@@ -15,7 +15,7 @@ from flask import (
     make_response,
     jsonify,
 )
-from models import User, Transaction, Beneficiary, Card, Invitees
+from models import User, Transaction, Beneficiary, Card, Invitees, save_bank_beneficiary, get_one_bank_beneficiary
 from models.transact import save_transfer_in_transactions, save_spend_and_save_transaction
 from form import *
 from func import save_transaction_cat, get_cat, get_all_cats
@@ -384,21 +384,32 @@ def transfer_to_bank():
     bank_code = request.args.get("bank_code")
     account_number = request.args.get("account_number")
     bank_name = request.args.get("bank_name")
+    bank_id = request.args.get("bank_id")
+    is_present = False
 
     alert = session.pop("alert", None)
     bg_color = session.pop("bg_color", None)
 
-    res, status_code = pay_stack.resolve_account(account_number, bank_code)
-    if status_code != 200:
-        session["alert"] = "Invalid account number"
-        session["bg_color"] = "danger"
-        return redirect(url_for("view.home"))
-    account_name = res["data"]["account_name"]
+    if bank_id:
+        res = get_one_bank_beneficiary(bank_id)
+        account_number = res.account_number
+        bank_name = res.bank_name
+        bank_code = res.bank_code
+        account_name = res.full_name
+        is_present = True
+    else:
+        res, status_code = pay_stack.resolve_account(account_number, bank_code)
+        if status_code != 200:
+            session["alert"] = "Invalid account number"
+            session["bg_color"] = "danger"
+            return redirect(url_for("view.home"))
+        account_name = res["data"]["account_name"]
 
     if request.method == "POST":
         transaction_pin = request.form.get("pin")
         narration = request.form.get("narration")
         amount = request.form.get("amount")
+        add_ben = request.form.get("add_ben", None)
 
         if not amount:
             alert = "Please enter amount"
@@ -546,6 +557,9 @@ def transfer_to_bank():
 
         if current_user.enabled_spend_save:
             save_spend_and_save_transaction(current_user, float(amount), generate_reference(), get_cat("Spend&Save"))
+        if add_ben:
+            print("ADD BENEFICIARY")
+            save_bank_beneficiary(account_name, account_number, bank_name, bank_code, current_user.id)
 
         return redirect(
             url_for(
@@ -565,6 +579,7 @@ def transfer_to_bank():
         account_name=account_name,
         bank_name=bank_name,
         account_number=account_number,
+        is_present=is_present,
         alert=alert,
         bg_color=bg_color,
     )
