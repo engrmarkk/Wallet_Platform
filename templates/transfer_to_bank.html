@@ -25,6 +25,14 @@
       <input type="number" name="amount" class="form-control text-center" placeholder="Enter Amount" required>
       <input type="text" name="narration" class="form-control text-center" placeholder="Enter Narration">
       <input type="text" name="pin" id="pin" class="form-control text-center" placeholder="Enter Transaction Pin" value="" required maxlength="4">
+<!--    add as beneficiary-->
+    {% if not is_present %}
+    <div class="form-check mt-2">
+  <input type="checkbox" class="form-check-input" name="add_ben" id="add_as_beneficiary" value="1">
+  <label class="form-check-label text-muted" for="add_as_beneficiary">Add as Beneficiary</label>
+</div>
+    {% endif %}
+
       </div>
   <div class="row">
   <div class="col-md-12">
