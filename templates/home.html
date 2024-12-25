@@ -301,11 +301,20 @@
           <input type="hidden" name="bank_name" id="bankNameInput">
           <!-- For account number validations -->
           <input type="text" name="account_number" id="" class="form-control mt-2 py-3 shadow-none bank_modal_form" placeholder="Enter account number" required maxlength="10">
+
+            {% if current_user.bank_beneficiaries %}
+           <div class="col-4 col-sm-3 col-md-3 mb-3 mt-3">
+          <a class="badge badge-pill badge-text-color text-success bg-white text-decoration-none thiss" data-bs-toggle="modal"
+              data-bs-target="#benModal" style="border: none;" type="button" id="dropdownMenuButton"
+              data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select Beneficiary
+          </a>
+      </div>
+          {% endif %}
       </div>
       <div class="modal-footer">
         <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
 
-        <button type="submit" class="btn primary-btn">Confirm account</button> 
+        <button type="submit" class="btn primary-btn">Confirm account</button>
       </div>
       </form>
 
@@ -313,6 +322,40 @@
   </div>
 </div>
 
+
+
+<div class="modal fade" id="benModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="benModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+    <div class=" modal-content bank_modal">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="benModalLabel">Select Beneficiary</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+          {% if current_user.bank_beneficiaries %}
+            {% for ben in current_user.bank_beneficiaries %}
+            <div class="d-flex justify-content-between list-group-item">
+                    <div class="d-flex flex-column">
+                      <p>{{ ben.full_name.title() }}
+                        <br>
+                        {{ ben.account_number}}
+                        {{ ben.bank_name}}
+                      </p>
+                    </div>
+                    <div>
+                      <a class="btn primary-btn btn-sm"
+                        href="{{ url_for('view.transfer_to_bank', bank_id=ben.id) }}">Select</a>
+                    </div>
+                  </div>
+            {% endfor %}
+          {% endif %}
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
