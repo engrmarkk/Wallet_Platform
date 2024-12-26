@@ -12,6 +12,7 @@ from models import (
     BankBeneficiary,
 )
 from dotenv import load_dotenv
+import os
 
 
 app = create_app()
@@ -36,7 +37,7 @@ def make_shell_context():
 
 
 if __name__ == "__main__":
-    app.secret_key = "super secret key"
+    app.secret_key = os.environ.get("SECRET_KEY")
     app.config["SESSION_TYPE"] = "filesystem"
     sess.init_app(app)
     app.run(debug=True, host="0.0.0.0", port=4000)
