@@ -151,3 +151,38 @@ def validate_password(password):
     if not re.search('[!@#$%^&*(),.?":{}|<>]', password):
         return "Password must contain at least one special character."
     return None
+
+
+def send_alert_email(email_type, user, amount, balance, date, subject,
+                     acct=None, receiver=None, receiver_acct=None,
+                     bank_name=None, description=None, trans_type=None,
+                     sender=None,
+                     sender_acct=None, phone=None):
+    try:
+        context = {
+            "user": user,
+            "amount": f"{float(amount):,.2f}",
+            "balance": f"{balance:,.2f}",
+            "date": date,
+            "acct": str(acct),
+            "alert_type": email_type,  # Add the email type to the context
+            "receiver": receiver,  # Add the receiver to the context
+            "receiver_acct": receiver_acct,  # Add the receiver's account number to the context
+            "bank_name": bank_name,
+            "description": description,  # Add the description to the context (if available)
+            "trans_type": trans_type,
+            "sender": sender,
+            "sender_acct": sender_acct,
+            "phone": phone
+        }
+        msg = Message(
+            subject=subject,  # Dynamic subject passed to the function
+            sender="EasyTransact <easytransact.send@gmail.com>",
+            recipients=[user.email],
+        )
+        msg.html = render_template("alert.html", **context)
+        mail.send(msg)
+    except Exception as e:
+        print(e, "ERROR")
+        session["alert"] = "Network Error"
+        session["bg_color"] = "danger"
