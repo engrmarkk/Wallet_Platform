@@ -10,7 +10,7 @@ from flask_login import logout_user
 import pytz
 import random
 import string
-from utils import send_notification, send_credit_notification
+from utils import send_notification, send_credit_notification, send_alert_email
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import func
 from passlib.hash import pbkdf2_sha256 as hasher
@@ -123,7 +123,10 @@ def deduct_history(
     )
     db.session.add(transact)
     db.session.commit()
-    send_notification(current_user, amount, description, transact.date_posted, phone)
+    send_alert_email("debit", user=current_user, amount=amount, balance=current_user.account_balance,
+                     date=transact.date_posted, subject="DEBIT ALERT", description=description, trans_type=cat,
+                     phone=phone)
+    # send_notification(current_user, amount, description, transact.date_posted, phone)
     return transact
 
 
@@ -148,14 +151,17 @@ def refund(amount, current_user, request_id, purchase_type, service_id, phone=""
     )
     db.session.add(transact)
     db.session.commit()
-    send_credit_notification(
-        "REFUND",
-        current_user,
-        amount,
-        transact.description,
-        transact.date_posted,
-        phone,
-    )
+    send_alert_email("credit", user=current_user, amount=amount, balance=current_user.account_balance,
+                     date=transact.date_posted, subject="REFUND", description=transact.description, trans_type=cat,
+                     phone=phone)
+    # send_credit_notification(
+    #     "REFUND",
+    #     current_user,
+    #     amount,
+    #     transact.description,
+    #     transact.date_posted,
+    #     phone,
+    # )
     return transact
 
 
