@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #F4F4F4; margin: 0; padding: 20px;">
+    <div style="max-width: 600px; background: rgba(255, 255, 255, 0.9); padding: 20px; border-radius: 5px; margin: auto;">
+        <div style="background: linear-gradient(to right, #404784, #00A550); color: white; text-align: center; padding: 20px; font-size: 28px; font-weight: bold; border-radius: 10px 10px 0 0;">
+            Transaction Receipt
+        </div>
+        <div style="text-align: center; margin-top: 20px;">
+            <img src="https://res.cloudinary.com/duwyopabr/image/upload/v1740495305/easytra_y8lrcp.png" alt="Company Logo" style="max-width: 80%; height: auto; border-radius: 10px;">
+        </div>
+        <div style="padding: 20px; font-size: 16px; color: #333;">
+            <p style="line-height: 1.6;">Dear <strong>{{user.first_name.title()}}</strong>,</p>
+            <p style="line-height: 1.6;">Please be informed that a credit transaction occured on your wallet</p>
+            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                <tr>
+                    <th style="border: 1px solid #ddd; padding: 10px; text-align: left; background: linear-gradient(to right, #404784, #00A550); color: rgb(0, 0, 0);">Detail</th>
+                    <th style="border: 1px solid #ddd; padding: 10px; text-align: left; background: linear-gradient(to right, #404784, #00A550); color: rgb(0, 0, 0);">Information</th>
+                </tr>
+                {% if acct %}
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Acc Number</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;"><strong>{{acct[:4]}}******</strong></td>
+                </tr>
+                {% endif %}
+
+                {% if trans_type %}
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Trans Type</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">{{trans_type}}</td>
+                </tr>
+                {% endif %}
+
+                {% if receiver %}
+                <tr>
+                  <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Receiver</td>
+                  <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">{{receiver}}</td>
+              </tr>
+              {% endif %}
+
+              {% if sender %}
+              <tr>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Sender</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">{{sender}}</td>
+            </tr>
+            {% endif %}
+
+            {% if receiver_acct %}
+              <tr>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Receiver Acct</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">{{receiver_acct}}</td>
+            </tr>
+            {% endif %}
+
+            {% if sender_acct %}
+            <tr>
+              <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Sender Acct</td>
+              <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">{{sender_acct}}</td>
+          </tr>
+          {% endif %}
+
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Amount</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">₦{{amount}}</td>
+                </tr>
+
+                {% if phone %}
+                <tr>
+                  <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Phone</td>
+                  <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">{{phone}}</td>
+              </tr>
+              {% endif %}
+
+              {% if description %}
+              <tr>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Description</td>
+                <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">{{description}}</td>
+            </tr>
+            {% endif %}
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Balance</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">₦{{balance}}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Date</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">{{ date.strftime('%Y-%m-%d') }} {{ date.strftime('%I:%M %p') }}</td>
+                </tr>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;">Status</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: left;"><strong>Completed</strong></td>
+                </tr>
+            </table>
+            <p style="line-height: 1.6;">If you have any questions or concerns regarding this transaction, please do not hesitate to reach out to our support team at <a href="mailto:easytransact.send@gmail.com" style="color: #007BFF;">easytransact.send@gmail.com</a>.</p>
+            <p style="line-height: 1.6;">Thank you for choosing EasyTransact!</p>
+        </div>
+        <div style="text-align: center; padding: 10px; font-size: 14px; color: #666;">
+            &copy; {{ date.strftime('%Y') }} EasyTransact | All rights reserved.<br>
+            <a target="_blank" style="color: #007BFF;">Terms of Service</a> | <a target="_blank" style="color: #007BFF;">Privacy Policy</a>
+        </div>
+    </div>
+</body>
+</html>
