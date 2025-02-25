@@ -47,7 +47,7 @@ from utils import (
     generate_session_id,
     generate_transaction_ref,
     get_uri,
-    authenticate_auth_code,
+    authenticate_auth_code, send_alert_email
 )
 from paystack.paystack_endpoint import PaystackEndpoints
 
@@ -545,26 +545,13 @@ def transfer_to_bank():
         current_user.account_balance = balance
         db.session.commit()
 
-        try:
-            msg = Message(
-                subject="DEBIT ALERT",
-                sender="EasyTransact <easytransact.send@gmail.com>",
-                recipients=[current_user.email],
-            )
-            msg.html = render_template(
-                "transfer.html",
-                user=current_user,
-                amount=f"{float(amount):,.2f}",
-                balance=f"{current_user.account_balance:,.2f}",
-                date=trans.date_posted,
-                acct=str(current_user.account_number),
-                receiver=account_name,
-                receiver_acct=str(account_number),
-                bank_name=bank_name,
-            )
-            mail.send(msg)
-        except Exception as e:
-            print(e, "ERROR")
+        send_alert_email("Debit", user=current_user, amount=float(amount),
+                         balance=current_user.account_balance, date=trans.date_posted,
+                         subject="DEBIT ALERT",
+                         acct=str(current_user.account_number),
+                         receiver=account_name, receiver_acct=str(account_number),
+                         bank_name=bank_name, trans_type="Bank Transfer",
+                         description=narration or "Transfer")
 
         if current_user.enabled_spend_save:
             save_spend_and_save_transaction(
@@ -707,46 +694,20 @@ def pay(acct):
 
             # ALERTS WHEN FUNDS HAS BEEN SENT
             # alert for debit transaction
-            try:
-                msg = Message(
-                    subject="DEBIT ALERT",
-                    sender="EasyTransact <easytransact.send@gmail.com>",
-                    recipients=[current_user.email],
-                )
-                msg.html = render_template(
-                    "debit.html",
-                    amount=f"{amount:,.2f}",
-                    user=user1,
-                    balance=f"{current_user.account_balance:,.2f}",
-                    date=x,
-                    acct=str(current_user.account_number),
-                )
-                mail.send(msg)
-            except Exception as e:
-                print(e, "ERROR")
-                session["alert"] = "Network Error"
-                session["bg_color"] = "danger"
+            send_alert_email("debit", user=current_user, amount=amount,
+                             balance=current_user.account_balance,
+                             date=x, subject="DEBIT ALERT",
+                             acct=str(current_user.account_number), receiver=user1.username,
+                             receiver_acct=str(user1.account_number), trans_type="W2W Transfer",
+                             description=transact2.description)
 
             # alert for credit transaction
-            try:
-                msg = Message(
-                    subject="CREDIT ALERT",
-                    sender="EasyTransact <easytransact.send@gmail.com>",
-                    recipients=[user1.email],
-                )
-                msg.html = render_template(
-                    "credit.html",
-                    user=user1,
-                    amount=f"{amount:,.2f}",
-                    balance=f"{user1.account_balance:,.2f}",
-                    date=x,
-                    acct=str(user1.account_number),
-                )
-                mail.send(msg)
-            except Exception as e:
-                print(e, "ERROR")
-                session["alert"] = "Network Error"
-                session["bg_color"] = "danger"
+            send_alert_email("credit", user=user1, amount=amount,
+                             balance=user1.account_balance,
+                             date=x, subject="CREDIT ALERT",
+                             acct=str(user1.account_number), sender=current_user.username,
+                             sender_acct=str(current_user.account_number), trans_type="W2W Top-Up",
+                             description=transact1.description)
 
             if current_user.enabled_spend_save:
                 save_spend_and_save_transaction(
