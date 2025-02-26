@@ -124,7 +124,8 @@ def deduct_history(
     db.session.add(transact)
     db.session.commit()
     send_alert_email("debit", user=current_user, amount=amount, balance=current_user.account_balance,
-                     date=transact.date_posted, subject="DEBIT ALERT", description=description, trans_type=cat,
+                     date=transact.date_posted, subject="DEBIT ALERT",
+                     acct=str(current_user.account_number),description=description, trans_type=cat,
                      phone=phone)
     # send_notification(current_user, amount, description, transact.date_posted, phone)
     return transact
@@ -152,7 +153,9 @@ def refund(amount, current_user, request_id, purchase_type, service_id, phone=""
     db.session.add(transact)
     db.session.commit()
     send_alert_email("credit", user=current_user, amount=amount, balance=current_user.account_balance,
-                     date=transact.date_posted, subject="REFUND", description=transact.description, trans_type=cat,
+                     date=transact.date_posted, subject="REFUND",
+                     acct=str(current_user.account_number),
+                     description=transact.description, trans_type=cat,
                      phone=phone)
     # send_credit_notification(
     #     "REFUND",
