@@ -310,7 +310,7 @@ def get_user_transactions(page, per_page, transaction_type, status, category, us
         ).count()
         refund_transactions = transactions.filter(
             Transaction.status == "Refunded"
-        )
+        ).count()
         inflow_transactions = transactions.filter(
             Transaction.transaction_type == "CRT"
         ).count()
