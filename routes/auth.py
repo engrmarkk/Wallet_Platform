@@ -159,28 +159,28 @@ def login():
                     #     session["alert"] = "Incorrect password"
                     #     session["bg_color"] = "danger"
                     #     return redirect(url_for("auth.login"))
-                else:
-                    admin = Admin.query.filter_by(email=form.email.data.lower()).first()
-                    if admin:
-                        print("admin found")
-                        if not hasher.verify(form.password.data, admin.password):
-                            session["alert"] = "Incorrect password"
-                            session["bg_color"] = "danger"
-                            return redirect(url_for("auth.login"))
-                        if not admin.active:
-                            session["alert"] = "Account is inactive"
-                            session["bg_color"] = "danger"
-                            return redirect(url_for("auth.login"))
-                        print("I got here")
-                        session["alert"] = "Login Successful"
-                        session["bg_color"] = "success"
-                        login_user(admin, remember=False)
-                        print("logged in admin")
-                        return redirect(url_for("admin_blp.admin_dashboard"))
-                    # If the user doesn't exist, flash a message to the user while still on the same page
-                    session["alert"] = "User doesn't exist"
-                    session["bg_color"] = "danger"
-                    return redirect(url_for("auth.login"))
+                    else:
+                        admin = Admin.query.filter_by(email=form.email.data.lower()).first()
+                        if admin:
+                            print("admin found")
+                            if not hasher.verify(form.password.data, admin.password):
+                                session["alert"] = "Incorrect password"
+                                session["bg_color"] = "danger"
+                                return redirect(url_for("auth.login"))
+                            if not admin.active:
+                                session["alert"] = "Account is inactive"
+                                session["bg_color"] = "danger"
+                                return redirect(url_for("auth.login"))
+                            print("I got here")
+                            session["alert"] = "Login Successful"
+                            session["bg_color"] = "success"
+                            login_user(admin, remember=False)
+                            print("logged in admin")
+                            return redirect(url_for("admin_blp.admin_dashboard"))
+                        # If the user doesn't exist, flash a message to the user while still on the same page
+                        session["alert"] = "User doesn't exist"
+                        session["bg_color"] = "danger"
+                        return redirect(url_for("auth.login"))
 
                     """not using this"""
                     # return redirect(url_for("auth.login"))
