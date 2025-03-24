@@ -349,6 +349,7 @@ def get_all_transactions(
         success_counts = transactions.filter(Transaction.status == "Success").count()
         pending_counts = transactions.filter(Transaction.status == "Pending").count()
         failed_counts = transactions.filter(Transaction.status == "Failed").count()
+        refund_counts = transactions.filter(Transaction.status == "Refunded").count()
         inflow = transactions.filter(Transaction.transaction_type == "CRT").count()
         outflow = transactions.filter(Transaction.transaction_type == "DBT").count()
         if status:
@@ -378,6 +379,7 @@ def get_all_transactions(
             failed_counts,
             inflow,
             outflow,
+            refund_counts
         )
     except Exception as e:
         print(e, "error in get_all_transactions")
