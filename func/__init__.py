@@ -308,6 +308,9 @@ def get_user_transactions(page, per_page, transaction_type, status, category, us
         failed_transactions = transactions.filter(
             Transaction.status == "Failed"
         ).count()
+        refund_transactions = transactions.filter(
+            Transaction.status == "Refunded"
+        )
         inflow_transactions = transactions.filter(
             Transaction.transaction_type == "CRT"
         ).count()
@@ -333,6 +336,7 @@ def get_user_transactions(page, per_page, transaction_type, status, category, us
             failed_transactions,
             inflow_transactions,
             outflow_transactions,
+            refund_transactions
         )
     except Exception as e:
         print(e, "error in get_user_transactions")
