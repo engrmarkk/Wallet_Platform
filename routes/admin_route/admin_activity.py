@@ -243,6 +243,7 @@ def user_transactions(user_id):
             failed_transactions,
             inflow_transactions,
             outflow_transactions,
+            refund_transactions
         ) = get_user_transactions(
             page, per_page, transaction_type, status, category, user
         )
@@ -257,6 +258,7 @@ def user_transactions(user_id):
             failed_transactions=failed_transactions,
             inflow_transactions=inflow_transactions,
             outflow_transactions=outflow_transactions,
+            refund_transactions=refund_transactions
         )
     except Exception as e:
         print(e, "error in user transactions")
