@@ -315,6 +315,7 @@ def get_all_user_transactions():
             failed_counts,
             inflow,
             outflow,
+            refund_counts
         ) = get_all_transactions(
             page, per_page, status, transaction_type, category, bank_name, receiver
         )
@@ -328,6 +329,7 @@ def get_all_user_transactions():
             failed_transactions=failed_counts,
             inflow_transactions=inflow,
             outflow_transactions=outflow,
+            refund_transactions=refund_counts
         )
     except Exception as e:
         print(e, "error in get all user transactions")
