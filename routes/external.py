@@ -10,6 +10,7 @@ from flask_mail import Message
 from models.main import get_account_number_details
 from models.transact import save_transfer_in_transactions
 from utils import generate_session_id, generate_transaction_ref
+from utils import send_alert_email
 
 external = Blueprint("external", __name__, template_folder="../templates")
 
@@ -126,26 +127,14 @@ def transfer_in():
             details.account_balance = balance
             db.session.commit()
 
-            try:
-                msg = Message(
-                    subject="CREDIT ALERT",
-                    sender="EasyTransact <easytransact.send@gmail.com>",
-                    recipients=[details.email],
-                )
-                msg.html = render_template(
-                    "topup.html",
-                    user=details,
-                    amount=f"{amount:,.2f}",
-                    balance=f"{details.account_balance:,.2f}",
-                    date=trans.date_posted,
-                    acct=str(details.account_number),
-                    sender=sender_name,
-                    sender_acct=str(sender_account),
-                    bank_name=bank_name,
-                )
-                mail.send(msg)
-            except Exception as e:
-                print(e, "ERROR")
+            send_alert_email("credit", user=details, amount=float(amount),
+                             balance=details.account_balance, date=trans.date_posted,
+                             subject="CREDIT ALERT",
+                             acct=str(details.account_number),
+                             sender=sender_name,
+                             sender_acct=str(sender_account),
+                             bank_name=bank_name, trans_type="Bank TopUp",
+                             description=description or "Bank TopUp")
 
             return (
                 jsonify(
