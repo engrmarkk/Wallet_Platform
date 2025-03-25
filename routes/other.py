@@ -911,6 +911,8 @@ def faq():
 def transaction_successful(
     amount, receiver, sender, sender_acct, bank_name, receiver_acct, date
 ):
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     return render_template(
         "trans_success.html",
         date=date,
@@ -920,6 +922,8 @@ def transaction_successful(
         sender_acct=sender_acct,
         bank_name=bank_name,
         receiver_acct=receiver_acct,
+        alert=alert,
+        bg_color=bg_color,
     )
 
 
