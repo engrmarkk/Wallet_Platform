@@ -486,7 +486,7 @@ def statistics():
             "failed_count": transaction_stats["failed"][0],
             "failed_amount": transaction_stats["failed"][1] or 0,
             "refunded_count": transaction_stats["refund"][0],
-            "refunded_count": transaction_stats["refund"][1] or 0,
+            "refunded_amount": transaction_stats["refund"][1] or 0,
             "inflow_count": transaction_stats["inflow"][0],
             "inflow_amount": transaction_stats["inflow"][1] or 0,
             "outflow_count": transaction_stats["outflow"][0],
