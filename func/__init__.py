@@ -424,6 +424,11 @@ def statistics():
                 .with_entities(func.count(), func.sum(Transaction.transaction_amount))
                 .first()
             ),
+            "refund": safe_first(
+                Transaction.query.filter(Transaction.status == "Refunded")
+                .with_entities(func.count(), func.sum(Transaction.transaction_amount))
+                .first()
+            ),
             "inflow": safe_first(
                 Transaction.query.filter(Transaction.transaction_type == "CRT")
                 .with_entities(func.count(), func.sum(Transaction.transaction_amount))
@@ -480,6 +485,8 @@ def statistics():
             "pending_amount": transaction_stats["pending"][1] or 0,
             "failed_count": transaction_stats["failed"][0],
             "failed_amount": transaction_stats["failed"][1] or 0,
+            "refunded_count": transaction_stats["refund"][0],
+            "refunded_count": transaction_stats["refund"][1] or 0,
             "inflow_count": transaction_stats["inflow"][0],
             "inflow_amount": transaction_stats["inflow"][1] or 0,
             "outflow_count": transaction_stats["outflow"][0],
