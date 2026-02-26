@@ -11,7 +11,14 @@ from wtforms import (
 )
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from flask import flash
-from wtforms.validators import DataRequired, Length, Email, EqualTo, NumberRange, ValidationError
+from wtforms.validators import (
+    DataRequired,
+    Length,
+    Email,
+    EqualTo,
+    NumberRange,
+    ValidationError,
+)
 
 
 class LoginForm(FlaskForm):
@@ -23,20 +30,36 @@ class LoginForm(FlaskForm):
 class SendMoneyForm(FlaskForm):
     amount = IntegerField("Amount", validators=[DataRequired(), NumberRange(min=100)])
     add_beneficiary = BooleanField("Add as beneficiary")
-    transfer_pin = IntegerField("Enter 4 digits transfer pin", validators=[DataRequired()])
+    transfer_pin = IntegerField(
+        "Enter 4 digits transfer pin", validators=[DataRequired()]
+    )
     submit = SubmitField("Send")
 
 
 class CreateTransferPin(FlaskForm):
-    transfer_pin = IntegerField("Create 4 digits transfer pin", validators=[DataRequired(), NumberRange(min=1000, max=9999)])
-    confirm_transfer_pin = IntegerField("Confirm 4 digits transfer pin", validators=[DataRequired(), EqualTo("transfer_pin")])
-    secret_answer = StringField("Enter a secret answer (This answer cannot be changed)", validators=[DataRequired(), Length(min=2, max=50)])
+    transfer_pin = IntegerField(
+        "Create 4 digits transfer pin",
+        validators=[DataRequired(), NumberRange(min=1000, max=9999)],
+    )
+    confirm_transfer_pin = IntegerField(
+        "Confirm 4 digits transfer pin",
+        validators=[DataRequired(), EqualTo("transfer_pin")],
+    )
+    secret_answer = StringField(
+        "Enter a secret answer (This answer cannot be changed)",
+        validators=[DataRequired(), Length(min=2, max=50)],
+    )
     submit = SubmitField("Create")
 
 
 class ChangeTransferPin(FlaskForm):
-    new_pin = IntegerField("Enter new 4 digits transfer pin", validators=[DataRequired(), NumberRange(min=1000, max=9999)])
-    secret_answer = StringField("Enter your secret answer", validators=[DataRequired(), Length(min=2, max=50)])
+    new_pin = IntegerField(
+        "Enter new 4 digits transfer pin",
+        validators=[DataRequired(), NumberRange(min=1000, max=9999)],
+    )
+    secret_answer = StringField(
+        "Enter your secret answer", validators=[DataRequired(), Length(min=2, max=50)]
+    )
     submit = SubmitField("Change")
 
 
@@ -81,7 +104,9 @@ class ResetPasswordForm(FlaskForm):
 
 
 class PhotoForm(FlaskForm):
-    image = FileField(validators=[FileRequired(), FileAllowed(['jpg', 'jpeg', 'png', 'gif'])])
+    image = FileField(
+        validators=[FileRequired(), FileAllowed(["jpg", "jpeg", "png", "gif"])]
+    )
 
     def validate_image(self, field):
         if field.data:
@@ -91,12 +116,16 @@ class PhotoForm(FlaskForm):
 
 
 class ConfirmAccount(FlaskForm):
-    account_number = TelField("Wallet Account Number", validators=[DataRequired(), Length(max=10)])
+    account_number = TelField(
+        "Wallet Account Number", validators=[DataRequired(), Length(max=10)]
+    )
 
 
 class CardForm(FlaskForm):
     card_number = TelField("Card Number", validators=[DataRequired(), Length(max=16)])
-    card_name = StringField("Card Name", validators=[DataRequired(), Length(min=2, max=30)])
+    card_name = StringField(
+        "Card Name", validators=[DataRequired(), Length(min=2, max=30)]
+    )
     card_expiry = StringField("Card Expiry", validators=[DataRequired(), Length(max=5)])
     card_cvv = TelField("Card CVV", validators=[DataRequired(), Length(max=3)])
     card_pin = TelField("Card PIN", validators=[DataRequired(), Length(max=4)])
