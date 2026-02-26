@@ -123,10 +123,18 @@ def deduct_history(
     )
     db.session.add(transact)
     db.session.commit()
-    send_alert_email("debit", user=current_user, amount=amount, balance=current_user.account_balance,
-                     date=transact.date_posted, subject="DEBIT ALERT",
-                     acct=str(current_user.account_number),description=description, trans_type=cat,
-                     phone=phone)
+    send_alert_email(
+        "debit",
+        user=current_user,
+        amount=amount,
+        balance=current_user.account_balance,
+        date=transact.date_posted,
+        subject="DEBIT ALERT",
+        acct=str(current_user.account_number),
+        description=description,
+        trans_type=cat,
+        phone=phone,
+    )
     # send_notification(current_user, amount, description, transact.date_posted, phone)
     return transact
 
@@ -152,11 +160,18 @@ def refund(amount, current_user, request_id, purchase_type, service_id, phone=""
     )
     db.session.add(transact)
     db.session.commit()
-    send_alert_email("credit", user=current_user, amount=amount, balance=current_user.account_balance,
-                     date=transact.date_posted, subject="REFUND",
-                     acct=str(current_user.account_number),
-                     description=transact.description, trans_type=cat,
-                     phone=phone)
+    send_alert_email(
+        "credit",
+        user=current_user,
+        amount=amount,
+        balance=current_user.account_balance,
+        date=transact.date_posted,
+        subject="REFUND",
+        acct=str(current_user.account_number),
+        description=transact.description,
+        trans_type=cat,
+        phone=phone,
+    )
     # send_credit_notification(
     #     "REFUND",
     #     current_user,
@@ -336,7 +351,7 @@ def get_user_transactions(page, per_page, transaction_type, status, category, us
             failed_transactions,
             inflow_transactions,
             outflow_transactions,
-            refund_transactions
+            refund_transactions,
         )
     except Exception as e:
         print(e, "error in get_user_transactions")
@@ -383,7 +398,7 @@ def get_all_transactions(
             failed_counts,
             inflow,
             outflow,
-            refund_counts
+            refund_counts,
         )
     except Exception as e:
         print(e, "error in get_all_transactions")
