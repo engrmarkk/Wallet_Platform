@@ -153,11 +153,23 @@ def validate_password(password):
     return None
 
 
-def send_alert_email(email_type, user, amount, balance, date, subject,
-                     acct=None, receiver=None, receiver_acct=None,
-                     bank_name=None, description=None, trans_type=None,
-                     sender=None,
-                     sender_acct=None, phone=None):
+def send_alert_email(
+    email_type,
+    user,
+    amount,
+    balance,
+    date,
+    subject,
+    acct=None,
+    receiver=None,
+    receiver_acct=None,
+    bank_name=None,
+    description=None,
+    trans_type=None,
+    sender=None,
+    sender_acct=None,
+    phone=None,
+):
     try:
         context = {
             "user": user,
@@ -173,7 +185,7 @@ def send_alert_email(email_type, user, amount, balance, date, subject,
             "trans_type": trans_type,
             "sender": sender,
             "sender_acct": sender_acct,
-            "phone": phone
+            "phone": phone,
         }
         msg = Message(
             subject=subject,  # Dynamic subject passed to the function
