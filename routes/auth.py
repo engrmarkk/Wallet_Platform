@@ -54,7 +54,7 @@ def validate(email):
     return render_template(
         "confirmation.html",
         email=email,
-        date=datetime.utcnow(),
+        date=datetime.now(),
         alert=alert,
         bg_color=bg_color,
     )
@@ -78,6 +78,7 @@ def login():
                 # Query the User model and assign the queried data to the variable 'user'
                 user = User.query.filter_by(email=form.email.data.lower()).first()
                 email = form.email.data.lower()
+                print(f"Email: {email}")
                 if user and not user.active:
                     session["alert"] = "Account is inactive"
                     session["bg_color"] = "danger"
@@ -102,7 +103,7 @@ def login():
                         bg_color = "danger"
                         return render_template(
                             "login.html",
-                            date=datetime.utcnow(),
+                            date=datetime.now(),
                             form=form,
                             alert=alert,
                             bg_color=bg_color,
@@ -111,14 +112,16 @@ def login():
                     return redirect(url_for("auth.validate", email=email))
                 # Check if the user exist in the database and if the inputted password is same with the one attached to
                 # the user on the database
+                print(f"no use found: {user}")
                 if user:
+                    print(f"User Email: {email}")
                     # ************* THIS IS FOR PANIC LOGIN ***************
                     if user.has_set_panic:
                         if check_password_hash(user.panic_password, form.password.data):
                             if user.enabled_2fa:
                                 return render_template(
                                     "login.html",
-                                    date=datetime.utcnow(),
+                                    date=datetime.now(),
                                     form=form,
                                     alert=alert,
                                     bg_color=bg_color,
@@ -136,10 +139,11 @@ def login():
                     # ************* END OF PANIC LOGIN ***************
 
                     if check_password_hash(user.password, form.password.data):
+                        print(f"pass Email: {email}")
                         if user.enabled_2fa:
                             return render_template(
                                 "login.html",
-                                date=datetime.utcnow(),
+                                date=datetime.now(),
                                 form=form,
                                 alert=alert,
                                 bg_color=bg_color,
@@ -159,28 +163,31 @@ def login():
                     #     session["alert"] = "Incorrect password"
                     #     session["bg_color"] = "danger"
                     #     return redirect(url_for("auth.login"))
-                    else:
-                        admin = Admin.query.filter_by(email=form.email.data.lower()).first()
-                        if admin:
-                            print("admin found")
-                            if not hasher.verify(form.password.data, admin.password):
-                                session["alert"] = "Incorrect password"
-                                session["bg_color"] = "danger"
-                                return redirect(url_for("auth.login"))
-                            if not admin.active:
-                                session["alert"] = "Account is inactive"
-                                session["bg_color"] = "danger"
-                                return redirect(url_for("auth.login"))
-                            print("I got here")
-                            session["alert"] = "Login Successful"
-                            session["bg_color"] = "success"
-                            login_user(admin, remember=False)
-                            print("logged in admin")
-                            return redirect(url_for("admin_blp.admin_dashboard"))
-                        # If the user doesn't exist, flash a message to the user while still on the same page
-                        session["alert"] = "User doesn't exist"
-                        session["bg_color"] = "danger"
-                        return redirect(url_for("auth.login"))
+                else:
+                    print(f"Admin Email: {email}")
+                    admin = Admin.query.filter_by(
+                        email=form.email.data.lower()
+                    ).first()
+                    if admin:
+                        print("admin found")
+                        if not hasher.verify(form.password.data, admin.password):
+                            session["alert"] = "Incorrect password"
+                            session["bg_color"] = "danger"
+                            return redirect(url_for("auth.login"))
+                        if not admin.active:
+                            session["alert"] = "Account is inactive"
+                            session["bg_color"] = "danger"
+                            return redirect(url_for("auth.login"))
+                        print("I got here")
+                        session["alert"] = "Login Successful"
+                        session["bg_color"] = "success"
+                        login_user(admin, remember=False)
+                        print("logged in admin")
+                        return redirect(url_for("admin_blp.admin_dashboard"))
+                    # If the user doesn't exist, flash a message to the user while still on the same page
+                    session["alert"] = "User doesn't exist"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("auth.login"))
 
                     """not using this"""
                     # return redirect(url_for("auth.login"))
@@ -190,7 +197,7 @@ def login():
         # called upon
         return render_template(
             "login.html",
-            date=datetime.utcnow(),
+            date=datetime.now(),
             form=form,
             alert=alert,
             bg_color=bg_color,
@@ -203,7 +210,7 @@ def login():
         bg_color = "danger"
         return render_template(
             "login.html",
-            date=datetime.utcnow(),
+            date=datetime.now(),
             form=form,
             alert=alert,
             bg_color=bg_color,
@@ -215,7 +222,7 @@ def login():
         bg_color = "danger"
         return render_template(
             "login.html",
-            date=datetime.utcnow(),
+            date=datetime.now(),
             form=form,
             alert=alert,
             bg_color=bg_color,
@@ -233,7 +240,7 @@ def verify_2fa():
         bg_color = "danger"
         return render_template(
             "login.html",
-            date=datetime.utcnow(),
+            date=datetime.now(),
             form=form,
             alert=alert,
             bg_color=bg_color,
@@ -246,7 +253,7 @@ def verify_2fa():
         bg_color = "danger"
         return render_template(
             "login.html",
-            date=datetime.utcnow(),
+            date=datetime.now(),
             form=form,
             alert=alert,
             bg_color=bg_color,
@@ -271,147 +278,159 @@ def register():
     form = RegistrationForm()
     # If the request is a post request and the form doesn't get validated, redirect the user to that same page
     if request.method == "POST":
+        try:
         # If the form gets validated on submit
-        if form.validate_on_submit():
-            # Check if the username already exist
-            user = User.query.filter_by(username=form.username.data.lower()).first()
-            # if the username exist
-            if user:
-                session["alert"] = "User with this username already exist"
-                session["bg_color"] = "danger"
-                return redirect(url_for("auth.register"))
+            if form.validate_on_submit():
+                # Check if the username already exist
+                user = User.query.filter_by(username=form.username.data.lower()).first()
+                # if the username exist
+                if user:
+                    session["alert"] = "User with this username already exist"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("auth.register"))
 
-            # Check if email exist
-            existing_email = User.query.filter_by(email=form.email.data.lower()).first()
-            # if the email exist
-            if existing_email:
-                alert = "User with this email already exist"
-                bg_color = "danger"
-                return render_template(
-                    "register.html",
-                    date=datetime.utcnow(),
-                    form=form,
-                    alert=alert,
-                    bg_color=bg_color,
-                )
+                # Check if email exist
+                existing_email = User.query.filter_by(email=form.email.data.lower()).first()
+                # if the email exist
+                if existing_email:
+                    alert = "User with this email already exist"
+                    bg_color = "danger"
+                    return render_template(
+                        "register.html",
+                        date=datetime.now(),
+                        form=form,
+                        alert=alert,
+                        bg_color=bg_color,
+                    )
 
-            # Check if phone number exist
-            existing_phone = User.query.filter_by(
-                account_number=form.phone_number.data[1:]
-            ).first()
-            # if the phone number exist
-            if existing_phone:
-                session["alert"] = "User with this phone number already exist"
-                session["bg_color"] = "danger"
-                return redirect(url_for("auth.register"))
-            if not form.phone_number.data.isnumeric():
-                alert = "This is not a valid number"
-                bg_color = "danger"
-                return render_template(
-                    "register.html",
-                    date=datetime.utcnow(),
-                    form=form,
-                    alert=alert,
-                    bg_color=bg_color,
-                )
-
-            first_name = form.first_name.data.lower()
-            last_name = form.last_name.data.lower()
-            username = form.username.data.lower()
-            email = form.email.data.lower()
-            # phone_number = str(form.phone_number.data)
-            phone_number = form.phone_number.data
-            # account_number = int(str(phone_number)[1:])
-            account_number = form.phone_number.data
-            password_hash = generate_password_hash(form.password.data)
-
-            # to check if the password is the mixture of uppercase, lowercase and a number at least
-            letters = set(form.password.data)
-            mixed = (
-                any(letter.islower() for letter in letters)
-                and any(letter.isupper() for letter in letters)
-                and any(letter.isdigit() for letter in letters)
-            )
-            if not mixed:
-                alert = "Password should contain at least an uppercase, lowercase and a number"
-                bg_color = "danger"
-                return render_template(
-                    "register.html",
-                    date=datetime.utcnow(),
-                    form=form,
-                    alert=alert,
-                    bg_color=bg_color,
-                )
-
-            if len(phone_number) != 11:
-                session["alert"] = "Phone number must be 11 digits"
-                session["bg_color"] = "danger"
-                return redirect(url_for("auth.register"))
-
-            if (
-                form.invited_by.data
-                and not User.query.filter_by(
-                    account_number=form.invited_by.data
+                # Check if phone number exist
+                existing_phone = User.query.filter_by(
+                    account_number=form.phone_number.data[1:]
                 ).first()
-            ):
-                alert = "Invalid referral code"
-                bg_color = "danger"
-                return render_template(
-                    "register.html",
-                    date=datetime.utcnow(),
-                    form=form,
-                    alert=alert,
-                    bg_color=bg_color,
+                # if the phone number exist
+                if existing_phone:
+                    session["alert"] = "User with this phone number already exist"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("auth.register"))
+                if not form.phone_number.data.isnumeric():
+                    alert = "This is not a valid number"
+                    bg_color = "danger"
+                    return render_template(
+                        "register.html",
+                        date=datetime.now(),
+                        form=form,
+                        alert=alert,
+                        bg_color=bg_color,
+                    )
+
+                first_name = form.first_name.data.lower()
+                last_name = form.last_name.data.lower()
+                username = form.username.data.lower()
+                email = form.email.data.lower()
+                # phone_number = str(form.phone_number.data)
+                phone_number = form.phone_number.data
+                # account_number = int(str(phone_number)[1:])
+                account_number = form.phone_number.data
+                password_hash = generate_password_hash(form.password.data)
+
+                # to check if the password is the mixture of uppercase, lowercase and a number at least
+                letters = set(form.password.data)
+                mixed = (
+                    any(letter.islower() for letter in letters)
+                    and any(letter.isupper() for letter in letters)
+                    and any(letter.isdigit() for letter in letters)
                 )
+                if not mixed:
+                    alert = "Password should contain at least an uppercase, lowercase and a number"
+                    bg_color = "danger"
+                    return render_template(
+                        "register.html",
+                        date=datetime.now(),
+                        form=form,
+                        alert=alert,
+                        bg_color=bg_color,
+                    )
 
-            if not form.invited_by.data:
-                invited_by = 0
-            else:
-                invited_by = int(form.invited_by.data)
+                if len(phone_number) != 11:
+                    session["alert"] = "Phone number must be 11 digits"
+                    session["bg_color"] = "danger"
+                    return redirect(url_for("auth.register"))
 
-            # variable 'new_user'
-            new_user = User(
-                first_name=first_name,
-                last_name=last_name,
-                username=username,
-                phone_number=form.phone_number.data,
-                email=email,
-                account_number=form.phone_number.data,
-                invited_by=invited_by,
-                password=password_hash,
-                confirmed=False,
+                if (
+                    form.invited_by.data
+                    and not User.query.filter_by(
+                        account_number=form.invited_by.data
+                    ).first()
+                ):
+                    alert = "Invalid referral code"
+                    bg_color = "danger"
+                    return render_template(
+                        "register.html",
+                        date=datetime.now(),
+                        form=form,
+                        alert=alert,
+                        bg_color=bg_color,
+                    )
+
+                if not form.invited_by.data:
+                    invited_by = 0
+                else:
+                    invited_by = int(form.invited_by.data)
+
+                # variable 'new_user'
+                new_user = User(
+                    first_name=first_name,
+                    last_name=last_name,
+                    username=username,
+                    phone_number=form.phone_number.data,
+                    email=email,
+                    account_number=form.phone_number.data,
+                    invited_by=invited_by,
+                    password=password_hash,
+                    confirmed=False,
+                )
+                try:
+                    msg = Message(
+                        subject="Email Verification",
+                        sender="EasyTransact <easytransact.send@gmail.com>",
+                        recipients=[email],
+                    )
+                    msg.html = render_template("email_verification.html", otp=str(otp))
+                    mail.send(msg)
+                except Exception as e:
+                    print(e)
+                    alert = "Failed to verify email"
+                    bg_color = "danger"
+                    return render_template(
+                        "register.html",
+                        date=datetime.now(),
+                        form=form,
+                        alert=alert,
+                        bg_color=bg_color,
+                    )
+
+                # Add the 'new_user'
+                db.session.add(new_user)
+                db.session.commit()
+
+                session["alert"] = "A confirmation email has been sent to you via email"
+                session["bg_color"] = "success"
+                return redirect(url_for("auth.validate", email=email))
+        except Exception as e:
+            print(f"register error: {e}")
+            alert = "Failed register user"
+            bg_color = "danger"
+            return render_template(
+                "register.html",
+                date=datetime.now(),
+                form=form,
+                alert=alert,
+                bg_color=bg_color,
             )
-            try:
-                msg = Message(
-                    subject="Email Verification",
-                    sender="EasyTransact <easytransact.send@gmail.com>",
-                    recipients=[email],
-                )
-                msg.html = render_template("email_verification.html", otp=str(otp))
-                mail.send(msg)
-            except Exception as e:
-                print(e)
-                alert = "Failed to verify email"
-                bg_color = "danger"
-                return render_template(
-                    "register.html",
-                    date=datetime.utcnow(),
-                    form=form,
-                    alert=alert,
-                    bg_color=bg_color,
-                )
-
-            # Add the 'new_user'
-            db.session.add(new_user)
-            db.session.commit()
-
-            session["alert"] = "A confirmation email has been sent to you via email"
-            session["bg_color"] = "success"
-            return redirect(url_for("auth.validate", email=email))
 
     return render_template(
         "register.html",
-        date=datetime.utcnow(),
+        date=datetime.now(),
         form=form,
         alert=alert,
         bg_color=bg_color,
