@@ -45,7 +45,7 @@ def vtpass_payment():
         )
         print("amount: ", amount)
         amount = float(amount)
-        verify_number = request.form.get("verify_number", "")
+        verified_number = request.form.get("verify_number", "")
 
         print(
             "amount: ",
@@ -66,8 +66,8 @@ def vtpass_payment():
             request_id,
             "customer_name",
             customer_name,
-            "verify_number",
-            verify_number,
+            "verified_number",
+            verified_number,
         )
 
         # if not amount or not phone_number or not service_id:
@@ -123,7 +123,7 @@ def vtpass_payment():
             service_id,
             phone_number,
             customer_name,
-            verify_number,
+            verified_number,
             panic,
         )
 
