@@ -127,14 +127,20 @@ def transfer_in():
             details.account_balance = balance
             db.session.commit()
 
-            send_alert_email("credit", user=details, amount=float(amount),
-                             balance=details.account_balance, date=trans.date_posted,
-                             subject="CREDIT ALERT",
-                             acct=str(details.account_number),
-                             sender=sender_name,
-                             sender_acct=str(sender_account),
-                             bank_name=bank_name, trans_type="Bank TopUp",
-                             description=description or "Bank TopUp")
+            send_alert_email(
+                "credit",
+                user=details,
+                amount=float(amount),
+                balance=details.account_balance,
+                date=trans.date_posted,
+                subject="CREDIT ALERT",
+                acct=str(details.account_number),
+                sender=sender_name,
+                sender_acct=str(sender_account),
+                bank_name=bank_name,
+                trans_type="Bank TopUp",
+                description=description or "Bank TopUp",
+            )
 
             return (
                 jsonify(
