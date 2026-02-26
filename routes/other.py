@@ -47,7 +47,8 @@ from utils import (
     generate_session_id,
     generate_transaction_ref,
     get_uri,
-    authenticate_auth_code, send_alert_email
+    authenticate_auth_code,
+    send_alert_email,
 )
 from paystack.paystack_endpoint import PaystackEndpoints
 
@@ -545,13 +546,20 @@ def transfer_to_bank():
         current_user.account_balance = balance
         db.session.commit()
 
-        send_alert_email("Debit", user=current_user, amount=float(amount),
-                         balance=current_user.account_balance, date=trans.date_posted,
-                         subject="DEBIT ALERT",
-                         acct=str(current_user.account_number),
-                         receiver=account_name, receiver_acct=str(account_number),
-                         bank_name=bank_name, trans_type="Bank Transfer",
-                         description=narration or "Transfer")
+        send_alert_email(
+            "Debit",
+            user=current_user,
+            amount=float(amount),
+            balance=current_user.account_balance,
+            date=trans.date_posted,
+            subject="DEBIT ALERT",
+            acct=str(current_user.account_number),
+            receiver=account_name,
+            receiver_acct=str(account_number),
+            bank_name=bank_name,
+            trans_type="Bank Transfer",
+            description=narration or "Transfer",
+        )
 
         if current_user.enabled_spend_save:
             save_spend_and_save_transaction(
@@ -694,20 +702,34 @@ def pay(acct):
 
             # ALERTS WHEN FUNDS HAS BEEN SENT
             # alert for debit transaction
-            send_alert_email("debit", user=current_user, amount=amount,
-                             balance=current_user.account_balance,
-                             date=x, subject="DEBIT ALERT",
-                             acct=str(current_user.account_number), receiver=user1.username,
-                             receiver_acct=str(user1.account_number), trans_type="W2W Transfer",
-                             description=transact2.description)
+            send_alert_email(
+                "debit",
+                user=current_user,
+                amount=amount,
+                balance=current_user.account_balance,
+                date=x,
+                subject="DEBIT ALERT",
+                acct=str(current_user.account_number),
+                receiver=user1.username,
+                receiver_acct=str(user1.account_number),
+                trans_type="W2W Transfer",
+                description=transact2.description,
+            )
 
             # alert for credit transaction
-            send_alert_email("credit", user=user1, amount=amount,
-                             balance=user1.account_balance,
-                             date=x, subject="CREDIT ALERT",
-                             acct=str(user1.account_number), sender=current_user.username,
-                             sender_acct=str(current_user.account_number), trans_type="W2W Top-Up",
-                             description=transact1.description)
+            send_alert_email(
+                "credit",
+                user=user1,
+                amount=amount,
+                balance=user1.account_balance,
+                date=x,
+                subject="CREDIT ALERT",
+                acct=str(user1.account_number),
+                sender=current_user.username,
+                sender_acct=str(current_user.account_number),
+                trans_type="W2W Top-Up",
+                description=transact1.description,
+            )
 
             if current_user.enabled_spend_save:
                 save_spend_and_save_transaction(
