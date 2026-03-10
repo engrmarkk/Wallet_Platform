@@ -1,274 +1,479 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
 
- <!-- Flash messages -->
- {% with messages = get_flashed_messages(with_categories=true) %} {% if
-  messages %} {% for category, message in messages %}
-  <div
-    class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }} mt-3"
-    role="alert"
-    style="height: 3.5rem; transition: 0.6s"
-  >
-  {% if category=='success' %}
-    <div class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-    {% else %}
-    <div class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-    {% endif %}
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="alert"
-      aria-label="Close"
-    ></button>
-  </div>
-  {% endfor %} {% endif %} {% endwith %}
+{% block title %}Account — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise   { opacity: 0; animation: riseUp .55s cubic-bezier(.34,1.1,.64,1) forwards; }
+  .rise-1 { animation-delay: .05s; }
+  .rise-2 { animation-delay: .13s; }
+  .rise-3 { animation-delay: .21s; }
+  .rise-4 { animation-delay: .29s; }
+
+  .profile-hero {
+    background: linear-gradient(135deg, #0c694c, #164e49 50%, #1a6f94);
+    border-radius: 22px; position: relative; overflow: hidden;
+    padding: 24px 20px 20px;
+  }
+  .profile-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 85% 20%, rgba(46,139,182,0.25) 0%, transparent 50%),
+      radial-gradient(circle at 10% 80%, rgba(26,163,116,0.18) 0%, transparent 45%);
+  }
+  .profile-hero::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .profile-hero > * { position: relative; z-index: 1; }
+
+  .hero-avatar {
+    width: 72px; height: 72px; border-radius: 50%;
+    object-fit: cover; flex-shrink: 0;
+    border: 3px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    cursor: pointer; transition: border-color .2s;
+    display: block;
+  }
+  .hero-avatar:hover { border-color: rgba(255,255,255,0.6); }
+  .avatar-cam {
+    position: absolute; bottom: 2px; right: 2px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: #1aa374; border: 2px solid rgba(255,255,255,0.4);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+
+  .menu-card {
+    background: #fff; border-radius: 18px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 12px rgba(13,31,26,0.04); overflow: hidden;
+  }
+  .menu-item {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px; text-decoration: none;
+    border-bottom: 1px solid #f8fafc; transition: background .18s;
+    cursor: pointer; width: 100%; background: none;
+    border-left: none; border-right: none; border-top: none; text-align: left;
+    box-sizing: border-box;
+  }
+  .menu-item:last-child { border-bottom: none; }
+  .menu-item:hover { background: #f8fafc; }
+  .menu-icon {
+    width: 38px; height: 38px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: transform .2s;
+  }
+  .menu-item:hover .menu-icon { transform: scale(1.08); }
+  .menu-text { flex: 1; min-width: 0; overflow: hidden; }
+  .menu-label {
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    color: #0d1f1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .menu-sublabel {
+    font-family: 'DM Sans', sans-serif; font-size: 11px;
+    color: #94a3b8; margin-top: 1px;
+  }
+  .menu-right { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .menu-arrow {
+    color: #cbd5e1; font-size: 11px;
+    transition: transform .2s, color .2s;
+  }
+  .menu-item:hover .menu-arrow { transform: translateX(3px); color: #1aa374; }
+
+  .badge-on {
+    font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 20px;
+    background: rgba(26,163,116,0.1); color: #0c694c;
+    border: 1px solid rgba(26,163,116,0.2);
+    text-transform: uppercase; letter-spacing: .04em; white-space: nowrap;
+  }
+  .badge-off {
+    font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 20px;
+    background: #f1f5f9; color: #94a3b8;
+    border: 1px solid #e2e8f0;
+    text-transform: uppercase; letter-spacing: .04em; white-space: nowrap;
+  }
+  .badge-admin {
+    font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+    background: linear-gradient(135deg,#7c3aed,#5b21b6);
+    color: #fff; letter-spacing: .04em; white-space: nowrap;
+  }
+  .section-label {
+    font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700;
+    color: #94a3b8; text-transform: uppercase; letter-spacing: .1em;
+    padding: 0 2px; margin-bottom: 8px; margin-top: 20px; display: block;
+  }
+
+  /* Modals */
+  .et-modal-overlay {
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(13,31,26,0.5); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    opacity: 0; pointer-events: none; transition: opacity .3s;
+  }
+  .et-modal-overlay.open { opacity: 1; pointer-events: auto; }
+  .et-modal {
+    background: #fff; border-radius: 22px; padding: 1.75rem;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 30px 70px rgba(13,31,26,0.2);
+    transform: translateY(20px) scale(0.97);
+    transition: transform .35s cubic-bezier(.34,1.3,.64,1);
+  }
+  .et-modal-overlay.open .et-modal { transform: translateY(0) scale(1); }
+  .modal-input {
+    width: 100%; padding: 12px 14px; background: #f8fafc;
+    border: 1.5px solid #e2e8f0; border-radius: 12px; outline: none;
+    font-family: 'DM Sans', sans-serif; font-size: 22px; color: #0d1f1a;
+    transition: border-color .2s, box-shadow .2s;
+    text-align: center; letter-spacing: .3em;
+  }
+  .modal-input:focus { border-color: #1aa374; box-shadow: 0 0 0 4px rgba(26,163,116,0.10); background: #fff; }
+  .modal-btn {
+    width: 100%; padding: 13px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg,#1aa374,#2e8bb6); color: #fff;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; box-shadow: 0 6px 20px rgba(26,163,116,0.3);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .modal-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(26,163,116,0.4); }
+  .modal-btn-secondary {
+    width: 100%; padding: 11px; border-radius: 12px;
+    border: 1.5px solid #e2e8f0; background: #fff; color: #64748b;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
+    cursor: pointer; transition: background .2s;
+  }
+  .modal-btn-secondary:hover { background: #f1f5f9; }
+  .modal-btn-danger {
+    flex: 1; padding: 11px; border-radius: 10px; border: none;
+    background: #ef4444; color: #fff;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: background .2s;
+    text-decoration: none; display: flex; align-items: center; justify-content: center;
+  }
+  .modal-btn-danger:hover { background: #dc2626; color: #fff; }
+  .qr-wrap { background: #fff; border-radius: 14px; padding: 12px; display: inline-block; box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+
+  #copy-toast {
+    position: fixed; bottom: 1.5rem;
+    left: 50%; transform: translateX(-50%) translateY(10px);
+    background: #0d1f1a; color: #fff;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px;
+    padding: 12px 20px; border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    display: flex; align-items: center; gap: 8px;
+    pointer-events: none; z-index: 9999;
+    opacity: 0; transition: opacity .3s, transform .3s;
+  }
+</style>
+{% endblock head %}
 
 
-<div
-  class="mt-5 account-wrapper p-5 col-15 col-xs-10 col-sm-10 col-md-9 card"
-  style="margin: auto"
->
-<div class="d-flex align-items-center _profile">
-  <div class="d-flex acc-header">
-    <div onclick="chooseFile();"><img
-      src="{{ current_user.photo }}"
-      class="img-thumbnail article-img border-none mt-4"
-      style="width: 11rem; height: 11rem; cursor: pointer;"
-      alt="{{ current_user.last_name.title() + ' ' +
-      current_user.first_name.title() }} image"
-    /></div>
-      <div class='account-header'>
-        <h1 class="mt-3">My Account</h1><br>
-      <span class="text-accent user-name h4"
-        >{{ current_user.last_name.title() + ' ' +
-        current_user.first_name.title() }}</span
-      ></div>
-    </div>
+{% block content %}
+<div class="w-full" style="background:#f7faf8; padding:1.5rem 1rem 5rem; min-height:80vh;">
+  <div style="max-width:480px; margin:0 auto;">
 
-    <form action="" method="post" class="mb-5" enctype="multipart/form-data" id="upload-form">
-      <!-- For image validations -->
-      <!-- {{ form.image.label(class='label') }} -->
-      <div style="height: 0px; overflow: hidden; 
-      ">
-          {{ form.image(class=" w-100 mt-5 form-control-file",
-          required=False, placeholder="Enter email", id="fileInput") }}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-4">
+          {% for category, message in messages %}
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-radius:16px;margin-bottom:8px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;{% if category=='success'%}background:#0f835d;color:#fff;{% else %}background:#ef4444;color:#fff;{% endif %}">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <i class="fas {% if category=='success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+                <span>{{ message }}</span>
+              </div>
+              <button onclick="this.parentElement.remove()" style="background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;">
+                <i class="fas fa-times" style="font-size:11px;"></i>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <!-- HERO -->
+    <div class="profile-hero rise rise-1 mb-5">
+      <!-- Avatar + Name centred -->
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:20px;">
+        <div style="position:relative;width:72px;">
+          <img src="{{ current_user.photo }}"
+               alt="{{ current_user.first_name.title() }}"
+               class="hero-avatar"
+               id="avatar-preview"
+               onclick="chooseFile()" />
+          <div class="avatar-cam" onclick="chooseFile()">
+            <i class="fas fa-camera text-white" style="font-size:9px;"></i>
+          </div>
+        </div>
+        <div>
+          <h2 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;color:#fff;font-size:1.25rem;line-height:1.2;margin:0;">
+            {{ current_user.first_name.title() }} {{ current_user.last_name.title() }}
+          </h2>
+          <p style="font-family:'DM Sans',sans-serif;color:rgba(255,255,255,.55);font-size:13px;margin:4px 0 0;">@{{ current_user.username }}</p>
+          <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;flex-wrap:wrap;">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:#86efcc;background:rgba(255,255,255,.1);padding:4px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.12);">
+              <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;display:inline-block;"></span>
+              Active
+            </span>
+            {% if current_user.is_admin %}
+            <span class="badge-admin">Admin</span>
+            {% endif %}
+          </div>
+        </div>
       </div>
-      
-      <div style="overflow: hidden;
-      height: 0px; 
-      ">
-      <input type="submit" value="Upload" class="btn btn-success py-0 px-2" id="upload"
-      style="font-size: small;
-      ">
+
+      <!-- Account number -->
+      <div style="display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:12px 16px;">
+        <i class="fas fa-university" style="color:rgba(255,255,255,.4);font-size:14px;flex-shrink:0;"></i>
+        <div style="flex:1;min-width:0;">
+          <p style="font-family:'DM Sans',sans-serif;color:rgba(255,255,255,.4);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin:0 0 2px;">Account Number</p>
+          <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:700;color:#fff;font-size:17px;letter-spacing:.12em;margin:0;">{{ current_user.account_number }}</p>
+        </div>
+        <button onclick="copyAcct('{{ current_user.account_number }}')"
+          style="width:32px;height:32px;border-radius:10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;flex-shrink:0;"
+          onmouseover="this.style.background='rgba(255,255,255,.2)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
+          <i class="fas fa-copy" style="color:rgba(255,255,255,.5);font-size:11px;"></i>
+        </button>
       </div>
-  
-  </form>
 
-    
-    <div class="d-flex  flex-column px-3">
-     <!-- <p class='acc-detail'>
-        <small class="text-muted">Account Number</small><br />
-        <span class="text-accent">{{ current_user.account_number }}</span>
-      </p> i dont think there's need to include this here -->
+      <form action="" method="post" enctype="multipart/form-data" id="upload-form" style="display:none;">
+        {{ form.image(class="", required=False, id="fileInput") }}
+      </form>
     </div>
-  </div>
-  <div class="container acc-con">
-  <div class="acc-row row ">
-    <div class="col-lg-12 acc-col ">
-      {% if pinset == True %}
-      <a
-        href="{{url_for('view.change_transfer_pin')}}"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-        <i class="far fas fa-key"></i>
-        <div class="fw-bold">Change pin</div>
+
+    <!-- SECURITY -->
+    <span class="section-label rise rise-2">Security</span>
+    <div class="menu-card rise rise-2">
+      <a href="{{ url_for('view.change_transfer_pin' if pinset else 'view.create_transfer_pin') }}" class="menu-item">
+        <div class="menu-icon" style="background:rgba(26,163,116,0.1);">
+          <i class="fas fa-key text-brand-600 text-sm"></i>
+        </div>
+        <div class="menu-text">
+          <p class="menu-label">Transaction PIN</p>
+          <p class="menu-sublabel">{% if pinset %}Change your 4-digit PIN{% else %}Set up your PIN{% endif %}</p>
+        </div>
+        <div class="menu-right">
+          <span class="{% if pinset %}badge-on{% else %}badge-off{% endif %}">{% if pinset %}Set{% else %}Not set{% endif %}</span>
+          <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
       </a>
-      {% else %}
-      <a
-        href="{{url_for('view.create_transfer_pin')}}"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-        <i class="far fas fa-key"></i>
-        <div class="fw-bold">Transaction pin</div>
-      </a>
+
+      <button class="menu-item" onclick="openModal('twofa-modal')">
+        <div class="menu-icon" style="background:rgba(46,139,182,0.1);">
+          <i class="fas fa-shield-alt" style="color:#2e8bb6;font-size:14px;"></i>
+        </div>
+        <div class="menu-text">
+          <p class="menu-label">Two-Factor Auth</p>
+          <p class="menu-sublabel">Google Authenticator (TOTP)</p>
+        </div>
+        <div class="menu-right">
+          <span class="{% if current_user.enabled_2fa %}badge-on{% else %}badge-off{% endif %}">{% if current_user.enabled_2fa %}On{% else %}Off{% endif %}</span>
+          <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+      </button>
+
+      {% if not current_user.panic_mode %}
+      <button class="menu-item" onclick="{% if current_user.has_set_panic %}openModal('panic-modal'){% else %}window.location='{{ url_for('view.create_panic_password') }}'{% endif %}">
+        <div class="menu-icon" style="background:rgba(239,68,68,0.1);">
+          <i class="fas fa-lock" style="color:#ef4444;font-size:14px;"></i>
+        </div>
+        <div class="menu-text">
+          <p class="menu-label">Panic Password</p>
+          <p class="menu-sublabel">Emergency account lock</p>
+        </div>
+        <div class="menu-right">
+          <span class="{% if current_user.has_set_panic %}badge-on{% else %}badge-off{% endif %}">{% if current_user.has_set_panic %}Set{% else %}Not set{% endif %}</span>
+          <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
+      </button>
       {% endif %}
     </div>
 
-    <div class="col-lg-12 acc-col ">
-      <a
-      data-bs-toggle="modal" data-bs-target="#exampleModal" style="cursor: pointer;"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-      {% if current_user.enabled_2fa %}
-      <i class="fa-solid fa-toggle-on"></i>
-        <div class="fw-bold">Disable 2FA</div>
-      {% else %}
-      <i class="fa-solid fa-toggle-off"></i>
-      <div class="fw-bold">Enable 2FA</div>
-      {% endif %}
+    <!-- ACCOUNT -->
+    <span class="section-label rise rise-3">Account</span>
+    <div class="menu-card rise rise-3">
+      <a href="{{ url_for('view.download_pdf') }}" class="menu-item">
+        <div class="menu-icon" style="background:rgba(245,158,11,0.1);">
+          <i class="fas fa-file-invoice" style="color:#f59e0b;font-size:14px;"></i>
+        </div>
+        <div class="menu-text">
+          <p class="menu-label">Statement Report</p>
+          <p class="menu-sublabel">Download history as PDF</p>
+        </div>
+        <div class="menu-right"><i class="fas fa-chevron-right menu-arrow"></i></div>
+      </a>
+      <a href="{{ url_for('view.invite_and_earn') }}" class="menu-item">
+        <div class="menu-icon" style="background:rgba(16,185,129,0.1);">
+          <i class="fas fa-gift" style="color:#10b981;font-size:14px;"></i>
+        </div>
+        <div class="menu-text">
+          <p class="menu-label">Invite &amp; Earn</p>
+          <p class="menu-sublabel">Refer friends and get rewarded</p>
+        </div>
+        <div class="menu-right"><i class="fas fa-chevron-right menu-arrow"></i></div>
       </a>
     </div>
 
-    {% if not current_user.panic_mode %}
-    <div class="col-lg-12 acc-col ">
-      {% if current_user.has_set_panic %}
-      <a
-      data-bs-toggle="modal" data-bs-target="#realModel" type="button"
-      class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-    >
-      <i class="fa-solid fa-lock icon-fa"></i>
-      <div class="fw-bold">Panic Password</div>
-    </a>
-      {% else %}
-      <a
-        href="{{url_for('view.create_panic_password')}}"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-        <i class="fa-solid fa-lock icon-fa"></i>
-        <div class="fw-bold">Panic Password</div>
+    <!-- SUPPORT -->
+    <span class="section-label rise rise-4">Support &amp; Legal</span>
+    <div class="menu-card rise rise-4">
+      <a href="{{ url_for('view.faq') }}" class="menu-item">
+        <div class="menu-icon" style="background:rgba(99,102,241,0.1);">
+          <i class="fas fa-question-circle" style="color:#6366f1;font-size:14px;"></i>
+        </div>
+        <div class="menu-text">
+          <p class="menu-label">FAQs</p>
+          <p class="menu-sublabel">Common questions answered</p>
+        </div>
+        <div class="menu-right"><i class="fas fa-chevron-right menu-arrow"></i></div>
       </a>
-      {% endif %}
-    </div>
-    {% endif %}
-
-    <div class="col-lg-12 acc-col ">
-      <a
-        href="{{url_for('view.download_pdf')}}"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-        <i class="far fa-sticky-note icon-fa"></i>
-        <div class="fw-bold">Statement Report</div>
+      <a href="{{ url_for('view.contact') }}" class="menu-item">
+        <div class="menu-icon" style="background:rgba(14,165,233,0.1);">
+          <i class="fas fa-headset" style="color:#0ea5e9;font-size:14px;"></i>
+        </div>
+        <div class="menu-text">
+          <p class="menu-label">Contact Us</p>
+          <p class="menu-sublabel">Chat, email or WhatsApp</p>
+        </div>
+        <div class="menu-right"><i class="fas fa-chevron-right menu-arrow"></i></div>
       </a>
-    </div>
-<!-- 
-    <div class="col-lg-12 acc-col ">
-      <a
-        href="#"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-        <i class="fab fa-rocketchat icon-fa"></i>
-        <p>Chat with us</p>
-      </a>
-    </div> -->
-
-    <div class="col-lg-12 acc-col ">
-      <a
-        href="{{ url_for('view.coming_soon') }}"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-        <i class="fas fa-pen-square icon-fa"></i>
-        <div class="fw-bold">Legal</div>
-      </a>
-    </div>
-
-    <div class="col-lg-12 acc-col ">
-      <a
-        href="{{ url_for('view.faq') }}"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-        <i class="far fa-question-circle icon-fa"></i>
-        <div class="fw-bold">FAQs</div>
-      </a>
-    </div>
-
-    <div class="col-lg-12 acc-col ">
-      <a
-        href="{{ url_for('view.invite_and_earn') }}"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-        <i class="fab fa-osi icon-fa"></i>
-        <div class="fw-bold">Invite and earn</div>
-      </a>
-    </div>
-
-    <div class="col-lg-12 acc-col ">
-      <a
-        href="{{ url_for('view.contact') }}"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-        <i class="fas fa-phone-square icon-fa"></i>
-        <div class="fw-bold">Contact us</div>
+      <a href="{{ url_for('view.coming_soon') }}" class="menu-item">
+        <div class="menu-icon" style="background:rgba(100,116,139,0.1);">
+          <i class="fas fa-balance-scale" style="color:#64748b;font-size:14px;"></i>
+        </div>
+        <div class="menu-text">
+          <p class="menu-label">Legal</p>
+          <p class="menu-sublabel">Terms &amp; Privacy policy</p>
+        </div>
+        <div class="menu-right"><i class="fas fa-chevron-right menu-arrow"></i></div>
       </a>
     </div>
 
     {% if current_user.is_admin %}
-    <div class="col-lg-12 acc-col ">
-      <a
-        href="{{ url_for('admin_blp.admin_dashboard') }}"
-        class="acc-box-item bg-profile-menu text-accent text-decoration-none py-1 px-3 lead d-flex align-items-center justify-content-between"
-      >
-      <i class="fas fa-user-shield icon-fa"></i>
-        <div class="fw-bold">Admin Panel</div>
+    <div class="menu-card rise rise-4 mt-5">
+      <a href="{{ url_for('admin_blp.admin_dashboard') }}" class="menu-item">
+        <div class="menu-icon" style="background:rgba(124,58,237,0.1);">
+          <i class="fas fa-user-shield" style="color:#7c3aed;font-size:14px;"></i>
+        </div>
+        <div class="menu-text">
+          <p class="menu-label">Admin Panel</p>
+          <p class="menu-sublabel">Manage users and platform</p>
+        </div>
+        <div class="menu-right">
+          <span class="badge-admin">Admin</span>
+          <i class="fas fa-chevron-right menu-arrow"></i>
+        </div>
       </a>
     </div>
     {% endif %}
+
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="realModel" tabindex="-1" aria-labelledby="realModelLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-sm">
-    <div class="modal-content">
-      <!-- <div class="modal-header">
-        <h5 class="modal-title" id="realModelLabel"></h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div> -->
-      <div class="modal-body text-center m-auto">
-        Wanna deactivate panic password?
+<div id="copy-toast">
+  <i class="fas fa-check-circle" style="color:#6dd6ae;font-size:14px;"></i>
+  <span id="copy-toast-msg">Copied!</span>
+</div>
+
+<!-- 2FA MODAL -->
+<div class="et-modal-overlay" id="twofa-modal">
+  <div class="et-modal">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#2e8bb6,#1a6f94);display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-shield-alt" style="color:#fff;font-size:14px;"></i>
+        </div>
+        <div>
+          <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:15px;color:#0d1f1a;margin:0;">{% if current_user.enabled_2fa %}Disable 2FA{% else %}Enable 2FA{% endif %}</p>
+          <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin:0;">Google Authenticator</p>
+        </div>
       </div>
-      <div class="my-2 m-auto">
-        <a href="{{ url_for('view.delete_panic_password')}}" class="btn btn-danger">Yes</a>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+      <button onclick="closeModal('twofa-modal')" style="width:32px;height:32px;border-radius:10px;background:#f1f5f9;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-times" style="color:#64748b;font-size:11px;"></i>
+      </button>
+    </div>
+    {% if not current_user.enabled_2fa %}
+    <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#64748b;margin-bottom:16px;line-height:1.6;">Scan this QR in <strong style="color:#0d1f1a;">Google Authenticator</strong>, then enter the 6-digit code.</p>
+    <div style="display:flex;justify-content:center;margin-bottom:16px;">
+      <div class="qr-wrap">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ uri }}" class="rounded-lg" width="160" height="160" alt="QR">
       </div>
     </div>
+    {% else %}
+    <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#64748b;margin-bottom:16px;">Enter your current <strong style="color:#0d1f1a;">Authenticator code</strong> to disable 2FA.</p>
+    {% endif %}
+    <form method="post" action="{{ url_for('view.toggle_2fa') }}">
+      <label style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:8px;">6-Digit Code</label>
+      <input type="text" name="auth_code" class="modal-input" style="margin-bottom:16px;" maxlength="6" placeholder="000000" inputmode="numeric">
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <button type="submit" class="modal-btn">{% if current_user.enabled_2fa %}Disable 2FA{% else %}Enable 2FA{% endif %}</button>
+        <button type="button" onclick="closeModal('twofa-modal')" class="modal-btn-secondary">Cancel</button>
+      </div>
+    </form>
   </div>
 </div>
 
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"
-style="background: rgba(0, 0, 0, 0.669);"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <p class="modal-title" id="exampleModalLabel">
-          {% if current_user.enabled_2fa %}
-          Please enter your Google Authenticator code to disable
-          {% else %}
-          Scan the QR code below with Google Authenticator and provide the code
-          {% endif %}
-        </p>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- PANIC MODAL -->
+{% if current_user.has_set_panic %}
+<div class="et-modal-overlay" id="panic-modal">
+  <div class="et-modal">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+      <div style="width:40px;height:40px;border-radius:12px;background:#fee2e2;display:flex;align-items:center;justify-content:center;">
+        <i class="fas fa-exclamation-triangle" style="color:#ef4444;"></i>
       </div>
-      <form class="form-group h-100" method="post" action="{{ url_for('view.toggle_2fa') }}">
-      <div class="modal-body">
-        {% if not current_user.enabled_2fa %}
-        <!-- qr code -->
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data={{ uri }}" class="mx-auto img-thumbnail mb-3 d-flex justify-content-center">
-        {% endif %}
-        <input type="text" name="auth_code" class="form-control shadow-none w-100 text-center border-2" maxlength="6" placeholder="Enter 6 digit code">
-        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
-        <button type="submit" class="btn btn-primary mt-3 shadow-none mx-auto d-flex justify-content-center">
-          {% if current_user.enabled_2fa %}
-          Disable
-          {% else %}
-          Enable
-          {% endif %}
-        </button>
-      </form>
+      <div>
+        <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:15px;color:#0d1f1a;margin:0;">Remove Panic Password?</p>
+        <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin:0;">This removes your emergency lock</p>
+      </div>
     </div>
+    <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#64748b;margin-bottom:20px;line-height:1.6;">Your account will no longer have emergency protection after removing this.</p>
+    <div style="display:flex;gap:10px;">
+      <button onclick="closeModal('panic-modal')" class="modal-btn-secondary" style="flex:1;">Keep it</button>
+      <a href="{{ url_for('view.delete_panic_password') }}" class="modal-btn-danger" style="flex:1;">Yes, remove</a>
     </div>
   </div>
 </div>
-
-<script>
-  function chooseFile() {
-    document.getElementById("fileInput").click();
-  }
-
-  document.getElementById("fileInput").addEventListener("change", function() {
-      document.getElementById("upload-form").submit();
-  });
-</script>
+{% endif %}
 
 {% endblock content %}
+
+{% block scripts %}
+<script>
+  function chooseFile() { document.getElementById("fileInput").click(); }
+  document.getElementById("fileInput").addEventListener("change", function() {
+    if (this.files && this.files[0]) {
+      const r = new FileReader();
+      r.onload = e => document.getElementById('avatar-preview').src = e.target.result;
+      r.readAsDataURL(this.files[0]);
+    }
+    document.getElementById("upload-form").submit();
+  });
+  function copyAcct(val) {
+    navigator.clipboard.writeText(val).then(() => {
+      const t = document.getElementById('copy-toast');
+      document.getElementById('copy-toast-msg').textContent = 'Account number copied!';
+      t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)';
+      clearTimeout(window._tt);
+      window._tt = setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(10px)'; }, 2200);
+    });
+  }
+  function openModal(id)  { document.getElementById(id).classList.add('open');    document.body.style.overflow='hidden'; }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+  document.querySelectorAll('.et-modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if(e.target===o) closeModal(o.id); });
+  });
+  document.addEventListener('keydown', e => {
+    if(e.key==='Escape') document.querySelectorAll('.et-modal-overlay.open').forEach(m=>closeModal(m.id));
+  });
+</script>
+{% endblock scripts %}
