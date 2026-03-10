@@ -74,9 +74,10 @@ class User(db.Model, UserMixin):
     @staticmethod
     def verify_reset_token(token):
         try:
-            id = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])[
+            id = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=["HS256"])[
                 "reset_password"
             ]
+            print(f"Id from token: {id}")
         except Exception as e:
             print(e, "error in token verification")
             return None
