@@ -1,109 +1,121 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Quicksand:wght@400;700&family=Sora&display=swap" rel="stylesheet">
-    <link rel='stylesheet' href="{{ url_for('static', filename='css/customStyle.css') }}"/>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-      crossorigin="anonymous"
-    />
+{% extends 'base.html' %}
 
-    <!-- For dropdown BOOTSTRAP -->
-    <!-- Load Bootstrap -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
-      integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I"
-      crossorigin="anonymous"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
-      integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
-      crossorigin="anonymous"
-    ></script>
+{% block title %}Coming Soon — EasyTransact{% endblock title %}
 
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/customStyle.css') }}"
-    />
+{% block head %}
+<style>
+  body { background: #0d1f1a !important; }
+  #navbar, footer, #dark-mode-toggle, #scroll-top { display: none !important; }
+  .page-content { padding-top: 0 !important; }
 
-    <link
-      rel="icon"
-      href="{{ url_for('static', filename='images/logo-normal.png') }}"
-    />
+  @keyframes riseUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes blobPulse { 0%,100%{transform:scale(1) rotate(0deg)} 50%{transform:scale(1.08) rotate(6deg)} }
+  @keyframes gridScroll { from{background-position:0 0} to{background-position:40px 40px} }
+  @keyframes cookingBounce { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-12px) rotate(5deg)} }
+  @keyframes steam { 0%{opacity:0;transform:translateY(0) scaleX(1)} 50%{opacity:.5;transform:translateY(-20px) scaleX(1.2)} 100%{opacity:0;transform:translateY(-40px) scaleX(.8)} }
 
-    <!-- font awesome -->
+  .rise{opacity:0;animation:riseUp .7s cubic-bezier(.34,1.1,.64,1) forwards;}
+  .rise-1{animation-delay:.1s;} .rise-2{animation-delay:.22s;} .rise-3{animation-delay:.34s;} .rise-4{animation-delay:.46s;}
 
-    <!-- fontAwesome -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
+  /* Background */
+  .coming-bg {
+    min-height:100vh; width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:2rem 1.5rem; position:relative; overflow:hidden;
+    background:#0d1f1a;
+  }
+  .coming-bg::before {
+    content:''; position:absolute; inset:0;
+    background-image:linear-gradient(rgba(26,163,116,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(26,163,116,.06) 1px,transparent 1px);
+    background-size:40px 40px;
+    animation:gridScroll 6s linear infinite;
+  }
+  /* Blobs */
+  .blob { position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; }
+  .blob-1 { width:500px; height:500px; background:rgba(26,163,116,0.12); top:-150px; left:-150px; animation:blobPulse 9s ease-in-out infinite; }
+  .blob-2 { width:400px; height:400px; background:rgba(46,139,182,0.10); bottom:-100px; right:-120px; animation:blobPulse 12s ease-in-out infinite reverse; }
 
-    <!-- @@@@@@@@@@@@@@@@@@@@@@@ -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
-    />
-    <title>Comimg Soon</title>
-</head>
-<body>
+  /* Content */
+  .content-wrap { position:relative; z-index:1; text-align:center; max-width:520px; width:100%; }
 
-    <div class="login-container bg-dark">
-        <a href="{{ url_for('view.front_page') }}" class="navbar-brand">
-            <img
-              src="{{ url_for('static', filename='images/logo-white.png') }}"
-              alt="company's logo"
-              style="width: 2.5rem"
-            />
-            <span>&nbsp;Easy<span class="text-green">Transact</span></span>
-          </a>
+  /* Cooking icon */
+  .cook-icon { font-size:72px; display:block; animation:cookingBounce 2.4s ease-in-out infinite; line-height:1; margin-bottom:8px; }
+  .steam-wrap { display:flex; justify-content:center; gap:8px; height:40px; margin-bottom:4px; }
+  .steam-line { width:3px; border-radius:10px; background:rgba(255,255,255,.15); animation:steam 2s ease-in-out infinite; }
+  .steam-line:nth-child(2) { animation-delay:.4s; height:24px; }
+  .steam-line:nth-child(3) { animation-delay:.8s; }
 
-          <div style="margin-top: 7rem;">
-            <p class="text-center fw-bold text-muted">WE'RE STILL</p>
-            <h3 class="fw-bold text-light text-center fs-2">Cooking Our Website</h3>
-            <p class="text-center text-light" style="font-size: small;">We are going to make this page available later</p>
-          </div>
-          <div class="text center bg-light px-3 rounded mt-4 fw-bold" onclick="history.back()" style="cursor: pointer;">
-            <i class="fa fa-caret-left"></i> Go Back
-          </div>
+  /* Badge */
+  .coming-badge { display:inline-flex; align-items:center; gap:6px; background:rgba(26,163,116,.12); border:1px solid rgba(26,163,116,.25); padding:5px 14px; border-radius:20px; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:700; color:#6dd6ae; letter-spacing:.07em; margin-bottom:18px; }
+
+  /* Go back */
+  .go-back-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; border-radius:14px; border:1.5px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:rgba(255,255,255,.7); font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px; cursor:pointer; text-decoration:none; transition:all .25s; }
+  .go-back-btn:hover { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.22); color:#fff; transform:translateX(-3px); }
+
+  /* Home link */
+  .home-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; border-radius:14px; border:none; background:linear-gradient(135deg,#1aa374,#2e8bb6); color:#fff; font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px; cursor:pointer; text-decoration:none; box-shadow:0 6px 20px rgba(26,163,116,.35); transition:transform .2s,box-shadow .2s; }
+  .home-btn:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(26,163,116,.45); color:#fff; }
+</style>
+{% endblock head %}
+
+
+{% block content %}
+<div class="coming-bg">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="content-wrap">
+
+    <!-- Logo -->
+    <div class="rise rise-1" style="margin-bottom:36px;">
+      <a href="{{ url_for('view.front_page') }}" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">
+        <img src="{{ url_for('static', filename='images/logo-white.png') }}" alt="EasyTransact" style="width:32px;height:32px;">
+        <span style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.15rem;color:#fff;">Easy<span style="color:#6dd6ae;">Transact</span></span>
+      </a>
     </div>
-    
 
+    <!-- Cooking animation -->
+    <div class="rise rise-2">
+      <div class="steam-wrap">
+        <div class="steam-line" style="height:30px;"></div>
+        <div class="steam-line"></div>
+        <div class="steam-line" style="height:30px;"></div>
+      </div>
+      <span class="cook-icon">🍳</span>
+    </div>
 
+    <!-- Text -->
+    <div class="rise rise-3" style="margin-bottom:32px;">
+      <span class="coming-badge">
+        <i class="fas fa-clock" style="font-size:9px;"></i>
+        WE'RE STILL COOKING
+      </span>
+      <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:clamp(2rem,6vw,2.8rem);color:#fff;margin:0 0 14px;line-height:1.15;">
+        This page is<br>coming soon
+      </h1>
+      <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,.45);margin:0;line-height:1.7;max-width:360px;margin:0 auto;">
+        We're working hard to bring this feature to life.<br>Check back later — it'll be worth the wait!
+      </p>
+    </div>
 
+    <!-- Actions -->
+    <div class="rise rise-4" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="go-back-btn" onclick="history.back()">
+        <i class="fas fa-arrow-left" style="font-size:12px;"></i>
+        Go Back
+      </button>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('view.home') }}" class="home-btn">
+        <i class="fas fa-house" style="font-size:12px;"></i>
+        Dashboard
+      </a>
+      {% else %}
+      <a href="{{ url_for('view.front_page') }}" class="home-btn">
+        <i class="fas fa-house" style="font-size:12px;"></i>
+        Home
+      </a>
+      {% endif %}
+    </div>
 
-
-
-
-
-
-
-
-    <!-- BOOTSTRAP -->
-
-    <!-- Bootsrap popper -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
-      integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
-      crossorigin="anonymous"
-    ></script>
-</body>
-</html>
+  </div>
+</div>
+{% endblock content %}
