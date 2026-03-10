@@ -1,107 +1,279 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
 
-<div class="d-flex flex-column justify-content-center align-items-center mt-5">
-  <div style=' 
-  display: flex;
-  align-items: center;
-  gap: 5px;'>
-    <span class="text-muted h3">Create Pin </span>
-  </div>
-  <div class="col-10 col-xs-10 col-sm-10 col-md-6">
-    <!-- wallet sending money form-->
-    <form
-      action=""
-      method="post"
-      class="p-5 create-pin mt-5 w-100"
-    >
-      <!-- Flash messages -->
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %} {% for category, message in messages %}
-      <div
-        class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
-        role="alert"
-        style="height: 3.5rem; transition: 0.6s"
-      >
-        {% if category=='success' %}
-        <div class="small text-center">
-          <i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}
-        </div>
-        {% else %}
-        <div class="small text-center">
-          <i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{
-          message }}
-        </div>
-        {% endif %}
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
+{% block title %}Create Transfer PIN — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+  #navbar, footer, #dark-mode-toggle, #scroll-top { display: none !important; }
+  .page-content { padding-top: 0 !important; }
+
+  @keyframes riseUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes slideInRight { from{opacity:0;transform:translateX(120%)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(120%)} }
+  @keyframes shrink { from{width:100%} to{width:0} }
+  @keyframes dotPop { 0%{transform:scale(1)} 50%{transform:scale(1.35)} 100%{transform:scale(1)} }
+
+  .rise{opacity:0;animation:riseUp .6s cubic-bezier(.34,1.1,.64,1) forwards;}
+  .rise-1{animation-delay:.06s;} .rise-2{animation-delay:.16s;} .rise-3{animation-delay:.26s;}
+
+  /* PIN dots */
+  .pin-dots { display:flex; gap:14px; justify-content:center; margin:0 0 12px; }
+  .pin-dot { width:16px; height:16px; border-radius:50%; border:2px solid #e2e8f0; background:#f8fafc; transition:background .2s,border-color .2s,transform .2s; }
+  .pin-dot.filled { background:#1aa374; border-color:#1aa374; animation:dotPop .25s ease; }
+
+  /* Inputs */
+  .et-input { width:100%; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:12px; padding:11px 14px; font-family:'DM Sans',sans-serif; font-size:14px; color:#0d1f1a; outline:none; transition:border-color .25s,box-shadow .25s,background .2s; box-sizing:border-box; }
+  .et-input::placeholder { color:#94a3b8; }
+  .et-input:focus { border-color:#1aa374; background:#fff; box-shadow:0 0 0 4px rgba(26,163,116,.10); }
+  .et-input.has-error { border-color:#f87171; background:#fff5f5; }
+  .field-label { display:block; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
+  .pw-wrap { position:relative; }
+  .pw-toggle { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:#94a3b8; cursor:pointer; font-size:13px; background:none; border:none; padding:0; transition:color .2s; }
+  .pw-toggle:hover { color:#475569; }
+
+  /* Custom select */
+  .et-select { width:100%; background:#f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%2394a3b8'%3E%3Cpath fill-rule='evenodd' d='M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z'/%3E%3C/svg%3E") no-repeat right 14px center/16px; border:1.5px solid #e2e8f0; border-radius:12px; padding:11px 38px 11px 14px; font-family:'DM Sans',sans-serif; font-size:13px; color:#0d1f1a; outline:none; -webkit-appearance:none; appearance:none; transition:border-color .25s,box-shadow .25s; box-sizing:border-box; cursor:pointer; }
+  .et-select:focus { border-color:#1aa374; background-color:#fff; box-shadow:0 0 0 4px rgba(26,163,116,.10); }
+
+  /* Submit */
+  .submit-btn { width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#1aa374,#2e8bb6); color:#fff; font-family:'DM Sans',sans-serif; font-weight:700; font-size:15px; cursor:pointer; position:relative; overflow:hidden; box-shadow:0 8px 25px rgba(26,163,116,.30); transition:transform .2s,box-shadow .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .submit-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#0c694c,#1a6f94); opacity:0; transition:opacity .3s; }
+  .submit-btn:hover::before { opacity:1; }
+  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 14px 35px rgba(26,163,116,.4); }
+  .submit-btn span { position:relative; z-index:1; display:flex; align-items:center; gap:8px; }
+
+  /* Section divider */
+  .section-label { display:flex; align-items:center; gap:10px; margin:20px 0 14px; }
+  .section-label::before,.section-label::after { content:''; flex:1; height:1px; background:#f1f5f9; }
+  .section-label span { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:.08em; white-space:nowrap; }
+
+  /* Flash toasts */
+  .flash-toast { position:fixed; top:1.25rem; right:1.25rem; z-index:9999; display:flex; align-items:flex-start; gap:12px; background:#fff; border-radius:16px; padding:14px 16px; min-width:280px; max-width:360px; box-shadow:0 8px 32px rgba(13,31,26,.14); border:1px solid #f1f5f9; animation:slideInRight .4s cubic-bezier(.34,1.2,.64,1) forwards; overflow:hidden; }
+  .flash-toast.hide { animation:slideOutRight .35s ease forwards; }
+  .ft-icon{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .ft-icon.success{background:rgba(26,163,116,.1);color:#0c694c;} .ft-icon.error{background:rgba(239,68,68,.1);color:#dc2626;}
+  .ft-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0 0 2px;}
+  .ft-msg{font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;}
+  .ft-close{background:none;border:none;cursor:pointer;padding:0;color:#cbd5e1;font-size:12px;}
+  .ft-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 16px 16px;animation:shrink 4s linear forwards;}
+  .ft-bar.success{background:#1aa374;} .ft-bar.error{background:#ef4444;}
+</style>
+{% endblock head %}
+
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:10px;">
+      {% for category, message in messages %}
+      {% set tone = 'success' if category=='success' else 'error' %}
+      <div class="flash-toast" id="ft-{{ loop.index }}" style="position:relative;">
+        <div class="ft-icon {{ tone }}"><i class="fas {% if tone=='success' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i></div>
+        <div style="flex:1;min-width:0;"><p class="ft-title">{% if tone=='success' %}Success{% else %}Error{% endif %}</p><p class="ft-msg">{{ message }}</p></div>
+        <button class="ft-close" onclick="dismissToast('ft-{{ loop.index }}')"><i class="fas fa-times"></i></button>
+        <div class="ft-bar {{ tone }}"></div>
       </div>
-      {% endfor %} {% endif %} {% endwith %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 
-      <div
-        class="bg-light d-flex mb-3 rounded"
-        style="width: fit-content; margin: auto"
-      >
-        <img
-          src="{{ url_for('static', filename='images/logo-normal.png') }}"
-          class="p-2"
-          style="width: 4.5rem; margin: auto"
-          alt=""
-        />
+<div style="background:#f7faf8;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2.5rem 1rem 4rem;">
+  <div style="width:100%;max-width:440px;">
+
+    <!-- Logo / back -->
+    <div class="rise rise-1" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;">
+      <a href="{{ url_for('view.account') }}" style="display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#64748b;text-decoration:none;padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;transition:all .2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#fff'">
+        <i class="fas fa-arrow-left" style="font-size:11px;"></i> Back
+      </a>
+      <a href="{{ url_for('view.front_page') }}" style="display:inline-flex;align-items:center;gap:7px;text-decoration:none;">
+        <img src="{{ url_for('static', filename='images/logo-normal.png') }}" alt="EasyTransact" style="width:28px;height:28px;">
+        <span style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1rem;color:#0d1f1a;">Easy<span style="color:#1aa374;">Transact</span></span>
+      </a>
+    </div>
+
+    <!-- Card -->
+    <div class="rise rise-2" style="background:#fff;border-radius:24px;padding:32px 28px 36px;box-shadow:0 8px 40px rgba(13,31,26,.08);border:1px solid #f1f5f9;">
+
+      <!-- Header -->
+      <div style="text-align:center;margin-bottom:24px;">
+        <div style="width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#1aa374,#2e8bb6);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 6px 20px rgba(26,163,116,.28);">
+          <i class="fas fa-lock" style="color:#fff;font-size:22px;"></i>
+        </div>
+        <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.4rem;color:#0d1f1a;margin:0 0 6px;">Create Transfer PIN</h1>
+        <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:0;line-height:1.5;">Your 4-digit PIN is required for all transfers and payments.</p>
       </div>
-      {{ form.hidden_tag() }}
-        <!-- For wallet number -->
-        <div class="form-group">
-            {{ form.transfer_pin.label(class='form-label text-muted badge') }}
-            {{ form.transfer_pin(class='form-control', placeholder='Enter transfer pin') }}
 
+      <form action="" method="post">
+        {{ form.hidden_tag() }}
+
+        <!-- ── PIN entry ── -->
+        <div style="background:#f8fafc;border-radius:16px;padding:18px 20px;margin-bottom:20px;">
+
+          <!-- Transfer PIN -->
+          <div style="margin-bottom:16px;">
+            {{ form.transfer_pin.label(class="field-label") }}
+            <!-- Visual dots only — driven by JS from the input below -->
+            <div class="pin-dots">
+              <div class="pin-dot" id="dot1-0"></div>
+              <div class="pin-dot" id="dot1-1"></div>
+              <div class="pin-dot" id="dot1-2"></div>
+              <div class="pin-dot" id="dot1-3"></div>
+            </div>
+            <!-- Single real input — this is the only one that submits -->
+            <div class="pw-wrap">
+              {{ form.transfer_pin(
+                  class="et-input" + (" has-error" if form.transfer_pin.errors else ""),
+                  id="pin-visible-1",
+                  maxlength=4,
+                  inputmode="numeric",
+                  autocomplete="off",
+                  placeholder="Enter 4-digit PIN",
+                  oninput="syncDots('pin-visible-1','dot1');checkPINMatch()",
+                  style="padding-right:40px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.3em;"
+              ) }}
+              <button type="button" class="pw-toggle" onclick="togglePw('pin-visible-1','eye1')" tabindex="-1">
+                <i class="fas fa-eye" id="eye1"></i>
+              </button>
+            </div>
             {% for error in form.transfer_pin.errors %}
-            <p class="text-danger small">{{ error }}</p>
+              <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#ef4444;margin:5px 0 0;display:flex;align-items:center;gap:5px;"><i class="fas fa-exclamation-circle" style="font-size:10px;"></i>{{ error }}</p>
             {% endfor %}
+          </div>
 
-            {{ form.confirm_transfer_pin(class='form-control', placeholder='Confirm transfer pin') }}   
+          <!-- Confirm PIN -->
+          <div>
+            {{ form.confirm_transfer_pin.label(class="field-label") }}
+            <!-- Visual dots only -->
+            <div class="pin-dots">
+              <div class="pin-dot" id="dot2-0"></div>
+              <div class="pin-dot" id="dot2-1"></div>
+              <div class="pin-dot" id="dot2-2"></div>
+              <div class="pin-dot" id="dot2-3"></div>
+            </div>
+            <!-- Single real input -->
+            <div class="pw-wrap">
+              {{ form.confirm_transfer_pin(
+                  class="et-input" + (" has-error" if form.confirm_transfer_pin.errors else ""),
+                  id="pin-confirm",
+                  maxlength=4,
+                  inputmode="numeric",
+                  autocomplete="off",
+                  placeholder="Confirm 4-digit PIN",
+                  oninput="syncDots('pin-confirm','dot2');checkPINMatch()",
+                  style="padding-right:40px;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:1.1rem;letter-spacing:.3em;"
+              ) }}
+              <button type="button" class="pw-toggle" onclick="togglePw('pin-confirm','eye2')" tabindex="-1">
+                <i class="fas fa-eye" id="eye2"></i>
+              </button>
+            </div>
+            <p id="pin-match-text" style="font-family:'DM Sans',sans-serif;font-size:12px;margin:5px 0 0;"></p>
             {% for error in form.confirm_transfer_pin.errors %}
-            <p class="text-danger small">{{ error }}</p>
+              <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#ef4444;margin:5px 0 0;display:flex;align-items:center;gap:5px;"><i class="fas fa-exclamation-circle" style="font-size:10px;"></i>{{ error }}</p>
             {% endfor %}
-            <br>
-            <span class="mb-2 badge text-muted">Secret Question and Answer</span>
-            <select name="secret_question" id="secret_question" class="p-2 border-1" required>
-                <option value="What elementary school did you attend?">What elementary school did you attend?</option>
-                <option value="What is your favorite color?">What is your favorite color?</option>
-                <option value="What is your favorite food?">What is your favorite food?</option>
-                <option value="When you were young, what did you want to be when you grew up?">When you were young, what did you want to be when you grew up?</option>
-                <option value="What is your middle name?">What is your middle name?</option>
-                <option value="What is your favorite place?">What is your favorite place?</option>
-                <option value="Who was your childhood hero?">Who was your childhood hero?</option>
-                <option value="What is your favorite holiday?">What is your favorite holiday?</option>
-                <option value="What is your favorite drink?">What is your favorite drink?</option>
-                <option value="Where was your best family vacation as a kid?">Where was your best family vacation as a kid?</option>   
-                <option value="What is your favorite fruit?">What is your favorite fruit?</option>
-                <option value="What is your favorite store?">What is your favorite store?</option>
-                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
-                <option value="What is your favorite app?">What is your favorite app?</option>
-                <option value="What is your favorite game?">What is your favorite game?</option>
-                <option value="What is the name of your first pet?">What is the name of your first pet?</option>
-                <option value="What is your favorite sport?">What is your favorite sport?</option>
-                <option value="What was your first car?">What was your first car?</option>
-                <option value="What is the name of the town where you were born?">What is the name of the town where you were born?</option>
-            </select>
-            {{ form.secret_answer(class='form-control', placeholder='Secret answer') }}   
-            {% for error in form.secret_answer.errors %}
-            <p class="text-danger small">{{ error }}</p>
-            {% endfor %}
+          </div>
 
-            
         </div>
 
-      
-            <!-- For submit button -->
-      {{ form.submit(size=20, class='btn')}}
-    </form>
+        <!-- ── Secret question ── -->
+        <div class="section-label"><span>Security Question</span></div>
+
+        <div style="margin-bottom:14px;">
+          <label class="field-label" for="secret_question">Choose a question</label>
+          <select name="secret_question" id="secret_question" class="et-select" required>
+            <option value="" disabled selected>Select a secret question…</option>
+            <option value="What elementary school did you attend?">What elementary school did you attend?</option>
+            <option value="What is your favorite color?">What is your favorite color?</option>
+            <option value="What is your favorite food?">What is your favorite food?</option>
+            <option value="When you were young, what did you want to be when you grew up?">When you were young, what did you want to be when you grew up?</option>
+            <option value="What is your middle name?">What is your middle name?</option>
+            <option value="What is your favorite place?">What is your favorite place?</option>
+            <option value="Who was your childhood hero?">Who was your childhood hero?</option>
+            <option value="What is your favorite holiday?">What is your favorite holiday?</option>
+            <option value="What is your favorite drink?">What is your favorite drink?</option>
+            <option value="Where was your best family vacation as a kid?">Where was your best family vacation as a kid?</option>
+            <option value="What is your favorite fruit?">What is your favorite fruit?</option>
+            <option value="What is your favorite store?">What is your favorite store?</option>
+            <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+            <option value="What is your favorite app?">What is your favorite app?</option>
+            <option value="What is your favorite game?">What is your favorite game?</option>
+            <option value="What is the name of your first pet?">What is the name of your first pet?</option>
+            <option value="What is your favorite sport?">What is your favorite sport?</option>
+            <option value="What was your first car?">What was your first car?</option>
+            <option value="What is the name of the town where you were born?">What is the name of the town where you were born?</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom:24px;">
+          {{ form.secret_answer.label(class="field-label") }}
+          {{ form.secret_answer(class="et-input" + (" has-error" if form.secret_answer.errors else ""), placeholder="Your secret answer") }}
+          {% for error in form.secret_answer.errors %}
+            <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#ef4444;margin:5px 0 0;display:flex;align-items:center;gap:5px;"><i class="fas fa-exclamation-circle" style="font-size:10px;"></i>{{ error }}</p>
+          {% endfor %}
+          <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin:5px 0 0;">This is used to verify your identity if you forget your PIN.</p>
+        </div>
+
+        <!-- Security note -->
+        <div style="background:rgba(26,163,116,0.06);border:1px solid rgba(26,163,116,0.15);border-radius:12px;padding:12px 14px;margin-bottom:20px;display:flex;align-items:center;gap:9px;">
+          <i class="fas fa-shield-alt" style="color:#1aa374;font-size:13px;flex-shrink:0;"></i>
+          <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#0c694c;margin:0;line-height:1.5;">Your PIN is encrypted and never stored in plain text. Never share it with anyone.</p>
+        </div>
+
+        {{ form.submit(class="submit-btn") }}
+      </form>
+    </div>
+
   </div>
 </div>
 {% endblock content %}
 
+
+{% block scripts %}
+<script>
+  // Numeric-only enforcement
+  document.querySelectorAll('[inputmode="numeric"]').forEach(inp => {
+    inp.addEventListener('keypress', e => { if (!/[0-9]/.test(e.key)) e.preventDefault(); });
+    inp.addEventListener('input', () => { inp.value = inp.value.replace(/\D/g, ''); });
+  });
+
+  // Sync PIN input value → visual dots
+  function syncDots(inputId, dotPrefix) {
+    const val = document.getElementById(inputId).value;
+    for (let i = 0; i < 4; i++) {
+      const dot = document.getElementById(dotPrefix + '-' + i);
+      if (!dot) continue;
+      if (val.length > i) { dot.classList.add('filled'); }
+      else                { dot.classList.remove('filled'); }
+    }
+  }
+
+  // Show / hide PIN toggle
+  function togglePw(id, eyeId) {
+    const inp = document.getElementById(id);
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    document.getElementById(eyeId).className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+  }
+
+  // Live PIN match indicator
+  function checkPINMatch() {
+    const p1 = document.getElementById('pin-visible-1').value;
+    const p2 = document.getElementById('pin-confirm').value;
+    const mt = document.getElementById('pin-match-text');
+    if (!p2) { mt.textContent = ''; return; }
+    if (p1 === p2) { mt.textContent = '✓ PINs match';        mt.style.color = '#16a34a'; }
+    else           { mt.textContent = '✗ PINs do not match'; mt.style.color = '#ef4444'; }
+  }
+
+  // Toast auto-dismiss
+  document.querySelectorAll('.flash-toast').forEach((t, i) => setTimeout(() => dismissToast(t.id), 4000 + i * 300));
+  function dismissToast(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('hide');
+    setTimeout(() => el.remove(), 380);
+  }
+</script>
+{% endblock scripts %}
