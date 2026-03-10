@@ -1,145 +1,219 @@
-{% extends 'base.html' %} {% block content %}
-<!-- Contact form -->
-<section class="container mt-3">
-  <!-- Flash messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %} {% if
-  messages %} {% for category, message in messages %}
-  <div class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}" role="alert"
-    style="height: 3.5rem; transition: 0.6s">
-    {% if category=='success' %}
-    <div class="small text-center">
-      <i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}
+{% extends 'base.html' %}
+
+{% block title %}Contact Us — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+  @keyframes riseUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes slideInRight { from{opacity:0;transform:translateX(120%)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(120%)} }
+  @keyframes shrink { from{width:100%} to{width:0} }
+  .rise{opacity:0;animation:riseUp .55s cubic-bezier(.34,1.1,.64,1) forwards;}
+  .rise-1{animation-delay:.06s;} .rise-2{animation-delay:.16s;} .rise-3{animation-delay:.24s;}
+
+  /* ── Contact info ── */
+  .contact-info-item { display:flex; align-items:flex-start; gap:14px; padding:14px 0; border-bottom:1px solid #f1f5f9; }
+  .contact-info-item:last-child { border-bottom:none; }
+  .c-icon { width:40px; height:40px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .c-label { font-family:'DM Sans',sans-serif; font-size:10px; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:.07em; margin:0 0 2px; }
+  .c-value { font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; color:#0d1f1a; margin:0; }
+
+  /* ── Form inputs ── */
+  .et-input {
+    width:100%; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:12px;
+    padding:11px 14px; font-family:'DM Sans',sans-serif; font-size:14px; color:#0d1f1a;
+    outline:none; transition:border-color .25s,box-shadow .25s,background .2s;
+    box-sizing:border-box;
+  }
+  .et-input::placeholder { color:#94a3b8; }
+  .et-input:focus { border-color:#1aa374; background:#fff; box-shadow:0 0 0 4px rgba(26,163,116,0.10); }
+  .et-input.has-error { border-color:#f87171; background:#fff5f5; }
+  .et-textarea { resize:vertical; min-height:120px; }
+  .field-label { display:block; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
+
+  /* ── Submit ── */
+  .submit-btn { width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#1aa374,#2e8bb6); color:#fff; font-family:'DM Sans',sans-serif; font-weight:700; font-size:15px; cursor:pointer; position:relative; overflow:hidden; box-shadow:0 8px 25px rgba(26,163,116,0.30); transition:transform .2s,box-shadow .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .submit-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#0c694c,#1a6f94); opacity:0; transition:opacity .3s; }
+  .submit-btn:hover::before { opacity:1; }
+  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 14px 35px rgba(26,163,116,0.4); }
+  .submit-btn span { position:relative; z-index:1; display:flex; align-items:center; gap:8px; }
+
+  /* ── Social links ── */
+  .social-link { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:16px; background:#f8fafc; border:1px solid #f1f5f9; color:#64748b; transition:all .2s; }
+  .social-link:hover { transform:translateY(-2px); }
+  .social-link.fb:hover   { background:#1877f2; border-color:#1877f2; color:#fff; }
+  .social-link.wa:hover   { background:#25d366; border-color:#25d366; color:#fff; }
+  .social-link.tw:hover   { background:#1da1f2; border-color:#1da1f2; color:#fff; }
+  .social-link.gm:hover   { background:#ea4335; border-color:#ea4335; color:#fff; }
+
+  /* ── Flash toasts ── */
+  .flash-toast { position:fixed; top:1.25rem; right:1.25rem; z-index:9999; display:flex; align-items:flex-start; gap:12px; background:#fff; border-radius:16px; padding:14px 16px; min-width:280px; max-width:360px; box-shadow:0 8px 32px rgba(13,31,26,0.14); border:1px solid #f1f5f9; animation:slideInRight .4s cubic-bezier(.34,1.2,.64,1) forwards; overflow:hidden; }
+  .flash-toast.hide { animation:slideOutRight .35s ease forwards; }
+  .ft-icon{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .ft-icon.success{background:rgba(26,163,116,0.1);color:#0c694c;} .ft-icon.error{background:rgba(239,68,68,0.1);color:#dc2626;}
+  .ft-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0 0 2px;}
+  .ft-msg{font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;}
+  .ft-close{background:none;border:none;cursor:pointer;padding:0;color:#cbd5e1;font-size:12px;line-height:1;}
+  .ft-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 16px 16px;animation:shrink 4s linear forwards;}
+  .ft-bar.success{background:#1aa374;} .ft-bar.error{background:#ef4444;}
+</style>
+{% endblock head %}
+
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:10px;">
+      {% for category, message in messages %}
+      {% set tone = 'success' if category=='success' else 'error' %}
+      <div class="flash-toast" id="ft-{{ loop.index }}" style="position:relative;">
+        <div class="ft-icon {{ tone }}"><i class="fas {% if tone=='success' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i></div>
+        <div style="flex:1;min-width:0;"><p class="ft-title">{% if tone=='success' %}Success{% else %}Error{% endif %}</p><p class="ft-msg">{{ message }}</p></div>
+        <button class="ft-close" onclick="dismissToast('ft-{{ loop.index }}')"><i class="fas fa-times"></i></button>
+        <div class="ft-bar {{ tone }}"></div>
+      </div>
+      {% endfor %}
     </div>
-    {% else %}
-    <div class="small text-center">
-      <i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}
+  {% endif %}
+{% endwith %}
+
+<div class="w-full" style="background:#f7faf8;padding:1.5rem 1rem 5rem;min-height:80vh;">
+  <div style="max-width:680px;margin:0 auto;">
+
+    <!-- Page header -->
+    <div class="rise rise-1" style="text-align:center;margin-bottom:28px;">
+      <div style="width:52px;height:52px;border-radius:18px;background:linear-gradient(135deg,#1aa374,#2e8bb6);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 6px 20px rgba(26,163,116,0.3);">
+        <i class="fas fa-headset" style="color:#fff;font-size:20px;"></i>
+      </div>
+      <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.75rem;color:#0d1f1a;margin:0 0 8px;">Send Us a Message</h1>
+      <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:#94a3b8;margin:0;">We're available 24/7. Expect a reply within a few hours.</p>
     </div>
-    {% endif %}
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+    <div style="display:grid;grid-template-columns:1fr;gap:20px;">
+
+      <!-- On large screens: two column layout -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;align-items:start;">
+
+        <!-- ── Contact info card ── -->
+        <div class="rise rise-2" style="background:#fff;border-radius:20px;border:1px solid #f1f5f9;box-shadow:0 2px 12px rgba(13,31,26,0.04);padding:22px 20px;">
+
+          <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin:0 0 4px;">Contact Details</p>
+
+          <div class="contact-info-item">
+            <div class="c-icon" style="background:rgba(245,158,11,0.1);">
+              <i class="fas fa-envelope" style="color:#f59e0b;font-size:14px;"></i>
+            </div>
+            <div>
+              <p class="c-label">Email</p>
+              <a href="mailto:easytransact.send@gmail.com" class="c-value" style="text-decoration:none;color:#0d1f1a;">easytransact.send@gmail.com</a>
+            </div>
+          </div>
+
+          <div class="contact-info-item">
+            <div class="c-icon" style="background:rgba(26,163,116,0.1);">
+              <i class="fas fa-phone" style="color:#1aa374;font-size:14px;"></i>
+            </div>
+            <div>
+              <p class="c-label">Phone</p>
+              <p class="c-value">+01 XXX XXXX</p>
+            </div>
+          </div>
+
+          <div class="contact-info-item">
+            <div class="c-icon" style="background:rgba(46,139,182,0.1);">
+              <i class="fas fa-location-dot" style="color:#2e8bb6;font-size:14px;"></i>
+            </div>
+            <div>
+              <p class="c-label">Address</p>
+              <p class="c-value" style="line-height:1.5;">21, Salvation Avenue, Ikate,<br>Lekki Phase 1, Lagos, Nigeria</p>
+            </div>
+          </div>
+
+          <!-- Socials -->
+          <div style="padding-top:16px;">
+            <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin:0 0 12px;">Follow Us</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <a href="#" class="social-link fb"><i class="fab fa-facebook-f" style="font-size:14px;"></i></a>
+              <a href="#" class="social-link wa"><i class="fab fa-whatsapp" style="font-size:16px;"></i></a>
+              <a href="#" class="social-link tw"><i class="fab fa-twitter" style="font-size:14px;"></i></a>
+              <a href="#" class="social-link gm"><i class="fab fa-google" style="font-size:14px;"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Contact form ── -->
+        <div class="rise rise-2" style="background:#fff;border-radius:20px;border:1px solid #f1f5f9;box-shadow:0 2px 12px rgba(13,31,26,0.04);padding:24px 22px;">
+          <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin:0 0 18px;">Write to us</p>
+
+          <form action="" method="post">
+            {{ form.hidden_tag() }}
+
+            <!-- Name -->
+            <div style="margin-bottom:16px;">
+              {{ form.name.label(class="field-label") }}
+              {% if current_user.is_authenticated %}
+                {% if form.name.errors %}
+                  {{ form.name(class="et-input has-error", placeholder="Your name", required=False) }}
+                  {% for error in form.name.errors %}<p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#ef4444;margin:5px 0 0;display:flex;align-items:center;gap:5px;"><i class="fas fa-exclamation-circle" style="font-size:10px;"></i>{{ error }}</p>{% endfor %}
+                {% else %}
+                  {{ form.name(class="et-input", placeholder="Your name", required=False, value=current_user.last_name.title() ~ ' ' ~ current_user.first_name.title()) }}
+                {% endif %}
+              {% else %}
+                {% if form.name.errors %}
+                  {{ form.name(class="et-input has-error", placeholder="Your name", required=False) }}
+                  {% for error in form.name.errors %}<p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#ef4444;margin:5px 0 0;display:flex;align-items:center;gap:5px;"><i class="fas fa-exclamation-circle" style="font-size:10px;"></i>{{ error }}</p>{% endfor %}
+                {% else %}
+                  {{ form.name(class="et-input", placeholder="Your name", required=False) }}
+                {% endif %}
+              {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div style="margin-bottom:16px;">
+              {{ form.email.label(class="field-label") }}
+              {% if current_user.is_authenticated %}
+                {% if form.email.errors %}
+                  {{ form.email(class="et-input has-error", placeholder="your@email.com", required=False) }}
+                  {% for error in form.email.errors %}<p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#ef4444;margin:5px 0 0;display:flex;align-items:center;gap:5px;"><i class="fas fa-exclamation-circle" style="font-size:10px;"></i>{{ error }}</p>{% endfor %}
+                {% else %}
+                  {{ form.email(class="et-input", placeholder="your@email.com", required=False, value=current_user.email) }}
+                {% endif %}
+              {% else %}
+                {% if form.email.errors %}
+                  {{ form.email(class="et-input has-error", placeholder="your@email.com", required=False) }}
+                  {% for error in form.email.errors %}<p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#ef4444;margin:5px 0 0;display:flex;align-items:center;gap:5px;"><i class="fas fa-exclamation-circle" style="font-size:10px;"></i>{{ error }}</p>{% endfor %}
+                {% else %}
+                  {{ form.email(class="et-input", placeholder="your@email.com", required=False) }}
+                {% endif %}
+              {% endif %}
+            </div>
+
+            <!-- Message -->
+            <div style="margin-bottom:22px;">
+              {{ form.message.label(class="field-label") }}
+              {% if form.message.errors %}
+                {{ form.message(class="et-input et-textarea has-error", placeholder="How can we help you?", required=False) }}
+                {% for error in form.message.errors %}<p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#ef4444;margin:5px 0 0;display:flex;align-items:center;gap:5px;"><i class="fas fa-exclamation-circle" style="font-size:10px;"></i>{{ error }}</p>{% endfor %}
+              {% else %}
+                {{ form.message(class="et-input et-textarea", placeholder="How can we help you?", required=False) }}
+              {% endif %}
+            </div>
+
+            {{ form.submit(class="submit-btn") }}
+          </form>
+        </div>
+      </div>
+
+    </div>
   </div>
-  {% endfor %} {% endif %} {% endwith %}
-
-  <h3 class="text-muted text-center" style="margin: 3rem 0">
-    SEND US A MESSAGE
-  </h3>
-  <div class="d-flex w-100 flex-column-reverse flex-lg-row align-items-lg-center">
-    <div class="d-flex flex-column w-100 py-5 m-auto">
-      <!-- my details -->
-
-      <div class="d-flex align-items-center">
-        <i class="far fa-envelope bg-warning rounded-circle p-2 h6"></i>
-        <p class="text-white text    text-muted" style="margin-left: 1rem">
-          easytransact.send@gmail.com
-        </p>
-      </div>
-      <div class="d-flex align-items-center mt-3">
-        <i class="far fas fa-phone bg-warning rounded-circle p-2 h6"></i>
-        <p class="text-white text    text-muted" style="margin-left: 1rem">
-          +01 XXX XXXX
-        </p>
-      </div>
-      <div class="d-flex align-items-center mt-3">
-        <i class="fas fa-location-arrow bg-warning rounded-circle p-2 h6"></i>
-        <p class="text-white text    text-muted" style="margin-left: 1rem">
-          21, Salvation Avenue, Ikate, Lekki phase 1, Lagos, Nigeria
-        </p>
-      </div>
-      <hr class="" style="
-          border: 1px solid rgb(251, 255, 0);
-          width: 1px;
-          height: 9rem;
-          position: absolute;
-          margin-top: 0.5rem;
-          z-index: -1;
-          margin-left: 0.9rem;
-        " />
-
-      <div class="mt-4" style="width: fit-content;">
-        <a href="#" class="p-2" style="width: fit-content"><i
-            class="fab fa-facebook p-2 primary-text rounded-circle bg-white h5"></i></a>
-        <a href="#" class="p-2" style="width: fit-content"><i
-            class="fab fa-whatsapp fw-bold p-2 text-success rounded-circle bg-white h5"></i></a>
-        <a href="#" class="p-2" style="width: fit-content"><i
-            class="fab fa-twitter p-2 primary-text rounded-circle bg-white h5"></i></a>
-        <a href="#" class="p-2" style="width: fit-content"><i
-            class="fab fa-google p-2 text-danger rounded-circle bg-white h5"></i></a>
-      </div>
-    </div>
-    <div class="m-auto p-5 w-100 py-5" style="
-        box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
-        background: rgba(116, 111, 111, 0.212);
-      ">
-      <form action="" method="post">
-        {{ form.hidden_tag() }}
-        <!-- Name Field -->
-        <div>
-          {{ form.name.label(class='text-muted text mb-1') }} <br />
-
-          {% if current_user.is_authenticated %}
-          {% if form.name.errors %} {{ form.name(class='form-control text-muted', placeholder='Enter your name',
-          required=False) }}
-          {% for error in
-          form.name.errors %}
-          <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
-          {% endfor %} {% else %} {{ form.name(class='form-control text-muted', placeholder='Enter your name',
-          required=False, value=current_user.last_name.title() + ' ' + current_user.first_name.title()) }}
-          {% endif %}
-
-        </div>
-        <!-- Email Field -->
-        <div class="mt-3">
-          {{ form.email.label(class='text-muted text mb-1') }} <br />
-
-          {% if form.email.errors %} {{ form.email(class='form-control text-muted', placeholder='Enter your email',
-          required=False) }} {% for error in
-          form.email.errors %}
-          <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
-          {% endfor %} {% else %} {{ form.email(class='form-control text-muted', placeholder='Enter your email',
-          required=False, value=current_user.email ) }} {% endif %}
-
-        </div>
-
-        {% else %}
-        {% if form.name.errors %} {{ form.name(class='form-control text-muted', placeholder='Enter your name',
-        required=False) }}
-        {% for error in
-        form.name.errors %}
-        <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
-        {% endfor %} {% else %} {{ form.name(class='form-control text-muted', placeholder='Enter your name', required=False) }}
-        {% endif %}
-
-      </div>
-      <!-- Email Field -->
-      <div class="mt-3">
-        {{ form.email.label(class='text-muted text mb-1') }} <br />
-
-        {% if form.email.errors %} {{ form.email(class='form-control text-muted', placeholder='Enter your email',
-        required=False) }} {% for error in
-        form.email.errors %}
-        <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
-        {% endfor %} {% else %} {{ form.email(class='form-control text-muted', placeholder='Enter your email', required=False) }} {% endif %}
-
-
-        {% endif %}
-
-
-        <!-- Message Field -->
-        <div class="mt-3">
-          {{ form.message.label(class='text-muted text mb-1') }} <br />
-
-          {% if form.message.errors %} {{ form.message(class='form-control text-muted', placeholder='Enter your message', required=False) }} {% for error in
-          form.message.errors %}
-          <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
-          {% endfor %} {% else %} {{ form.message(class='form-control text-muted', placeholder='Enter your message',
-          required=False) }} {% endif %}
-          <!-- If error -->
-
-        </div>
-        <!-- Submit Field -->
-        <div class="mt-4">{{ form.submit(class='btn btn-success w-100') }}</div>
-      </form>
-    </div>
-  </div>
-</section>
-
+</div>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('.flash-toast').forEach((t,i) => setTimeout(()=>dismissToast(t.id), 4000+i*300));
+  function dismissToast(id) { const el=document.getElementById(id); if(!el)return; el.classList.add('hide'); setTimeout(()=>el.remove(),380); }
+</script>
+{% endblock scripts %}
