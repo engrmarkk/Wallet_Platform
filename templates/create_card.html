@@ -1,32 +1,169 @@
 {% extends 'base.html' %}
+
+{% block title %}Create Card — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+
+  @keyframes riseUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes slideInRight { from{opacity:0;transform:translateX(120%)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(120%)} }
+  @keyframes shrink { from{width:100%} to{width:0} }
+  @keyframes floatCard { 0%,100%{transform:translateY(0) rotateX(2deg)} 50%{transform:translateY(-8px) rotateX(-1deg)} }
+  @keyframes shimmerSweep { 0%{background-position:-200% center} 100%{background-position:200% center} }
+
+  .rise{opacity:0;animation:riseUp .55s cubic-bezier(.34,1.1,.64,1) forwards;}
+  .rise-1{animation-delay:.06s;} .rise-2{animation-delay:.16s;} .rise-3{animation-delay:.26s;}
+
+  /* ── Floating card illustration ── */
+  .card-preview {
+    width:280px; height:168px; border-radius:18px; margin:0 auto;
+    background:linear-gradient(135deg,#0c694c 0%,#1aa374 45%,#2e8bb6 100%);
+    position:relative; overflow:hidden;
+    box-shadow:0 20px 50px rgba(13,31,26,0.3);
+    animation:floatCard 4s ease-in-out infinite;
+    perspective:800px;
+  }
+  .card-preview::before {
+    content:''; position:absolute; inset:0;
+    background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);
+    background-size:22px 22px;
+  }
+  .card-shimmer {
+    position:absolute; inset:0;
+    background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0) 100%);
+    background-size:200% 100%; animation:shimmerSweep 3s linear infinite;
+  }
+  .card-dots { position:absolute; top:0; right:0; width:200px; height:200px; border-radius:50%; background:rgba(255,255,255,0.04); transform:translate(40%,-40%); }
+  .card-chip { width:34px; height:26px; border-radius:5px; background:linear-gradient(135deg,#f0d060,#c8a020); position:absolute; top:28px; left:22px; display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr 1fr; gap:2px; padding:4px; box-shadow:0 2px 6px rgba(0,0,0,0.2); }
+  .card-chip div { background:rgba(0,0,0,0.25); border-radius:2px; }
+  .card-chip .full { grid-column:1/3; }
+  .card-num { position:absolute; bottom:38px; left:22px; font-family:'Courier New',monospace; font-size:14px; font-weight:700; color:rgba(255,255,255,0.85); letter-spacing:.2em; }
+  .card-logo { position:absolute; top:22px; right:18px; display:flex; }
+  .card-logo span { width:28px; height:28px; border-radius:50%; opacity:.85; }
+  .card-logo span:first-child { background:#eb001b; margin-right:-10px; }
+  .card-logo span:last-child  { background:#f79e1b; }
+  .card-holder { position:absolute; bottom:14px; left:22px; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; color:rgba(255,255,255,.6); text-transform:uppercase; letter-spacing:.08em; }
+
+  /* ── Benefits list ── */
+  .benefit-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #f8fafc; }
+  .benefit-row:last-child { border-bottom:none; }
+  .ben-icon { width:36px; height:36px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+
+  /* ── Create button ── */
+  .create-btn { width:100%; padding:16px; border-radius:14px; border:none; background:linear-gradient(135deg,#1aa374,#2e8bb6); color:#fff; font-family:'Cabinet Grotesk',sans-serif; font-weight:900; font-size:16px; cursor:pointer; position:relative; overflow:hidden; box-shadow:0 10px 30px rgba(26,163,116,0.35); transition:transform .2s,box-shadow .2s; display:flex; align-items:center; justify-content:center; gap:10px; }
+  .create-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#0c694c,#1a6f94); opacity:0; transition:opacity .3s; }
+  .create-btn:hover::before { opacity:1; }
+  .create-btn:hover { transform:translateY(-3px); box-shadow:0 16px 40px rgba(26,163,116,0.45); }
+  .create-btn span { position:relative; z-index:1; display:flex; align-items:center; gap:10px; }
+
+  /* Flash toasts */
+  .flash-toast { position:fixed; top:1.25rem; right:1.25rem; z-index:9999; display:flex; align-items:flex-start; gap:12px; background:#fff; border-radius:16px; padding:14px 16px; min-width:280px; max-width:360px; box-shadow:0 8px 32px rgba(13,31,26,0.14); border:1px solid #f1f5f9; animation:slideInRight .4s cubic-bezier(.34,1.2,.64,1) forwards; overflow:hidden; }
+  .flash-toast.hide { animation:slideOutRight .35s ease forwards; }
+  .ft-icon{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .ft-icon.success{background:rgba(26,163,116,0.1);color:#0c694c;} .ft-icon.error{background:rgba(239,68,68,0.1);color:#dc2626;}
+  .ft-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0 0 2px;}
+  .ft-msg{font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;}
+  .ft-close{background:none;border:none;cursor:pointer;padding:0;color:#cbd5e1;font-size:12px;line-height:1;}
+  .ft-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 16px 16px;animation:shrink 4s linear forwards;}
+  .ft-bar.success{background:#1aa374;} .ft-bar.error{background:#ef4444;}
+</style>
+{% endblock head %}
+
+
 {% block content %}
-{% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %}
-    <div
-      class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
-      role="alert"
-      style="height: 3.5rem; transition: 0.6s"
-    >
-    {% if category=='success' %}
-      <div class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-      {% else %}
-      <div class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-      {% endif %}
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:10px;">
+      {% for category, message in messages %}
+      {% set tone = 'success' if category=='success' else 'error' %}
+      <div class="flash-toast" id="ft-{{ loop.index }}" style="position:relative;">
+        <div class="ft-icon {{ tone }}"><i class="fas {% if tone=='success' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i></div>
+        <div style="flex:1;min-width:0;"><p class="ft-title">{% if tone=='success' %}Success{% else %}Error{% endif %}</p><p class="ft-msg">{{ message }}</p></div>
+        <button class="ft-close" onclick="dismissToast('ft-{{ loop.index }}')"><i class="fas fa-times"></i></button>
+        <div class="ft-bar {{ tone }}"></div>
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %} {% endif %} {% endwith %}
+  {% endif %}
+{% endwith %}
 
-<div class="form-group">
-    <form action="/create-card" method="post">
-        <p>Click to create a new card</p>
-        <button type="submit">Create Card</button>
-    </form>
-    
+<div class="w-full" style="background:#f7faf8;padding:1.5rem 1rem 5rem;min-height:80vh;">
+  <div style="max-width:440px;margin:0 auto;">
+
+    <!-- Header -->
+    <div class="rise rise-1" style="text-align:center;margin-bottom:28px;">
+      <p style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px;">EasyTransact</p>
+      <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.75rem;color:#0d1f1a;margin:0 0 8px;">Your Virtual Card</h1>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:0;line-height:1.6;">Get a free virtual Mastercard linked to your wallet for online payments.</p>
+    </div>
+
+    <!-- Floating card preview -->
+    <div class="rise rise-1" style="margin-bottom:32px;perspective:600px;">
+      <div class="card-preview">
+        <div class="card-shimmer"></div>
+        <div class="card-dots"></div>
+        <div class="card-chip">
+          <div class="full"></div>
+          <div></div><div></div>
+          <div class="full"></div>
+        </div>
+        <div class="card-num">•••• •••• •••• ••••</div>
+        <div class="card-logo">
+          <span></span><span></span>
+        </div>
+        <div class="card-holder">{{ current_user.last_name.upper() }} {{ current_user.first_name.upper() }}</div>
+      </div>
+    </div>
+
+    <!-- Benefits -->
+    <div class="rise rise-2" style="background:#fff;border-radius:20px;border:1px solid #f1f5f9;box-shadow:0 2px 12px rgba(13,31,26,0.04);padding:20px;margin-bottom:20px;">
+      <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin:0 0 14px;">What you get</p>
+      {% for icon, bg, color, title, desc in [
+        ('fa-credit-card','rgba(26,163,116,0.1)','#1aa374','Virtual Mastercard','Accepted on any website worldwide'),
+        ('fa-shield-alt','rgba(46,139,182,0.1)','#2e8bb6','Secure & Instant','Generated instantly, linked to your wallet'),
+        ('fa-lock','rgba(99,102,241,0.1)','#6366f1','CVV Protected','Full card details secured behind your PIN'),
+        ('fa-wallet','rgba(245,158,11,0.1)','#f59e0b','Wallet Funded','Spend directly from your EasyTransact balance')
+      ] %}
+      <div class="benefit-row">
+        <div class="ben-icon" style="background:{{ bg }};"><i class="fas {{ icon }}" style="color:{{ color }};font-size:13px;"></i></div>
+        <div>
+          <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0;">{{ title }}</p>
+          <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin:2px 0 0;">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Free badge + create button -->
+    <div class="rise rise-3">
+      <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:14px;">
+        <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(26,163,116,0.08);border:1px solid rgba(26,163,116,0.2);padding:5px 12px;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:#0c694c;">
+          <i class="fas fa-check-circle" style="font-size:10px;"></i>
+          100% Free · No hidden fees
+        </span>
+      </div>
+
+      <form action="/create-card" method="post">
+        <button type="submit" class="create-btn">
+          <span><i class="fas fa-plus" style="font-size:14px;"></i> Create My Card</span>
+        </button>
+      </form>
+
+      <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;text-align:center;margin:12px 0 0;line-height:1.5;">
+        Your card will be linked to your EasyTransact wallet. You can view and manage it from the <strong style="color:#0d1f1a;">Card</strong> section.
+      </p>
+    </div>
+
+  </div>
 </div>
-
 {% endblock content %}
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('.flash-toast').forEach((t,i) => setTimeout(()=>dismissToast(t.id), 4000+i*300));
+  function dismissToast(id) { const el=document.getElementById(id); if(!el)return; el.classList.add('hide'); setTimeout(()=>el.remove(),380); }
+</script>
+{% endblock scripts %}
