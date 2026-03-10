@@ -1,336 +1,600 @@
 {% extends 'base.html' %}
+
+{% block title %}Pay Bills — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise   { opacity: 0; animation: riseUp .5s cubic-bezier(.34,1.1,.64,1) forwards; }
+  .rise-1 { animation-delay: .05s; }
+  .rise-2 { animation-delay: .13s; }
+  .rise-3 { animation-delay: .21s; }
+
+  /* ── Provider grid ── */
+  .provider-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 12px;
+  }
+
+  .provider-item {
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    cursor: pointer; padding: 10px 6px; border-radius: 14px;
+    border: 2px solid transparent;
+    transition: border-color .2s, background .2s, transform .2s;
+    background: #fff;
+  }
+  .provider-item:hover { background: #f1fdf8; transform: translateY(-2px); }
+  .provider-item.selected {
+    border-color: #1aa374;
+    background: rgba(26,163,116,0.06);
+    box-shadow: 0 4px 16px rgba(26,163,116,0.15);
+  }
+  .provider-img-wrap {
+    width: 58px; height: 58px; border-radius: 50%;
+    overflow: hidden; border: 2px solid #f1f5f9;
+    background: #f8fafc;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .2s;
+  }
+  .provider-item.selected .provider-img-wrap { border-color: #1aa374; }
+  .provider-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .provider-name {
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+    color: #475569; text-align: center; line-height: 1.2;
+    transition: color .2s;
+  }
+  .provider-item.selected .provider-name { color: #0c694c; }
+  .provider-tick {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: #1aa374; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity .2s; position: absolute; top: 4px; right: 4px;
+  }
+  .provider-item.selected .provider-tick { opacity: 1; }
+
+  /* ── Form card ── */
+  .form-card {
+    background: #fff; border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 20px rgba(13,31,26,0.06);
+    overflow: hidden;
+    animation: riseUp .45s cubic-bezier(.34,1.1,.64,1) forwards;
+  }
+  .form-card-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 18px 20px 14px; border-bottom: 1px solid #f8fafc;
+  }
+
+  /* ── Selected provider banner ── */
+  .selected-provider-banner {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px; margin-bottom: 18px;
+    background: linear-gradient(135deg, rgba(26,163,116,0.06), rgba(46,139,182,0.05));
+    border: 1px solid rgba(26,163,116,0.15); border-radius: 14px;
+  }
+  .banner-logo {
+    width: 44px; height: 44px; border-radius: 50%;
+    overflow: hidden; border: 2px solid rgba(26,163,116,0.2);
+    flex-shrink: 0;
+  }
+  .banner-logo img { width: 100%; height: 100%; object-fit: cover; }
+
+  /* ── Inputs ── */
+  .et-input {
+    width: 100%; background: #f8fafc;
+    border: 1.5px solid #e2e8f0; border-radius: 12px;
+    padding: 11px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: #0d1f1a;
+    outline: none; transition: border-color .25s, box-shadow .25s, background .2s;
+  }
+  .et-input::placeholder { color: #94a3b8; }
+  .et-input:focus { border-color: #1aa374; background: #fff; box-shadow: 0 0 0 4px rgba(26,163,116,0.10); }
+
+  .et-select {
+    width: 100%; background: #f8fafc;
+    border: 1.5px solid #e2e8f0; border-radius: 12px;
+    padding: 11px 36px 11px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: #0d1f1a;
+    outline: none; appearance: none; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+    transition: border-color .25s, box-shadow .25s;
+  }
+  .et-select:focus { border-color: #1aa374; background-color: #fff; box-shadow: 0 0 0 4px rgba(26,163,116,0.10); }
+
+  .field-label {
+    display: block; font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600; color: #64748b;
+    text-transform: uppercase; letter-spacing: .07em; margin-bottom: 6px;
+  }
+
+  /* Amount prefix */
+  .amount-wrap { position: relative; }
+  .amount-prefix {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-weight: 900; font-size: 17px; color: #1aa374; pointer-events: none;
+  }
+  .amount-input { padding-left: 30px !important; font-family: 'Cabinet Grotesk',sans-serif !important; font-weight: 700 !important; font-size: 16px !important; }
+
+  /* Customer name reveal */
+  .customer-reveal {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(26,163,116,0.08); border: 1px solid rgba(26,163,116,0.2);
+    border-radius: 8px; padding: 6px 12px; margin-top: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    color: #0c694c; min-height: 32px;
+  }
+
+  /* PIN dots */
+  .pin-dots { display: flex; justify-content: center; gap: 10px; margin-bottom: 8px; }
+  .pin-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #e2e8f0; transition: background .2s, transform .25s;
+  }
+  .pin-dot.filled { background: #1aa374; transform: scale(1.2); }
+
+  .pw-wrap { position: relative; }
+  .pw-toggle {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    color: #94a3b8; cursor: pointer; font-size: 13px;
+    background: none; border: none; padding: 0; transition: color .2s;
+  }
+  .pw-toggle:hover { color: #475569; }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%; padding: 13px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #1aa374, #2e8bb6);
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 15px; cursor: pointer;
+    position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s, opacity .2s;
+    box-shadow: 0 8px 25px rgba(26,163,116,0.30);
+  }
+  .submit-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0c694c, #1a6f94);
+    opacity: 0; transition: opacity .3s;
+  }
+  .submit-btn:hover:not(:disabled)::before { opacity: 1; }
+  .submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 35px rgba(26,163,116,0.4); }
+  .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .submit-btn .lbl { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+  /* Continue button */
+  .continue-btn {
+    padding: 12px 28px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #1aa374, #2e8bb6);
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 14px; cursor: pointer;
+    box-shadow: 0 6px 20px rgba(26,163,116,0.3);
+    transition: transform .2s, box-shadow .2s; position: relative; overflow: hidden;
+  }
+  .continue-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, #0c694c, #1a6f94); opacity: 0; transition: opacity .3s; }
+  .continue-btn:hover::before { opacity: 1; }
+  .continue-btn:hover { transform: translateY(-1px); }
+  .continue-btn span { position: relative; z-index: 1; }
+
+  /* Divider */
+  .divider-label {
+    font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700;
+    color: #94a3b8; text-transform: uppercase; letter-spacing: .1em;
+    display: flex; align-items: center; gap: 10px; margin: 18px 0 14px;
+  }
+  .divider-label::before, .divider-label::after { content: ''; flex: 1; height: 1px; background: #f1f5f9; }
+
+  /* ── PIN modal ── */
+  .et-modal-overlay {
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(13,31,26,0.5); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center; padding: 1rem;
+    opacity: 0; pointer-events: none; transition: opacity .3s;
+  }
+  .et-modal-overlay.open { opacity: 1; pointer-events: auto; }
+  .et-modal {
+    background: #fff; border-radius: 22px; padding: 1.75rem;
+    width: 100%; max-width: 360px;
+    box-shadow: 0 30px 70px rgba(13,31,26,0.2);
+    transform: translateY(20px) scale(0.97);
+    transition: transform .35s cubic-bezier(.34,1.3,.64,1);
+  }
+  .et-modal-overlay.open .et-modal { transform: translateY(0) scale(1); }
+
+  .modal-pin-input {
+    width: 100%; padding: 13px 14px; background: #f8fafc;
+    border: 1.5px solid #e2e8f0; border-radius: 12px; outline: none;
+    font-family: 'Courier New', monospace; font-size: 24px; color: #0d1f1a;
+    text-align: center; letter-spacing: .35em;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .modal-pin-input:focus { border-color: #1aa374; box-shadow: 0 0 0 4px rgba(26,163,116,0.10); background: #fff; }
+
+  .modal-submit {
+    width: 100%; padding: 13px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #1aa374, #2e8bb6);
+    color: #fff; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+    cursor: pointer; box-shadow: 0 6px 20px rgba(26,163,116,0.3);
+    transition: transform .2s, opacity .2s;
+  }
+  .modal-submit:disabled { opacity: 0.45; cursor: not-allowed; }
+  .modal-cancel {
+    width: 100%; padding: 11px; border-radius: 12px;
+    border: 1.5px solid #e2e8f0; background: #fff; color: #64748b;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
+    cursor: pointer; transition: background .2s;
+  }
+  .modal-cancel:hover { background: #f1f5f9; }
+
+  /* ── Flash toasts (same as bank transfer) ── */
+  @keyframes slideInRight { from{opacity:0;transform:translateX(120%)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(120%)} }
+  .flash-toast {
+    position: fixed; top: 1.25rem; right: 1.25rem; z-index: 9999;
+    display: flex; align-items: flex-start; gap: 12px;
+    background: #fff; border-radius: 16px; padding: 14px 16px;
+    min-width: 280px; max-width: 360px;
+    box-shadow: 0 8px 32px rgba(13,31,26,0.14); border: 1px solid #f1f5f9;
+    animation: slideInRight .4s cubic-bezier(.34,1.2,.64,1) forwards;
+    overflow: hidden;
+  }
+  .flash-toast.hide { animation: slideOutRight .35s ease forwards; }
+  .flash-toast-icon { width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px; }
+  .flash-toast-icon.success{background:rgba(26,163,116,0.1);color:#0c694c;}
+  .flash-toast-icon.error  {background:rgba(239,68,68,0.1);color:#dc2626;}
+  .flash-toast-icon.info   {background:rgba(46,139,182,0.1);color:#1a6f94;}
+  .flash-toast-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0 0 2px;}
+  .flash-toast-msg  {font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;}
+  .flash-toast-close{background:none;border:none;cursor:pointer;padding:0;color:#cbd5e1;font-size:12px;line-height:1;transition:color .2s;}
+  .flash-toast-close:hover{color:#64748b;}
+  .flash-toast-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 16px 16px;animation:shrink 4s linear forwards;}
+  @keyframes shrink{from{width:100%}to{width:0}}
+  .flash-toast-bar.success{background:#1aa374;}
+  .flash-toast-bar.error  {background:#ef4444;}
+  .flash-toast-bar.info   {background:#2e8bb6;}
+</style>
+{% endblock head %}
+
+
 {% block content %}
 
-<style>
-    /* Hide the radio input */
-    .form-check-input {
-        display: none;
-    }
-</style>
+<!-- Flash toasts -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div id="toast-zone" style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:10px;">
+      {% for category, message in messages %}
+      {% set tone = 'success' if category=='success' else ('error' if category in ['danger','error'] else 'info') %}
+      <div class="flash-toast" id="ft-{{ loop.index }}" style="position:relative;">
+        <div class="flash-toast-icon {{ tone }}">
+          <i class="fas {% if tone=='success' %}fa-check-circle{% elif tone=='error' %}fa-times-circle{% else %}fa-info-circle{% endif %}"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p class="flash-toast-title">{% if tone=='success' %}Success{% elif tone=='error' %}Error{% else %}Notice{% endif %}</p>
+          <p class="flash-toast-msg">{{ message }}</p>
+        </div>
+        <button class="flash-toast-close" onclick="dismissToast('ft-{{ loop.index }}')"><i class="fas fa-times"></i></button>
+        <div class="flash-toast-bar {{ tone }}"></div>
+      </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 
-<div class="d-flex justify-content-between mt-4">
-    {% for service in services %}
-    {% if service['image'] %}
-    <div class="px-2">
-        <label class="selected-image" onclick="checkRadio('{{ service['name'] }}', this)">
-            <img src="{{ service['image'] }}" class="card-img-top rounded-circle img-thumbnail mb-2 w-75 m-auto"
-                alt="{{ service['name'] }}">
-            <a href="{{ url_for('bills.set_img_and_redirect', service_id=service['serviceID'], img=service['image']) }}"
-                class="d-none" id="click_me{{ service['name'] }}">click</a>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="serviceRadios" id="{{ service['name'] }}">
+<div class="w-full" style="background:#f7faf8; padding:1.5rem 1rem 5rem; min-height:80vh;">
+  <div style="max-width:560px; margin:0 auto;">
+
+    <!-- Page header -->
+    <div class="rise rise-1" style="margin-bottom:24px;">
+      <a href="{{ url_for('view.home') }}" style="display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#64748b;text-decoration:none;padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;transition:all .2s;margin-bottom:16px;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#fff'">
+        <i class="fas fa-arrow-left" style="font-size:11px;"></i> Back
+      </a>
+      <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.5rem;color:#0d1f1a;margin:0 0 4px;">Pay Bills</h1>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:0;">Select your provider to continue</p>
+    </div>
+
+    <!-- ══ PROVIDER SELECTION ══ -->
+    {% if services %}
+    <div class="rise rise-1" style="background:#fff;border-radius:20px;border:1px solid #f1f5f9;box-shadow:0 2px 12px rgba(13,31,26,0.04);padding:20px;margin-bottom:20px;">
+      <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin:0 0 14px;">Choose Provider</p>
+      <div class="provider-grid">
+        {% for service in services %}
+        {% if service['image'] %}
+        <div style="position:relative;">
+          <div class="provider-item" id="pi-{{ loop.index }}"
+               onclick="selectProvider('{{ service['name'] }}', '{{ service['image'] }}', '{{ service['serviceID'] }}', {{ loop.index }})">
+            <div class="provider-img-wrap">
+              <img src="{{ service['image'] }}" alt="{{ service['name'] }}">
             </div>
-        </label>
-
+            <span class="provider-name">{{ service['name'] }}</span>
+            <div class="provider-tick">
+              <i class="fas fa-check" style="color:#fff;font-size:8px;"></i>
+            </div>
+          </div>
+          <!-- Hidden redirect link -->
+          <a href="{{ url_for('bills.set_img_and_redirect', service_id=service['serviceID'], img=service['image']) }}"
+             class="d-none" id="goto_{{ service['name'] }}"></a>
+        </div>
+        {% endif %}
+        {% endfor %}
+      </div>
     </div>
     {% endif %}
-    {% endfor %}
-</div>
-
-{% if variations_code %}
-<img src="{{ img }}" class="card-img-top img-thumbnail m-auto d-flex justify-content-center" alt="image"
-    style="width: 10rem;">
-{% if variations %}
-<form action="
-{% if 'mtn-data' in service_id or 'glo-data' in service_id or 'etisalat-data' in service_id or 'airtel-data' in service_id or 'smiles' in service_id or 'spectranet' in service_id %}
-{{url_for('bills.purchase_data', service_id=service_id)}} {% else %} {{url_for('bills.vtpass_payment', service_id=service_id)}} {% endif %}" class="form-group" method="post">
-
-{% if not "electric" in service_id %}
-<select name="amount" id="variations_cd" class="form-control w-50">
-        <option value="select" disabled selected>Select</option>
-        {% for variation in variations %}
-        <option value="{{ variation['variation_amount'] }}"
-        >{{ variation['name'] }}
-        </option>
-        {% endfor %}
-    </select>
-    {% endif %}
-    {% if "electric" in service_id %}
-    <select name="type" id="variations_cd" class="form-control w-50">
-        <option value="select" disabled selected>Select</option>
-        {% for variation in variations %}
-        <option value="{{ variation['name'] }}"
-        >{{ variation['name'] }}
-        </option>
-        {% endfor %}
-    </select>
-    <input type="text" name="verify_number" id="prepaid_number" class="form-control w-50 mt-4"
-        placeholder="Enter your Prepaid Number" required maxlength="13">
-        <span class="reveal1 badge bg-success p-1" id="reveal1"></span>
-        <input type="number" class="form-control w-50 mt-4" id="amount" placeholder="Enter amount" name="amount">
-        <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
-        maxlength="11" required>
-    {% elif "dstv" in service_id or "gotv" in service_id or "startimes" in service_id or "showmax" in service_id %}
-    <input type="text" name="verify_number" id="smartcard_number" class="form-control w-50 mt-4"
-        placeholder="Enter your SmartCard Number" required maxlength="13">
-        <span class="reveal1 badge bg-success p-1" id="reveal1"></span>
-        <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
-        maxlength="11" required>
-    {% elif "mtn-data" in service_id or "glo-data" in service_id or "etisalat-data" in service_id or "airtel-data" in service_id or "smiles" in service_id or "spectranet" in service_id %}
-    <input type="tel" name="phone_number" id="telephone2" class="form-control w-50 mt-4" placeholder="Enter telephone"
-        maxlength="11" required>
-    {% endif %}
-    <input type="text" class="form-control w-50 mt-4 d-none" id="get_service_id" value="{{service_id}}">
-    <input type="text" class="form-control w-50 mt-4 d-none" id="customer_name" value="" name="">
-    <input type="hidden" id="hidden_input" name="customer_name" value="">
-    <br>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModall">
-            Continue
-          </button>
-    
-        <!-- modal -->
-        <!-- modal -->
-
-        <div class="modal fade" id="exampleModall" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-              <div class="modal-content">
-                <div class="modal-header">
-                {% if current_user.pin_set %}
-                  <h5 class="modal-title" id="exampleModalLabel">Complete Transaction</h5>
-                {% else %}
-                <h5 class="modal-title" id="exampleModalLabel">Set your pin</h5>
-                {% endif %}
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    {% if current_user.pin_set %}
-                    <input type="text" name="transaction_pin" id="transaction_pin" class="form-control w-50 mt-4 mx-auto shadow-none"
-                    placeholder="Enter your Pin" required maxlength="4">
-                    {% else %}
-                    <a href="{{url_for('view.create_transfer_pin')}}" class="btn justify-content-center d-flex btn-primary mt-4 mx-auto shadow-none border-0 w-50">Set Pin</a>
-                    {% endif %}
-                </div>
-                <div class="modal-footer">
-                    {% if current_user.pin_set %}
-                    <button type="submit" class="btn btn-success mt-4">Submit</button>
-                    {% endif %}
-                </div>
-              </div>
-            </div>
-          </div>
-
-        <!-- modal -->
-        <!-- modal -->
-</form>
-{% else %}
-<form action="{{url_for('bills.vtpass_payment', service_id=service_id)}}" class="form-group" method="post">
-    <!-- <select name="" id="amount_select" class="form-control w-50">
-        <option value="select" disabled selected>Select</option>
-        <option value="100">100</option>
-        <option value="200">200</option>
-        <option value="300">300</option>
-        <option value="400">400</option>
-        <option value="500">500</option>
-        <option value="600">600</option>
-    </select> -->
-    <input type="number" class="form-control w-50 mt-4" id="amount" placeholder="Enter amount" name="amount">
-    <input type="tel" name="phone_number" id="telephone" class="form-control w-50 mt-4" placeholder="Enter telephone"
-        maxlength="11">
 
 
-    <button type="button" class="btn btn-primary mt-4" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        Continue
-      </button>
+    <!-- ══ FORM (shows after provider selection) ══ -->
+    {% if variations_code %}
+    <div class="form-card rise rise-2">
 
-    <!-- modal -->
-    <!-- modal -->
-
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-            {% if current_user.pin_set %}
-              <h5 class="modal-title" id="exampleModalLabel">Complete Transaction</h5>
-            {% else %}
-            <h5 class="modal-title" id="exampleModalLabel">Set your pin</h5>
-            {% endif %}
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                {% if current_user.pin_set %}
-                <input type="text" name="transaction_pin" id="transaction_pin" class="form-control w-50 mt-4 mx-auto shadow-none"
-                placeholder="Enter your Pin" required maxlength="4">
-                {% else %}
-                <a href="{{url_for('view.create_transfer_pin')}}" class="btn justify-content-center d-flex btn-primary mt-4 mx-auto shadow-none border-0 w-50">Set Pin</a>
-                {% endif %}
-            </div>
-            <div class="modal-footer">
-                {% if current_user.pin_set %}
-                <button type="submit" class="btn btn-success mt-4">Submit</button>
-                {% endif %}
-            </div>
-          </div>
+      <!-- Selected provider header -->
+      <div class="form-card-header">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(26,163,116,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-receipt" style="color:#1aa374;font-size:14px;"></i>
         </div>
+        <div>
+          <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:15px;color:#0d1f1a;margin:0;">Complete Payment</p>
+          <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin:0;">Fill in the details below</p>
+        </div>
+        {% if img %}
+        <div style="margin-left:auto;width:40px;height:40px;border-radius:50%;overflow:hidden;border:2px solid #e2e8f0;flex-shrink:0;">
+          <img src="{{ img }}" style="width:100%;height:100%;object-fit:cover;" alt="">
+        </div>
+        {% endif %}
       </div>
 
-    <!-- modal -->
-    <!-- modal -->
-</form>
-{% endif %}
-{% endif %}
+      <div style="padding:20px;">
+        {% if variations %}
+        <form action="
+          {% if 'mtn-data' in service_id or 'glo-data' in service_id or 'etisalat-data' in service_id or 'airtel-data' in service_id or 'smiles' in service_id or 'spectranet' in service_id %}
+            {{ url_for('bills.purchase_data', service_id=service_id) }}
+          {% else %}
+            {{ url_for('bills.vtpass_payment', service_id=service_id) }}
+          {% endif %}" method="post">
 
+          <!-- Plan/Type selector -->
+          {% if not "electric" in service_id %}
+          <div style="margin-bottom:16px;">
+            <label class="field-label">Select Plan</label>
+            <select name="amount" id="variations_cd" class="et-select">
+              <option value="" disabled selected>Choose a plan…</option>
+              {% for variation in variations %}
+              <option value="{{ variation['variation_amount'] }}">{{ variation['name'] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+
+          {% if "electric" in service_id %}
+          <!-- Electricity fields -->
+          <div style="margin-bottom:16px;">
+            <label class="field-label">Meter Type</label>
+            <select name="type" id="variations_cd" class="et-select">
+              <option value="" disabled selected>Select meter type…</option>
+              {% for variation in variations %}
+              <option value="{{ variation['name'] }}">{{ variation['name'] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="field-label">Prepaid Meter Number</label>
+            <input type="text" name="verify_number" id="prepaid_number" class="et-input"
+                   placeholder="Enter 13-digit meter number" required maxlength="13" inputmode="numeric">
+            <div class="customer-reveal" id="reveal1" style="display:none;">
+              <i class="fas fa-check-circle" style="font-size:11px;color:#1aa374;"></i>
+              <span id="reveal1-text"></span>
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="field-label">Amount</label>
+            <div class="amount-wrap">
+              <span class="amount-prefix">₦</span>
+              <input type="number" class="et-input amount-input" id="amount" placeholder="0.00" name="amount" required min="1">
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="field-label">Phone Number</label>
+            <input type="tel" name="phone_number" id="telephone2" class="et-input"
+                   placeholder="080X XXX XXXX" maxlength="11" required>
+          </div>
+
+          {% elif "dstv" in service_id or "gotv" in service_id or "startimes" in service_id or "showmax" in service_id %}
+          <!-- Cable TV fields -->
+          <div style="margin-bottom:16px;">
+            <label class="field-label">SmartCard Number</label>
+            <input type="text" name="verify_number" id="smartcard_number" class="et-input"
+                   placeholder="Enter SmartCard number" required maxlength="13" inputmode="numeric">
+            <div class="customer-reveal" id="reveal1" style="display:none;">
+              <i class="fas fa-check-circle" style="font-size:11px;color:#1aa374;"></i>
+              <span id="reveal1-text"></span>
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="field-label">Phone Number</label>
+            <input type="tel" name="phone_number" id="telephone2" class="et-input"
+                   placeholder="080X XXX XXXX" maxlength="11" required>
+          </div>
+
+          {% elif "mtn-data" in service_id or "glo-data" in service_id or "etisalat-data" in service_id or "airtel-data" in service_id or "smiles" in service_id or "spectranet" in service_id %}
+          <!-- Data fields -->
+          <div style="margin-bottom:16px;">
+            <label class="field-label">Phone Number</label>
+            <input type="tel" name="phone_number" id="telephone2" class="et-input"
+                   placeholder="080X XXX XXXX" maxlength="11" required>
+          </div>
+          {% endif %}
+
+          <input type="hidden" id="get_service_id" value="{{ service_id }}">
+          <input type="hidden" id="hidden_input" name="customer_name" value="">
+
+          <div class="divider-label">Confirm with PIN</div>
+
+          {% if current_user.pin_set %}
+          <!-- PIN dots -->
+          <div class="pin-dots">
+            <div class="pin-dot" id="pd1"></div>
+            <div class="pin-dot" id="pd2"></div>
+            <div class="pin-dot" id="pd3"></div>
+            <div class="pin-dot" id="pd4"></div>
+          </div>
+          <div class="pw-wrap" style="margin-bottom:20px;">
+            <input type="password" name="transaction_pin" id="pin-input" class="et-input"
+                   style="text-align:center;letter-spacing:.35em;font-size:20px;font-family:'Courier New',monospace;"
+                   placeholder="••••" required maxlength="4" inputmode="numeric">
+            <button type="button" class="pw-toggle" onclick="togglePin()" tabindex="-1">
+              <i class="fas fa-eye" id="pin-eye"></i>
+            </button>
+          </div>
+          <button type="submit" class="submit-btn" id="submit-btn" disabled>
+            <span class="lbl"><i class="fas fa-circle-check"></i> Pay Now</span>
+          </button>
+          {% else %}
+          <a href="{{ url_for('view.create_transfer_pin') }}"
+             style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,#1aa374,#2e8bb6);color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;text-decoration:none;">
+            <i class="fas fa-key"></i> Set Transaction PIN First
+          </a>
+          {% endif %}
+
+        </form>
+
+        {% else %}
+        <!-- No variations — simple form -->
+        <form action="{{ url_for('bills.vtpass_payment', service_id=service_id) }}" method="post">
+          <div style="margin-bottom:16px;">
+            <label class="field-label">Amount</label>
+            <div class="amount-wrap">
+              <span class="amount-prefix">₦</span>
+              <input type="number" class="et-input amount-input" id="amount" placeholder="0.00" name="amount" required min="1">
+            </div>
+          </div>
+          <div style="margin-bottom:16px;">
+            <label class="field-label">Phone Number</label>
+            <input type="tel" name="phone_number" id="telephone" class="et-input"
+                   placeholder="080X XXX XXXX" maxlength="11">
+          </div>
+
+          <div class="divider-label">Confirm with PIN</div>
+
+          {% if current_user.pin_set %}
+          <div class="pin-dots">
+            <div class="pin-dot" id="pd1"></div>
+            <div class="pin-dot" id="pd2"></div>
+            <div class="pin-dot" id="pd3"></div>
+            <div class="pin-dot" id="pd4"></div>
+          </div>
+          <div class="pw-wrap" style="margin-bottom:20px;">
+            <input type="password" name="transaction_pin" id="pin-input" class="et-input"
+                   style="text-align:center;letter-spacing:.35em;font-size:20px;font-family:'Courier New',monospace;"
+                   placeholder="••••" required maxlength="4" inputmode="numeric">
+            <button type="button" class="pw-toggle" onclick="togglePin()" tabindex="-1">
+              <i class="fas fa-eye" id="pin-eye"></i>
+            </button>
+          </div>
+          <button type="submit" class="submit-btn" id="submit-btn" disabled>
+            <span class="lbl"><i class="fas fa-circle-check"></i> Pay Now</span>
+          </button>
+          {% else %}
+          <a href="{{ url_for('view.create_transfer_pin') }}"
+             style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,#1aa374,#2e8bb6);color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;text-decoration:none;">
+            <i class="fas fa-key"></i> Set Transaction PIN First
+          </a>
+          {% endif %}
+        </form>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock content %}
+
+
+{% block scripts %}
 <script>
+  // ── Provider selection
+  function selectProvider(name, img, serviceId, idx) {
+    document.querySelectorAll('.provider-item').forEach(el => el.classList.remove('selected'));
+    document.getElementById('pi-' + idx).classList.add('selected');
+    const link = document.getElementById('goto_' + name);
+    if (link) { setTimeout(() => link.click(), 180); }
+  }
 
-    // Part 1: Handle variations_cd
-    let variations_cd = document.getElementById("variations_cd");
-    if (variations_cd) {
-        variations_cd.addEventListener("change", function () {
-            let submit_btn2 = document.getElementById("submit_btn2");
-            let tel2 = document.getElementById("telephone2")
-            if (submit_btn2) {
-                tel2.classList.remove("d-none")
-                submit_btn2.disabled = false;
-            }
-        });
-    }
+  // ── PIN dots + submit enable
+  const pinInput  = document.getElementById('pin-input');
+  const submitBtn = document.getElementById('submit-btn');
+  const dots = ['pd1','pd2','pd3','pd4'].map(id => document.getElementById(id)).filter(Boolean);
 
-    let card_input = document.getElementById("smartcard_number")
-    let electric_input = document.getElementById("prepaid_number")
-
-    if(card_input || electric_input){
-        if(card_input){
-            // call an endpoint and get the data from the reesponse
-        }else{
-            // call same endpoint and get the data from the response
-        }
-    }
-
-
-
-    // Part 2: Handle amount_select, amount, telephone, and submit_btn
-    let select_amount = document.getElementById("amount_select");
-    let amount = document.getElementById("amount");
-    let tel = document.getElementById("telephone");
-    let submit_btn = document.getElementById("submit_btn");
-
-    if (select_amount && amount && tel && submit_btn) {
-        select_amount.addEventListener("change", function () {
-            amount.value = select_amount.value;
-        });
-
-        document.addEventListener("input", function () {
-            if (amount.value) {
-                tel.classList.remove("d-none");
-            } else {
-                tel.classList.add("d-none");
-            }
-        });
-
-        document.addEventListener("change", function () {
-            if (amount.value) {
-                tel.classList.remove("d-none");
-            } else {
-                tel.classList.add("d-none");
-            }
-        });
-
-        document.addEventListener("input", function () {
-            if (tel.value.length === 11) {
-                submit_btn.disabled = false;
-            } else {
-                submit_btn.disabled = true;
-            }
-        });
-    }
-
-
-    function checkRadio(name, element) {
-        // Remove the 'checked' class from all elements
-        var elements = document.querySelectorAll('.px-2');
-        elements.forEach(function (el) {
-            el.classList.remove('checked');
-        });
-
-        // Add the 'checked' class to the clicked element
-        element.classList.add('checked');
-
-        // Remove the 'bg-secondary' class from all images
-        var images = document.querySelectorAll('.selected-image img');
-        images.forEach(function (img) {
-            img.classList.remove('bg-secondary');
-        });
-
-        // Add the 'bg-secondary' class to the clicked image
-        var clickedImage = element.querySelector('.selected-image img');
-        clickedImage.classList.add('bg-secondary');
-
-        document.getElementById(name).checked = true;
-        // serviceId = document.getElementById("service_id").textContent
-        // console.log(serviceId, "service id")
-        document.getElementById(`click_me${name}`).click()
-
-
-
-
-    }
-
-
-
-
-
-    // Assuming you have input fields with IDs "prepaid_number" and "smartcard_number"
-let prepaidInput = document.getElementById("prepaid_number");
-let smartcardInput = document.getElementById("smartcard_number");
-let customer_name = document.getElementById("customer_name");
-let hidden_input = document.getElementById("hidden_input");
-let service_id = document.getElementById("get_service_id").value;
-// let type_ = document.getElementById("variation_cd").value;
-
-let type_ = "prepaid"
-// let service_id = "dstv"
-
-// Event listener for prepaid meter number input
-if (prepaidInput) {
-    prepaidInput.addEventListener("input", function () {
-        let prepaidNumber = prepaidInput.value;
-        if (prepaidNumber.length === 13) {
-            fetchResponse("prepaid", prepaidNumber);
-        }
+  if (pinInput) {
+    pinInput.addEventListener('input', function() {
+      const val = this.value.replace(/\D/g,'').slice(0,4);
+      this.value = val;
+      dots.forEach((d, i) => d.classList.toggle('filled', i < val.length));
+      if (submitBtn) {
+        const ready = val.length === 4;
+        submitBtn.disabled = !ready;
+        submitBtn.style.opacity = ready ? '1' : '0.45';
+      }
     });
-}
+    pinInput.addEventListener('keypress', e => { if(!/[0-9]/.test(e.key)) e.preventDefault(); });
+  }
 
-// Event listener for smartcard number input
-if (smartcardInput) {
-    smartcardInput.addEventListener("input", function () {
-        let smartcardNumber = smartcardInput.value;
-        if (smartcardNumber.length === 13) {
-            fetchResponse(type_, smartcardNumber);
-        }
-    });
-}
+  function togglePin() {
+    if (!pinInput) return;
+    const show = pinInput.type === 'password';
+    pinInput.type = show ? 'text' : 'password';
+    document.getElementById('pin-eye').className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+  }
 
-// Function to fetch response from the endpoint
-function fetchResponse(type, number) {
-    fetch("/verify_number", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            type: type,
-            billers_code: number,
-            service_id: service_id
-        })
+  // ── Customer name fetch (electricity / cable)
+  const prepaidInput   = document.getElementById('prepaid_number');
+  const smartcardInput = document.getElementById('smartcard_number');
+  const hiddenInput    = document.getElementById('hidden_input');
+  const serviceIdEl    = document.getElementById('get_service_id');
+  const serviceId      = serviceIdEl ? serviceIdEl.value : '';
+
+  function showReveal(text) {
+    const el  = document.getElementById('reveal1');
+    const txt = document.getElementById('reveal1-text');
+    if (el && txt) { txt.textContent = text; el.style.display = 'flex'; }
+    if (hiddenInput) hiddenInput.value = text;
+  }
+
+  function fetchVerify(type, number) {
+    fetch('/verify_number', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, billers_code: number, service_id: serviceId })
     })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data, "response"); // Handle the response data as needed
+    .then(r => r.json())
+    .then(data => { if (data.customer_name) showReveal(data.customer_name); })
+    .catch(err => console.error(err));
+  }
 
-        // customer_name.classList.remove("d-none");
-        // set the disabled attribute to false
-        // customer_name.disabled = true;
-        // customer_name.value = data['customer_name']
-
-        // beleow is a span tag
-        document.getElementById("reveal1").textContent = data['customer_name'];
-        hidden_input.value = data['customer_name']
-        // remove the d-none class from the element
-    })
-    .catch(error => {
-        console.error("Error:", error);
+  if (prepaidInput) {
+    prepaidInput.addEventListener('input', function() {
+      if (this.value.length === 13) fetchVerify('prepaid', this.value);
     });
-}
+  }
+  if (smartcardInput) {
+    smartcardInput.addEventListener('input', function() {
+      if (this.value.length === 13) fetchVerify('prepaid', this.value);
+    });
+  }
 
+  // ── Toast dismiss
+  document.querySelectorAll('.flash-toast').forEach((t, i) => {
+    setTimeout(() => dismissToast(t.id), 4000 + i * 300);
+  });
+  function dismissToast(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('hide');
+    setTimeout(() => el.remove(), 380);
+  }
 </script>
-
-{% endblock %}
+{% endblock scripts %}
