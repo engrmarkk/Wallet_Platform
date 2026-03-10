@@ -18,6 +18,7 @@ from wtforms.validators import (
     EqualTo,
     NumberRange,
     ValidationError,
+    Regexp
 )
 
 
@@ -37,13 +38,21 @@ class SendMoneyForm(FlaskForm):
 
 
 class CreateTransferPin(FlaskForm):
-    transfer_pin = IntegerField(
+    transfer_pin = PasswordField(
         "Create 4 digits transfer pin",
-        validators=[DataRequired(), NumberRange(min=1000, max=9999)],
+        validators=[
+            DataRequired(),
+            Length(min=4, max=4, message="PIN must be exactly 4 digits"),
+            Regexp(r'^\d{4}$', message="PIN must contain only numbers")
+        ],
     )
-    confirm_transfer_pin = IntegerField(
+    confirm_transfer_pin = PasswordField(
         "Confirm 4 digits transfer pin",
-        validators=[DataRequired(), EqualTo("transfer_pin")],
+        validators=[
+            DataRequired(),
+            EqualTo("transfer_pin", message="PINs do not match"),
+            Length(min=4, max=4, message="PIN must be exactly 4 digits")
+        ],
     )
     secret_answer = StringField(
         "Enter a secret answer (This answer cannot be changed)",
