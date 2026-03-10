@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Quicksand:wght@400;700&family=Sora&display=swap" rel="stylesheet">
+    <link rel='stylesheet' href="{{ url_for('static', filename='css/customStyle.css') }}"/>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+
+    <!-- For dropdown BOOTSTRAP -->
+    <!-- Load Bootstrap -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+      integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
+      integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- font awesome -->
+
+    <!-- fontAwesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- @@@@@@@@@@@@@@@@@@@@@@@ -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/customStyle.css') }}"
+    />
+
+    
+    <!-- The Jquery local libarary -->
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='javascript/jquery-3.6.1.min.js') }}"
+    ></script>
+
+    <!-- Js -->
+
+    <script
+      src="{{ url_for('static', filename='javascript/script.js') }}"
+      defer
+    ></script>
+
+    <title>Easy Transact</title>
+
+    <link
+      rel="icon"
+      href="{{ url_for('static', filename='images/logo-yellow.png') }}"
+    />
+
+    <script>
+      // Do this before the body gets parsed
+      //if (localStorage.getItem('darkmode') === '1') {
+      //  document.documentElement.classList.add('darkmode');
+      //}else{
+      //  document.documentElement.classList.remove('darkmode');
+      //}
+    </script>
+  </head>
+  <body class='light'>
+    <style>
+      .btn:hover{
+        cursor: pointer;
+        background-color: black !important;
+        color: white !important;
+        transition: ease-in-out 0.5s;
+      }
+    </style>
+    {% if current_user.is_authenticated %}
+
+    <!-- Navbar -->
+    <nav class="d-flex align-items-center navbar navbar-expand-lg nav-bar py-3" id="navbar">
+      <div class="container">
+        <a href="{{ url_for('view.home') }}" class="navbar-brand d-flex">
+          <img
+            src="{{ url_for('static', filename='images/logo-normal.png') }}"
+            alt="company's logo"
+            style="width: 2.5rem"
+          />
+          <span class='logo-text'>&nbsp;Easy<span class="text-green">Transact</span></span>
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navmenu"
+        >
+        <span class="navbar-toggler-ico one"
+        ></span>
+        <span class="navbar-toggler-ico two"></span>
+        <span class="navbar-toggler-ico three"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navmenu">
+          <ul class="navbar-nav m-auto">
+            <li class="nav-item _box">
+              <a href="{{ url_for('view.home') }}" class="nav-link " id="navlinks">
+                <i class="fas fa-home d-none d-lg-inline"></i>
+                Home</a>
+            </li>
+            <li class="nav-item _box" style="margin-left:2rem">
+              <a href="#" class="nav-link" id="navlinks">
+                <i class="far fa-money-bill-alt d-none d-lg-inline"></i>
+                Pay</a>
+            </li>
+            <li class="nav-item _box" style="margin-left:2rem">
+              <a href="{{ url_for('view.create_card') }}" class="nav-link" id="navlinks">
+                <i class="far fa-credit-card d-none d-lg-inline"></i>
+                Card</a>
+            </li>
+            <li class="nav-item _box" style="margin-left:2rem">
+              <a href="{{ url_for('view.coming_soon') }}" class="nav-link" id="navlinks">
+                <i class="fas fa-business-time d-none d-lg-inline"></i>
+                Invest</a>
+            </li>
+
+            </ul>
+            <!-- drop down -->
+            <div class="dropdown">
+              <button class="text-accent" style="border: none; background: none;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+              >
+              <div class="user d-flex align-items-center">
+                 <img src="{{ current_user.photo }}" 
+                 style="width: 2rem;"
+                 class="rounded" alt="{{ current_user.first_name }}"></i> &nbsp; {{ current_user.last_name.title() + ' ' + current_user.first_name.title() }}
+                </div>
+                </button>
+                <div class="dropdown-menu px-2" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item text-decoration-none text-muted small text-center fw-bold">Notification
+                  <span class="badge rounded-pill bg-danger position-absolute">9+</span>
+                  </a>
+                  <a class="dropdown-item text-decoration-none text-muted small text-center fw-bold" href="{{ url_for('view.account') }}">Account</a>
+                  <a class="dropdown-item text-decoration-none text-muted small text-center fw-bold" href="{{ url_for('view.user_profile') }}">Profile</a>
+                  <a class="dropdown-item text-decoration-none text-white rounded small bg-danger text-center" href="{{ url_for('auth.logout') }}">Logout</a>
+                </div>
+              </div>
+  
+            <!-- ................... -->
+        </div>
+      </div>
+    </nav>
+
+
+    {% else %}
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg py-3" id="navbar">
+      <div class="container">
+        <a href="{{ url_for('view.front_page') }}" class="navbar-brand">
+          <img
+            src="{{ url_for('static', filename='images/logo-normal.png') }}"
+            alt="company's logo"
+            style="width: 2.5rem"
+          />
+          <span class='logo-text'>&nbsp;Easy<span class="text-green">Transact</span></span>
+        </a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navmenu"
+        >
+        <span class="navbar-toggler-ico one"></span>
+        <span class="navbar-toggler-ico two"></span>
+        <span class="navbar-toggler-ico three"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navmenu">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item _box">
+              <a href="{{ url_for('view.coming_soon') }}" class="nav-link">Business</a>
+            </li>
+            <li class="nav-item _box">
+              <a href="{{ url_for('view.team') }}" class="nav-link">Team</a>
+            </li>
+            <li class="nav-item _box">
+              <a href="{{ url_for('view.contact') }}" class="nav-link">Help</a>
+            </li>
+            <li class="nav-item _button">
+              <a href="{{ url_for('auth.login') }}" class="nav-link nav-btn"><span>Sign In</span></a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    {% endif %}
+    <section class="container">
+      {% block content %} {% endblock content %}
+
+      {% if alert %}
+  <div class="toast align-items-center show fade text-white {% if bg_color %} bg-{{bg_color}} {% else %} bg-info {% endif %} border-0 position-fixed top-0 end-0" role="alert"
+  data-bs-autohide="true" aria-live="polite" aria-atomic="true" data-bs-animation="true" style="z-index: 99; margin-top: 5rem; transform: translateX(100%); transition: transform 4s ease-in-out;">
+    <div class="d-flex">
+      <div class="toast-body" style="font-size: 1rem;">
+        {{alert}}
+      </div>
+      <!-- <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button> -->
+    </div>
+  </div>
+{% endif %}
+
+      <!-- footer -->
+      <!-- <hr style="border: 1px solid rgb(124, 120, 120); margin-top: 7rem"/> -->
+    {% if current_user.is_authenticated %}
+    <!-- The footer to see if the user is logged in -->
+    <footer>
+      <p class="text-dark text-center"></p>
+    </footer>
+    {% else %}
+    <!-- The footer to see if the user is not yet logged in -->
+      <footer
+        class="footer footer-text"
+      >
+        <div class="w-100 py-3">
+          <img
+            class=""
+            src="{{ url_for('static', filename='images/logo-normal.png') }}"
+            alt="EasyTransact"
+            style="width: 4rem; margin-left: 2rem"
+          />
+        </div>
+        <div class='footer-wrapper'>
+        <div class="d-flex flex-row w-100">
+          <ul class="w-100 text-muted" style="list-style: none;padding:0 !important;">
+            <li class="p-2">Useful Links</li>
+            <li class="p-2"> <a href="{{ url_for('view.faq') }}" class="text-decoration-none text-info">FAQs</a> </li>
+            <li class="p-2"> <a href="{{ url_for('view.contact') }}" class="text-decoration-none text-info">Help</a></li>
+            <li class="p-2"> <a href="{{ url_for('view.coming_soon') }}" class="text-decoration-none text-info">Business</a> </li>
+            <li class="p-2"> <a href="{{ url_for('view.team') }}" class="text-decoration-none text-info">Team</a></li>
+          </ul>
+        </div>
+
+        <div class="d-flex flex-row w-100">
+          <ul class="w-100 text-muted" style="list-style: none;padding:0 !important;">
+            <li class="p-2">Socials</li>
+            <li class="p-2"><a href="#" class="text-decoration-none text-info">Twitter</a></li>
+            <li class="p-2"><a href="#" class="text-decoration-none text-info">Instagram</a></li>
+            <li class="p-2"><a href="#" class="text-decoration-none text-info">Linkedin</a></li>
+            <li class="p-2"><a href="#" class="text-decoration-none text-info">Facebook</a></li>
+          </ul>
+        </div>
+        </div>
+      </footer>
+      {% endif %}
+      <p class="footer-text mt-3 text-muted">
+        EasyTransact | copyright &copy; {{ date.year }}
+      </p>
+    </section>
+
+    <!-- Go to top button -->
+    <a href="#" class="position-fixed p-4" style="bottom: 0; right: 0"
+      ><i class="far fa-arrow-alt-circle-up text-muted h3"></i
+    ></a>
+    <!-- ............... -->
+
+        <!-- Icon for the dark mode -->
+        <i class="dntoggle fas fa-moon" id="dark-mode-toggle"></i>
+
+
+    <script>
+    var myToast = new bootstrap.Toast(document.querySelector('.toast'));
+
+    document.querySelector('.toast').style.transform = 'translateX(-0%)';
+
+    setTimeout(function() {
+        // fade the toast away
+        document.querySelector('.toast').style.transition = '4s ease-in-out';
+        myToast.hide();
+    }, 2000);
+    </script>
+
+    <!-- BOOTSTRAP -->
+
+    <!-- Bootsrap popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
+      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
+      integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
+      crossorigin="anonymous"
+    ></script>
+  </body>
+</html>

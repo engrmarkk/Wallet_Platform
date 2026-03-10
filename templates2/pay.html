@@ -1,0 +1,99 @@
+{% extends 'base.html' %} 
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center mt-5">
+  <div>
+    <span class="text-muted h3">Send Money </span
+    ><small class="badge badge-pill bg-success py-2 px-4">To wallet</small>
+  </div>
+  <div class="col-10 col-xs-10 col-sm-10 col-md-6">
+    <!-- wallet sending money form-->
+    <form
+      action=""
+      method="post"
+      class="send-money p-3 mt-3 w-100"
+    >
+      <!-- Flash messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
+        role="alert"
+        style="height: 3.5rem; transition: 0.6s"
+      >
+        {% if category=='success' %}
+        <div class="small text-center">
+          <i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}
+        </div>
+        {% else %}
+        <div class="small text-center">
+          <i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{
+          message }}
+        </div>
+        {% endif %}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+
+      <div
+        class="bg-light d-flex mb-3 "
+        style="width: 10.5rem;height:10.5rem; margin: auto ;border-radius:50%"
+      >
+        <img
+          src="{{ user1.photo }}"
+          class="p-2 rounded-circle"
+          style="width: 10.5rem; margin: auto;"
+          alt=""
+        />
+      </div>
+      {{ form.hidden_tag() }}
+
+      <div>
+        <span class="pay-header"><span class="fw-bold"> Account Name</span><br> 
+       <span class="h4 text-white" > {{ user1.last_name.upper() }} &nbsp;{{ user1.first_name.upper() }}
+        </span>
+       </span>
+      </div>
+
+      <!-- For Amount validations -->
+      
+      
+      {% if current_user.pin_set %}
+      {% if form.amount.errors %} {{ form.amount(class="form-control p-2 ",
+      required=False, placeholder='Enter amount') }} {% for error in
+      form.amount.errors %}
+      <small class="text-danger mt-1"
+        ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
+        }}</small
+      ><br>
+      {% endfor %} {% else %} {{ form.amount(class="form-control p-2 ",
+      required=False, placeholder='Enter amount') }} {% endif %}
+
+      <br>
+      {{form.transfer_pin(class='form-control p-2', required=True, placeholder='Enter 4 digits transfer pin') }}
+      <br>
+      {% if user1.account_number not in beneficial %}
+      <div class='d-flex align-item-center' style='gap:5px; flex-direction:row-reverse;'>
+      {{ form.add_beneficiary(class="") }} {{ form.add_beneficiary.label(class='label text-muted fw-bold') }}
+      </div>
+      {% endif %}
+      {% endif %}
+
+      {% if current_user.pin_set %}
+            <!-- For submit button -->
+      {{ form.submit(size=20, class='pay-btn btn btn-success mt-4 w-100 p-1')}}
+
+      {% endif %}
+
+      {% if not current_user.pin_set %}
+      <a href="{{url_for('view.create_transfer_pin')}}" class="btn justify-content-center d-flex btn-primary mt-4 mx-auto shadow-none border-0 w-50">Set Pin</a>
+      {% endif %}
+    </form>
+  </div>
+</div>
+{% endblock content %}

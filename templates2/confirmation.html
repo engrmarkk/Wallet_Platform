@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center mt-5">
+    <div>
+      <span class="text-h2 h3">Email Verification</span
+      >
+    </div>
+    <div class="col-10 col-xs-10 col-sm-10 col-md-6">
+      <!-- wallet sendimg money form-->
+      <form
+        action=""
+        method="post"
+        class="confirmation  p-5 mt-5 w-100"       
+      >
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %} {% if
+        messages %} {% for category, message in messages %}
+        <div
+          class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
+          role="alert"
+          style="height: 3.5rem; transition: 0.6s"
+        >
+          {% if category=='success' %}
+          <div class="small text-center">
+            <i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}
+          </div>
+          {% else %}
+          <div class="small text-center">
+            <i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{
+            message }}
+          </div>
+          {% endif %}
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"
+          ></button>
+        </div>
+        {% endfor %} {% endif %} {% endwith %}
+        <h5 class="text-center mb-3">One time password has been sent to <strong>{{email}}</strong>. Please check inbox/spam </h5>
+        <label>Enter OTP:</label> <input type="text" name="otp"/>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  </div>
+<div style="margin-bottom: 10rem;"></div>  
+{% endblock content %}

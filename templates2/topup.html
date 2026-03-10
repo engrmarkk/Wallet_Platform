@@ -1,0 +1,150 @@
+<!-- ....................... -->
+
+<body
+  style="
+    border: 1px solid #ddd;
+    border-radius: 0.5rem;
+    background: #fff;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+    max-width: 600px;
+    padding: 1rem;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #212529;
+    text-align: left;
+  "
+>
+  <div style="text-align: center; margin-bottom: 1rem">
+    <p class="h5 text-muted" style="font-weight: 700">
+      EasyTransact Transaction Alert Service
+    </p>
+    <p
+      style="
+        color: rgb(19, 49, 105);
+        margin-bottom: 1rem;
+        margin-top: 3rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+      "
+    >
+      Hello {{user.first_name.title()}},
+    </p>
+    <p>Please be informed that a credit transaction occurred on your wallet.</p>
+    <p>Kindly find the details of the transaction below.</p>
+
+    <div style="overflow-x: auto;">
+      <table
+        style="
+          border-collapse: collapse;
+          border-spacing: 0;
+          width: 100%;
+          border: 1px solid #ddd;
+        "
+      >
+        <tbody style="border: 1px solid #ddd">
+          <td
+            style="
+              border: 1px solid #ddd;
+              width: 50%;
+              padding: 0.7rem;
+              background: rgba(0, 0, 255, 0.514);
+              color: white;
+            "
+          >
+            TRANSACTION DETAILS
+          </td>
+          <td
+            style="
+              padding: 0.7rem;
+              border: 1px solid #ddd;
+              background: rgba(0, 0, 255, 0.514);
+            "
+          ></td>
+        </tbody>
+
+        <tbody style="border: 1px solid #ddd">
+          <td style="border: 1px solid #ddd; width: 50%; padding: 0.7rem">
+            Account Number
+          </td>
+          <td style="padding: 0.7rem; border: 1px solid #ddd">
+            {{acct[:4]}}******
+          </td>
+        </tbody>
+
+        <tbody style="border: 1px solid #ddd">
+          <td style="border: 1px solid #ddd; width: 50%; padding: 0.7rem">
+            Transaction Type
+          </td>
+          <td
+            style="
+              padding: 0.7rem;
+              border: 1px solid #ddd;
+              background: rgba(0, 255, 42, 0.705);
+            "
+          >
+            CREDIT
+          </td>
+        </tbody>
+
+        <tbody style="border: 1px solid #ddd">
+          <td style="border: 1px solid #ddd; width: 50%; padding: 0.7rem">
+            Description
+          </td>
+          <td style="padding: 0.7rem; border: 1px solid #ddd">
+            FUND RECEIVED FROM {{ sender }}/{{ sender_acct[:4] }}****
+          </td>
+        </tbody>
+
+        <tbody style="border: 1px solid #ddd">
+          <td style="border: 1px solid #ddd; width: 50%; padding: 0.7rem">
+            Bank Name
+          </td>
+          <td style="padding: 0.7rem; border: 1px solid #ddd">
+            {{bank_name}}
+          </td>
+        </tbody>
+
+        <tbody style="border: 1px solid #ddd">
+          <td style="border: 1px solid #ddd; width: 50%; padding: 0.7rem">
+            Transaction Amount
+          </td>
+          <td style="padding: 0.7rem; border: 1px solid #ddd">
+            <del style="text-decoration-style: double">N</del> {{amount}}
+          </td>
+        </tbody>
+
+        <tbody style="border: 1px solid #ddd">
+          <td style="border: 1px solid #ddd; width: 50%; padding: 0.7rem">
+            Current Balance
+          </td>
+          <td style="padding: 0.7rem; border: 1px solid #ddd">
+            <del style="text-decoration-style: double">N</del> {{balance}}
+          </td>
+        </tbody>
+
+        <tbody style="border: 1px solid #ddd">
+          <td style="border: 1px solid #ddd; width: 50%; padding: 0.7rem">
+            Transaction Date
+          </td>
+          <td style="padding: 0.7rem; border: 1px solid #ddd">
+            {{ date.strftime('%Y-%m-%d') }} {{ date.strftime('%I:%M %p') }}
+          </td>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="margin-top: 1.5rem">
+      <div>
+        <span style="font-weight: 700">Remember:</span> Keep your pin and login
+        information secure.
+      </div>
+      <span
+        >Do not respond to emails requesting for your login/PIN details.</span
+      >
+      <br /><br />
+      <p style="color: dimgray">Thank you for banking with EasyTransact</p>
+    </div>
+  </div>
+</body>

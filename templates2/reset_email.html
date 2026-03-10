@@ -1,0 +1,12 @@
+<p>
+    You are receiving this email because you requested a password reset for your user account at EasyTransact.
+    Your username is {{ user.username }}.
+</p>
+<p>
+    To reset your password <a href="{{ url_for('view.reset_password_verified', user=user, token=token, _external=True) }}">
+        click here
+    </a>
+</p>
+    To reset your password
+    .
+</p>

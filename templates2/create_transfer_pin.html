@@ -1,0 +1,107 @@
+{% extends 'base.html' %} {% block content %}
+
+<div class="d-flex flex-column justify-content-center align-items-center mt-5">
+  <div style=' 
+  display: flex;
+  align-items: center;
+  gap: 5px;'>
+    <span class="text-muted h3">Create Pin </span>
+  </div>
+  <div class="col-10 col-xs-10 col-sm-10 col-md-6">
+    <!-- wallet sending money form-->
+    <form
+      action=""
+      method="post"
+      class="p-5 create-pin mt-5 w-100"
+    >
+      <!-- Flash messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div
+        class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
+        role="alert"
+        style="height: 3.5rem; transition: 0.6s"
+      >
+        {% if category=='success' %}
+        <div class="small text-center">
+          <i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}
+        </div>
+        {% else %}
+        <div class="small text-center">
+          <i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{
+          message }}
+        </div>
+        {% endif %}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+
+      <div
+        class="bg-light d-flex mb-3 rounded"
+        style="width: fit-content; margin: auto"
+      >
+        <img
+          src="{{ url_for('static', filename='images/logo-normal.png') }}"
+          class="p-2"
+          style="width: 4.5rem; margin: auto"
+          alt=""
+        />
+      </div>
+      {{ form.hidden_tag() }}
+        <!-- For wallet number -->
+        <div class="form-group">
+            {{ form.transfer_pin.label(class='form-label text-muted badge') }}
+            {{ form.transfer_pin(class='form-control', placeholder='Enter transfer pin') }}
+
+            {% for error in form.transfer_pin.errors %}
+            <p class="text-danger small">{{ error }}</p>
+            {% endfor %}
+
+            {{ form.confirm_transfer_pin(class='form-control', placeholder='Confirm transfer pin') }}   
+            {% for error in form.confirm_transfer_pin.errors %}
+            <p class="text-danger small">{{ error }}</p>
+            {% endfor %}
+            <br>
+            <span class="mb-2 badge text-muted">Secret Question and Answer</span>
+            <select name="secret_question" id="secret_question" class="p-2 border-1" required>
+                <option value="What elementary school did you attend?">What elementary school did you attend?</option>
+                <option value="What is your favorite color?">What is your favorite color?</option>
+                <option value="What is your favorite food?">What is your favorite food?</option>
+                <option value="When you were young, what did you want to be when you grew up?">When you were young, what did you want to be when you grew up?</option>
+                <option value="What is your middle name?">What is your middle name?</option>
+                <option value="What is your favorite place?">What is your favorite place?</option>
+                <option value="Who was your childhood hero?">Who was your childhood hero?</option>
+                <option value="What is your favorite holiday?">What is your favorite holiday?</option>
+                <option value="What is your favorite drink?">What is your favorite drink?</option>
+                <option value="Where was your best family vacation as a kid?">Where was your best family vacation as a kid?</option>   
+                <option value="What is your favorite fruit?">What is your favorite fruit?</option>
+                <option value="What is your favorite store?">What is your favorite store?</option>
+                <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                <option value="What is your favorite app?">What is your favorite app?</option>
+                <option value="What is your favorite game?">What is your favorite game?</option>
+                <option value="What is the name of your first pet?">What is the name of your first pet?</option>
+                <option value="What is your favorite sport?">What is your favorite sport?</option>
+                <option value="What was your first car?">What was your first car?</option>
+                <option value="What is the name of the town where you were born?">What is the name of the town where you were born?</option>
+            </select>
+            {{ form.secret_answer(class='form-control', placeholder='Secret answer') }}   
+            {% for error in form.secret_answer.errors %}
+            <p class="text-danger small">{{ error }}</p>
+            {% endfor %}
+
+            
+        </div>
+
+      
+            <!-- For submit button -->
+      {{ form.submit(size=20, class='btn')}}
+    </form>
+  </div>
+</div>
+{% endblock content %}
+
