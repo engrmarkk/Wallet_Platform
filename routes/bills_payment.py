@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from flask_login import current_user, login_required
 from flask import (
@@ -19,6 +20,7 @@ import pytz
 from passlib.hash import pbkdf2_sha256 as hasher
 from utils import determine_purchase_type, send_notification
 import traceback
+from configs.redis_config import redis_conn
 
 bills = Blueprint("bills", __name__, template_folder="../templates")
 
@@ -320,7 +322,13 @@ def purchase_data():
 @login_required
 def display_service(service):
     try:
-        response = vtpass_service.service_identifier(service)
+        red_get = redis_conn.get(service)
+        if red_get:
+            print(f"Getting {service} from redis")
+            response = json.loads(red_get)
+        else:
+            response = vtpass_service.service_identifier(service)
+            redis_conn.set(service, json.dumps(response), expire=4000000)
         # print(response, "response")
         return render_template(
             "display_serv.html",
