@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 
 from werkzeug.exceptions import RequestEntityTooLarge
@@ -23,6 +24,7 @@ from models import (
     Invitees,
     save_bank_beneficiary,
     get_one_bank_beneficiary,
+    TransactionCategories
 )
 from models.transact import (
     save_transfer_in_transactions,
@@ -51,6 +53,7 @@ from utils import (
     send_alert_email,
 )
 from paystack.paystack_endpoint import PaystackEndpoints
+from configs.redis_config import redis_conn
 
 view = Blueprint("view", __name__, template_folder="../templates")
 
@@ -114,7 +117,14 @@ def account():
     pinset = current_user.pin_set
 
     if not current_user.enabled_2fa:
-        qr_data = get_uri(current_user)
+        key = f"{current_user.id}_uri"
+        qr_get = redis_conn.get(key)
+        if qr_get:
+            qr_data = json.loads(qr_get)
+        else:
+            qr_data = get_uri(current_user)
+            redis_conn.set(key, json.dumps(qr_data), 30000)
+
         uri = qr_data["uri"]
     else:
         uri = ""
@@ -202,6 +212,7 @@ def showtransaction():
         .paginate(page=page, per_page=per_page)
     )
     # print(transactions.items, "transactions")
+    category_name = TransactionCategories.query.filter_by(id=category).first().category if category else None
     return render_template(
         "show-histories.html",
         date=x,
@@ -210,6 +221,7 @@ def showtransaction():
         types=types,
         status=status,
         category=category,
+        category_name=category_name,
         ref=ref,
         show=show,
     )
@@ -219,7 +231,15 @@ def showtransaction():
 @login_required
 def home():
     form = ConfirmAccount()
-    banks = pay_stack.list_banks()
+    key = "paystack_banks"
+    bank_get = redis_conn.get(key)
+    if bank_get:
+        print("Getting banks from redis")
+        banks = json.loads(bank_get)
+    else:
+        print("Getting banks from paystack")
+        banks = pay_stack.list_banks()
+        redis_conn.set(key, json.dumps(banks), expire=30000)
     beneficials = Beneficiary.query.filter_by(user_id=current_user.id).all()
     balance = (
         f"{current_user.panic_balance:,.2f}"
@@ -410,7 +430,13 @@ def transfer_to_bank():
         account_name = res.full_name
         is_present = True
     else:
-        res, status_code = pay_stack.resolve_account(account_number, bank_code)
+        res_red = redis_conn.get(f"{account_number}_{bank_code}")
+        if res_red:
+            print(f"Getting resolution from redis")
+            res, status_code = json.loads(res_red), 200
+        else:
+            res, status_code = pay_stack.resolve_account(account_number, bank_code)
+            redis_conn.set(f"{account_number}_{bank_code}", json.dumps(res), 8000000)
         if status_code != 200:
             session["alert"] = "Invalid account number"
             session["bg_color"] = "danger"
@@ -437,30 +463,30 @@ def transfer_to_bank():
                 )
             )
         if not transaction_pin:
-            alert = "Please enter your transaction pin"
-            bg_color = "danger"
+            session["alert"] = "Please enter your transaction pin"
+            session["bg_color"] = "danger"
             return redirect(
                 url_for(
                     "view.transfer_to_bank",
                     bank_code=bank_code,
                     account_number=account_number,
                     bank_name=bank_name,
-                    alert=alert,
-                    bg_color=bg_color,
+                    # alert=alert,
+                    # bg_color=bg_color,
                 )
             )
 
         if not hasher.verify(transaction_pin, current_user.transaction_pin):
-            alert = "Invalid transaction pin"
-            bg_color = "danger"
+            session["alert"] = "Invalid transaction pin"
+            session["bg_color"] = "danger"
             return redirect(
                 url_for(
                     "view.transfer_to_bank",
                     bank_code=bank_code,
                     account_number=account_number,
                     bank_name=bank_name,
-                    alert=alert,
-                    bg_color=bg_color,
+                    # alert=alert,
+                    # bg_color=bg_color,
                 )
             )
 
@@ -805,6 +831,11 @@ def reset_password_verified(token):
                 session["alert"] = "Password changed successfully"
                 session["bg_color"] = "success"
                 return redirect(url_for("auth.login"))
+    user = User.verify_reset_token(token)
+    if not user:
+        session["alert"] = "Invalid token"
+        session["bg_color"] = "danger"
+        return redirect(url_for("view.reset_password"))
     return render_template(
         "reset_verified.html", date=x, form=form, alert=alert, bg_color=bg_color
     )
@@ -839,8 +870,10 @@ def create_card():
 @view.route("/card/", methods=["GET", "POST"])
 @login_required
 def card():
+    alert = session.pop("alert", None)
+    bg_color = session.pop("bg_color", None)
     card = Card.query.filter_by(user_id=current_user.id).first()
-    return render_template("card.html", date=x, card=card)
+    return render_template("card.html", date=x, card=card, alert=alert, bg_color=bg_color)
 
 
 @view.route("/contact/", methods=["GET", "POST"])
