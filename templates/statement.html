@@ -52,10 +52,6 @@
                           <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Current Balance</p>
                           <p style="font-size:18px;font-weight:900;color:#0c694c;margin:0;">₦{{"{:,.2f}".format(current_user.account_balance)}}</p>
                         </td>
-                        <td style="padding-top:12px;vertical-align:top;text-align:right;">
-                          <p style="font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;margin:0 0 4px;">Statement Date</p>
-                          <p style="font-size:13px;color:#0d1f1a;margin:0;">{% now 'utc', '%d %b %Y' %}</p>
-                        </td>
                       </tr>
                     </table>
                   </td>
