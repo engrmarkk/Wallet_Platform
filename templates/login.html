@@ -1,220 +1,485 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-<meta charset="UTF-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lobster&family=Quicksand:wght@400;700&family=Sora&display=swap" rel="stylesheet">
-<link rel='stylesheet' href="{{ url_for('static', filename='css/customStyle.css') }}"/>
+{% extends 'base.html' %}
 
-      <!-- Load Bootstrap -->
-<link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
-  integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I"
-  crossorigin="anonymous"
-/>
-<script
-  src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-  integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-  crossorigin="anonymous"
-></script>
-<script
-  src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
-  integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
-  crossorigin="anonymous"
-></script>
-<link
-  href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-  rel="stylesheet"
-  integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-  crossorigin="anonymous"
-/>
-<link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/customStyle.css') }}"
-    />
-    <script
-    type="text/javascript"
-    src="{{ url_for('static', filename='javascript/jquery-3.6.1.min.js') }}"
-  ></script>
+{% block title %}Sign In — EasyTransact{% endblock title %}
 
-  <!-- Js -->
+{% block head %}
+<style>
+  /* Hide the base navbar & footer for auth pages — clean focused experience */
+  #navbar, footer, #dark-mode-toggle, #scroll-top { display: none !important; }
+  body { background: #f7faf8 !important; }
+  .page-content { padding-top: 0 !important; }
 
-<!--  <script-->
-<!--    src="{{ url_for('static', filename='javascript/script.js') }}"-->
-<!--    defer-->
-<!--  ></script>-->
-  <link
-      rel="icon"
-      href="{{ url_for('static', filename='images/logo-normal.png') }}"
-    />
-<title>Login</title>
-</head>
-<body>
+  /* Animated mesh background */
+  .auth-bg {
+    min-height: 100vh;
+    background-color: #f7faf8;
+    background-image:
+      radial-gradient(ellipse 60% 55% at 8% 40%,  rgba(26,163,116,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 45% at 92% 70%, rgba(46,139,182,0.07) 0%, transparent 58%),
+      radial-gradient(ellipse 35% 35% at 50% 5%,  rgba(12,105,76,0.06)  0%, transparent 55%);
+  }
 
-<div class="login-container">
-  <a href="{{ url_for('view.front_page') }}" class="navbar-brand">
-    <img
-      src="{{ url_for('static', filename='images/logo-white.png') }}"
-      alt="company's logo"
-      style="width: 2.5rem"
-    />
-    <span>&nbsp;Easy<span class="text-green">Transact</span></span>
-  </a>
-<div class="d-flex login">
-<form
-  action=""
-  method="post"
-  class="login p-5 mt-5 w-100"
->
+  /* Dot grid */
+  .auth-bg::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(circle, rgba(13,31,26,0.055) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none;
+  }
 
- <!-- Flash messages -->
- {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %}
-    <div
-      class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
-      role="alert"
-      style="height: 3.5rem; transition: 0.6s"
-    >
-    {% if category=='success' %}
-      <div class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-      {% else %}
-      <div class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-      {% endif %}
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
-    </div>
-    {% endfor %} {% endif %} {% endwith %}
+  /* Animated blobs */
+  @keyframes morph {
+    0%,100% { border-radius: 60% 40% 70% 30% / 50% 60% 40% 70%; }
+    33%      { border-radius: 40% 60% 30% 70% / 60% 40% 70% 30%; }
+    66%      { border-radius: 70% 30% 50% 50% / 40% 70% 30% 60%; }
+  }
+  .blob-auth {
+    position: fixed; pointer-events: none;
+    animation: morph 14s ease-in-out infinite;
+    filter: blur(55px);
+  }
+
+  /* Card entrance */
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(28px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  }
+  .auth-card { animation: cardIn .65s cubic-bezier(.34,1.3,.64,1) forwards; }
+
+  /* Input focus ring */
+  .et-input {
+    width: 100%;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 13px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #0d1f1a;
+    outline: none;
+    transition: border-color .25s, background .25s, box-shadow .25s;
+  }
+  .et-input::placeholder { color: #94a3b8; }
+  .et-input:focus {
+    border-color: #1aa374;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(26,163,116,0.10);
+  }
+  .et-input.error {
+    border-color: #f87171;
+    background: #fff5f5;
+  }
+  .et-input.error:focus { box-shadow: 0 0 0 4px rgba(248,113,113,0.10); }
+
+  /* Submit button */
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, #1aa374, #2e8bb6);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 8px 25px rgba(26,163,116,0.35);
+  }
+  .submit-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0c694c, #1a6f94);
+    opacity: 0; transition: opacity .3s;
+  }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 35px rgba(26,163,116,0.45); }
+  .submit-btn:hover::before { opacity: 1; }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn span { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+  /* Password toggle */
+  .pw-wrap { position: relative; }
+  .pw-toggle {
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    color: #94a3b8; cursor: pointer; font-size: 14px;
+    transition: color .2s; background: none; border: none; padding: 0;
+  }
+  .pw-toggle:hover { color: #475569; }
+
+  /* Divider */
+  .or-divider {
+    display: flex; align-items: center; gap: 12px;
+    color: #94a3b8;
+    font-family: 'DM Sans', sans-serif; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .08em; font-weight: 600;
+  }
+  .or-divider::before, .or-divider::after {
+    content: ''; flex: 1; height: 1px; background: #e2e8f0;
+  }
+
+  /* 2FA Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 999;
+    background: rgba(0,0,0,0.75);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem;
+  }
+  .modal-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 2rem;
+    width: 100%; max-width: 380px;
+    box-shadow: 0 30px 80px rgba(13,31,26,0.12);
+    animation: cardIn .4s ease forwards;
+  }
+
+  /* OTP inputs */
+  .otp-input {
+    width: 48px; height: 56px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    color: #0d1f1a;
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-weight: 700; font-size: 22px;
+    text-align: center; outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .otp-input:focus {
+    border-color: #1aa374;
+    box-shadow: 0 0 0 4px rgba(26,163,116,0.10);
+    background: #ffffff;
+  }
+
+  /* Flash inside form */
+  .flash-inline {
+    border-radius: 10px; padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .flash-success { background: rgba(26,163,116,0.15); border: 1px solid rgba(26,163,116,0.3); color: #6dd6ae; }
+  .flash-error   { background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25); color: #fca5a5; }
+
+  /* Left panel */
+  .left-panel {
+    background: linear-gradient(160deg, #0c694c 0%, #0a4534 50%, #071a12 100%);
+    position: relative; overflow: hidden;
+  }
+  .left-panel::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle at 30% 40%, rgba(26,163,116,0.3) 0%, transparent 55%),
+                      radial-gradient(circle at 75% 75%, rgba(46,139,182,0.2) 0%, transparent 50%);
+  }
+  .left-panel::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  /* Stat pill */
+  .stat-pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 12px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+</style>
+{% endblock head %}
 
 
-  <p class="login-header h3">Login to EasyTransact</p>
-  <p class="text-muted"> login with your email address</p>
-  {{ form.hidden_tag() }}
+{% block content %}
+<div class="auth-bg w-full">
 
-  
-  <!-- For Emails validations -->
-  <div>{{ form.email.label(class='label fw-bold mt-4 mb-2') }}
-  {% if form.email.errors %} {{ form.email(class="form-control p-2",
-  required=False, placeholder="Enter email") }} {% for error in
-  form.email.errors %}
-  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
-  {% endfor %} {% else %} {{ form.email(class="form-control p-2",
-  required=False, placeholder="Enter email") }} {% endif %}</div>
-  
-  <!-- For password validations -->
-  <div>{{ form.password.label(class='label text-muted fw-bold mt-4 mb-2') }}
-  {% if form.password.errors %} {{ form.password(class="form-control p-2
-  ", required=False, placeholder='Enter password') }} {% for error in
-  form.password.errors %}
-  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small>
-  {% endfor %} {% else %} {{ form.password(class="form-control p-2 ",
-  required=False, placeholder='Enter password') }} {% endif %}</div>
+  <!-- Background blobs -->
+  <div class="blob-auth w-96 h-96 opacity-30" style="background:radial-gradient(circle,rgba(26,163,116,0.4),transparent 70%);top:-80px;left:-80px;"></div>
+  <div class="blob-auth w-80 h-80 opacity-20" style="background:radial-gradient(circle,rgba(46,139,182,0.35),transparent 70%);bottom:0;right:-60px;animation-direction:reverse;animation-duration:18s;"></div>
 
-  <p style="color: black; margin-top: 1rem" class="text-muted">
-    Forgot Password?
-    <a
-      class="reset"
-      style="text-decoration: none; "
-      href="{{ url_for('view.reset_password') }}"
-      >Reset it</a
-    >
-  </p>
+  <div class="min-h-screen flex">
 
-  <!-- For submit button -->
-  {{ form.submit(size=20, class='btn btn-success mt-1 w-25')}}
+    <!-- ═══════════════════════════════
+         LEFT PANEL — decorative (hidden on mobile)
+    ═══════════════════════════════ -->
+    <div class="left-panel hidden lg:flex flex-col justify-between w-[46%] p-12 xl:p-16">
+      <div class="relative z-10">
+        <!-- Logo -->
+        <a href="{{ url_for('view.front_page') }}" class="inline-flex items-center gap-2.5 mb-16">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg" style="background:linear-gradient(135deg,#1aa374,#2e8bb6);">
+            <i class="fas fa-bolt text-white text-sm"></i>
+          </div>
+          <span class="font-display font-black text-xl text-white">Easy<span class="text-brand-400">Transact</span></span>
+        </a>
 
-  <p style="color: black; margin-top: 1rem" class="text-muted  small">
-    If you don't have an account, you can register
-    <a
-      class="signup"
-      style="text-decoration: none;"
-      href="{{ url_for('auth.register') }}"
-      >here</a
-    > to get an account in a few minutes
-  </p>
-</form>
-
-
-    {% if alert %}
-  <div class="toast align-items-center show fade text-white {% if bg_color %} bg-{{bg_color}} {% else %} bg-info {% endif %} border-0 position-fixed top-0 end-0" role="alert"
-  data-bs-autohide="true" aria-live="polite" aria-atomic="true" data-bs-animation="true" style="z-index: 99; margin-top: 5rem; transform: translateX(100%); transition: transform 4s ease-in-out;">
-    <div class="d-flex">
-      <div class="toast-body" style="font-size: 1rem;">
-        {{alert}}
+        <!-- Headline -->
+        <h2 class="font-display font-black text-white leading-tight mb-4" style="font-size:clamp(2rem,3vw,2.8rem);">
+          Welcome back.<br>
+          <span class="text-brand-300 font-serif italic">Your money awaits.</span>
+        </h2>
+        <p class="font-body text-sm text-brand-200/70 leading-relaxed max-w-xs">
+          Log in to access your wallet, track your transactions, and stay on top of your finances.
+        </p>
       </div>
-      <!-- <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button> -->
+
+      <!-- Stats -->
+      <div class="relative z-10 space-y-3">
+        <div class="stat-pill">
+          <div class="w-9 h-9 rounded-xl bg-brand-500/20 flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-users text-brand-300 text-sm"></i>
+          </div>
+          <div>
+            <p class="font-display font-bold text-white text-base leading-none">50,000+</p>
+            <p class="font-body text-xs text-brand-300/60 mt-0.5">Active users across Nigeria</p>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(46,139,182,0.2);">
+            <i class="fas fa-shield-alt text-ocean-400 text-sm"></i>
+          </div>
+          <div>
+            <p class="font-display font-bold text-white text-base leading-none">256-bit SSL</p>
+            <p class="font-body text-xs text-brand-300/60 mt-0.5">Bank-grade encryption on every session</p>
+          </div>
+        </div>
+        <div class="stat-pill">
+          <div class="w-9 h-9 rounded-xl bg-amber-500/15 flex items-center justify-center flex-shrink-0">
+            <i class="fas fa-bolt text-amber-400 text-sm"></i>
+          </div>
+          <div>
+            <p class="font-display font-bold text-white text-base leading-none">₦2B+ processed</p>
+            <p class="font-body text-xs text-brand-300/60 mt-0.5">Transactions completed to date</p>
+          </div>
+        </div>
+
+        <p class="font-body text-xs text-brand-300/40 pt-2">© {{ date.year }} EasyTransact. All rights reserved.</p>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════
+         RIGHT PANEL — Form
+    ═══════════════════════════════ -->
+    <div class="flex-1 flex flex-col items-center justify-center px-5 py-12 relative z-10 bg-cream">
+
+      <!-- Mobile logo -->
+      <a href="{{ url_for('view.front_page') }}" class="lg:hidden inline-flex items-center gap-2 mb-10">
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center shadow" style="background:linear-gradient(135deg,#1aa374,#2e8bb6);">
+          <i class="fas fa-bolt text-white text-xs"></i>
+        </div>
+        <span class="font-display font-black text-lg text-ink">Easy<span class="text-brand-600">Transact</span></span>
+      </a>
+
+      <div class="auth-card w-full max-w-md bg-white rounded-3xl p-8 shadow-xl border border-slate-100">
+
+        <!-- Header -->
+        <div class="mb-8">
+          <h1 class="font-display font-black text-ink text-3xl mb-1">Sign in</h1>
+          <p class="font-body text-sm text-slate-400">Enter your credentials to access your wallet</p>
+        </div>
+
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-inline {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+                <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} text-sm flex-shrink-0"></i>
+                <span>{{ message }}</span>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <!-- Form -->
+        <form action="" method="post" class="space-y-5" id="login-form">
+          {{ form.hidden_tag() }}
+
+          <!-- Email -->
+          <div>
+            <label class="font-body text-xs font-semibold text-slate-500 uppercase tracking-widest mb-2 block">
+              Email Address
+            </label>
+            {% if form.email.errors %}
+              {{ form.email(class="et-input error", required=False, placeholder="adaeze@email.com", id="email-input") }}
+              {% for error in form.email.errors %}
+                <p class="font-body text-xs text-red-400 mt-1.5 flex items-center gap-1.5">
+                  <i class="fas fa-exclamation-circle text-[10px]"></i>{{ error }}
+                </p>
+              {% endfor %}
+            {% else %}
+              {{ form.email(class="et-input", required=False, placeholder="adaeze@email.com", id="email-input") }}
+            {% endif %}
+          </div>
+
+          <!-- Password -->
+          <div>
+            <div class="flex justify-between items-center mb-2">
+              <label class="font-body text-xs font-semibold text-slate-500 uppercase tracking-widest">Password</label>
+              <a href="{{ url_for('view.reset_password') }}"
+                 class="font-body text-xs font-semibold text-brand-400 hover:text-brand-300 transition-colors">
+                Forgot password?
+              </a>
+            </div>
+            <div class="pw-wrap">
+              {% if form.password.errors %}
+                {{ form.password(class="et-input error pr-12", required=False, placeholder="Enter your password", id="pw-input") }}
+                {% for error in form.password.errors %}
+                  <p class="font-body text-xs text-red-400 mt-1.5 flex items-center gap-1.5">
+                    <i class="fas fa-exclamation-circle text-[10px]"></i>{{ error }}
+                  </p>
+                {% endfor %}
+              {% else %}
+                {{ form.password(class="et-input pr-12", required=False, placeholder="Enter your password", id="pw-input") }}
+              {% endif %}
+              <button type="button" class="pw-toggle" id="pw-toggle" tabindex="-1">
+                <i class="fas fa-eye" id="pw-icon"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember me -->
+          <div class="flex items-center gap-3">
+            <button type="button" id="remember-btn" onclick="toggleRemember()"
+              class="w-5 h-5 rounded-[6px] border border-slate-300 bg-slate-50 flex items-center justify-center transition-all flex-shrink-0"
+              style="transition:background .2s,border-color .2s;">
+              <i class="fas fa-check text-[9px] text-white opacity-0" id="check-icon"></i>
+            </button>
+            <input type="checkbox" name="remember" id="remember-input" class="hidden">
+            <label for="remember-btn" class="font-body text-sm text-slate-500 cursor-pointer select-none">
+              Keep me signed in
+            </label>
+          </div>
+
+          <!-- Submit -->
+          {{ form.submit(class="submit-btn", value="Sign In") }}
+
+          <p class="font-body text-xs text-center text-slate-400 pt-1">
+            Don't have an account?
+            <a href="{{ url_for('auth.register') }}" class="text-brand-400 hover:text-brand-300 font-semibold transition-colors ml-1">
+              Create one free →
+            </a>
+          </p>
+        </form>
+
+      </div>
     </div>
   </div>
+</div>
+
+
+<!-- ═══════════════════════════════
+     2FA MODAL
+═══════════════════════════════ -->
+{% if open_modal %}
+<div class="modal-overlay" id="tfa-overlay">
+  <div class="modal-box">
+
+    <!-- Icon -->
+    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg" style="background:linear-gradient(135deg,#1aa374,#2e8bb6);">
+      <i class="fas fa-shield-alt text-white text-xl"></i>
+    </div>
+
+    <h3 class="font-display font-bold text-ink text-xl text-center mb-1">Two-Factor Auth</h3>
+    <p class="font-body text-sm text-slate-400 text-center mb-7">Enter the 6-digit code from your authenticator app</p>
+
+    <form method="post" action="{{ url_for('auth.verify_2fa') }}">
+      <input type="hidden" name="email" value="{{ email }}">
+
+      <!-- OTP input boxes -->
+      <div class="flex justify-center gap-2.5 mb-6" id="otp-boxes">
+        {% for i in range(6) %}
+        <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"
+               class="otp-input"
+               data-index="{{ i }}"
+               autocomplete="{% if i == 0 %}one-time-code{% else %}off{% endif %}">
+        {% endfor %}
+        <input type="hidden" name="auth_code" id="auth-code-input">
+      </div>
+
+      <button type="submit" id="otp-submit"
+        class="submit-btn opacity-50 cursor-not-allowed" disabled>
+        <span><i class="fas fa-arrow-right text-sm"></i> Verify & Continue</span>
+      </button>
+    </form>
+
+    <button onclick="document.getElementById('tfa-overlay').remove()"
+      class="w-full mt-3 py-3 font-body text-sm text-slate-400 hover:text-slate-600 transition-colors text-center">
+      Cancel
+    </button>
+  </div>
+</div>
 {% endif %}
 
-<!--<img class="login-img w-50.d-none.d-lg-block px-5" src="{{ url_for('static', filename='images/login.svg') }}" alt="login">-->
-</div>
-</div>
+{% endblock content %}
 
- <script>
-    var myToast = new bootstrap.Toast(document.querySelector('.toast'));
 
-    document.querySelector('.toast').style.transform = 'translateX(-0%)';
-
-    setTimeout(function() {
-        // fade the toast away
-        document.querySelector('.toast').style.transition = '4s ease-in-out';
-        myToast.hide();
-    }, 2000);
-    </script>
-
-{% if open_modal %}
-<!-- Modal -->
-<div class="modal fade show" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false"
-style="background: rgba(0, 0, 0, 0.669);"
->
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <p>Enter Authenticator Code</p>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <form class="form-group h-100" method="post" action="{{ url_for('auth.verify_2fa') }}">
-      <div class="modal-body">
-        <input type="text" name="email" class="form-control shadow-none w-100 text-center border-2" value="{{ email }}" hidden>
-        <input type="text" name="auth_code" class="form-control shadow-none w-100 text-center border-2" maxlength="6" placeholder="Enter 6 digit code">
-        <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
-        <button type="submit" class="btn btn-primary mt-3 shadow-none mx-auto d-flex justify-content-center">
-          Continue
-        </button>
-      </form>
-    </div>
-    </div>
-  </div>
+{% block scripts %}
 <script>
-  // Automatically show the modal when the page loads
-  document.addEventListener('DOMContentLoaded', function() {
-      var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
-      myModal.show();
+  // ── Password toggle
+  const pwToggle = document.getElementById('pw-toggle');
+  const pwInput  = document.getElementById('pw-input');
+  const pwIcon   = document.getElementById('pw-icon');
+  if (pwToggle) {
+    pwToggle.addEventListener('click', () => {
+      const show = pwInput.type === 'password';
+      pwInput.type = show ? 'text' : 'password';
+      pwIcon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+    });
+  }
+
+  // ── Remember me toggle
+  let remembered = false;
+  function toggleRemember() {
+    remembered = !remembered;
+    const btn   = document.getElementById('remember-btn');
+    const check = document.getElementById('check-icon');
+    const inp   = document.getElementById('remember-input');
+    btn.style.background     = remembered ? '#1aa374' : '#f8fafc';
+    btn.style.borderColor    = remembered ? '#1aa374' : '#cbd5e1';
+    check.style.opacity      = remembered ? '1' : '0';
+    inp.checked              = remembered;
+  }
+
+  // ── OTP boxes logic
+  const otpBoxes = document.querySelectorAll('.otp-input');
+  const codeInput = document.getElementById('auth-code-input');
+  const submitBtn = document.getElementById('otp-submit');
+
+  function syncCode() {
+    const code = [...otpBoxes].map(b => b.value).join('');
+    if (codeInput) codeInput.value = code;
+    if (submitBtn) {
+      const ready = code.length === 6;
+      submitBtn.disabled = !ready;
+      submitBtn.style.opacity = ready ? '1' : '0.5';
+      submitBtn.style.cursor  = ready ? 'pointer' : 'not-allowed';
+    }
+  }
+
+  otpBoxes.forEach((box, i) => {
+    box.addEventListener('input', e => {
+      const val = e.target.value.replace(/\D/g,'');
+      box.value = val.slice(-1);
+      if (val && i < otpBoxes.length - 1) otpBoxes[i+1].focus();
+      syncCode();
+    });
+    box.addEventListener('keydown', e => {
+      if (e.key === 'Backspace' && !box.value && i > 0) otpBoxes[i-1].focus();
+      if (e.key === 'ArrowLeft'  && i > 0) otpBoxes[i-1].focus();
+      if (e.key === 'ArrowRight' && i < otpBoxes.length-1) otpBoxes[i+1].focus();
+    });
+    box.addEventListener('paste', e => {
+      e.preventDefault();
+      const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g,'');
+      [...paste.slice(0,6)].forEach((ch, j) => { if (otpBoxes[i+j]) otpBoxes[i+j].value = ch; });
+      syncCode();
+      const next = Math.min(i + paste.length, otpBoxes.length - 1);
+      otpBoxes[next].focus();
+    });
   });
 </script>
-{% endif %}
-
-
-<!-- BOOTSTRAP -->
-
-<!-- Bootsrap popper -->
-<script
-  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-  integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-  crossorigin="anonymous"
-></script>
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
-  integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
-  crossorigin="anonymous"
-></script>
-</body>
-</html>
+{% endblock scripts %}
