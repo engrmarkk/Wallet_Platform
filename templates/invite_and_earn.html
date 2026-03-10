@@ -1,136 +1,262 @@
 {% extends 'base.html' %}
+
+{% block title %}Invite &amp; Earn — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+  @keyframes riseUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes slideInRight { from{opacity:0;transform:translateX(120%)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(120%)} }
+  @keyframes shrink { from{width:100%} to{width:0} }
+  .rise{opacity:0;animation:riseUp .55s cubic-bezier(.34,1.1,.64,1) forwards;}
+  .rise-1{animation-delay:.06s;} .rise-2{animation-delay:.16s;} .rise-3{animation-delay:.26s;}
+
+  /* Hero */
+  .earn-hero { background:linear-gradient(135deg,#0c694c 0%,#1aa374 45%,#2e8bb6 100%); border-radius:24px; padding:32px 24px 28px; position:relative; overflow:hidden; box-shadow:0 12px 40px rgba(26,163,116,0.28); }
+  .earn-hero::before { content:''; position:absolute; inset:0; background-image:radial-gradient(circle at 85% 15%,rgba(255,255,255,.10) 0%,transparent 50%),radial-gradient(circle at 10% 85%,rgba(255,255,255,.06) 0%,transparent 45%); }
+  .earn-hero::after  { content:''; position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size:28px 28px; }
+  .earn-hero > * { position:relative; z-index:1; }
+
+  /* Stat cards */
+  .stat-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .stat-card { background:#fff; border-radius:18px; border:1px solid #f1f5f9; box-shadow:0 2px 12px rgba(13,31,26,0.04); padding:18px 20px; display:flex; align-items:center; gap:14px; }
+  .stat-icon { width:42px; height:42px; border-radius:13px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .stat-label { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:.07em; margin:0 0 3px; }
+  .stat-value { font-family:'Cabinet Grotesk',sans-serif; font-size:20px; font-weight:900; color:#0d1f1a; margin:0; line-height:1; }
+
+  /* Referral code copy */
+  .referral-box { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.2); border-radius:14px; padding:12px 16px; }
+  .copy-btn { background:rgba(255,255,255,.2); border:none; border-radius:10px; padding:8px 14px; color:#fff; font-family:'DM Sans',sans-serif; font-weight:700; font-size:12px; cursor:pointer; transition:background .2s; display:flex; align-items:center; gap:5px; flex-shrink:0; }
+  .copy-btn:hover { background:rgba(255,255,255,.3); }
+
+  /* Withdraw btn */
+  .withdraw-btn { display:inline-flex; align-items:center; gap:7px; padding:11px 22px; border-radius:12px; background:#fff; color:#0c694c; font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px; text-decoration:none; box-shadow:0 4px 14px rgba(0,0,0,.10); transition:transform .2s,box-shadow .2s; }
+  .withdraw-btn:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.16); color:#0c694c; }
+
+  /* Accordion */
+  .acc-item { background:#fff; border-radius:16px; border:1px solid #f1f5f9; box-shadow:0 2px 8px rgba(13,31,26,0.03); overflow:hidden; transition:box-shadow .2s; }
+  .acc-item.open { box-shadow:0 6px 24px rgba(13,31,26,0.08); border-color:rgba(26,163,116,0.2); }
+  .acc-trigger { width:100%; display:flex; align-items:center; gap:12px; padding:15px 18px; background:none; border:none; cursor:pointer; text-align:left; transition:background .18s; }
+  .acc-trigger:hover { background:#f8fafc; }
+  .acc-item.open .acc-trigger { background:rgba(26,163,116,0.04); }
+  .acc-title { flex:1; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:700; color:#0d1f1a; }
+  .acc-item.open .acc-title { color:#0c694c; }
+  .acc-chevron { width:28px; height:28px; border-radius:8px; background:#f1f5f9; flex-shrink:0; display:flex; align-items:center; justify-content:center; transition:transform .3s,background .2s; }
+  .acc-item.open .acc-chevron { transform:rotate(180deg); background:rgba(26,163,116,0.1); }
+  .acc-body { max-height:0; overflow:hidden; transition:max-height .4s cubic-bezier(0,1,.3,1),padding .3s; padding:0 18px; }
+  .acc-item.open .acc-body { max-height:600px; padding:0 18px 18px; }
+  .acc-inner { border-top:1px solid #f1f5f9; padding-top:14px; }
+
+  /* Invitee list */
+  .invitee-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid #f8fafc; }
+  .invitee-row:last-child { border-bottom:none; }
+  .invitee-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,#1aa374,#2e8bb6); display:flex; align-items:center; justify-content:center; font-family:'Cabinet Grotesk',sans-serif; font-weight:900; font-size:14px; color:#fff; flex-shrink:0; }
+
+  /* Earn step */
+  .earn-step { display:flex; align-items:flex-start; gap:14px; }
+  .step-num { width:28px; height:28px; border-radius:50%; background:linear-gradient(135deg,#1aa374,#2e8bb6); display:flex; align-items:center; justify-content:center; font-family:'Cabinet Grotesk',sans-serif; font-weight:900; font-size:12px; color:#fff; flex-shrink:0; margin-top:2px; }
+
+  /* Copy toast */
+  #copy-toast { position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%) translateY(10px); background:#0d1f1a; color:#fff; font-family:'DM Sans',sans-serif; font-weight:600; font-size:13px; padding:12px 20px; border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,.25); display:flex; align-items:center; gap:8px; pointer-events:none; z-index:9999; opacity:0; transition:opacity .3s,transform .3s; }
+
+  /* Flash toasts */
+  .flash-toast { position:fixed; top:1.25rem; right:1.25rem; z-index:9999; display:flex; align-items:flex-start; gap:12px; background:#fff; border-radius:16px; padding:14px 16px; min-width:280px; max-width:360px; box-shadow:0 8px 32px rgba(13,31,26,0.14); border:1px solid #f1f5f9; animation:slideInRight .4s cubic-bezier(.34,1.2,.64,1) forwards; overflow:hidden; }
+  .flash-toast.hide { animation:slideOutRight .35s ease forwards; }
+  .ft-icon{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .ft-icon.success{background:rgba(26,163,116,0.1);color:#0c694c;} .ft-icon.error{background:rgba(239,68,68,0.1);color:#dc2626;}
+  .ft-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0 0 2px;}
+  .ft-msg{font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;}
+  .ft-close{background:none;border:none;cursor:pointer;padding:0;color:#cbd5e1;font-size:12px;line-height:1;}
+  .ft-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 16px 16px;animation:shrink 4s linear forwards;}
+  .ft-bar.success{background:#1aa374;} .ft-bar.error{background:#ef4444;}
+</style>
+{% endblock head %}
+
+
 {% block content %}
 
-
-  <!-- Flash messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %}
-    <div class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}" role="alert"
-      style="height: 3.5rem; transition: 0.6s">
-      {% if category=='success' %}
-        <div class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-        {% else %}
-        <div class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-        {% endif %}
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:10px;">
+      {% for category, message in messages %}
+      {% set tone = 'success' if category=='success' else 'error' %}
+      <div class="flash-toast" id="ft-{{ loop.index }}" style="position:relative;">
+        <div class="ft-icon {{ tone }}"><i class="fas {% if tone=='success' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i></div>
+        <div style="flex:1;min-width:0;"><p class="ft-title">{% if tone=='success' %}Success{% else %}Error{% endif %}</p><p class="ft-msg">{{ message }}</p></div>
+        <button class="ft-close" onclick="dismissToast('ft-{{ loop.index }}')"><i class="fas fa-times"></i></button>
+        <div class="ft-bar {{ tone }}"></div>
       </div>
-      {% endfor %} {% endif %} {% endwith %}
-
-
-
-    <p class="mt-5 text-center fw-bold">Your account number is your referral code</p>
-<div class="border m-auto" style="max-width: 400px; margin-right: auto; margin-left: auto;
-display: flex; justify-content: center; align-items: center; flex-direction: row;
-margin:auto
-">
-    <div class="bg-success text-center text-light p-5 w-100">
-        <small class="h5">Earnings</small> <br>
-        <span class="h1"><del style="text-decoration-style: double;" class="h3">N</del> {{ current_user.invite_earn }}</span>
+      {% endfor %}
     </div>
-    <div class="bg-info text-center text-light p-5 w-100">
-        <small class="h5">Invitees</small> <br>
-        <span class="h1">{{ len }}</span>
-    </div>
+  {% endif %}
+{% endwith %}
 
+<div id="copy-toast">
+  <i class="fas fa-check-circle" style="color:#6dd6ae;font-size:14px;"></i>
+  <span id="copy-toast-msg">Copied!</span>
 </div>
-<a href="{{ url_for('view.withdraw_earnings') }}" class="btn btn-success m-auto d-flex mt-3" style="width: fit-content;">Withdraw</a>
 
+<div class="w-full" style="background:#f7faf8;padding:1.5rem 1rem 5rem;min-height:80vh;">
+  <div style="max-width:480px;margin:0 auto;">
 
-<div class="mt-5">
-    
-  <div class="accordion my-2" id="accordionExample" >
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne3" aria-expanded="false" aria-controls="flush-collapseOne">
-          USER INVITED
+    <!-- Header -->
+    <div class="rise rise-1" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+      <div>
+        <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.5rem;color:#0d1f1a;margin:0 0 3px;">Invite &amp; Earn</h1>
+        <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:0;">Earn ₦100 per confirmed referral</p>
+      </div>
+      <div style="width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#f59e0b,#f97316);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(245,158,11,0.3);">
+        <i class="fas fa-gift" style="color:#fff;font-size:16px;"></i>
+      </div>
+    </div>
+
+    <!-- Hero -->
+    <div class="earn-hero rise rise-1" style="margin-bottom:20px;">
+      <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;margin:0 0 14px;">Your Referral Code</p>
+
+      <!-- Referral code copy box -->
+      <div class="referral-box" style="margin-bottom:20px;">
+        <div style="flex:1;min-width:0;">
+          <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin:0 0 2px;">Account Number = Invite Code</p>
+          <p style="font-family:'Courier New',monospace;font-weight:700;color:#fff;font-size:20px;letter-spacing:.15em;margin:0;">{{ current_user.account_number }}</p>
+        </div>
+        <button class="copy-btn" onclick="copyCode('{{ current_user.account_number }}')">
+          <i class="fas fa-copy" style="font-size:11px;"></i>
+          Copy
         </button>
-      </h2>
-      <div id="flush-collapseOne3" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">
-            {% for each in current_user.invitees %}
-            <h6>You invited <span class="fw-bold">{{ each.last_name }} {{ each.first_name }}</span></h6>
-            {% endfor %}
+      </div>
+
+      <!-- Stats row -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;">
+        <div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:14px 16px;">
+          <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.07em;margin:0 0 4px;">Earnings</p>
+          <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.6rem;color:#fff;margin:0;line-height:1;"><span style="font-size:1rem;opacity:.65;">₦</span>{{ current_user.invite_earn }}</p>
+        </div>
+        <div style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:14px 16px;">
+          <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.07em;margin:0 0 4px;">Invitees</p>
+          <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.6rem;color:#fff;margin:0;line-height:1;">{{ len }}</p>
         </div>
       </div>
+
+      <a href="{{ url_for('view.withdraw_earnings') }}" class="withdraw-btn">
+        <i class="fas fa-wallet" style="font-size:13px;color:#1aa374;"></i>
+        Withdraw Earnings
+      </a>
     </div>
-  </div>
-</div>
 
+    <!-- Stat cards -->
+    <div class="stat-row rise rise-2" style="margin-bottom:20px;">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(26,163,116,0.1);"><i class="fas fa-coins" style="color:#1aa374;font-size:14px;"></i></div>
+        <div><p class="stat-label">Per Invite</p><p class="stat-value">₦100</p></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(245,158,11,0.1);"><i class="fas fa-user-plus" style="color:#f59e0b;font-size:14px;"></i></div>
+        <div><p class="stat-label">Total Invited</p><p class="stat-value">{{ len }}</p></div>
+      </div>
+    </div>
 
-<div class="accordion my-2" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingO">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseO" aria-expanded="false" aria-controls="flush-collapseOne">
-          INVITE AND EARN INFORMATION
+    <!-- Invited users accordion -->
+    <div class="rise rise-2" style="margin-bottom:12px;">
+      <div class="acc-item" id="acc-invitees">
+        <button class="acc-trigger" onclick="toggleAcc('acc-invitees')">
+          <div style="width:32px;height:32px;border-radius:9px;background:rgba(26,163,116,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-users" style="color:#1aa374;font-size:12px;"></i>
+          </div>
+          <span class="acc-title">Users Invited ({{ len }})</span>
+          <div class="acc-chevron"><i class="fas fa-chevron-down" style="color:#94a3b8;font-size:11px;"></i></div>
         </button>
-      </h2>
-      <div id="flush-collapseO" class="accordion-collapse collapse" aria-labelledby="flush-headingO" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">
-            <div id="overlay-earnn">
-                <div class="border m-auto p-3" style="width: fit-content;">
-                <div class="card m-auto rounded p-3 mt-3" style="width: fit-content; background: rgb(89, 167, 11); border: 5px solid rgb(248, 252, 255); ">
-                    <h5 class="text-center badge">REFER AND EARN</h5>
-                    <h1 class="fw-bolder text-center text-white"><del style="text-decoration-style: double;">N</del> 100</h1>
+        <div class="acc-body">
+          <div class="acc-inner">
+            {% if current_user.invitees %}
+              {% for each in current_user.invitees %}
+              <div class="invitee-row">
+                <div class="invitee-avatar">{{ each.last_name[0].upper() }}</div>
+                <div style="flex:1;min-width:0;">
+                  <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ each.last_name.title() }} {{ each.first_name.title() }}</p>
+                  <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin:2px 0 0;">Joined via your invite</p>
                 </div>
-            
-                <ul class="m-auto mt-3" style="max-width: 500px; line-height: 2rem;">
-                    <li>The more friends you invite, the more you earn</li>
-                    <li>You earn <del style="text-decoration-style: double;">N</del> 100 bonus when your friend confirmed his/her email address</li>
-                </ul>
-            
-                <h6 class="text-center bg-white text-success m-auto fw-bold px-2 mt-5" style="width: fit-content;">How to earn bonus</h6>
-            
-                <ol class="m-auto mt-3" style="max-width: 500px; line-height: 2rem;">
-                    <li>Ask your friend to create an account with Easytransact</li>
-                    <li>During the registration process, an invited by field is available, your Invitation code (i.e your account number) should be provided in that field</li>
-                    <li>The new user should kindly confirm his/her email for you to be credited</li>
-                </ol>
-            
-                <!-- <p class="btn btn-info mt-4 m-auto d-flex" id="see-earn" style="width: fit-content;">See earning</p> -->
-            </div>
-            </div>
+                <span style="background:rgba(26,163,116,0.1);color:#0c694c;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;border:1px solid rgba(26,163,116,0.2);flex-shrink:0;">+₦100</span>
+              </div>
+              {% endfor %}
+            {% else %}
+              <div style="text-align:center;padding:20px 0;">
+                <i class="fas fa-user-slash" style="color:#cbd5e1;font-size:24px;margin-bottom:10px;display:block;"></i>
+                <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:0;">No invitees yet. Share your code!</p>
+              </div>
+            {% endif %}
+          </div>
         </div>
       </div>
     </div>
+
+    <!-- How to earn accordion -->
+    <div class="rise rise-3">
+      <div class="acc-item" id="acc-howto">
+        <button class="acc-trigger" onclick="toggleAcc('acc-howto')">
+          <div style="width:32px;height:32px;border-radius:9px;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas fa-info-circle" style="color:#f59e0b;font-size:12px;"></i>
+          </div>
+          <span class="acc-title">Invite &amp; Earn Information</span>
+          <div class="acc-chevron"><i class="fas fa-chevron-down" style="color:#94a3b8;font-size:11px;"></i></div>
+        </button>
+        <div class="acc-body">
+          <div class="acc-inner">
+            <div style="background:linear-gradient(135deg,rgba(26,163,116,0.08),rgba(46,139,182,0.06));border:1px solid rgba(26,163,116,0.15);border-radius:14px;padding:16px 18px;text-align:center;margin-bottom:16px;">
+              <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:#0c694c;text-transform:uppercase;letter-spacing:.08em;margin:0 0 4px;">Refer &amp; Earn</p>
+              <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:2rem;color:#0d1f1a;margin:0;"><span style="font-size:1.1rem;color:#94a3b8;">₦</span>100</p>
+              <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin:4px 0 0;">per confirmed invitee</p>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:16px;">
+              {% for step, icon, desc in [
+                ('Share your code','fa-share-alt','Your account number is your unique invite code'),
+                ('Friend registers','fa-user-plus','They enter your code in the "Invited by" field'),
+                ('Email confirmed','fa-envelope-circle-check','They verify their email — you get ₦100 credited instantly')
+              ] %}
+              <div class="earn-step">
+                <div class="step-num">{{ loop.index }}</div>
+                <div>
+                  <div style="display:flex;align-items:center;gap:7px;margin-bottom:3px;">
+                    <i class="fas {{ icon }}" style="color:#1aa374;font-size:11px;"></i>
+                    <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0;">{{ step }}</p>
+                  </div>
+                  <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;line-height:1.5;">{{ desc }}</p>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+
+            <div style="background:#f8fafc;border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:8px;">
+              <i class="fas fa-lightbulb" style="color:#f59e0b;font-size:12px;flex-shrink:0;"></i>
+              <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;line-height:1.5;">The more friends you invite, the more you earn. There is no limit!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
-
-<!-- <div id="overlay-earnn">
-    <div class="m-auto d-flex align-items-center justify-content-center my-4">
-        <img src="{{ url_for('static', filename='images/logo-white.png') }}" alt="easytransact logo" style="width: 2.5rem;">
-        <p class="h4 px-2">EasyTransact</p>
-    </div>
-    <div class="border m-auto p-3" style="width: fit-content;">
-    <div class="card m-auto rounded p-3 mt-3" style="width: fit-content; background: rgba(128, 255, 0, 0.219); border: 5px solid rgb(248, 252, 255); ">
-        <h5 class="text-center badge">REFER AND EARN</h5>
-        <h1 class="fw-bolder text-center"><del style="text-decoration-style: double;">N</del> 100</h1>
-    </div>
-
-    <ul class="m-auto mt-3" style="max-width: 500px; line-height: 2rem;">
-        <li>The more friends you invite, the more you earn</li>
-        <li>You earn <del style="text-decoration-style: double;">N</del> 100 bonus when your friend confirmed his/her email address</li>
-    </ul>
-
-    <p class="text-center bg-white text-success m-auto fw-bold px-2 mt-5" style="width: fit-content;">How to earn bonus</p>
-
-    <ol class="m-auto mt-3" style="max-width: 500px; line-height: 2rem;">
-        <li>Ask your friend to create an account with Easytransact</li>
-        <li>During the registration process, an invited by field is available, your Invitation code (i.e your account number) should be provided in that field</li>
-        <li>The new user should kindly confirm his/her email for you to be credited</li>
-    </ol>
-
-    <p class="btn btn-info mt-4 m-auto d-flex" id="see-earn" style="width: fit-content;">See earning</p>
 </div>
-</div> -->
-
-<!-- <script>
-   document.getElementById("see-earn").addEventListener("click", function() {
-       document.getElementById("overlay-earn").style.top="-990px"
-   });
-</script> -->
-
 {% endblock content %}
+
+{% block scripts %}
+<script>
+  function toggleAcc(id) {
+    const item = document.getElementById(id);
+    item.classList.toggle('open');
+  }
+  function copyCode(val) {
+    navigator.clipboard.writeText(val).then(() => {
+      const t = document.getElementById('copy-toast');
+      document.getElementById('copy-toast-msg').textContent = 'Referral code copied!';
+      t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)';
+      clearTimeout(window._ct);
+      window._ct = setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(10px)'; },2200);
+    });
+  }
+  document.querySelectorAll('.flash-toast').forEach((t,i) => setTimeout(()=>dismissToast(t.id), 4000+i*300));
+  function dismissToast(id) { const el=document.getElementById(id); if(!el)return; el.classList.add('hide'); setTimeout(()=>el.remove(),380); }
+</script>
+{% endblock scripts %}
