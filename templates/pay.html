@@ -1,99 +1,406 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
+
+{% block title %}Send Money — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+  #navbar, footer, #dark-mode-toggle, #scroll-top { display: none !important; }
+  .page-content { padding-top: 0 !important; }
+
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise   { opacity: 0; animation: riseUp .55s cubic-bezier(.34,1.1,.64,1) forwards; }
+  .rise-1 { animation-delay: .05s; }
+  .rise-2 { animation-delay: .14s; }
+  .rise-3 { animation-delay: .22s; }
+
+  .page-wrap {
+    min-height: 100vh; background: #f7faf8;
+    display: flex; flex-direction: column;
+    align-items: center; padding: 2rem 1rem 4rem;
+  }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: #64748b; text-decoration: none;
+    padding: 7px 14px; border-radius: 10px;
+    border: 1.5px solid #e2e8f0; background: #fff; transition: all .2s;
+  }
+  .back-link:hover { background: #f1f5f9; color: #0d1f1a; transform: translateX(-2px); }
+
+  .transfer-card {
+    width: 100%; max-width: 420px;
+    background: #fff; border-radius: 24px;
+    padding: 32px 28px;
+    box-shadow: 0 8px 40px rgba(13,31,26,0.08);
+    border: 1px solid #f1f5f9;
+  }
+
+  /* ── Recipient avatar ── */
+  .recipient-circle {
+    width: 88px; height: 88px; border-radius: 50%;
+    overflow: hidden; margin: 0 auto 6px;
+    border: 3px solid #f1f5f9;
+    box-shadow: 0 6px 20px rgba(13,31,26,0.10);
+    background: #e2e8f0;
+  }
+  .recipient-circle img {
+    width: 100%; height: 100%; object-fit: cover;
+    object-position: center top; display: block;
+  }
+
+  /* ── Name banner ── */
+  .name-banner {
+    background: linear-gradient(135deg, #0c694c, #164e49 50%, #1a6f94);
+    border-radius: 16px; padding: 14px 18px; margin-bottom: 22px;
+    text-align: center; position: relative; overflow: hidden;
+  }
+  .name-banner::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .name-banner > * { position: relative; z-index: 1; }
+
+  /* ── Inputs ── */
+  .et-input {
+    width: 100%; background: #f8fafc;
+    border: 1.5px solid #e2e8f0; border-radius: 12px;
+    padding: 11px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: #0d1f1a;
+    outline: none; transition: border-color .25s, box-shadow .25s, background .2s;
+  }
+  .et-input::placeholder { color: #94a3b8; }
+  .et-input:focus { border-color: #1aa374; background: #fff; box-shadow: 0 0 0 4px rgba(26,163,116,0.10); }
+  .et-input.has-error { border-color: #f87171; background: #fff5f5; }
+
+  .field-label {
+    display: block; font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600; color: #64748b;
+    text-transform: uppercase; letter-spacing: .07em; margin-bottom: 6px;
+  }
+
+  /* Amount */
+  .amount-wrap { position: relative; }
+  .amount-prefix {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-family: 'Cabinet Grotesk', sans-serif; font-weight: 900; font-size: 17px;
+    color: #1aa374; pointer-events: none;
+  }
+  .amount-input { padding-left: 30px !important; font-family: 'Cabinet Grotesk',sans-serif !important; font-weight: 700 !important; font-size: 18px !important; }
+
+  /* Fee badge */
+  .fee-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700;
+    padding: 3px 9px; border-radius: 20px;
+    background: rgba(26,163,116,0.1); color: #0c694c;
+    border: 1px solid rgba(26,163,116,0.2);
+  }
+
+  /* PIN dots */
+  .pin-dots { display: flex; justify-content: center; gap: 10px; margin-bottom: 8px; }
+  .pin-dot { width: 12px; height: 12px; border-radius: 50%; background: #e2e8f0; transition: background .2s, transform .25s; }
+  .pin-dot.filled { background: #1aa374; transform: scale(1.2); }
+
+  .pw-wrap { position: relative; }
+  .pw-toggle {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    color: #94a3b8; cursor: pointer; font-size: 13px;
+    background: none; border: none; padding: 0; transition: color .2s;
+  }
+  .pw-toggle:hover { color: #475569; }
+
+  /* Beneficiary checkbox */
+  .ben-check-wrap {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; border-radius: 12px;
+    background: rgba(26,163,116,0.04);
+    border: 1px solid rgba(26,163,116,0.12);
+    cursor: pointer; transition: background .2s;
+  }
+  .ben-check-wrap:hover { background: rgba(26,163,116,0.08); }
+  .ben-check-box {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 1.5px solid #cbd5e1; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: background .2s, border-color .2s;
+  }
+  .ben-check-box.checked { background: #1aa374; border-color: #1aa374; }
+
+  /* Submit */
+  .submit-btn {
+    width: 100%; padding: 14px; border-radius: 14px; border: none;
+    background: linear-gradient(135deg, #1aa374, #2e8bb6);
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 15px; cursor: pointer;
+    position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s, opacity .25s;
+    box-shadow: 0 8px 25px rgba(26,163,116,0.30);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .submit-btn::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg,#0c694c,#1a6f94); opacity: 0; transition: opacity .3s; }
+  .submit-btn:hover:not(:disabled)::before { opacity: 1; }
+  .submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 14px 35px rgba(26,163,116,0.4); }
+  .submit-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: 0 4px 12px rgba(26,163,116,0.15); }
+  .submit-btn .lbl { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; }
+
+  .divider-label {
+    font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700;
+    color: #94a3b8; text-transform: uppercase; letter-spacing: .1em;
+    display: flex; align-items: center; gap: 10px; margin: 18px 0 14px;
+  }
+  .divider-label::before, .divider-label::after { content: ''; flex: 1; height: 1px; background: #f1f5f9; }
+
+  /* ── Flash toasts ── */
+  @keyframes slideInRight { from{opacity:0;transform:translateX(120%)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(120%)} }
+  .flash-toast {
+    position: fixed; top: 1.25rem; right: 1.25rem; z-index: 9999;
+    display: flex; align-items: flex-start; gap: 12px;
+    background: #fff; border-radius: 16px; padding: 14px 16px;
+    min-width: 280px; max-width: 360px;
+    box-shadow: 0 8px 32px rgba(13,31,26,0.14); border: 1px solid #f1f5f9;
+    animation: slideInRight .4s cubic-bezier(.34,1.2,.64,1) forwards; overflow: hidden;
+  }
+  .flash-toast.hide { animation: slideOutRight .35s ease forwards; }
+  .ft-icon { width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px; }
+  .ft-icon.success{background:rgba(26,163,116,0.1);color:#0c694c;}
+  .ft-icon.error  {background:rgba(239,68,68,0.1);color:#dc2626;}
+  .ft-icon.info   {background:rgba(46,139,182,0.1);color:#1a6f94;}
+  .ft-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0 0 2px;}
+  .ft-msg  {font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;}
+  .ft-close{background:none;border:none;cursor:pointer;padding:0;color:#cbd5e1;font-size:12px;line-height:1;transition:color .2s;}
+  .ft-close:hover{color:#64748b;}
+  .ft-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 16px 16px;animation:shrink 4s linear forwards;}
+  @keyframes shrink{from{width:100%}to{width:0}}
+  .ft-bar.success{background:#1aa374;} .ft-bar.error{background:#ef4444;} .ft-bar.info{background:#2e8bb6;}
+</style>
+{% endblock head %}
+
+
 {% block content %}
 
-<div class="d-flex flex-column justify-content-center align-items-center mt-5">
-  <div>
-    <span class="text-muted h3">Send Money </span
-    ><small class="badge badge-pill bg-success py-2 px-4">To wallet</small>
-  </div>
-  <div class="col-10 col-xs-10 col-sm-10 col-md-6">
-    <!-- wallet sending money form-->
-    <form
-      action=""
-      method="post"
-      class="send-money p-3 mt-3 w-100"
-    >
-      <!-- Flash messages -->
-      {% with messages = get_flashed_messages(with_categories=true) %} {% if
-      messages %} {% for category, message in messages %}
-      <div
-        class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
-        role="alert"
-        style="height: 3.5rem; transition: 0.6s"
-      >
-        {% if category=='success' %}
-        <div class="small text-center">
-          <i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}
+<!-- Flash toasts -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div id="toast-zone" style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:10px;">
+      {% for category, message in messages %}
+      {% set tone = 'success' if category=='success' else ('error' if category in ['danger','error'] else 'info') %}
+      <div class="flash-toast" id="ft-{{ loop.index }}" style="position:relative;">
+        <div class="ft-icon {{ tone }}">
+          <i class="fas {% if tone=='success' %}fa-check-circle{% elif tone=='error' %}fa-times-circle{% else %}fa-info-circle{% endif %}"></i>
         </div>
-        {% else %}
-        <div class="small text-center">
-          <i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{
-          message }}
+        <div style="flex:1;min-width:0;">
+          <p class="ft-title">{% if tone=='success' %}Success{% elif tone=='error' %}Error{% else %}Notice{% endif %}</p>
+          <p class="ft-msg">{{ message }}</p>
         </div>
-        {% endif %}
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-label="Close"
-        ></button>
+        <button class="ft-close" onclick="dismissToast('ft-{{ loop.index }}')"><i class="fas fa-times"></i></button>
+        <div class="ft-bar {{ tone }}"></div>
       </div>
-      {% endfor %} {% endif %} {% endwith %}
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
 
-      <div
-        class="bg-light d-flex mb-3 "
-        style="width: 10.5rem;height:10.5rem; margin: auto ;border-radius:50%"
-      >
-        <img
-          src="{{ user1.photo }}"
-          class="p-2 rounded-circle"
-          style="width: 10.5rem; margin: auto;"
-          alt=""
-        />
+<div class="page-wrap">
+
+  <!-- Back -->
+  <div class="rise rise-1" style="width:100%;max-width:420px;margin-bottom:16px;">
+    <a href="{{ url_for('view.home') }}" class="back-link">
+      <i class="fas fa-arrow-left" style="font-size:11px;"></i>
+      Back
+    </a>
+  </div>
+
+  <div class="transfer-card rise rise-1">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(26,163,116,0.08);border:1px solid rgba(26,163,116,0.2);padding:5px 14px 5px 8px;border-radius:20px;margin-bottom:16px;">
+        <div style="width:22px;height:22px;border-radius:8px;background:linear-gradient(135deg,#1aa374,#2e8bb6);display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-wallet" style="color:#fff;font-size:10px;"></i>
+        </div>
+        <span style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:#0c694c;">Wallet Transfer</span>
       </div>
+      <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.4rem;color:#0d1f1a;margin:0 0 4px;">Send Money</h1>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:0;">Instant · Free · Secure</p>
+    </div>
+
+    <form action="" method="post">
       {{ form.hidden_tag() }}
 
-      <div>
-        <span class="pay-header"><span class="fw-bold"> Account Name</span><br> 
-       <span class="h4 text-white" > {{ user1.last_name.upper() }} &nbsp;{{ user1.first_name.upper() }}
-        </span>
-       </span>
+      <!-- ── Recipient card ── -->
+      <div class="rise rise-2" style="margin-bottom:22px;">
+        <div style="text-align:center;margin-bottom:12px;">
+          <div class="recipient-circle">
+            <img src="{{ user1.photo }}" alt="{{ user1.first_name.title() }}">
+          </div>
+          <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;font-weight:600;text-transform:uppercase;letter-spacing:.07em;margin:6px 0 2px;">Sending to</p>
+        </div>
+
+        <div class="name-banner">
+          <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin:0 0 3px;">Account Name</p>
+          <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;color:#fff;font-size:1.2rem;margin:0;letter-spacing:.01em;">
+            {{ user1.last_name.upper() }}&nbsp;{{ user1.first_name.upper() }}
+          </p>
+          <div style="display:flex;align-items:center;justify-content:center;gap:5px;margin-top:5px;">
+            <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;display:inline-block;"></span>
+            <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.5);">EasyTransact Wallet</span>
+          </div>
+        </div>
       </div>
 
-      <!-- For Amount validations -->
-      
-      
-      {% if current_user.pin_set %}
-      {% if form.amount.errors %} {{ form.amount(class="form-control p-2 ",
-      required=False, placeholder='Enter amount') }} {% for error in
-      form.amount.errors %}
-      <small class="text-danger mt-1"
-        ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
-        }}</small
-      ><br>
-      {% endfor %} {% else %} {{ form.amount(class="form-control p-2 ",
-      required=False, placeholder='Enter amount') }} {% endif %}
+      <!-- ── Amount ── -->
+      <div class="rise rise-2" style="margin-bottom:16px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+          <label class="field-label" style="margin:0;">Amount</label>
+          <span class="fee-badge"><i class="fas fa-check-circle" style="font-size:9px;"></i> ₦0 Fee</span>
+        </div>
+        {% if form.amount.errors %}
+          <div class="amount-wrap">
+            <span class="amount-prefix">₦</span>
+            {{ form.amount(class="et-input amount-input has-error", required=False, placeholder="0.00") }}
+          </div>
+          {% for error in form.amount.errors %}
+            <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#ef4444;margin:5px 0 0;display:flex;align-items:center;gap:5px;">
+              <i class="fas fa-exclamation-circle" style="font-size:10px;"></i>{{ error }}
+            </p>
+          {% endfor %}
+        {% else %}
+          <div class="amount-wrap">
+            <span class="amount-prefix">₦</span>
+            {{ form.amount(class="et-input amount-input", required=False, placeholder="0.00") }}
+          </div>
+        {% endif %}
+      </div>
 
-      <br>
-      {{form.transfer_pin(class='form-control p-2', required=True, placeholder='Enter 4 digits transfer pin') }}
-      <br>
+      <!-- ── PIN or set pin ── -->
+      {% if current_user.pin_set %}
+
+      <div class="divider-label rise rise-3">Confirm with PIN</div>
+
+      <div class="rise rise-3" style="margin-bottom:16px;">
+        <!-- PIN dots -->
+        <div class="pin-dots">
+          <div class="pin-dot" id="pd1"></div>
+          <div class="pin-dot" id="pd2"></div>
+          <div class="pin-dot" id="pd3"></div>
+          <div class="pin-dot" id="pd4"></div>
+        </div>
+        <div class="pw-wrap">
+          {{ form.transfer_pin(class="et-input", id="pin-input",
+             style="text-align:center;letter-spacing:.35em;font-size:20px;font-family:'Courier New',monospace;",
+             required=True, placeholder="••••", maxlength="4") }}
+          <button type="button" class="pw-toggle" onclick="togglePin()" tabindex="-1">
+            <i class="fas fa-eye" id="pin-eye"></i>
+          </button>
+        </div>
+        <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;text-align:center;margin:6px 0 0;">Enter your 4-digit transaction PIN</p>
+      </div>
+
+      <!-- Beneficiary checkbox -->
       {% if user1.account_number not in beneficial %}
-      <div class='d-flex align-item-center' style='gap:5px; flex-direction:row-reverse;'>
-      {{ form.add_beneficiary(class="") }} {{ form.add_beneficiary.label(class='label text-muted fw-bold') }}
+      <div class="rise rise-3" style="margin-bottom:20px;">
+        <div class="ben-check-wrap" onclick="toggleBen()" id="ben-wrap">
+          <div class="ben-check-box" id="ben-box">
+            <i class="fas fa-check" style="color:#fff;font-size:9px;display:none;" id="ben-icon"></i>
+          </div>
+          {{ form.add_beneficiary(id="ben-input", style="display:none;") }}
+          <div>
+            <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#0d1f1a;margin:0;">Save as Beneficiary</p>
+            <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin:2px 0 0;">Quickly find {{ user1.first_name.title() }} next time</p>
+          </div>
+        </div>
       </div>
       {% endif %}
+
+      <!-- Submit -->
+      <div class="rise rise-3">
+        {{ form.submit(class="submit-btn", id="submit-btn", disabled=True) }}
+        <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin-top:12px;">
+          <i class="fas fa-lock" style="font-size:10px;color:#cbd5e1;"></i>
+          <span>Secured with 256-bit encryption</span>
+        </div>
+      </div>
+
+      {% else %}
+      <!-- No PIN set -->
+      <div class="rise rise-3" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:14px;padding:16px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;">
+        <div style="width:36px;height:36px;border-radius:10px;background:rgba(245,158,11,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas fa-lock" style="color:#f59e0b;font-size:14px;"></i>
+        </div>
+        <div>
+          <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#92400e;margin:0 0 2px;">PIN Required</p>
+          <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#b45309;margin:0;">Set your transaction PIN to send money</p>
+        </div>
+      </div>
+      <a href="{{ url_for('view.create_transfer_pin') }}"
+         style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;text-decoration:none;box-shadow:0 6px 20px rgba(245,158,11,0.3);">
+        <i class="fas fa-key"></i> Set Transaction PIN
+      </a>
       {% endif %}
 
-      {% if current_user.pin_set %}
-            <!-- For submit button -->
-      {{ form.submit(size=20, class='pay-btn btn btn-success mt-4 w-100 p-1')}}
-
-      {% endif %}
-
-      {% if not current_user.pin_set %}
-      <a href="{{url_for('view.create_transfer_pin')}}" class="btn justify-content-center d-flex btn-primary mt-4 mx-auto shadow-none border-0 w-50">Set Pin</a>
-      {% endif %}
     </form>
   </div>
 </div>
 {% endblock content %}
+
+
+{% block scripts %}
+<script>
+  const pinInput  = document.getElementById('pin-input');
+  const submitBtn = document.getElementById('submit-btn');
+  const dots      = ['pd1','pd2','pd3','pd4'].map(id => document.getElementById(id)).filter(Boolean);
+
+  if (pinInput) {
+    // Force input type password initially
+    pinInput.type = 'password';
+
+    pinInput.addEventListener('input', function() {
+      const val = this.value.replace(/\D/g,'').slice(0,4);
+      this.value = val;
+      dots.forEach((d, i) => d.classList.toggle('filled', i < val.length));
+      if (submitBtn) {
+        const ready = val.length === 4;
+        submitBtn.disabled = !ready;
+        submitBtn.style.opacity = ready ? '1' : '0.45';
+      }
+    });
+    pinInput.addEventListener('keypress', e => { if(!/[0-9]/.test(e.key)) e.preventDefault(); });
+  }
+
+  function togglePin() {
+    if (!pinInput) return;
+    const show = pinInput.type === 'password';
+    pinInput.type = show ? 'text' : 'password';
+    document.getElementById('pin-eye').className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+  }
+
+  let benChecked = false;
+  function toggleBen() {
+    benChecked = !benChecked;
+    const box  = document.getElementById('ben-box');
+    const icon = document.getElementById('ben-icon');
+    const inp  = document.getElementById('ben-input');
+    if (box)  box.classList.toggle('checked', benChecked);
+    if (icon) icon.style.display = benChecked ? 'block' : 'none';
+    if (inp)  inp.checked = benChecked;
+  }
+
+  // Toast dismiss
+  document.querySelectorAll('.flash-toast').forEach((t, i) => {
+    setTimeout(() => dismissToast(t.id), 4000 + i * 300);
+  });
+  function dismissToast(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('hide');
+    setTimeout(() => el.remove(), 380);
+  }
+</script>
+{% endblock scripts %}
