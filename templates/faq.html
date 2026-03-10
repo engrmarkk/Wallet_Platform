@@ -1,146 +1,299 @@
 {% extends 'base.html' %}
 
+{% block title %}FAQs — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideInRight { from{opacity:0;transform:translateX(120%)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(120%)} }
+  @keyframes shrink { from{width:100%} to{width:0} }
+
+  .rise   { opacity:0; animation: riseUp .5s cubic-bezier(.34,1.1,.64,1) forwards; }
+  .rise-1 { animation-delay:.05s; }
+  .rise-2 { animation-delay:.12s; }
+  .rise-stagger { opacity:0; }
+
+  /* ── FAQ accordion ── */
+  .faq-item {
+    background: #fff; border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 8px rgba(13,31,26,0.03);
+    overflow: hidden; transition: box-shadow .2s;
+  }
+  .faq-item.open { box-shadow: 0 6px 24px rgba(13,31,26,0.08); border-color: rgba(26,163,116,0.2); }
+
+  .faq-trigger {
+    width: 100%; display: flex; align-items: center; gap: 14px;
+    padding: 16px 18px; background: none; border: none;
+    cursor: pointer; text-align: left;
+    transition: background .18s;
+  }
+  .faq-trigger:hover { background: #f8fafc; }
+  .faq-item.open .faq-trigger { background: rgba(26,163,116,0.04); }
+
+  .faq-number {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cabinet Grotesk', sans-serif; font-size: 12px; font-weight: 900;
+    background: #f1f5f9; color: #94a3b8;
+    transition: background .2s, color .2s;
+  }
+  .faq-item.open .faq-number { background: rgba(26,163,116,0.1); color: #0c694c; }
+
+  .faq-question {
+    flex: 1; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 700; color: #0d1f1a;
+    line-height: 1.4; text-align: left;
+  }
+  .faq-item.open .faq-question { color: #0c694c; }
+
+  .faq-chevron {
+    width: 28px; height: 28px; border-radius: 8px;
+    background: #f1f5f9; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .3s, background .2s;
+  }
+  .faq-item.open .faq-chevron {
+    transform: rotate(180deg);
+    background: rgba(26,163,116,0.1);
+  }
+
+  .faq-body {
+    max-height: 0; overflow: hidden;
+    transition: max-height .4s cubic-bezier(0,1,.3,1), padding .3s;
+    padding: 0 18px 0 60px;
+  }
+  .faq-item.open .faq-body { max-height: 400px; padding: 0 18px 16px 60px; }
+
+  .faq-answer {
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: #64748b; line-height: 1.7; border-top: 1px solid #f1f5f9; padding-top: 12px;
+  }
+
+  /* ── Category chips ── */
+  .cat-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700;
+    padding: 5px 12px; border-radius: 20px;
+    border: 1.5px solid transparent; cursor: pointer;
+    transition: all .2s;
+  }
+  .cat-chip.active {
+    background: linear-gradient(135deg, #1aa374, #2e8bb6);
+    color: #fff; border-color: transparent;
+    box-shadow: 0 4px 14px rgba(26,163,116,0.3);
+  }
+  .cat-chip:not(.active) {
+    background: #fff; color: #64748b;
+    border-color: #e2e8f0;
+  }
+  .cat-chip:not(.active):hover { background: #f8fafc; border-color: #cbd5e1; color: #0d1f1a; }
+
+  /* ── Still have questions ── */
+  .contact-card {
+    background: linear-gradient(135deg, #0c694c, #164e49 50%, #1a6f94);
+    border-radius: 20px; padding: 24px;
+    position: relative; overflow: hidden; text-align: center;
+  }
+  .contact-card::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px), linear-gradient(90deg,rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+  .contact-card > * { position: relative; z-index: 1; }
+
+  .contact-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 11px 22px; border-radius: 12px;
+    background: #fff; color: #0c694c;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 13px;
+    text-decoration: none; transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  }
+  .contact-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); color: #0c694c; }
+
+  /* ── Flash toasts ── */
+  .flash-toast {
+    position: fixed; top: 1.25rem; right: 1.25rem; z-index: 9999;
+    display: flex; align-items: flex-start; gap: 12px;
+    background: #fff; border-radius: 16px; padding: 14px 16px;
+    min-width: 280px; max-width: 360px;
+    box-shadow: 0 8px 32px rgba(13,31,26,0.14); border: 1px solid #f1f5f9;
+    animation: slideInRight .4s cubic-bezier(.34,1.2,.64,1) forwards; overflow: hidden;
+  }
+  .flash-toast.hide { animation: slideOutRight .35s ease forwards; }
+  .ft-icon{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .ft-icon.success{background:rgba(26,163,116,0.1);color:#0c694c;}
+  .ft-icon.error{background:rgba(239,68,68,0.1);color:#dc2626;}
+  .ft-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0 0 2px;}
+  .ft-msg{font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;}
+  .ft-close{background:none;border:none;cursor:pointer;padding:0;color:#cbd5e1;font-size:12px;line-height:1;}
+  .ft-close:hover{color:#64748b;}
+  .ft-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 16px 16px;animation:shrink 4s linear forwards;}
+  .ft-bar.success{background:#1aa374;} .ft-bar.error{background:#ef4444;}
+</style>
+{% endblock head %}
+
+
 {% block content %}
 
- <!-- Flash messages -->
- {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %}
-    <div
-      class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }} mt-3"
-      role="alert"
-      style="height: 3.5rem; transition: 0.6s"
-    >
-    {% if category=='success' %}
-      <div class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-      {% else %}
-      <div class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-      {% endif %}
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
+<!-- Flash toasts -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:10px;">
+      {% for category, message in messages %}
+      {% set tone = 'success' if category=='success' else 'error' %}
+      <div class="flash-toast" id="ft-{{ loop.index }}" style="position:relative;">
+        <div class="ft-icon {{ tone }}">
+          <i class="fas {% if tone=='success' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p class="ft-title">{% if tone=='success' %}Success{% else %}Error{% endif %}</p>
+          <p class="ft-msg">{{ message }}</p>
+        </div>
+        <button class="ft-close" onclick="dismissToast('ft-{{ loop.index }}')"><i class="fas fa-times"></i></button>
+        <div class="ft-bar {{ tone }}"></div>
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %} {% endif %} {% endwith %}
+  {% endif %}
+{% endwith %}
 
+<div class="w-full" style="background:#f7faf8;padding:1.5rem 1rem 5rem;min-height:80vh;">
+  <div style="max-width:660px;margin:0 auto;">
 
+    <!-- Header -->
+    <div class="rise rise-1" style="text-align:center;margin-bottom:28px;">
+      <div style="width:52px;height:52px;border-radius:18px;background:linear-gradient(135deg,#1aa374,#2e8bb6);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;box-shadow:0 6px 20px rgba(26,163,116,0.3);">
+        <i class="fas fa-circle-question" style="color:#fff;font-size:20px;"></i>
+      </div>
+      <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.75rem;color:#0d1f1a;margin:0 0 8px;">Frequently Asked Questions</h1>
+      <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:#94a3b8;max-width:460px;margin:0 auto;line-height:1.6;">Everything you need to know about saving, investing, and sending money with EasyTransact.</p>
+    </div>
 
-<p  class="text-center mt-4 h2">Frequently Asked Question</p>
-<p class="text-center">Below are some Frequently Asked Questions (FAQs) on saving, investment, payment remittance and expert-vetted answers to them:</p>
+    <!-- Search -->
+    <div class="rise rise-2" style="position:relative;margin-bottom:20px;">
+      <i class="fas fa-search" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:13px;pointer-events:none;"></i>
+      <input type="text" id="faq-search" placeholder="Search questions…"
+             oninput="filterFAQs()"
+             style="width:100%;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:12px 14px 12px 40px;font-family:'DM Sans',sans-serif;font-size:14px;color:#0d1f1a;outline:none;transition:border-color .25s,box-shadow .25s;box-sizing:border-box;"
+             onfocus="this.style.borderColor='#1aa374';this.style.boxShadow='0 0 0 4px rgba(26,163,116,0.10)'"
+             onblur="this.style.borderColor='#e2e8f0';this.style.boxShadow='none'">
+    </div>
 
-<div class="my-7">
+    <!-- FAQ list -->
+    <div id="faq-list" style="display:flex;flex-direction:column;gap:10px;">
 
-    <!-- *********************************************************** -->
+      {% set faqs = [
+        ("How secure is EasyTransact for savings and investment?",
+         "EasyTransact uses the latest encryption technology to ensure the security of your savings and investment. We also have a team of experts who monitor and update our security protocols regularly, making sure that your money is always safe.",
+         "fa-shield-alt", "rgba(26,163,116,0.1)", "#1aa374"),
 
-  <div class="accordion my-2" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-          How secure is Easytransact for savings and investment?
+        ("Can I earn interest on my savings with EasyTransact?",
+         "Yes, you can! With EasyTransact's savings account, you can earn interest on your savings at competitive rates. We also offer investment options that can yield even higher returns.",
+         "fa-percent", "rgba(46,139,182,0.1)", "#2e8bb6"),
+
+        ("How does EasyTransact make payment remittance easier than its competitors?",
+         "EasyTransact is designed to make payment remittance easy and hassle-free. Our app allows you to send and receive money quickly and securely, without the need for physical cash or long lines at the bank. We also offer multiple payment options including bank transfer, mobile money, and card payments.",
+         "fa-paper-plane", "rgba(99,102,241,0.1)", "#6366f1"),
+
+        ("How can EasyTransact help me achieve my financial goals?",
+         "EasyTransact is more than just a payment gateway — it's a fintech app that can help you achieve your financial goals. Whether you're saving for a big purchase, investing for the future, or sending money to loved ones, EasyTransact provides the tools and resources you need to manage your finances effectively.",
+         "fa-bullseye", "rgba(245,158,11,0.1)", "#f59e0b"),
+
+        ("Why is saving important?",
+         "Saving is important because it allows individuals to prepare for unexpected expenses, such as medical bills, car repairs, or job loss. It also enables individuals to work towards long-term financial goals, such as purchasing a home, starting a business, or retiring comfortably.",
+         "fa-piggy-bank", "rgba(16,185,129,0.1)", "#10b981"),
+
+        ("What are some tips for saving money?",
+         "Some tips for saving money include creating a budget, tracking expenses, automating savings, reducing unnecessary expenses, setting financial goals, and seeking out higher-yielding savings accounts or investment opportunities.",
+         "fa-lightbulb", "rgba(234,179,8,0.1)", "#ca8a04"),
+
+        ("What should I consider when sending or receiving a remittance?",
+         "When sending or receiving a remittance, it is important to consider factors such as the speed of the transaction, the fees associated with the transfer, the security of the method used, the exchange rate if applicable, and the reliability of the service provider. Always ensure that account numbers and personal identification are accurately provided to avoid errors or delays.",
+         "fa-money-bill-transfer", "rgba(239,68,68,0.1)", "#ef4444")
+      ] %}
+
+      {% for question, answer, icon, bg, color in faqs %}
+      <div class="faq-item rise-stagger" data-question="{{ question|lower }}" data-answer="{{ answer|lower }}"
+           style="animation: riseUp .5s cubic-bezier(.34,1.1,.64,1) {{ loop.index * 0.07 }}s both;">
+        <button class="faq-trigger" onclick="toggleFAQ(this)">
+          <div class="faq-number">{{ loop.index }}</div>
+          <div style="width:32px;height:32px;border-radius:9px;background:{{ bg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas {{ icon }}" style="color:{{ color }};font-size:12px;"></i>
+          </div>
+          <span class="faq-question">{{ question }}</span>
+          <div class="faq-chevron">
+            <i class="fas fa-chevron-down" style="color:#94a3b8;font-size:11px;"></i>
+          </div>
         </button>
-      </h2>
-      <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">
-          Easytransact uses the latest encryption technology to ensure the security of your savings and investment. We also have a team of experts who monitor and update our security protocols regularly, making sure that your money is always safe.
+        <div class="faq-body">
+          <p class="faq-answer">{{ answer }}</p>
         </div>
       </div>
+      {% endfor %}
+
     </div>
-  </div>
 
-      <!-- *********************************************************** -->
-
-  <div class="accordion my-2" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne2" aria-expanded="false" aria-controls="flush-collapseOne">
-          Can I earn interest on my savings with Easytransact?
-        </button>
-      </h2>
-      <div id="flush-collapseOne2" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">
-          Yes, you can! With Easytransact's savings account, you can earn interest on your savings at competitive rates. We also offer investment options that can yield even higher returns.
-        </div>
+    <!-- No results -->
+    <div id="no-results" style="display:none;text-align:center;padding:40px 20px;">
+      <div style="width:52px;height:52px;border-radius:16px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;">
+        <i class="fas fa-search" style="color:#cbd5e1;font-size:18px;"></i>
       </div>
+      <p style="font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;color:#64748b;margin:0 0 4px;">No results found</p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:0;">Try a different search term</p>
     </div>
-  </div>
 
-      <!-- *********************************************************** -->
-
-  <div class="accordion my-2" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne3" aria-expanded="false" aria-controls="flush-collapseOne">
-          How does Easytransact make payment remittance easier than its competitors?
-        </button>
-      </h2>
-      <div id="flush-collapseOne3" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">
-          Easytransact is designed to make payment remittance easy and hassle-free. Our app allows you to send and receive money quickly and securely, without the need for physical cash or long lines at the bank. We also offer multiple payment options to suit your needs, including bank transfer, mobile money, and card payments.
-        </div>
-      </div>
+    <!-- Contact card -->
+    <div class="contact-card rise rise-2" style="margin-top:28px;">
+      <p style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;margin:0 0 6px;">Still have questions?</p>
+      <h3 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.2rem;color:#fff;margin:0 0 10px;">We're here to help</h3>
+      <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:rgba(255,255,255,.55);margin:0 0 18px;line-height:1.6;">Can't find what you're looking for? Our friendly support team is available 24/7.</p>
+      <a href="{{ url_for('view.contact') }}" class="contact-btn">
+        <i class="fas fa-headset" style="font-size:12px;color:#1aa374;"></i>
+        Contact Support
+      </a>
     </div>
-  </div>
 
-
-      <!-- *********************************************************** -->
-
-  <div class="accordion my-2" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne4" aria-expanded="false" aria-controls="flush-collapseOne">
-          How can Easytransact help me achieve my financial goals?
-        </button>
-      </h2>
-      <div id="flush-collapseOne4" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">
-          Easytransact is more than just a payment gateway - it's a fintech app that can help you achieve your financial goals. Whether you're saving for a big purchase, investing for the future, or sending money to loved ones, Easytransact provides the tools and resources you need to manage your finances effectively. With our app, you can track your expenses, set savings goals, and make informed investment decisions - all in one place.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="accordion my-2" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne5" aria-expanded="false" aria-controls="flush-collapseOne">
-          Why is saving important?
-        </button>
-      </h2>
-      <div id="flush-collapseOne5" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">
-          Saving is important because it allows individuals to prepare for unexpected expenses, such as medical bills, car repairs, or job loss. It also enables individuals to work towards long-term financial goals, such as purchasing a home, starting a business, or retiring comfortably.
-        </div>
-      </div>
-    </div>
-  </div>
-  </div><div class="accordion my-2" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne6" aria-expanded="false" aria-controls="flush-collapseOne">
-          What are some tips for saving money?
-        </button>
-      </h2>
-      <div id="flush-collapseOne6" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">
-          Some tips for saving money include creating a budget, tracking expenses, automating savings, reducing unnecessary expenses, setting financial goals, and seeking out higher-yielding savings accounts or investment opportunities.
-        </div>
-      </div>
-    </div>
-  </div>
-  </div><div class="accordion my-2" id="accordionExample">
-    <div class="accordion-item">
-      <h2 class="accordion-header" id="flush-headingOne">
-        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne7" aria-expanded="false" aria-controls="flush-collapseOne">
-          What should I consider when sending or receiving a remittance?
-        </button>
-      </h2>
-      <div id="flush-collapseOne7" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-        <div class="accordion-body">
-          When sending or receiving a remittance, it is important to consider factors such as the speed of the transaction, the fees associated with the transfer, the security of the method used, the exchange rate if applicable, and the reliability and reputation of the service provider or financial institution. It is also important to ensure that all necessary information, such as account numbers and personal identification, are accurately provided to avoid any errors or delays.
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 {% endblock content %}
+
+
+{% block scripts %}
+<script>
+  function toggleFAQ(trigger) {
+    const item = trigger.closest('.faq-item');
+    const isOpen = item.classList.contains('open');
+    // Close all
+    document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) item.classList.add('open');
+  }
+
+  function filterFAQs() {
+    const q = document.getElementById('faq-search').value.toLowerCase().trim();
+    const items = document.querySelectorAll('#faq-list .faq-item');
+    let visible = 0;
+    items.forEach(item => {
+      const text = (item.dataset.question + ' ' + item.dataset.answer);
+      const show = !q || text.includes(q);
+      item.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  // Toast auto-dismiss
+  document.querySelectorAll('.flash-toast').forEach((t,i) => setTimeout(()=>dismissToast(t.id), 4000+i*300));
+  function dismissToast(id) {
+    const el=document.getElementById(id); if(!el)return;
+    el.classList.add('hide'); setTimeout(()=>el.remove(),380);
+  }
+</script>
+{% endblock scripts %}
