@@ -927,12 +927,15 @@ def download_pdf():
         # render the Jinja2 template with the desired context
         html = render_template("statement.html")
 
+        random_api_key = os.environ.get(random.choice(["PDF_KEY", "PDF_KEY2"]))
+        print(f"Random api key: {random_api_key}")
+
         # convert the HTML to PDF using pdfshift.io
         response = requests.post(
             "https://api.pdfshift.io/v3/convert/pdf",
             auth=(
                 "api",
-                f'{os.environ.get(random.choice(["PDF_KEY", "PDF_KEY2", "PDF_KEY3", "PDF_KEY4"]))}',
+                random_api_key,
             ),
             json={"source": html, "landscape": False, "use_print": False},
         )
