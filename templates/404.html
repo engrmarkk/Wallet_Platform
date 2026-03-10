@@ -1,103 +1,111 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Quicksand:wght@400;700&family=Sora&display=swap" rel="stylesheet">
-    <link rel='stylesheet' href="{{ url_for('static', filename='css/customStyle.css') }}"/>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-      crossorigin="anonymous"
-    />
+{% extends 'base.html' %}
 
-    <!-- For dropdown BOOTSTRAP -->
-    <!-- Load Bootstrap -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
-      integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I"
-      crossorigin="anonymous"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
-      integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
-      crossorigin="anonymous"
-    ></script>
+{% block title %}404 — Page Not Found{% endblock title %}
 
-    <!-- <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/customStyle.css') }}"
-    /> -->
+{% block head %}
+<style>
+  body { background: #0d1f1a !important; }
+  #navbar, footer, #dark-mode-toggle, #scroll-top { display: none !important; }
+  .page-content { padding-top: 0 !important; }
 
-    <link
-      rel="icon"
-      href="{{ url_for('static', filename='images/logo-normal.png') }}"
-    />
+  @keyframes riseUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes floatFrown { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-14px) rotate(3deg)} }
+  @keyframes glitch1 { 0%,100%{clip-path:inset(0 0 95% 0)} 20%{clip-path:inset(30% 0 50% 0)} 40%{clip-path:inset(60% 0 20% 0)} 60%{clip-path:inset(10% 0 75% 0)} 80%{clip-path:inset(80% 0 5% 0)} }
+  @keyframes gridScroll { from{background-position:0 0} to{background-position:40px 40px} }
+  @keyframes blobPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.06)} }
 
-    <!-- font awesome -->
+  .rise{opacity:0;animation:riseUp .7s cubic-bezier(.34,1.1,.64,1) forwards;}
+  .rise-1{animation-delay:.08s;} .rise-2{animation-delay:.2s;} .rise-3{animation-delay:.34s;} .rise-4{animation-delay:.48s;}
 
-    <!-- fontAwesome -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
+  .error-bg {
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:2rem 1.5rem; position:relative; overflow:hidden; background:#0d1f1a;
+  }
+  .error-bg::before {
+    content:''; position:absolute; inset:0;
+    background-image:linear-gradient(rgba(26,163,116,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(26,163,116,.05) 1px,transparent 1px);
+    background-size:40px 40px; animation:gridScroll 7s linear infinite;
+  }
+  .blob { position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; }
+  .blob-1 { width:460px; height:460px; background:rgba(46,139,182,.09); top:-150px; right:-120px; animation:blobPulse 10s ease-in-out infinite; }
+  .blob-2 { width:380px; height:380px; background:rgba(239,68,68,.06); bottom:-80px; left:-100px; animation:blobPulse 13s ease-in-out infinite reverse; }
 
-    <!-- @@@@@@@@@@@@@@@@@@@@@@@ -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
-    />
-    <title>Not found</title>
-</head>
-<body class="d-flex flex-column justify-content-center" style="height: 100vh; margin: auto; 
-background:#2e8bb6;
-color: #ffff;
-">
+  .content { position:relative; z-index:1; text-align:center; max-width:480px; width:100%; }
 
-    <div class="w-100">
-      <div class="h1 text-center">oops..</div>
-        <div class="d-flex justify-content-center align-items-center" style="font-size: 11rem;">
-          4
-          <i class="fa fa-face-frown" style="font-size: 9rem;"></i>
-          4
-        </div>
-        <div class="text-center fw-bold" style="font-size: 2rem; margin-top: -2rem;">
-          Page not found
-        </div>
-        <div class="text center bg-light px-3 rounded mt-4 fw-bold primary-text m-auto" onclick="history.back()" style="cursor: pointer; width: fit-content;">
-          <i class="fa fa-caret-left"></i> Go Back
-        </div>
+  /* Big 404 */
+  .big-num {
+    font-family:'Cabinet Grotesk',sans-serif; font-weight:900;
+    font-size:clamp(7rem,22vw,11rem); line-height:1;
+    background:linear-gradient(135deg,#1aa374 0%,#2e8bb6 60%,rgba(255,255,255,.15) 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    display:flex; align-items:center; justify-content:center; gap:0.1em;
+    position:relative; margin-bottom:-10px;
+  }
+  .frown-wrap { display:inline-flex; align-items:center; justify-content:center; animation:floatFrown 3s ease-in-out infinite; }
+  .frown-icon { font-size:clamp(3.5rem,14vw,7rem); -webkit-text-fill-color:rgba(255,255,255,.15); }
+
+  .go-back-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; border-radius:14px; border:1.5px solid rgba(255,255,255,.12); background:rgba(255,255,255,.06); color:rgba(255,255,255,.7); font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px; cursor:pointer; text-decoration:none; transition:all .25s; }
+  .go-back-btn:hover { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.22); color:#fff; transform:translateX(-3px); }
+
+  .home-btn { display:inline-flex; align-items:center; gap:8px; padding:12px 24px; border-radius:14px; border:none; background:linear-gradient(135deg,#1aa374,#2e8bb6); color:#fff; font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px; cursor:pointer; text-decoration:none; box-shadow:0 6px 20px rgba(26,163,116,.35); transition:transform .2s,box-shadow .2s; }
+  .home-btn:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(26,163,116,.45); color:#fff; }
+</style>
+{% endblock head %}
+
+
+{% block content %}
+<div class="error-bg">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+
+  <div class="content">
+
+    <!-- Logo -->
+    <div class="rise rise-1" style="margin-bottom:32px;">
+      <a href="{{ url_for('view.front_page') }}" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;">
+        <img src="{{ url_for('static', filename='images/logo-white.png') }}" alt="EasyTransact" style="width:30px;height:30px;">
+        <span style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.05rem;color:#fff;">Easy<span style="color:#6dd6ae;">Transact</span></span>
+      </a>
     </div>
 
+    <!-- 4😟4 -->
+    <div class="rise rise-2">
+      <div class="big-num">
+        <span>4</span>
+        <span class="frown-wrap"><i class="fas fa-face-frown frown-icon"></i></span>
+        <span>4</span>
+      </div>
+    </div>
 
+    <!-- Text -->
+    <div class="rise rise-3" style="margin-bottom:32px;">
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.2);padding:5px 14px;border-radius:20px;margin-bottom:16px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#ef4444;display:inline-block;"></span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:#fca5a5;text-transform:uppercase;letter-spacing:.07em;">Page Not Found</span>
+      </div>
+      <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:clamp(1.5rem,5vw,2rem);color:#fff;margin:0 0 12px;line-height:1.2;">Oops! This page<br>doesn't exist</h1>
+      <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,.4);margin:0;line-height:1.7;max-width:340px;margin:0 auto;">The page you're looking for may have been moved, deleted, or never existed in the first place.</p>
+    </div>
 
+    <!-- Actions -->
+    <div class="rise rise-4" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="go-back-btn" onclick="history.back()">
+        <i class="fas fa-arrow-left" style="font-size:12px;"></i>
+        Go Back
+      </button>
+      {% if current_user.is_authenticated %}
+      <a href="{{ url_for('view.home') }}" class="home-btn">
+        <i class="fas fa-house" style="font-size:12px;"></i>
+        Dashboard
+      </a>
+      {% else %}
+      <a href="{{ url_for('view.front_page') }}" class="home-btn">
+        <i class="fas fa-house" style="font-size:12px;"></i>
+        Go Home
+      </a>
+      {% endif %}
+    </div>
 
-
-
-
-
-    <!-- BOOTSTRAP -->
-
-    <!-- Bootsrap popper -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
-      integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
-      crossorigin="anonymous"
-    ></script>
-</body>
-</html>
+  </div>
+</div>
+{% endblock content %}
