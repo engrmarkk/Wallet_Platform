@@ -1,163 +1,284 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-<meta charset="UTF-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lobster&family=Quicksand:wght@400;700&family=Sora&display=swap" rel="stylesheet">
-<link rel='stylesheet' href="{{ url_for('static', filename='css/customStyle.css') }}"/>
-<link
-  href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-  rel="stylesheet"
-  integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-  crossorigin="anonymous"
-/>
+{% extends 'base.html' %}
 
-<!-- fontAwesome -->
-<link
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-rel="stylesheet"
-/>
-<link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/customStyle.css') }}"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/team.css') }}"
-    />
-    <script
-    type="text/javascript"
-    src="{{ url_for('static', filename='javascript/jquery-3.6.1.min.js') }}"
-  ></script>
+{% block title %}Our Team — EasyTransact{% endblock title %}
 
-  <!-- Js -->
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
 
-  <script
-    src="{{ url_for('static', filename='javascript/script.js') }}"
-    defer
-  ></script>
-  <link
-      rel="icon"
-      href="{{ url_for('static', filename='images/logo-normal.png') }}"
-    />
-<title>Team</title>
-</head>
-<body style="background: #2e8bb6;
-">
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes floatBob {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-6px); }
+  }
 
-    <div>
-        {% if current_user.is_authenticated %}
-        <a href="{{ url_for('view.home') }}" class="navbar-brand d-flex justify-content-center mt-5">
-            <img
-              src="{{ url_for('static', filename='images/logo-white.png') }}"
-              alt="company's logo"
-              style="width: 3.5rem"
-            />
-            <span>&nbsp;Easy<span class="text-green">Transact</span></span>
-          </a>
-        {% else %}
-        <a href="{{ url_for('view.front_page') }}" class="navbar-brand d-flex justify-content-center mt-5">
-            <img
-              src="{{ url_for('static', filename='images/logo-white.png') }}"
-              alt="company's logo"
-              style="width: 3.5rem"
-            />
-            <span>&nbsp;Easy<span class="text-green">Transact</span></span>
-          </a>
-        {% endif %}
-    </div>
+  .rise   { opacity:0; animation: riseUp .6s cubic-bezier(.34,1.1,.64,1) forwards; }
+  .rise-1 { animation-delay:.06s; }
+  .rise-2 { animation-delay:.14s; }
 
-    <h5 class="h11 badge">EasyTransact Development Team</h5>
+  /* ── Hero banner ── */
+  .team-hero {
+    background: linear-gradient(135deg, #0c694c 0%, #1aa374 45%, #2e8bb6 100%);
+    border-radius: 0 0 32px 32px;
+    padding: 48px 24px 56px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .team-hero::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 85% 20%, rgba(255,255,255,0.10) 0%, transparent 50%),
+      radial-gradient(circle at 10% 80%, rgba(255,255,255,0.05) 0%, transparent 50%);
+  }
+  .team-hero::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .team-hero > * { position: relative; z-index: 1; }
 
-    <div class="parent-container my-4">
-      <!-- .............
-        COPY AND EDIT THE CODE BELOW TO YOUR INFO,,,
+  /* ── Team cards grid ── */
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 0 1rem 5rem;
+    max-width: 960px; margin: -36px auto 0;
+  }
 
-        YOUR CODE MUST BE INSIDE THE PARENT CONTAINER AS IT IS NOW
-        ............. -->
+  .team-card {
+    background: #fff; border-radius: 22px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 20px rgba(13,31,26,0.06);
+    padding: 28px 20px 22px;
+    text-align: center;
+    transition: transform .25s, box-shadow .25s;
+    opacity: 0;
+    animation: riseUp .6s cubic-bezier(.34,1.1,.64,1) forwards;
+  }
+  .team-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(13,31,26,0.12);
+  }
+  .team-card:hover .member-photo { animation: floatBob 2.5s ease-in-out infinite; }
 
-      
-      <div class="card-container mt-4">   <!--HIGHLIGHTING TO COPY SHOULD START FROM HERE-->
-        <div class="child-container">
-          <div class="image-container"><img src="https://github.com/engrmarkk.png" alt="Olanrewaju Image"></div>
-          <div class="name">Adeniyi Olanrewaju</div>
-          <small class="track text-muted d-flex justify-content-center"><i>Backend Developer</i></small>
-          <p class="email"><a href="mailto:adeniyiboladale@yahoo.com" target="_blank"><i class="fa-solid fa-envelope"></i> adeniyiboladale@yahoo.com</a></p>
+  /* ── Member photo ── */
+  .photo-wrap {
+    width: 80px; height: 80px; border-radius: 50%;
+    margin: 0 auto 14px; position: relative;
+    /* spinning gradient ring */
+  }
+  .photo-ring {
+    position: absolute; inset: -3px; border-radius: 50%;
+    background: linear-gradient(135deg, #1aa374, #2e8bb6, #1aa374);
+    background-size: 200%;
+  }
+  .photo-bg {
+    position: absolute; inset: 2px; border-radius: 50%; background: #fff; z-index: 1;
+  }
+  .member-photo {
+    position: absolute; inset: 4px; border-radius: 50%; overflow: hidden; z-index: 2;
+    background: #e2e8f0;
+  }
+  .member-photo img {
+    width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block;
+  }
 
-          <div class="social-media-icon">
-            <a href="https://twitter.com/iamengrmark" target="_blank"><i class="fa-brands fa-twitter"></i></a> 
-            <a href="https://www.linkedin.com/in/iamengrmark" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-            <a href="https://github.com/engrmarkk" target="_blank"><i class="fa-brands fa-github"></i></a>
-            <a href="https://wa.link/7filyo" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
-          </div>
-        </div>
-      </div>  <!--HIGHLIGHTING TO COPY SHOULD END HERE,,,PASTE THE COPIED CODE BELOW THIS LINE AND EDIT.......GIVE AT LEAST TWO FREE LINES BEFORE PASTING YOUR COPIED CODES BELOW THIS LINE-->
+  /* ── Role badge ── */
+  .role-badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  .role-backend  { background: rgba(26,163,116,0.1); color: #0c694c; border: 1px solid rgba(26,163,116,0.2); }
+  .role-frontend { background: rgba(46,139,182,0.1); color: #1a6f94; border: 1px solid rgba(46,139,182,0.2); }
+  .role-content  { background: rgba(245,158,11,0.1);  color: #92400e; border: 1px solid rgba(245,158,11,0.2); }
+  .role-design   { background: rgba(99,102,241,0.1);  color: #4338ca; border: 1px solid rgba(99,102,241,0.2); }
+
+  /* ── Email link ── */
+  .member-email {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+    color: #94a3b8; text-decoration: none; transition: color .2s;
+    margin: 8px 0 14px; word-break: break-all;
+  }
+  .member-email:hover { color: #1aa374; }
+
+  /* ── Social icons ── */
+  .social-row {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-top: 10px;
+  }
+  .social-link {
+    width: 32px; height: 32px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; font-size: 13px;
+    background: #f8fafc; border: 1px solid #f1f5f9;
+    color: #64748b; transition: all .2s;
+  }
+  .social-link:hover { transform: translateY(-2px); }
+  .social-link.twitter:hover  { background: #1da1f2; border-color: #1da1f2; color: #fff; }
+  .social-link.linkedin:hover { background: #0a66c2; border-color: #0a66c2; color: #fff; }
+  .social-link.github:hover   { background: #24292e; border-color: #24292e; color: #fff; }
+  .social-link.whatsapp:hover { background: #25d366; border-color: #25d366; color: #fff; }
+  .social-link.email:hover    { background: #ea4335; border-color: #ea4335; color: #fff; }
+
+  /* ── Divider ── */
+  .card-divider { height: 1px; background: #f1f5f9; margin: 12px 0; }
+</style>
+{% endblock head %}
 
 
-      <div class="card-container mt-4">   <!--HIGHLIGHTING TO COPY SHOULD START FROM HERE-->
-        <div class="child-container">
-          <div class="image-container"><img src="https://avatars.githubusercontent.com/u/78570858?v=4" alt="Noah Image"></div>
-          <div class="name">Noah Useghan</div>
-          <small class="track text-muted d-flex justify-content-center"><i>Backend Developer</i></small>
-          <p class="email"><a href="vnoah410@gmail.com" target="_blank"><i class="fa-solid fa-envelope"></i> vnoah410@gmail.com</a></p>
+{% block content %}
 
-          <div class="social-media-icon">
-            <a href="https://twitter.com/RedX_13" target="_blank"><i class="fa-brands fa-twitter"></i></a> 
-            <a href="https://www.linkedin.com/in/noah-useghan-44b37b221/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-            <a href="https://github.com/Unique-Red" target="_blank"><i class="fa-brands fa-github"></i></a>
-          </div>
-        </div>
+<!-- ══ HERO ══ -->
+<div class="team-hero rise rise-1">
+  <!-- Logo -->
+  {% if current_user.is_authenticated %}
+  <a href="{{ url_for('view.home') }}" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:24px;">
+  {% else %}
+  <a href="{{ url_for('view.front_page') }}" style="display:inline-flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:24px;">
+  {% endif %}
+    <img src="{{ url_for('static', filename='images/logo-white.png') }}" alt="EasyTransact" style="width:36px;height:36px;">
+    <span style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.1rem;color:#fff;">Easy<span style="color:#86efcc;">Transact</span></span>
+  </a>
+
+  <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:5px 14px;border-radius:20px;margin-bottom:14px;">
+    <i class="fas fa-users" style="color:rgba(255,255,255,.7);font-size:10px;"></i>
+    <span style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);text-transform:uppercase;letter-spacing:.08em;">Development Team</span>
+  </div>
+
+  <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:2rem;color:#fff;margin:0 0 10px;line-height:1.2;">Meet the people<br>behind EasyTransact</h1>
+  <p style="font-family:'DM Sans',sans-serif;font-size:14px;color:rgba(255,255,255,.6);max-width:420px;margin:0 auto;line-height:1.6;">A passionate team building the future of seamless financial transactions in Nigeria.</p>
+</div>
+
+<!-- ══ TEAM GRID ══ -->
+<div class="team-grid">
+
+  <!-- Adeniyi Olanrewaju -->
+  <div class="team-card" style="animation-delay:.10s;">
+    <div class="photo-wrap">
+      <div class="photo-ring"></div>
+      <div class="photo-bg"></div>
+      <div class="member-photo">
+        <img src="https://github.com/engrmarkk.png" alt="Adeniyi Olanrewaju">
       </div>
-      <div class="card-container mt-4">   <!--HIGHLIGHTING TO COPY SHOULD START FROM HERE-->
-        <div class="child-container">
-          <div class="image-container"><img src="https://avatars.githubusercontent.com/u/101014398?v=4" alt="Great's Image"></div>
-          <div class="name">Solomon Great</div>
-          <small class="track text-muted d-flex justify-content-center"><i>Frontend Developer</i></small>
-          <p class="email"><a href="vnoah410@gmail.com" target="_blank"><i class="fa-solid fa-envelope"></i> greatsoma2019@gmail.com</a></p>
-
-          <div class="social-media-icon">
-            <a href="https://twitter.com/B_lovedth" target="_blank"><i class="fa-brands fa-twitter"></i></a> 
-            <a href="https://www.linkedin.com/in/great-solomon-656397237/" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-            <a href="https://github.com/B-lovedth" target="_blank"><i class="fa-brands fa-github"></i></a>
-          </div>
-        </div>
-      </div>
-
-      <div class="card-container mt-4">   <!--HIGHLIGHTING TO COPY SHOULD START FROM HERE-->
-        <div class="child-container">
-          <div class="image-container"><img src="{{ url_for('static', filename='images/creator.jpg') }}" alt="Olanrewaju Image"></div>
-          <div class="name">Abolade Abdulrasheed</div>
-          <small class="track text-muted d-flex justify-content-center"><i>Content Creator</i></small>
-          <p class="email"><a href="mailto:adeniyiboladale@yahoo.com" target="_blank"><i class="fa-solid fa-envelope"></i> aboladerasheed137@gmail.com</a></p>
-
-          <div class="social-media-icon">
-            <a href="https://twitter.com/aboladeabdulra4" target="_blank"><i class="fa-brands fa-twitter"></i></a> 
-            <a href="https://www.linkedin.com/in/abdulrasheed-o-abolade-12b7311b2" target="_blank"><i class="fa-brands fa-linkedin"></i></a>
-            <a href="https://wa.link/jca3b5" target="_blank"><i class="fa-brands fa-whatsapp"></i></a>
-          </div>
-        </div>
-      </div> 
-
-
-
     </div>
+    <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:15px;color:#0d1f1a;margin:0 0 5px;">Adeniyi Olanrewaju</p>
+    <span class="role-badge role-backend"><i class="fas fa-server" style="font-size:8px;"></i> Backend Dev</span>
+    <div class="card-divider"></div>
+    <a href="mailto:adeniyiboladale@yahoo.com" class="member-email">
+      <i class="fas fa-envelope" style="font-size:10px;"></i>
+      adeniyiboladale@yahoo.com
+    </a>
+    <div class="social-row">
+      <a href="https://twitter.com/iamengrmark" target="_blank" class="social-link twitter">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="https://www.linkedin.com/in/iamengrmark" target="_blank" class="social-link linkedin">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
+      <a href="https://github.com/engrmarkk" target="_blank" class="social-link github">
+        <i class="fab fa-github"></i>
+      </a>
+      <a href="https://wa.link/7filyo" target="_blank" class="social-link whatsapp">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+    </div>
+  </div>
 
+  <!-- Noah Useghan -->
+  <div class="team-card" style="animation-delay:.19s;">
+    <div class="photo-wrap">
+      <div class="photo-ring"></div>
+      <div class="photo-bg"></div>
+      <div class="member-photo">
+        <img src="https://avatars.githubusercontent.com/u/78570858?v=4" alt="Noah Useghan">
+      </div>
+    </div>
+    <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:15px;color:#0d1f1a;margin:0 0 5px;">Noah Useghan</p>
+    <span class="role-badge role-backend"><i class="fas fa-server" style="font-size:8px;"></i> Backend Dev</span>
+    <div class="card-divider"></div>
+    <a href="mailto:vnoah410@gmail.com" class="member-email">
+      <i class="fas fa-envelope" style="font-size:10px;"></i>
+      vnoah410@gmail.com
+    </a>
+    <div class="social-row">
+      <a href="https://twitter.com/RedX_13" target="_blank" class="social-link twitter">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="https://www.linkedin.com/in/noah-useghan-44b37b221/" target="_blank" class="social-link linkedin">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
+      <a href="https://github.com/Unique-Red" target="_blank" class="social-link github">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+  </div>
 
-     <!-- BOOTSTRAP -->
+  <!-- Solomon Great -->
+  <div class="team-card" style="animation-delay:.28s;">
+    <div class="photo-wrap">
+      <div class="photo-ring" style="background:linear-gradient(135deg,#2e8bb6,#1aa374,#2e8bb6);background-size:200%;"></div>
+      <div class="photo-bg"></div>
+      <div class="member-photo">
+        <img src="https://avatars.githubusercontent.com/u/101014398?v=4" alt="Solomon Great">
+      </div>
+    </div>
+    <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:15px;color:#0d1f1a;margin:0 0 5px;">Solomon Great</p>
+    <span class="role-badge role-frontend"><i class="fas fa-code" style="font-size:8px;"></i> Frontend Dev</span>
+    <div class="card-divider"></div>
+    <a href="mailto:greatsoma2019@gmail.com" class="member-email">
+      <i class="fas fa-envelope" style="font-size:10px;"></i>
+      greatsoma2019@gmail.com
+    </a>
+    <div class="social-row">
+      <a href="https://twitter.com/B_lovedth" target="_blank" class="social-link twitter">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="https://www.linkedin.com/in/great-solomon-656397237/" target="_blank" class="social-link linkedin">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
+      <a href="https://github.com/B-lovedth" target="_blank" class="social-link github">
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+  </div>
 
-    <!-- Bootsrap popper -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
-      integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
-      crossorigin="anonymous"
-    ></script>
-  </body>
-</html>
+  <!-- Abolade Abdulrasheed -->
+  <div class="team-card" style="animation-delay:.37s;">
+    <div class="photo-wrap">
+      <div class="photo-ring" style="background:linear-gradient(135deg,#f59e0b,#f97316,#f59e0b);background-size:200%;"></div>
+      <div class="photo-bg"></div>
+      <div class="member-photo">
+        <img src="{{ url_for('static', filename='images/creator.jpg') }}" alt="Abolade Abdulrasheed">
+      </div>
+    </div>
+    <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:15px;color:#0d1f1a;margin:0 0 5px;">Abolade Abdulrasheed</p>
+    <span class="role-badge role-content"><i class="fas fa-pen-nib" style="font-size:8px;"></i> Content Creator</span>
+    <div class="card-divider"></div>
+    <a href="mailto:aboladerasheed137@gmail.com" class="member-email">
+      <i class="fas fa-envelope" style="font-size:10px;"></i>
+      aboladerasheed137@gmail.com
+    </a>
+    <div class="social-row">
+      <a href="https://twitter.com/aboladeabdulra4" target="_blank" class="social-link twitter">
+        <i class="fab fa-twitter"></i>
+      </a>
+      <a href="https://www.linkedin.com/in/abdulrasheed-o-abolade-12b7311b2" target="_blank" class="social-link linkedin">
+        <i class="fab fa-linkedin-in"></i>
+      </a>
+      <a href="https://wa.link/jca3b5" target="_blank" class="social-link whatsapp">
+        <i class="fab fa-whatsapp"></i>
+      </a>
+    </div>
+  </div>
+
+</div>
+
+{% endblock content %}

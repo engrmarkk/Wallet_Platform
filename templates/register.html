@@ -1,243 +1,546 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-<meta charset="UTF-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Lobster&family=Quicksand:wght@400;700&family=Sora&display=swap" rel="stylesheet">
-<link rel='stylesheet' href="{{ url_for('static', filename='css/customStyle.css') }}"/>
-<link
-  href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-  rel="stylesheet"
-  integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-  crossorigin="anonymous"
-/>
+{% extends 'base.html' %}
 
-      <!-- Load Bootstrap -->
-<link
-  rel="stylesheet"
-  href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
-  integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I"
-  crossorigin="anonymous"
-/>
-<script
-  src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-  integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-  crossorigin="anonymous"
-></script>
-<script
-  src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
-  integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
-  crossorigin="anonymous"
-></script>
-<link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/customStyle.css') }}"
-    />
-    <script
-    type="text/javascript"
-    src="{{ url_for('static', filename='javascript/jquery-3.6.1.min.js') }}"
-  ></script>
+{% block title %}Create Account — EasyTransact{% endblock title %}
 
-  <!-- Js -->
+{% block head %}
+<style>
+  /* Hide navbar/footer for auth pages */
+  #navbar, footer, #dark-mode-toggle, #scroll-top { display: none !important; }
+  body { background: #f7faf8 !important; }
+  .page-content { padding-top: 0 !important; }
 
-<!--  <script-->
-<!--    src="{{ url_for('static', filename='javascript/script.js') }}"-->
-<!--    defer-->
-<!--  ></script>-->
-  <link
-      rel="icon"
-      href="{{ url_for('static', filename='images/logo-normal.png') }}"
-    />
-<title>Sign Up</title>
-</head>
-<body>
+  /* Page background */
+  .auth-bg {
+    min-height: 100vh;
+    background-color: #f7faf8;
+    background-image:
+      radial-gradient(ellipse 60% 55% at 95% 30%, rgba(26,163,116,0.09) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 45% at 5%  70%, rgba(46,139,182,0.07) 0%, transparent 58%),
+      radial-gradient(ellipse 40% 40% at 50% 100%,rgba(12,105,76,0.06) 0%, transparent 55%);
+  }
 
-<div class ='signup-container' style="height: fit-content;">
-  <a href="{{ url_for('view.front_page') }}" class="navbar-brand">
-    <img
-      src="{{ url_for('static', filename='images/logo-white.png') }}"
-      alt="company's logo"
-      style="width: 3rem"
-    />
-    <span>&nbsp;Easy<span class="text-green">Transact</span></span>
-  </a>
-<div class="d-flex signup-wrapper">
-<form
-  action=""
-  method="post"
-  class="mt-5"
->
+  /* Subtle dot grid */
+  .auth-bg::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none;
+    background-image: radial-gradient(circle, rgba(13,31,26,0.055) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
 
- <!-- Flash messages -->
- {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %}
-    <div
-      class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
-      role="alert"
-      style="height: 3.5rem; transition: 0.6s"
-    >
-    {% if category=='success' %}
-      <div class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-      {% else %}
-      <div class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-      {% endif %}
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
+  /* Blobs */
+  @keyframes morph {
+    0%,100% { border-radius: 60% 40% 70% 30% / 50% 60% 40% 70%; }
+    33%      { border-radius: 40% 60% 30% 70% / 60% 40% 70% 30%; }
+    66%      { border-radius: 70% 30% 50% 50% / 40% 70% 30% 60%; }
+  }
+  .blob-auth {
+    position: fixed; pointer-events: none;
+    animation: morph 14s ease-in-out infinite;
+    filter: blur(55px); z-index: 0;
+  }
+
+  /* Card entrance */
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(24px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)    scale(1);    }
+  }
+  .auth-card { animation: cardIn .65s cubic-bezier(.34,1.2,.64,1) forwards; }
+
+  /* Inputs */
+  .et-input {
+    width: 100%;
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 11px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: #0d1f1a;
+    outline: none;
+    transition: border-color .25s, box-shadow .25s, background .2s;
+  }
+  .et-input::placeholder { color: #94a3b8; }
+  .et-input:focus {
+    border-color: #1aa374;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(26,163,116,0.10);
+  }
+  .et-input.error {
+    border-color: #f87171;
+    background: #fff5f5;
+  }
+  .et-input.error:focus { box-shadow: 0 0 0 4px rgba(248,113,113,0.10); }
+
+  /* Field label */
+  .field-label {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 6px;
+  }
+
+  /* Password toggle */
+  .pw-wrap { position: relative; }
+  .pw-toggle {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    color: #94a3b8; cursor: pointer; font-size: 13px;
+    transition: color .2s; background: none; border: none; padding: 0;
+  }
+  .pw-toggle:hover { color: #475569; }
+
+  /* Submit button */
+  .submit-btn {
+    width: 100%; padding: 13px;
+    border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #1aa374, #2e8bb6);
+    color: #fff;
+    font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 15px;
+    cursor: pointer; position: relative; overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 8px 25px rgba(26,163,116,0.30);
+  }
+  .submit-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, #0c694c, #1a6f94);
+    opacity: 0; transition: opacity .3s;
+  }
+  .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 35px rgba(26,163,116,0.40); }
+  .submit-btn:hover::before { opacity: 1; }
+  .submit-btn span { position: relative; z-index: 1; display: flex; align-items: center; justify-content: center; gap: 8px; }
+
+  /* Flash inline */
+  .flash-inline {
+    border-radius: 10px; padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+  }
+  .flash-success { background: rgba(26,163,116,0.10); border: 1px solid rgba(26,163,116,0.25); color: #0c694c; }
+  .flash-error   { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.2); color: #dc2626; }
+
+  /* Step indicator */
+  .step-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #e2e8f0; transition: background .3s, transform .3s;
+  }
+  .step-dot.active { background: #1aa374; transform: scale(1.3); }
+  .step-dot.done   { background: #0c694c; }
+
+  /* Left panel */
+  .left-panel {
+    background: linear-gradient(160deg, #0c694c 0%, #0a4534 50%, #071a12 100%);
+    position: relative; overflow: hidden;
+  }
+  .left-panel::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: radial-gradient(circle at 30% 40%, rgba(26,163,116,0.28) 0%, transparent 55%),
+                      radial-gradient(circle at 75% 75%, rgba(46,139,182,0.18) 0%, transparent 50%);
+  }
+  .left-panel::after {
+    content: ''; position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 36px 36px;
+  }
+
+  /* Benefit item */
+  .benefit {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 16px; border-radius: 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.09);
+    transition: background .2s;
+  }
+  .benefit:hover { background: rgba(255,255,255,0.1); }
+
+  /* Strength bar */
+  .strength-track {
+    height: 4px; border-radius: 2px; background: #e2e8f0;
+    overflow: hidden; margin-top: 8px;
+  }
+  .strength-fill {
+    height: 100%; border-radius: 2px;
+    transition: width .4s ease, background .4s ease;
+    width: 0;
+  }
+
+  /* Scrollbar (right panel) */
+  .right-panel::-webkit-scrollbar { width: 4px; }
+  .right-panel::-webkit-scrollbar-thumb { background: #d0f4e4; border-radius: 2px; }
+</style>
+{% endblock head %}
+
+
+{% block content %}
+<div class="auth-bg w-full relative">
+
+  <!-- Background blobs -->
+  <div class="blob-auth w-80 h-80 opacity-25 top-0 right-0" style="background:radial-gradient(circle,rgba(26,163,116,0.35),transparent 70%);"></div>
+  <div class="blob-auth w-72 h-72 opacity-20 bottom-0 left-0" style="background:radial-gradient(circle,rgba(46,139,182,0.3),transparent 70%);animation-direction:reverse;animation-duration:18s;"></div>
+
+  <div class="min-h-screen flex">
+
+    <!-- ═══════════════════════════════
+         LEFT PANEL — brand / benefits
+    ═══════════════════════════════ -->
+    <div class="left-panel hidden lg:flex flex-col justify-between w-[42%] xl:w-[38%] p-12 xl:p-14 flex-shrink-0">
+      <div class="relative z-10">
+        <!-- Logo -->
+        <a href="{{ url_for('view.front_page') }}" class="inline-flex items-center gap-2.5 mb-14">
+          <div class="w-9 h-9 rounded-xl flex items-center justify-center shadow-lg" style="background:linear-gradient(135deg,#1aa374,#2e8bb6);">
+            <i class="fas fa-bolt text-white text-sm"></i>
+          </div>
+          <span class="font-display font-black text-xl text-white">Easy<span class="text-brand-300">Transact</span></span>
+        </a>
+
+        <h2 class="font-display font-black text-white leading-tight mb-3" style="font-size:clamp(1.8rem,2.5vw,2.6rem);">
+          Start your journey<br>
+          <span class="text-brand-300 font-serif italic">to financial freedom.</span>
+        </h2>
+        <p class="font-body text-sm text-brand-200/60 leading-relaxed mb-10 max-w-xs">
+          Join over 50,000 Nigerians already managing their money smarter with EasyTransact.
+        </p>
+
+        <!-- Benefits -->
+        <div class="space-y-3">
+          {% for icon, title, desc in [
+            ('piggy-bank',   'Smart Savings',        'Automate goals and earn up to 15% interest'),
+            ('paper-plane',  'Instant Transfers',     'Send to any bank in Nigeria — zero fees'),
+            ('file-invoice', 'One-tap Bill Payments', 'Airtime, electricity, data and more'),
+            ('chart-line',   'Invest & Grow',         'Put your money to work with our plans'),
+          ] %}
+          <div class="benefit">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 mt-0.5" style="background:rgba(26,163,116,0.2);">
+              <i class="fas fa-{{ icon }} text-brand-300 text-sm"></i>
+            </div>
+            <div>
+              <p class="font-body font-semibold text-sm text-white">{{ title }}</p>
+              <p class="font-body text-xs text-brand-200/50 mt-0.5">{{ desc }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <!-- Bottom trust -->
+      <div class="relative z-10">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="flex -space-x-2">
+            {% for letter, color in [('A','#1aa374'),('K','#2e8bb6'),('O','#0c694c'),('N','#38bc8d')] %}
+            <div class="w-7 h-7 rounded-full border-2 border-white/20 flex items-center justify-center text-white text-[10px] font-bold font-display" style="background:{{ color }};">{{ letter }}</div>
+            {% endfor %}
+          </div>
+          <p class="font-body text-xs text-brand-200/60"><strong class="text-white">50,000+</strong> members and growing</p>
+        </div>
+        <div class="flex gap-4">
+          {% for icon, label in [('shield-alt','CBN Licensed'),('lock','SSL Secured'),('award','PCI DSS')] %}
+          <div class="flex items-center gap-1.5 text-brand-200/40">
+            <i class="fas fa-{{ icon }} text-[10px]"></i>
+            <span class="font-body text-[10px]">{{ label }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        <p class="font-body text-xs text-brand-200/30 mt-4">© {{ date.year }} EasyTransact. All rights reserved.</p>
+      </div>
     </div>
-    {% endfor %} {% endif %} {% endwith %}
 
 
-  <p class="signup-header h3">Create an EasyTransact account</p>
-  <p class="text-muted">To register, please provide a valid details</p>
-  {{ form.hidden_tag() }}
+    <!-- ═══════════════════════════════
+         RIGHT PANEL — Form
+    ═══════════════════════════════ -->
+    <div class="right-panel flex-1 overflow-y-auto flex flex-col items-center justify-start px-5 py-10 relative z-10 bg-cream">
 
-  <!-- For First name validations -->
-  {{ form.first_name.label(class='label text-muted fw-bold mt-4   mb-2') }}
+      <!-- Mobile logo -->
+      <a href="{{ url_for('view.front_page') }}" class="lg:hidden inline-flex items-center gap-2 mb-8">
+        <div class="w-8 h-8 rounded-xl flex items-center justify-center shadow" style="background:linear-gradient(135deg,#1aa374,#2e8bb6);">
+          <i class="fas fa-bolt text-white text-xs"></i>
+        </div>
+        <span class="font-display font-black text-lg text-ink">Easy<span class="text-brand-600">Transact</span></span>
+      </a>
 
-  {% if form.first_name.errors %} {{ form.first_name(class="form-control p-2",
-  required=False, placeholder="Enter First Name") }} {% for error in
-  form.first_name.errors %}
-  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
-  {% endfor %} {% else %} {{ form.first_name(class="form-control p-2",
-  required=False, placeholder="Enter First Name") }} {% endif %}
+      <div class="auth-card w-full max-w-lg bg-white rounded-3xl p-8 shadow-xl border border-slate-100 mb-8">
 
+        <!-- Header -->
+        <div class="mb-7">
+          <div class="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 rounded-full px-3 py-1 mb-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+            <span class="font-body text-xs font-semibold text-brand-700">Free forever — no hidden fees</span>
+          </div>
+          <h1 class="font-display font-black text-ink text-3xl mb-1">Create account</h1>
+          <p class="font-body text-sm text-slate-400">Fill in your details to get started in minutes</p>
+        </div>
 
-    <!-- For Last name validations -->
-    {{ form.last_name.label(class='label text-muted fw-bold mt-4   mb-2') }}
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-inline {% if category == 'success' %}flash-success{% else %}flash-error{% endif %}">
+                <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %} text-sm flex-shrink-0"></i>
+                <span>{{ message }}</span>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
 
-    {% if form.last_name.errors %} {{ form.last_name(class="form-control p-2",
-    required=False, placeholder="Enter Last Name") }} {% for error in
-    form.last_name.errors %}
-    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
-    {% endfor %} {% else %} {{ form.last_name(class="form-control p-2",
-    required=False, placeholder="Enter Last Name") }} {% endif %}
+        <form action="" method="post" class="space-y-4" id="register-form">
+          {{ form.hidden_tag() }}
 
-  <!-- For Emails validations -->
-  {{ form.email.label(class='label text-muted fw-bold mt-4   mb-2') }}
+          <!-- Row: First + Last name -->
+          <div class="grid grid-cols-2 gap-3">
+            <!-- First Name -->
+            <div>
+              <label class="field-label">First Name</label>
+              {% if form.first_name.errors %}
+                {{ form.first_name(class="et-input error", required=False, placeholder="Adaeze") }}
+                {% for error in form.first_name.errors %}
+                  <p class="font-body text-xs text-red-500 mt-1 flex items-center gap-1">
+                    <i class="fas fa-exclamation-circle text-[9px]"></i>{{ error }}
+                  </p>
+                {% endfor %}
+              {% else %}
+                {{ form.first_name(class="et-input", required=False, placeholder="Adaeze") }}
+              {% endif %}
+            </div>
 
-  {% if form.email.errors %} {{ form.email(class="form-control p-2",
-  required=False, placeholder="Enter email") }} {% for error in
-  form.email.errors %}
-  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
-  {% endfor %} {% else %} {{ form.email(class="form-control p-2",
-  required=False, placeholder="Enter email") }} {% endif %}
+            <!-- Last Name -->
+            <div>
+              <label class="field-label">Last Name</label>
+              {% if form.last_name.errors %}
+                {{ form.last_name(class="et-input error", required=False, placeholder="Okonkwo") }}
+                {% for error in form.last_name.errors %}
+                  <p class="font-body text-xs text-red-500 mt-1 flex items-center gap-1">
+                    <i class="fas fa-exclamation-circle text-[9px]"></i>{{ error }}
+                  </p>
+                {% endfor %}
+              {% else %}
+                {{ form.last_name(class="et-input", required=False, placeholder="Okonkwo") }}
+              {% endif %}
+            </div>
+          </div>
 
+          <!-- Email -->
+          <div>
+            <label class="field-label">Email Address</label>
+            {% if form.email.errors %}
+              {{ form.email(class="et-input error", required=False, placeholder="adaeze@email.com") }}
+              {% for error in form.email.errors %}
+                <p class="font-body text-xs text-red-500 mt-1 flex items-center gap-1">
+                  <i class="fas fa-exclamation-circle text-[9px]"></i>{{ error }}
+                </p>
+              {% endfor %}
+            {% else %}
+              {{ form.email(class="et-input", required=False, placeholder="adaeze@email.com") }}
+            {% endif %}
+          </div>
 
-    <!-- For Phone number validations -->
-    {{ form.phone_number.label(class='label text-muted fw-bold mt-4   mb-2') }}
+          <!-- Row: Phone + Username -->
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Phone Number -->
+            <div>
+              <label class="field-label">Phone Number</label>
+              {% if form.phone_number.errors %}
+                {{ form.phone_number(class="et-input error", required=False, placeholder="0801 234 5678") }}
+                {% for error in form.phone_number.errors %}
+                  <p class="font-body text-xs text-red-500 mt-1 flex items-center gap-1">
+                    <i class="fas fa-exclamation-circle text-[9px]"></i>{{ error }}
+                  </p>
+                {% endfor %}
+              {% else %}
+                {{ form.phone_number(class="et-input", required=False, placeholder="0801 234 5678") }}
+              {% endif %}
+            </div>
 
-    {% if form.phone_number.errors %} {{ form.phone_number(class="form-control p-2",
-    required=False, placeholder="Enter Phone Number (080 xxxxxxx)") }} {% for error in
-    form.phone_number.errors %}
-    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
-    {% endfor %} {% else %} {{ form.phone_number(class="form-control p-2",
-    required=False, placeholder="Enter Phone Number (080X XXX XXXX)") }} {% endif %}
+            <!-- Username -->
+            <div>
+              <label class="field-label">Username</label>
+              {% if form.username.errors %}
+                {{ form.username(class="et-input error", required=False, placeholder="adaeze_o") }}
+                {% for error in form.username.errors %}
+                  <p class="font-body text-xs text-red-500 mt-1 flex items-center gap-1">
+                    <i class="fas fa-exclamation-circle text-[9px]"></i>{{ error }}
+                  </p>
+                {% endfor %}
+              {% else %}
+                {{ form.username(class="et-input", required=False, placeholder="adaeze_o") }}
+              {% endif %}
+            </div>
+          </div>
 
+          <!-- Invited by (referral) -->
+          <div>
+            <label class="field-label">
+              Referral / Invitation Code
+              <span class="normal-case text-slate-400 font-normal ml-1">(optional)</span>
+            </label>
+            {% if form.invited_by.errors %}
+              {{ form.invited_by(class="et-input error", required=False, placeholder="e.g. ET-ABC123") }}
+              {% for error in form.invited_by.errors %}
+                <p class="font-body text-xs text-red-500 mt-1 flex items-center gap-1">
+                  <i class="fas fa-exclamation-circle text-[9px]"></i>{{ error }}
+                </p>
+              {% endfor %}
+            {% else %}
+              {{ form.invited_by(class="et-input", required=False, placeholder="e.g. ET-ABC123") }}
+            {% endif %}
+          </div>
 
-          <!-- For Invited validations -->
-    {{ form.invited_by.label(class='label text-muted fw-bold mt-4   mb-2') }}
+          <!-- Password -->
+          <div>
+            <label class="field-label">Password</label>
+            <div class="pw-wrap">
+              {% if form.password.errors %}
+                {{ form.password(class="et-input error pr-10", required=False, placeholder="Min. 8 characters", id="pw-input") }}
+                {% for error in form.password.errors %}
+                  <p class="font-body text-xs text-red-500 mt-1 flex items-center gap-1">
+                    <i class="fas fa-exclamation-circle text-[9px]"></i>{{ error }}
+                  </p>
+                {% endfor %}
+              {% else %}
+                {{ form.password(class="et-input pr-10", required=False, placeholder="Min. 8 characters", id="pw-input") }}
+              {% endif %}
+              <button type="button" class="pw-toggle" id="pw-toggle-1" tabindex="-1">
+                <i class="fas fa-eye" id="pw-icon-1"></i>
+              </button>
+            </div>
+            <!-- Strength bar -->
+            <div class="strength-track">
+              <div class="strength-fill" id="strength-fill"></div>
+            </div>
+            <p class="font-body text-[10px] text-slate-400 mt-1" id="strength-label"></p>
+          </div>
 
-    {% if form.invited_by.errors %} {{ form.invited_by(class="form-control p-2",
-    required=False, placeholder="Enter Invitation code") }} {% for error in
-    form.invited_by.errors %}
-    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
-    {% endfor %} {% else %} {{ form.invited_by(class="form-control p-2",
-    required=False, placeholder="Enter Invitation code") }} {% endif %}
+          <!-- Confirm Password -->
+          <div>
+            <label class="field-label">Confirm Password</label>
+            <div class="pw-wrap">
+              {% if form.confirm_password.errors %}
+                {{ form.confirm_password(class="et-input error pr-10", required=False, placeholder="Repeat your password", id="cpw-input") }}
+                {% for error in form.confirm_password.errors %}
+                  <p class="font-body text-xs text-red-500 mt-1 flex items-center gap-1">
+                    <i class="fas fa-exclamation-circle text-[9px]"></i>{{ error }}
+                  </p>
+                {% endfor %}
+              {% else %}
+                {{ form.confirm_password(class="et-input pr-10", required=False, placeholder="Repeat your password", id="cpw-input") }}
+              {% endif %}
+              <button type="button" class="pw-toggle" id="pw-toggle-2" tabindex="-1">
+                <i class="fas fa-eye" id="pw-icon-2"></i>
+              </button>
+            </div>
+            <p class="font-body text-[10px] mt-1" id="match-label"></p>
+          </div>
 
+          <!-- Terms -->
+          <div class="flex items-start gap-3 pt-1">
+            <button type="button" id="terms-btn" onclick="toggleTerms()"
+              class="w-5 h-5 rounded-[6px] border border-slate-300 bg-slate-50 flex items-center justify-center transition-all flex-shrink-0 mt-0.5"
+              style="transition:background .2s,border-color .2s;">
+              <i class="fas fa-check text-[9px] text-white opacity-0" id="terms-check"></i>
+            </button>
+            <input type="checkbox" id="terms-input" class="hidden">
+            <label for="terms-btn" class="font-body text-xs text-slate-500 cursor-pointer leading-relaxed">
+              I agree to the
+              <a href="#" class="text-brand-600 font-semibold hover:underline">Terms of Service</a>
+              and
+              <a href="#" class="text-brand-600 font-semibold hover:underline">Privacy Policy</a>
+            </label>
+          </div>
 
-    <!-- For Username validations -->
-    {{ form.username.label(class='label text-muted fw-bold mt-4   mb-2') }}
+          <!-- Submit -->
+          {{ form.submit(class="submit-btn mt-2", value="Create My Account") }}
 
-    {% if form.username.errors %} {{ form.username(class="form-control p-2",
-    required=False, placeholder="Enter Userame") }} {% for error in
-    form.username.errors %}
-    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
-    {% endfor %} {% else %} {{ form.username(class="form-control p-2",
-    required=False, placeholder="Enter Username") }} {% endif %}
+          <p class="font-body text-xs text-center text-slate-400 pt-1">
+            Already have an account?
+            <a href="{{ url_for('auth.login') }}" class="text-brand-600 hover:text-brand-700 font-semibold transition-colors ml-1">
+              Sign in →
+            </a>
+          </p>
+        </form>
 
+      </div><!-- /auth-card -->
+    </div><!-- /right-panel -->
 
-  <!-- For password validations -->
-  {{ form.password.label(class='label text-muted fw-bold mt-4   mb-2') }}
-
-  {% if form.password.errors %} {{ form.password(class="form-control p-2
-   ", required=False, placeholder='Enter password') }} {% for error in
-  form.password.errors %}
-  <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
-  {% endfor %} {% else %} {{ form.password(class="form-control p-2  ",
-  required=False, placeholder='Enter password') }} {% endif %}
-
-
-    <!-- For Confrim password validations -->
-    {{ form.confirm_password.label(class='label text-muted fw-bold mt-4   mb-2') }}
-
-    {% if form.confirm_password.errors %} {{ form.confirm_password(class="form-control p-2
-     ", required=False, placeholder='Confirm password') }} {% for error in
-    form.confirm_password.errors %}
-    <small class="text-danger mt-1"><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error }}</small><br>
-    {% endfor %} {% else %} {{ form.confirm_password(class="form-control p-2  ",
-    required=False, placeholder='Confirm password') }} {% endif %}
-
-
-  <!-- For submit button -->
-  {{ form.submit(size=20, class='btn btn-success mt-4 ')}}
-
-  <p style="color: black; margin-top: 1rem" class="text-muted  small login-txt">
-    Have an account?
-    <a
-      class="login"
-      style="text-decoration: none; font-weight: 700"
-      href="{{ url_for('auth.login') }}"
-      >Login</a
-    > to access your account
-  </p>
-</form>
-
-  {% if alert %}
-<div class="toast align-items-center show fade text-white {% if bg_color %} bg-{{bg_color}} {% else %} bg-info {% endif %} border-0 position-fixed top-0 end-0" role="alert"
-data-bs-autohide="true" aria-live="polite" aria-atomic="true" data-bs-animation="true" style="z-index: 99; margin-top: 5rem; transform: translateX(100%); transition: transform 4s ease-in-out;">
-<div class="d-flex">
-  <div class="toast-body" style="font-size: 1rem;">
-    {{alert}}
   </div>
-  <!-- <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button> -->
 </div>
-</div>
-{% endif %}
-</div>
-</div>
-
- <script>
-    var myToast = new bootstrap.Toast(document.querySelector('.toast'));
-
-    document.querySelector('.toast').style.transform = 'translateX(-0%)';
-
-    setTimeout(function() {
-        // fade the toast away
-        document.querySelector('.toast').style.transition = '4s ease-in-out';
-        myToast.hide();
-    }, 2000);
-    </script>
+{% endblock content %}
 
 
-<!-- BOOTSTRAP -->
+{% block scripts %}
+<script>
+  // ── Password visibility toggles
+  function makeToggle(btnId, iconId, inputId) {
+    const btn   = document.getElementById(btnId);
+    const icon  = document.getElementById(iconId);
+    const input = document.getElementById(inputId);
+    if (!btn || !input) return;
+    btn.addEventListener('click', () => {
+      const show = input.type === 'password';
+      input.type = show ? 'text' : 'password';
+      icon.className = show ? 'fas fa-eye-slash' : 'fas fa-eye';
+    });
+  }
+  makeToggle('pw-toggle-1', 'pw-icon-1', 'pw-input');
+  makeToggle('pw-toggle-2', 'pw-icon-2', 'cpw-input');
 
-<!-- Bootsrap popper -->
-<script
-  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-  integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-  crossorigin="anonymous"
-></script>
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
-  integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
-  crossorigin="anonymous"
-></script>
-</body>
-</html>
+  // ── Password strength meter
+  const pwInput      = document.getElementById('pw-input');
+  const strengthFill = document.getElementById('strength-fill');
+  const strengthLbl  = document.getElementById('strength-label');
+  const levels = [
+    { w:'20%', bg:'#ef4444', label:'Too weak'  },
+    { w:'45%', bg:'#f97316', label:'Weak'      },
+    { w:'65%', bg:'#eab308', label:'Fair'      },
+    { w:'85%', bg:'#22c55e', label:'Strong'    },
+    { w:'100%',bg:'#1aa374', label:'Very strong'},
+  ];
+  function scorePassword(pw) {
+    let score = 0;
+    if (pw.length >= 8)  score++;
+    if (pw.length >= 12) score++;
+    if (/[A-Z]/.test(pw)) score++;
+    if (/[0-9]/.test(pw)) score++;
+    if (/[^A-Za-z0-9]/.test(pw)) score++;
+    return Math.min(score, 4);
+  }
+  if (pwInput) {
+    pwInput.addEventListener('input', () => {
+      const val = pwInput.value;
+      if (!val) { strengthFill.style.width = '0'; strengthLbl.textContent = ''; return; }
+      const s = scorePassword(val);
+      strengthFill.style.width      = levels[s].w;
+      strengthFill.style.background = levels[s].bg;
+      strengthLbl.textContent       = levels[s].label;
+      strengthLbl.style.color       = levels[s].bg;
+    });
+  }
+
+  // ── Password match indicator
+  const cpwInput  = document.getElementById('cpw-input');
+  const matchLbl  = document.getElementById('match-label');
+  function checkMatch() {
+    if (!cpwInput || !pwInput || !cpwInput.value) { matchLbl.textContent = ''; return; }
+    const match = pwInput.value === cpwInput.value;
+    matchLbl.textContent  = match ? '✓ Passwords match' : '✗ Passwords do not match';
+    matchLbl.style.color  = match ? '#1aa374' : '#ef4444';
+    cpwInput.style.borderColor = match ? '#1aa374' : '#f87171';
+  }
+  if (cpwInput) cpwInput.addEventListener('input', checkMatch);
+  if (pwInput)  pwInput.addEventListener('input', checkMatch);
+
+  // ── Terms checkbox toggle
+  let termsAccepted = false;
+  function toggleTerms() {
+    termsAccepted = !termsAccepted;
+    const btn   = document.getElementById('terms-btn');
+    const check = document.getElementById('terms-check');
+    const inp   = document.getElementById('terms-input');
+    btn.style.background  = termsAccepted ? '#1aa374' : '#f8fafc';
+    btn.style.borderColor = termsAccepted ? '#1aa374' : '#cbd5e1';
+    check.style.opacity   = termsAccepted ? '1' : '0';
+    if (inp) inp.checked  = termsAccepted;
+  }
+</script>
+{% endblock scripts %}

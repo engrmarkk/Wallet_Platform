@@ -1,63 +1,468 @@
 {% extends 'base.html' %}
 
+{% block title %}Transaction Details — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise   { opacity: 0; animation: riseUp .55s ease forwards; }
+  .rise-1 { animation-delay: .05s; }
+  .rise-2 { animation-delay: .13s; }
+  .rise-3 { animation-delay: .21s; }
+
+  .dash-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 16px rgba(13,31,26,0.05);
+  }
+
+  /* ── Amount hero ── */
+  .amount-hero {
+    position: relative; overflow: hidden;
+    border-radius: 20px;
+  }
+  .amount-hero.debit {
+    background: linear-gradient(135deg, #7f1d1d, #991b1b, #b45309);
+  }
+  .amount-hero.credit {
+    background: linear-gradient(135deg, #0c694c, #164e49, #1a6f94);
+  }
+  .amount-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.07) 0%, transparent 50%);
+  }
+  .amount-hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .amount-hero > * { position: relative; z-index: 1; }
+
+  /* Shimmer */
+  @keyframes shimmer { 0%{left:-60%} 100%{left:160%} }
+  .hero-shimmer {
+    position: absolute; top: 0; left: -60%; width: 35%; height: 100%;
+    background: linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);
+    transform: skewX(-15deg);
+    animation: shimmer 4s infinite; z-index: 2;
+  }
+
+  /* ── Detail row ── */
+  .detail-row {
+    display: flex; align-items: flex-start;
+    padding: 13px 0;
+    border-bottom: 1px solid #f8fafc;
+    gap: 12px;
+  }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 1px;
+  }
+  .detail-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 600;
+    color: #94a3b8; text-transform: uppercase;
+    letter-spacing: .06em; margin-bottom: 2px;
+  }
+  .detail-value {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500; color: #0d1f1a;
+    word-break: break-all;
+  }
+
+  /* ── Status badge ── */
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 700;
+    padding: 5px 12px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  .s-success  { background: #dcfce7; color: #166534; }
+  .s-pending  { background: #fef9c3; color: #854d0e; }
+  .s-failed   { background: #fee2e2; color: #991b1b; }
+  .s-refunded { background: #dbeafe; color: #1e40af; }
+
+  /* ── Type badge ── */
+  .type-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px; font-weight: 700;
+    padding: 5px 12px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  .t-debit  { background: rgba(239,68,68,0.1);  color: #dc2626; }
+  .t-credit { background: rgba(26,163,116,0.1); color: #0c694c; }
+
+  /* ── Masked account ── */
+  .masked-acct {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-weight: 700; letter-spacing: .05em;
+  }
+
+  /* ── Back button ── */
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: #64748b; text-decoration: none;
+    padding: 8px 14px; border-radius: 10px;
+    border: 1.5px solid #e2e8f0; background: #fff;
+    transition: all .2s;
+  }
+  .back-btn:hover {
+    background: #f1f5f9; border-color: #cbd5e1; color: #0d1f1a;
+    transform: translateX(-2px);
+  }
+
+  /* ── Download / share btn ── */
+  .action-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: #0c694c; text-decoration: none;
+    padding: 8px 16px; border-radius: 10px;
+    border: 1.5px solid rgba(26,163,116,0.25);
+    background: rgba(26,163,116,0.06);
+    transition: all .2s; cursor: pointer;
+  }
+  .action-btn:hover {
+    background: rgba(26,163,116,0.12);
+    border-color: rgba(26,163,116,0.4);
+    color: #0c694c;
+  }
+
+  /* ── Section divider ── */
+  .section-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 4px 0 2px;
+  }
+  .section-divider span {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 700;
+    color: #94a3b8; text-transform: uppercase;
+    letter-spacing: .08em; white-space: nowrap;
+  }
+  .section-divider::before, .section-divider::after {
+    content: ''; flex: 1; height: 1px; background: #f1f5f9;
+  }
+
+  /* Token copy */
+  .copy-token {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'Cabinet Grotesk', sans-serif; font-weight: 700;
+    font-size: 15px; letter-spacing: .08em; color: #0c694c;
+    background: rgba(26,163,116,0.08); border: 1px solid rgba(26,163,116,0.2);
+    padding: 6px 14px; border-radius: 10px; cursor: pointer;
+    transition: background .2s;
+  }
+  .copy-token:hover { background: rgba(26,163,116,0.15); }
+</style>
+{% endblock head %}
+
+
 {% block content %}
+{% set is_debit = trans.transaction_type == 'DBT' %}
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 offset-md-2">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="card-title">Transaction Details</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <!-- <p><strong style="color: #4caf50;">Transaction ID:</strong> {{ trans.id }}</p> -->
-                            <p class="{% if trans.transaction_type == 'CRT' %}text-success{% else %}text-danger{% endif %}"><strong style="color: #007bff;">Type:</strong> {% if trans.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}</p>
-                            <p><strong style="color: #4caf50;">Date:</strong> {{ trans.date_posted.strftime("%Y-%m-%d %H:%M:%S") }}</p>
-                            <p><strong style="color: #4caf50;">Amount:</strong> <del style="text-decoration-style: double;">N</del>{{ "{:,.2f}".format(trans.transaction_amount) }}</p>
-                        </div>
-                        <div class="col-md-6">
-                            <p><strong style="color: #4caf50;">Balance:</strong> <del style="text-decoration-style: double;">N</del>{{ "{:,.2f}".format(trans.balance) }}</p>
-                            <p><strong style="color: #4caf50;">Reference:</strong> {{ trans.transaction_ref }}</p>
-                            <p><strong style="color: #4caf50;">Category:</strong> {{ trans.trans_category.category }}</p>
-                            <!-- Add more fields as needed -->
-                        </div>
-                    </div>
-                    <hr>
-                    <p><strong style="color: #4caf50;">Description:</strong> {{ trans.description }}</p>
-                    <p><strong style="color: #4caf50;">Status:</strong> <span class="badge {% if trans.status == 'Success' %}bg-success{% elif trans.status == 'Failed' %}text-danger{% elif trans.status == 'Pending' %}bg-warning{% elif trans.status == 'Refunded' %}bg-info{% endif %}"> {{ trans.status }} </span></p>
-                    {% if trans.phone_number %}
-                    <p><strong style="color: #4caf50;">Phone Number:</strong> {{ trans.phone_number }}</p>
-                    {% endif %}
-                    {% if trans.sender %}
-                    <p><strong style="color: #4caf50;">Sender:</strong> {{ trans.sender }}</p>
-                    {% endif %}
-                    {% if trans.receiver %}
-                    <p><strong style="color: #4caf50;">Receiver:</strong> {{ trans.receiver }}</p>
-                    {% endif %}
-                    {% if trans.customer_name %}
-                    <p><strong style="color: #4caf50;">Customer name:</strong> {{ trans.customer_name }}</p>
-                    {% endif %}
-                    {% if trans.token %}
-                    <p><strong style="color: #4caf50;">Token:</strong> {{ trans.token }}</p>
-                    {% endif %}
-                    {% if trans.sender_account %}
-                    <p><strong style="color: #4caf50;">Sender Account:</strong> {{ trans.sender_account[:3] }}****{{ trans.sender_account[-4:] }}</p>
-                    {% endif %}
-                    {% if trans.receiver_account %}
-                    <p><strong style="color: #4caf50;">Receiver Account:</strong> {{ trans.receiver_account[:3] }}****{{ trans.receiver_account[-4:] }}</p>
-                    {% endif %}
-                    {% if trans.bank_name %}
-                    <p><strong style="color: #4caf50;">Bank Name:</strong> {{ trans.bank_name }}</p>
-                    {% endif %}
-                    {% if trans.session_id %}
-                    <p><strong style="color: #4caf50;">Session Id:</strong> {{ trans.session_id }}</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+<div class="w-full" style="background:#f7faf8; padding: 1.5rem 1rem 4rem; min-height: 80vh;">
+  <div style="max-width: 640px; margin: 0 auto;">
+
+    <!-- ── Back + Actions row ── -->
+    <div class="rise rise-1 flex items-center justify-between mb-5">
+      <a href="{{ url_for('view.showtransaction') }}" class="back-btn">
+        <i class="fas fa-arrow-left text-xs"></i>
+        <span>All Transactions</span>
+      </a>
+      <div class="flex items-center gap-2">
+        <button class="action-btn" onclick="window.print()">
+          <i class="fas fa-download text-xs"></i>
+          <span class="hidden sm:inline">Receipt</span>
+        </button>
+        <button class="action-btn" onclick="shareTransaction()">
+          <i class="fas fa-share-alt text-xs"></i>
+          <span class="hidden sm:inline">Share</span>
+        </button>
+      </div>
     </div>
-</div>
 
+    <!-- ── Amount Hero Card ── -->
+    <div class="amount-hero {% if is_debit %}debit{% else %}credit{% endif %} p-7 mb-4 rise rise-1">
+      <div class="hero-shimmer"></div>
+
+      <!-- Status + type -->
+      <div class="flex items-center justify-between mb-6">
+        <span class="type-badge {% if is_debit %}t-debit{% else %}t-credit{% endif %} bg-white/15 !text-white border border-white/20">
+          <i class="fas {% if is_debit %}fa-arrow-up{% else %}fa-arrow-down{% endif %} text-[9px]"></i>
+          {% if is_debit %}Debit{% else %}Credit{% endif %}
+        </span>
+        <span class="status-badge
+          {% if trans.status == 'Success'  %}s-success
+          {% elif trans.status == 'Pending' %}s-pending
+          {% elif trans.status == 'Failed'  %}s-failed
+          {% else %}s-refunded{% endif %}">
+          <span class="w-1.5 h-1.5 rounded-full
+            {% if trans.status == 'Success'  %}bg-green-600
+            {% elif trans.status == 'Pending' %}bg-amber-600
+            {% elif trans.status == 'Failed'  %}bg-red-600
+            {% else %}bg-blue-600{% endif %}">
+          </span>
+          {{ trans.status }}
+        </span>
+      </div>
+
+      <!-- Amount -->
+      <p class="font-body text-white/50 text-xs font-semibold uppercase tracking-widest mb-1">
+        Transaction Amount
+      </p>
+      <p class="font-display font-black text-white leading-none mb-1" style="font-size:clamp(2.2rem,5vw,3rem);">
+        {% if is_debit %}−{% else %}+{% endif %}₦{{ "{:,.2f}".format(trans.transaction_amount) }}
+      </p>
+      <p class="font-body text-white/40 text-xs mt-3">
+        {{ trans.date_posted.strftime("%d %b %Y · %H:%M") }}
+      </p>
+    </div>
+
+
+    <!-- ── Detail Cards ── -->
+    <div class="dash-card rise rise-2 px-5 py-2 mb-4">
+
+      <!-- Core info -->
+      <div class="section-divider mt-3"><span>Transaction Info</span></div>
+
+      <div class="detail-row">
+        <div class="detail-icon bg-brand-50">
+          <i class="fas fa-hashtag text-brand-600 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Reference</p>
+          <p class="detail-value font-mono text-sm">{{ trans.transaction_ref }}</p>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-icon bg-slate-50">
+          <i class="fas fa-tag text-slate-500 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Category</p>
+          <p class="detail-value">{{ trans.trans_category.category }}</p>
+        </div>
+      </div>
+
+      <div class="detail-row">
+        <div class="detail-icon bg-blue-50">
+          <i class="fas fa-wallet text-ocean-500 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Balance After</p>
+          <p class="detail-value font-display font-bold text-ink">₦{{ "{:,.2f}".format(trans.balance) }}</p>
+        </div>
+      </div>
+
+      {% if trans.description %}
+      <div class="detail-row">
+        <div class="detail-icon bg-slate-50">
+          <i class="fas fa-align-left text-slate-400 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Description</p>
+          <p class="detail-value text-slate-500">{{ trans.description }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+
+    <!-- ── Parties (sender / receiver) ── -->
+    {% if trans.sender or trans.receiver or trans.sender_account or trans.receiver_account or trans.bank_name or trans.customer_name %}
+    <div class="dash-card rise rise-2 px-5 py-2 mb-4">
+      <div class="section-divider mt-3"><span>Parties</span></div>
+
+      {% if trans.sender %}
+      <div class="detail-row">
+        <div class="detail-icon" style="background:rgba(26,163,116,0.1);">
+          <i class="fas fa-user text-brand-600 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Sender</p>
+          <p class="detail-value">{{ trans.sender }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if trans.sender_account %}
+      <div class="detail-row">
+        <div class="detail-icon" style="background:rgba(26,163,116,0.08);">
+          <i class="fas fa-building-columns text-brand-500 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Sender Account</p>
+          <p class="detail-value masked-acct">{{ trans.sender_account[:3] }}••••{{ trans.sender_account[-4:] }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if trans.receiver %}
+      <div class="detail-row">
+        <div class="detail-icon" style="background:rgba(46,139,182,0.1);">
+          <i class="fas fa-user-check text-ocean-500 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Receiver</p>
+          <p class="detail-value">{{ trans.receiver }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if trans.receiver_account %}
+      <div class="detail-row">
+        <div class="detail-icon" style="background:rgba(46,139,182,0.08);">
+          <i class="fas fa-building-columns text-ocean-500 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Receiver Account</p>
+          <p class="detail-value masked-acct">{{ trans.receiver_account[:3] }}••••{{ trans.receiver_account[-4:] }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if trans.bank_name %}
+      <div class="detail-row">
+        <div class="detail-icon bg-amber-50">
+          <i class="fas fa-landmark text-amber-500 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Bank</p>
+          <p class="detail-value">{{ trans.bank_name }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if trans.customer_name %}
+      <div class="detail-row">
+        <div class="detail-icon bg-purple-50">
+          <i class="fas fa-id-card text-purple-500 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Customer Name</p>
+          <p class="detail-value">{{ trans.customer_name }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+    {% endif %}
+
+
+    <!-- ── Extra details (bills, token, session) ── -->
+    {% if trans.phone_number or trans.token or trans.session_id %}
+    <div class="dash-card rise rise-3 px-5 py-2 mb-4">
+      <div class="section-divider mt-3"><span>Additional Info</span></div>
+
+      {% if trans.phone_number %}
+      <div class="detail-row">
+        <div class="detail-icon bg-green-50">
+          <i class="fas fa-phone text-green-600 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Phone Number</p>
+          <p class="detail-value">{{ trans.phone_number }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if trans.token %}
+      <div class="detail-row">
+        <div class="detail-icon bg-amber-50">
+          <i class="fas fa-key text-amber-500 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Token / PIN</p>
+          <button class="copy-token mt-1" onclick="copyToken('{{ trans.token }}')" title="Click to copy">
+            <span id="token-text">{{ trans.token }}</span>
+            <i class="fas fa-copy text-xs text-brand-400" id="token-icon"></i>
+          </button>
+          <p class="font-body text-[10px] text-slate-400 mt-1" id="token-feedback"></p>
+        </div>
+      </div>
+      {% endif %}
+
+      {% if trans.session_id %}
+      <div class="detail-row">
+        <div class="detail-icon bg-slate-50">
+          <i class="fas fa-fingerprint text-slate-400 text-xs"></i>
+        </div>
+        <div>
+          <p class="detail-label">Session ID</p>
+          <p class="detail-value font-mono text-xs text-slate-500 break-all">{{ trans.session_id }}</p>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+    {% endif %}
+
+
+    <!-- ── Bottom action row ── -->
+    <div class="rise rise-3 flex flex-col sm:flex-row gap-3 mt-2">
+      <a href="{{ url_for('view.showtransaction') }}"
+         class="back-btn flex-1 justify-center">
+        <i class="fas fa-arrow-left text-xs"></i>
+        Back to Transactions
+      </a>
+      <a href="{{ url_for('view.home') }}"
+         class="action-btn flex-1 justify-center">
+        <i class="fas fa-home text-xs"></i>
+        Go to Dashboard
+      </a>
+    </div>
+
+  </div>
+</div>
 {% endblock content %}
+
+
+{% block scripts %}
+<script>
+  // ── Copy token
+  function copyToken(val) {
+    navigator.clipboard.writeText(val).then(() => {
+      const fb   = document.getElementById('token-feedback');
+      const icon = document.getElementById('token-icon');
+      icon.className = 'fas fa-check text-xs text-brand-600';
+      fb.textContent = '✓ Token copied to clipboard';
+      fb.style.color = '#1aa374';
+      setTimeout(() => {
+        icon.className = 'fas fa-copy text-xs text-brand-400';
+        fb.textContent = '';
+      }, 2500);
+    });
+  }
+
+  // ── Share transaction
+  function shareTransaction() {
+    const text = `EasyTransact Receipt\n` +
+      `Amount: {{ '−' if is_debit else '+' }}₦{{ "{:,.2f}".format(trans.transaction_amount) }}\n` +
+      `Ref: {{ trans.transaction_ref }}\n` +
+      `Status: {{ trans.status }}\n` +
+      `Date: {{ trans.date_posted.strftime("%d %b %Y %H:%M") }}`;
+    if (navigator.share) {
+      navigator.share({ title: 'EasyTransact Receipt', text });
+    } else {
+      navigator.clipboard.writeText(text).then(() => alert('Receipt details copied to clipboard!'));
+    }
+  }
+</script>
+{% endblock scripts %}

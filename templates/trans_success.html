@@ -1,90 +1,338 @@
 {% extends 'base.html' %}
 
+{% block title %}Transaction Successful — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes popIn {
+    0%   { opacity: 0; transform: scale(0.5); }
+    70%  { transform: scale(1.12); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+  @keyframes pulseRing {
+    0%   { box-shadow: 0 0 0 0 rgba(46,139,182,0.4); }
+    70%  { box-shadow: 0 0 0 18px rgba(46,139,182,0); }
+    100% { box-shadow: 0 0 0 0 rgba(46,139,182,0); }
+  }
+  @keyframes slideInRight { from{opacity:0;transform:translateX(120%)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(120%)} }
+  @keyframes shrink { from{width:100%} to{width:0} }
+
+  .rise   { opacity:0; animation: riseUp .55s cubic-bezier(.34,1.1,.64,1) forwards; }
+  .rise-1 { animation-delay:.1s; }
+  .rise-2 { animation-delay:.22s; }
+  .rise-3 { animation-delay:.34s; }
+  .rise-4 { animation-delay:.44s; }
+
+  /* ── Success icon ── */
+  .success-icon {
+    width: 96px; height: 96px; border-radius: 50%;
+    background: linear-gradient(135deg, #2e8bb6, #1a6f94);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 6px;
+    animation: popIn .6s cubic-bezier(.34,1.2,.64,1) .05s both, pulseRing 1.8s ease .7s 2;
+    box-shadow: 0 12px 36px rgba(46,139,182,0.35);
+  }
+
+  /* ── Receipt card ── */
+  .receipt-card {
+    width: 100%; max-width: 440px;
+    background: #fff; border-radius: 24px;
+    box-shadow: 0 8px 40px rgba(13,31,26,0.08);
+    border: 1px solid #f1f5f9; overflow: hidden;
+  }
+
+  /* ── Card header gradient ── */
+  .receipt-header {
+    background: linear-gradient(135deg, #0c694c, #164e49 50%, #1a6f94);
+    padding: 24px 24px 20px; position: relative; overflow: hidden;
+    text-align: center;
+  }
+  .receipt-header::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 80% 20%, rgba(46,139,182,0.25) 0%, transparent 50%),
+      radial-gradient(circle at 10% 80%, rgba(26,163,116,0.18) 0%, transparent 50%);
+  }
+  .receipt-header::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 26px 26px;
+  }
+  .receipt-header > * { position: relative; z-index: 1; }
+
+  /* ── Tear divider ── */
+  .tear-divider {
+    position: relative; height: 24px; background: #fff;
+    margin-top: -1px;
+  }
+  .tear-divider::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 24px;
+    background: linear-gradient(135deg, #0c694c, #1a6f94);
+    clip-path: polygon(
+      0 0, 4% 100%, 8% 0, 12% 100%, 16% 0, 20% 100%, 24% 0, 28% 100%,
+      32% 0, 36% 100%, 40% 0, 44% 100%, 48% 0, 52% 100%, 56% 0, 60% 100%,
+      64% 0, 68% 100%, 72% 0, 76% 100%, 80% 0, 84% 100%, 88% 0, 92% 100%,
+      96% 0, 100% 100%, 100% 0
+    );
+  }
+
+  /* ── Table rows ── */
+  .receipt-row {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    padding: 12px 24px; gap: 12px;
+    border-bottom: 1px solid #f8fafc;
+  }
+  .receipt-row:last-child { border-bottom: none; }
+  .receipt-row:hover { background: #fafcfc; }
+  .row-label {
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    color: #94a3b8; text-transform: uppercase; letter-spacing: .06em;
+    flex-shrink: 0; padding-top: 1px; min-width: 110px;
+  }
+  .row-value {
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: #0d1f1a; text-align: right; word-break: break-word;
+  }
+  .row-value.amount {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-weight: 900; font-size: 17px; color: #0c694c;
+  }
+
+  /* ── Status pill ── */
+  .status-success {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700;
+    padding: 4px 11px; border-radius: 20px;
+    background: rgba(26,163,116,0.1); color: #0c694c;
+    border: 1px solid rgba(26,163,116,0.2);
+  }
+
+  /* ── Action buttons ── */
+  .action-row {
+    display: flex; gap: 10px; padding: 20px 24px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .btn-print {
+    flex: 1; padding: 12px; border-radius: 12px; border: none;
+    background: linear-gradient(135deg, #1aa374, #2e8bb6);
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    box-shadow: 0 6px 20px rgba(26,163,116,0.3);
+    transition: transform .2s, box-shadow .2s; position: relative; overflow: hidden;
+    text-decoration: none;
+  }
+  .btn-print::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#0c694c,#1a6f94); opacity:0; transition:opacity .3s; }
+  .btn-print:hover::before { opacity:1; }
+  .btn-print:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(26,163,116,0.4); color:#fff; }
+  .btn-print span { position:relative; z-index:1; display:flex; align-items:center; gap:7px; }
+
+  .btn-home {
+    flex: 1; padding: 12px; border-radius: 12px;
+    border: 1.5px solid #e2e8f0; background: #fff;
+    color: #0d1f1a; font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 13px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 7px;
+    transition: background .2s; text-decoration: none;
+  }
+  .btn-home:hover { background: #f1f5f9; color: #0d1f1a; }
+
+  /* ── Flash toasts ── */
+  .flash-toast {
+    position: fixed; top: 1.25rem; right: 1.25rem; z-index: 9999;
+    display: flex; align-items: flex-start; gap: 12px;
+    background: #fff; border-radius: 16px; padding: 14px 16px;
+    min-width: 280px; max-width: 360px;
+    box-shadow: 0 8px 32px rgba(13,31,26,0.14); border: 1px solid #f1f5f9;
+    animation: slideInRight .4s cubic-bezier(.34,1.2,.64,1) forwards; overflow: hidden;
+  }
+  .flash-toast.hide { animation: slideOutRight .35s ease forwards; }
+  .ft-icon { width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px; }
+  .ft-icon.success{background:rgba(26,163,116,0.1);color:#0c694c;}
+  .ft-icon.error  {background:rgba(239,68,68,0.1);color:#dc2626;}
+  .ft-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0 0 2px;}
+  .ft-msg  {font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;}
+  .ft-close{background:none;border:none;cursor:pointer;padding:0;color:#cbd5e1;font-size:12px;line-height:1;transition:color .2s;}
+  .ft-close:hover{color:#64748b;}
+  .ft-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 16px 16px;animation:shrink 4s linear forwards;}
+  .ft-bar.success{background:#1aa374;} .ft-bar.error{background:#ef4444;}
+
+  /* ── Print styles ── */
+  @media print {
+    #navbar, footer, #dark-mode-toggle, #scroll-top,
+    .action-row, .back-area, .toast-zone { display: none !important; }
+    body { background: #fff !important; }
+    .receipt-card { box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
+    .page-wrap { padding: 0 !important; }
+  }
+</style>
+{% endblock head %}
+
+
 {% block content %}
 
-     <!-- Flash messages -->
- {% with messages = get_flashed_messages(with_categories=true) %} {% if
-    messages %} {% for category, message in messages %}
-    <div
-      class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }} mt-3"
-      role="alert"
-      style="height: 3.5rem; transition: 0.6s"
-    >
-    {% if category=='success' %}
-      <div class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-      {% else %}
-      <div class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-      {% endif %}
-      <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-      ></button>
+<!-- Flash toasts -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="toast-zone" style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:10px;">
+      {% for category, message in messages %}
+      {% set tone = 'success' if category=='success' else 'error' %}
+      <div class="flash-toast" id="ft-{{ loop.index }}" style="position:relative;">
+        <div class="ft-icon {{ tone }}">
+          <i class="fas {% if tone=='success' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p class="ft-title">{% if tone=='success' %}Success{% else %}Error{% endif %}</p>
+          <p class="ft-msg">{{ message }}</p>
+        </div>
+        <button class="ft-close" onclick="dismissToast('ft-{{ loop.index }}')"><i class="fas fa-times"></i></button>
+        <div class="ft-bar {{ tone }}"></div>
+      </div>
+      {% endfor %}
     </div>
-    {% endfor %} {% endif %} {% endwith %}
+  {% endif %}
+{% endwith %}
 
+<div class="page-wrap" style="background:#f7faf8;min-height:80vh;padding:2rem 1rem 5rem;display:flex;flex-direction:column;align-items:center;">
 
-    <div class="sent-wrapper" style=" display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    margin-top: 4rem;">
-    <i class="fa-solid fa-thumbs-up" style="  
-    font-size: 6rem;
-    color: #fff;
-    background: #2e8bbc;
-    border: 8px solid #2e8bbc;
-    border-radius: 50%;
-    padding: 2rem;"></i>
-    <span style="color:#2e8bbc; font-weight:600;font-size:3rem;">Sent!</span>
+  <!-- Back -->
+  <div class="back-area rise rise-1" style="width:100%;max-width:440px;margin-bottom:20px;">
+    <a href="{{ url_for('view.home') }}"
+       style="display:inline-flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:#64748b;text-decoration:none;padding:7px 14px;border-radius:10px;border:1.5px solid #e2e8f0;background:#fff;transition:all .2s;"
+       onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#fff'">
+      <i class="fas fa-arrow-left" style="font-size:11px;"></i> Home
+    </a>
   </div>
-    <div class="card my-5 p-2 m-auto" style="background: none; max-width: 400px;">
-        <h4 class="text-center text-info fw-bold">Transaction Receipt</h4>
-        <small class="text-muted text-center mb-4">Generated from EasyTransact on {{ date }}</small>
 
-        <table class="table m-auto">
-            <tbody>
-                <tr>
-                  <td style="color: #333333b3;" class=" fw-bold">Transaction Amount</td>
-                  <td class="text-info fw-bold"><del style="text-decoration-style: double;">N</del> {{amount}}</td>
-                </tr>
-                <tr>
-                  <td style="color: #333333b3;" class=" fw-bold">Transaction Type</td>
-                  <td class="text-info fw-bold">Debit</td>
-                </tr>
-                <tr>
-                    <td style="color: #333333b3;" class=" fw-bold">Transaction Date</td>
-                    <td class="text-info fw-bold">{{ date }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="color: #333333b3;" class=" fw-bold">Sender</td>
-                    <td class="text-info fw-bold">
-                        {{ sender }} | {{ sender_acct }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="color: #333333b3;" class=" fw-bold">Receiver</td>
-                    <td class="text-info fw-bold">
-                        {{ receiver }} | {{ receiver_acct }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="color: #333333b3;" class=" fw-bold">Bank Name</td>
-                    <td class="text-info fw-bold">
-                        {{bank_name}}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td style="color: #333333b3;" class=" fw-bold">Transaction Status</td>
-                    <td class="text-info fw-bold">Successful</td>
-                  </tr>
-              </tbody>
-        </table>
-        <small class="text-muted mt-5 text-center">If you have any question or would like more information, please contact the
-            <a href="{{ url_for('view.contact') }}" class="text-info text-decoration-none">customer care</a>
-        </small>
+  <!-- ══ SUCCESS ICON ══ -->
+  <!-- <div class="rise rise-1" style="text-align:center;margin-bottom:24px;">
+    <div class="success-icon">
+      <i class="fas fa-thumbs-up" style="color:#fff;font-size:36px;"></i>
     </div>
+    <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:2rem;color:#2e8bb6;margin:10px 0 4px;letter-spacing:-.01em;">Sent!</h1>
+    <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:0;">Your transaction was successful</p>
+  </div> -->
+
+  <!-- ══ RECEIPT CARD ══ -->
+  <div class="receipt-card rise rise-2" id="receipt-card">
+
+    <!-- Card header -->
+    <div class="receipt-header">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);padding:4px 12px;border-radius:20px;margin-bottom:10px;">
+        <i class="fas fa-receipt" style="color:rgba(255,255,255,.6);font-size:10px;"></i>
+        <span style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:rgba(255,255,255,.7);text-transform:uppercase;letter-spacing:.08em;">Transaction Receipt</span>
+      </div>
+      <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.45);margin:0 0 6px;">Generated from EasyTransact on {{ date }}</p>
+
+      <!-- Large amount display -->
+      <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:2.2rem;color:#fff;margin:0;line-height:1;">
+        <span style="font-size:1.3rem;opacity:.7;">₦</span>{{ amount }}
+      </p>
+      <div style="display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:rgba(255,255,255,.1);padding:4px 12px;border-radius:20px;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;display:inline-block;"></span>
+        <span style="font-family:'DM Sans',sans-serif;font-size:11px;color:rgba(255,255,255,.7);font-weight:600;">Debit · Successful</span>
+      </div>
     </div>
+
+    <!-- Tear effect -->
+    <div class="tear-divider"></div>
+
+    <!-- Receipt rows -->
+    <div style="padding: 4px 0;">
+
+      <div class="receipt-row rise rise-2">
+        <span class="row-label">Amount</span>
+        <span class="row-value amount">₦{{ amount }}</span>
+      </div>
+
+      <div class="receipt-row rise rise-2">
+        <span class="row-label">Type</span>
+        <span class="row-value">
+          <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(239,68,68,0.08);color:#dc2626;border:1px solid rgba(239,68,68,0.15);padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;">
+            <i class="fas fa-arrow-up" style="font-size:9px;"></i> Debit
+          </span>
+        </span>
+      </div>
+
+      <div class="receipt-row rise rise-2">
+        <span class="row-label">Date</span>
+        <span class="row-value">{{ date }}</span>
+      </div>
+
+      <div class="receipt-row rise rise-3">
+        <span class="row-label">Sender</span>
+        <span class="row-value">
+          {{ sender }}<br>
+          <span style="font-family:'Courier New',monospace;font-size:12px;color:#64748b;font-weight:400;letter-spacing:.07em;">{{ sender_acct }}</span>
+        </span>
+      </div>
+
+      <div class="receipt-row rise rise-3">
+        <span class="row-label">Receiver</span>
+        <span class="row-value">
+          {{ receiver }}<br>
+          <span style="font-family:'Courier New',monospace;font-size:12px;color:#64748b;font-weight:400;letter-spacing:.07em;">{{ receiver_acct }}</span>
+        </span>
+      </div>
+
+      <div class="receipt-row rise rise-3">
+        <span class="row-label">Bank</span>
+        <span class="row-value">{{ bank_name }}</span>
+      </div>
+
+      <div class="receipt-row rise rise-4">
+        <span class="row-label">Status</span>
+        <span class="row-value">
+          <span class="status-success">
+            <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;"></span>
+            Successful
+          </span>
+        </span>
+      </div>
+
+    </div>
+
+    <!-- Action buttons -->
+    <div class="action-row rise rise-4">
+      <button onclick="window.print()" class="btn-print">
+        <span><i class="fas fa-print"></i> Print Receipt</span>
+      </button>
+      <a href="{{ url_for('view.home') }}" class="btn-home">
+        <i class="fas fa-house" style="font-size:12px;"></i> Dashboard
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Footer note -->
+  <p class="rise rise-4" style="font-family:'DM Sans',sans-serif;font-size:12px;color:#94a3b8;text-align:center;max-width:380px;margin-top:20px;line-height:1.6;">
+    Have questions? <a href="{{ url_for('view.contact') }}" style="color:#2e8bb6;font-weight:600;text-decoration:none;">Contact customer care</a>
+  </p>
+
+</div>
 {% endblock content %}
+
+
+{% block scripts %}
+<script>
+  document.querySelectorAll('.flash-toast').forEach((t, i) => {
+    setTimeout(() => dismissToast(t.id), 4000 + i * 300);
+  });
+  function dismissToast(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.add('hide');
+    setTimeout(() => el.remove(), 380);
+  }
+</script>
+{% endblock scripts %}

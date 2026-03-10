@@ -1,114 +1,451 @@
 {% extends 'base.html' %}
-{% block content %} 
+
+{% block title %}Transactions — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+
+  /* ── Entrance ── */
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise { opacity: 0; animation: riseUp .55s ease forwards; }
+  .rise-1 { animation-delay: .05s; }
+  .rise-2 { animation-delay: .14s; }
+  .rise-3 { animation-delay: .22s; }
+
+  /* ── Page card ── */
+  .dash-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 16px rgba(13,31,26,0.05);
+  }
+
+  /* ── Filter bar ── */
+  .filter-select, .filter-input {
+    background: #fff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: #0d1f1a;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    cursor: pointer;
+  }
+  .filter-select:focus, .filter-input:focus {
+    border-color: #1aa374;
+    box-shadow: 0 0 0 3px rgba(26,163,116,0.10);
+  }
+  .filter-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px;
+  }
+  .filter-select::placeholder, .filter-input::placeholder { color: #94a3b8; }
+
+  /* ── Filter button ── */
+  .filter-btn {
+    padding: 9px 16px; border-radius: 10px; border: none;
+    background: linear-gradient(135deg, #1aa374, #2e8bb6);
+    color: #fff; font-family: 'DM Sans', sans-serif;
+    font-weight: 600; font-size: 13px; cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 4px 12px rgba(26,163,116,0.25);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .filter-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(26,163,116,0.35); }
+
+  .reset-btn {
+    padding: 9px 14px; border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    background: #fff; color: #64748b;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600; font-size: 13px; cursor: pointer;
+    transition: background .2s, border-color .2s, color .2s;
+    display: flex; align-items: center; gap: 6px;
+    text-decoration: none;
+  }
+  .reset-btn:hover { background: #f1f5f9; border-color: #cbd5e1; color: #0d1f1a; }
+
+  /* ── Table ── */
+  .txn-table { width: 100%; border-collapse: collapse; }
+  .txn-table thead tr {
+    background: linear-gradient(135deg, #0c694c, #1a6f94);
+  }
+  .txn-table thead th {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 700;
+    color: rgba(255,255,255,0.8);
+    text-transform: uppercase; letter-spacing: .07em;
+    padding: 13px 16px; white-space: nowrap;
+  }
+  .txn-table thead th:first-child { border-radius: 14px 0 0 0; }
+  .txn-table thead th:last-child  { border-radius: 0 14px 0 0; }
+
+  .txn-table tbody tr {
+    border-bottom: 1px solid #f8fafc;
+    transition: background .18s;
+  }
+  .txn-table tbody tr:last-child { border-bottom: none; }
+  .txn-table tbody tr:hover { background: #f8fafc; }
+
+  .txn-table tbody td {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; color: #334155;
+    padding: 13px 16px; vertical-align: middle;
+  }
+
+  /* ── Type pill ── */
+  .type-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 11px; font-weight: 700; font-family: 'DM Sans', sans-serif;
+    padding: 4px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: .04em;
+  }
+  .type-debit  { background: rgba(239,68,68,0.1);  color: #dc2626; }
+  .type-credit { background: rgba(26,163,116,0.1); color: #0c694c; }
+
+  /* ── Status pill ── */
+  .status-pill {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    padding: 3px 10px; border-radius: 20px;
+    text-transform: uppercase; letter-spacing: .05em;
+  }
+  .status-success  { background: #dcfce7; color: #166534; }
+  .status-pending  { background: #fef9c3; color: #854d0e; }
+  .status-failed   { background: #fee2e2; color: #991b1b; }
+  .status-refunded { background: #dbeafe; color: #1e40af; }
+
+  /* ── Amount ── */
+  .amount-debit  { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 700; color: #dc2626; }
+  .amount-credit { font-family: 'Cabinet Grotesk', sans-serif; font-weight: 700; color: #0c694c; }
+
+  /* ── View button ── */
+  .view-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 600;
+    color: #0c694c; text-decoration: none;
+    padding: 6px 12px; border-radius: 8px;
+    background: rgba(26,163,116,0.08);
+    border: 1px solid rgba(26,163,116,0.15);
+    transition: background .2s, border-color .2s, transform .2s;
+  }
+  .view-btn:hover {
+    background: rgba(26,163,116,0.15);
+    border-color: rgba(26,163,116,0.3);
+    transform: translateY(-1px);
+    color: #0c694c;
+  }
+
+  /* ── Empty state ── */
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 4rem 1rem; text-align: center;
+  }
+
+  /* ── Pagination ── */
+  .page-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 36px; height: 36px; padding: 0 10px;
+    border-radius: 10px; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600; text-decoration: none;
+    border: 1.5px solid #e2e8f0; color: #64748b; background: #fff;
+    transition: all .2s;
+  }
+  .page-btn:hover { background: #f1f5f9; border-color: #cbd5e1; color: #0d1f1a; }
+  .page-btn.active {
+    background: linear-gradient(135deg, #1aa374, #2e8bb6);
+    border-color: transparent; color: #fff;
+    box-shadow: 0 4px 12px rgba(26,163,116,0.3);
+  }
+  .page-btn.disabled { opacity: 0.4; pointer-events: none; }
+  .page-dots {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 36px; height: 36px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; color: #94a3b8;
+  }
+
+  /* ── Mobile transaction card ── */
+  .txn-mobile-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 16px; border-bottom: 1px solid #f8fafc;
+    transition: background .18s; text-decoration: none;
+  }
+  .txn-mobile-card:last-child { border-bottom: none; }
+  .txn-mobile-card:hover { background: #f8fafc; }
+  .txn-mobile-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  /* ── Active filter tag ── */
+  .filter-tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(26,163,116,0.08); border: 1px solid rgba(26,163,116,0.2);
+    color: #0c694c; border-radius: 20px;
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 4px 10px;
+  }
+</style>
+{% endblock head %}
 
 
-<div class="mt-5">
-  <form action="" class="d-flex">
-    <select name="status" id="" class="form-control" style="width: 6rem;">
-      <option value="" disabled {% if not status %} selected {% endif %}>Status</option>
-      <option value="Success" {% if status == 'Success' %} selected {% endif %}>Success</option>
-      <option value="Failed" {% if status == 'Failed' %} selected {% endif %}>Failed</option>
-      <option value="Pending" {% if status == 'Pending' %} selected {% endif %}>Pending</option>
-      <option value="Refunded" {% if status == 'Refunded' %} selected {% endif %}>Refunded</option>
-    </select>
+{% block content %}
+<div class="w-full" style="background:#f7faf8; padding: 1.5rem 1rem 4rem; min-height: 80vh;">
+  <div style="max-width: 980px; margin: 0 auto;">
 
-    <select name="category" id="" class="form-control" style="width: 6rem; margin-left: .7rem;">
-      <option value="" disabled {% if not category %} selected {% endif %}>Categories</option>
-      {% for cat in cats %}
-      <option value="{{ cat.id }}" {% if category == cat.id %} selected {% endif %}>{{ cat.category }}</option>
-      {% endfor %}
-    </select>
-
-    <select name="types" id="" class="form-control" style="width: 6rem; margin-left: .7rem;">
-      <option value="" disabled {% if not types %} selected {% endif %}>Types</option>
-      <option value="CRT" {% if types == 'CRT' %} selected {% endif %} >Credit</option>
-      <option value="DBT" {% if types == 'DBT' %} selected {% endif %}>Debit</option>
-    </select>
-
-    <input type="text" name="ref" id="" class="form-control" placeholder="Reference" style="width: 6rem; margin-left: .8rem;" value="{% if ref %}{{ ref }}{% endif %}">
-
-    <button type="submit" class="btn primary-btn mx-2"><i class="fas fa-filter"></i></button>
-    {% if show %}
-    <a href="{{url_for('view.showtransaction')}}" class="btn primary-btn mx-2 text-decoration-none"><i class="fas fa-undo"></i></a>
-    {% endif %}
-  </form>
-</div>
-<!-- Table -->
-
-<div class="mt-2">
-  <div class="row">
-      <div class="col-12 mb-3 mb-lg-5">
-          <div class="position-relative card table-nowrap table-card">
-              <div class="table-responsive">
-                  <table class="table table-hover mb-0">
-                      <thead class="small text-uppercase table_head text-white">
-                          <tr class="">
-                              <th class="py-3">Transaction Type</th>
-                              <th class="py-3">Date</th>
-                              <th class="py-3">Category</th>
-                              <th class="py-3">Amount</th>
-                              <th class="py-3">Status</th>
-                              <th class="py-3">Action</th>
-                          </tr>
-                      </thead>
-                      <tbody>
-                        {% for transaction in transactions %}
-                        <tr class="align-middle">
-                              <td class="fw-normal {% if transaction.transaction_type == 'DBT' %}text-danger{% else %}text-success{% endif %}">
-                                {% if transaction.transaction_type == "DBT" %} Debit {% else %} Credit {% endif %}
-                              </td>
-                              <td>{{ transaction.date_posted.strftime('%Y-%m-%d') }}</td>
-                              <td class="notf-detail">{{ transaction.trans_category.category }}</td>
-                              <td>
-                                  {% if transaction.transaction_type == "DBT" %}-{% else %}+{% endif %}<del style="text-decoration-style: double;">N</del> {{ "{:,.2f}".format(transaction.transaction_amount) }}
-                              </td>
-                              <td class="{% if transaction.status == 'Pending' %}text-warning{% else %}text-success{% endif %}">
-                                  {{ transaction.status }}
-                              </td>
-                              <td>
-                          <a href="{{url_for('view.view_transaction', trans_id=transaction.id)}}" class="text-decoration-none btn primary-btn">
-                                View
-                                </a>
-                              </td>
-                            </tr>
-                        {% endfor %}
-                      </tbody>
-                  </table>
-              </div>
-          </div>
+    <!-- ── Page header ── -->
+    <div class="rise rise-1 flex items-center justify-between mb-5">
+      <div>
+        <h1 class="font-display font-black text-2xl text-ink">Transactions</h1>
+        <p class="font-body text-sm text-slate-400 mt-0.5">Your complete payment history</p>
       </div>
-  </div>
-</div>
-  <!-- ..........End of table.............. -->
-  <!-- Pagination -->
-<div class="pagination justify-content-center mt-4">
-  <nav aria-label="Page navigation example">
-    <ul class="pagination">
-      {% if transactions.has_prev %}
-        <li class="page-item">
-          <a class="page-link primary-btn border-0" href="{{ url_for('view.showtransaction', page=transactions.prev_num) }}" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-          </a>
-        </li>
+      <div class="hidden sm:flex items-center gap-2 bg-white border border-slate-100 rounded-xl px-3 py-2 shadow-sm">
+        <i class="fas fa-circle text-brand-500 text-[8px] animate-pulse"></i>
+        <span class="font-body text-xs font-semibold text-slate-500">Live updates</span>
+      </div>
+    </div>
+
+    <!-- ── FILTER BAR ── -->
+    <div class="dash-card rise rise-2 p-4 mb-4">
+      <form action="" method="get" class="flex flex-wrap gap-2 items-center">
+
+        <!-- Status -->
+        <select name="status" class="filter-select">
+          <option value="" disabled {% if not status %}selected{% endif %}>Status</option>
+          <option value="Success"  {% if status == 'Success'  %}selected{% endif %}>Success</option>
+          <option value="Failed"   {% if status == 'Failed'   %}selected{% endif %}>Failed</option>
+          <option value="Pending"  {% if status == 'Pending'  %}selected{% endif %}>Pending</option>
+          <option value="Refunded" {% if status == 'Refunded' %}selected{% endif %}>Refunded</option>
+        </select>
+
+        <!-- Category -->
+        <select name="category" class="filter-select">
+          <option value="" disabled {% if not category %}selected{% endif %}>Category</option>
+          {% for cat in cats %}
+          <option value="{{ cat.id }}" {% if category == cat.id %}selected{% endif %}>{{ cat.category }}</option>
+          {% endfor %}
+        </select>
+
+        <!-- Type -->
+        <select name="types" class="filter-select">
+          <option value="" disabled {% if not types %}selected{% endif %}>Type</option>
+          <option value="CRT" {% if types == 'CRT' %}selected{% endif %}>Credit</option>
+          <option value="DBT" {% if types == 'DBT' %}selected{% endif %}>Debit</option>
+        </select>
+
+        <!-- Reference -->
+        <input type="text" name="ref" class="filter-input"
+               placeholder="Reference no." style="width:130px;"
+               value="{% if ref %}{{ ref }}{% endif %}">
+
+        <!-- Filter button -->
+        <button type="submit" class="filter-btn">
+          <i class="fas fa-filter text-xs"></i>
+          <span>Filter</span>
+        </button>
+
+        <!-- Reset -->
+        {% if show %}
+        <a href="{{ url_for('view.showtransaction') }}" class="reset-btn">
+          <i class="fas fa-undo text-xs"></i>
+          <span>Reset</span>
+        </a>
+        {% endif %}
+
+      </form>
+
+      <!-- Active filter tags -->
+      {% if status or category or types or ref %}
+      <div class="flex flex-wrap gap-2 mt-3 pt-3 border-t border-slate-100">
+        <span class="font-body text-xs text-slate-400 self-center">Active filters:</span>
+        {% if status  %}<span class="filter-tag"><i class="fas fa-circle text-[8px]"></i>{{ status }}</span>{% endif %}
+        {% if types   %}<span class="filter-tag"><i class="fas fa-circle text-[8px]"></i>{% if types == 'CRT' %}Credit{% else %}Debit{% endif %}</span>{% endif %}
+        {% if ref     %}<span class="filter-tag"><i class="fas fa-circle text-[8px]"></i>Ref: {{ ref }}</span>{% endif %}
+        {% if category%}<span class="filter-tag"><i class="fas fa-circle text-[8px]"></i>Category #{{ category_name }}</span>{% endif %}
+      </div>
       {% endif %}
+    </div>
+
+
+    <!-- ── TRANSACTIONS TABLE (desktop) ── -->
+    <div class="dash-card rise rise-3 overflow-hidden hidden md:block mb-4">
+      {% if transactions.items %}
+      <div class="overflow-x-auto">
+        <table class="txn-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Date</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for transaction in transactions %}
+            {% set is_debit = transaction.transaction_type == 'DBT' %}
+            <tr>
+              <!-- Type -->
+              <td>
+                <span class="type-pill {% if is_debit %}type-debit{% else %}type-credit{% endif %}">
+                  <i class="fas {% if is_debit %}fa-arrow-up{% else %}fa-arrow-down{% endif %} text-[9px]"></i>
+                  {% if is_debit %}Debit{% else %}Credit{% endif %}
+                </span>
+              </td>
+
+              <!-- Date -->
+              <td>
+                <span class="font-body text-slate-500 text-xs">{{ transaction.date_posted.strftime('%d %b %Y') }}</span>
+              </td>
+
+              <!-- Category -->
+              <td>
+                <span class="font-body font-semibold text-ink text-sm">{{ transaction.trans_category.category }}</span>
+              </td>
+
+              <!-- Amount -->
+              <td>
+                <span class="{% if is_debit %}amount-debit{% else %}amount-credit{% endif %}">
+                  {% if is_debit %}−{% else %}+{% endif %}₦{{ "{:,.2f}".format(transaction.transaction_amount) }}
+                </span>
+              </td>
+
+              <!-- Status -->
+              <td>
+                <span class="status-pill
+                  {% if transaction.status == 'Success'  %}status-success
+                  {% elif transaction.status == 'Pending' %}status-pending
+                  {% elif transaction.status == 'Failed'  %}status-failed
+                  {% else %}status-refunded{% endif %}">
+                  {{ transaction.status }}
+                </span>
+              </td>
+
+              <!-- Action -->
+              <td>
+                <a href="{{ url_for('view.view_transaction', trans_id=transaction.id) }}" class="view-btn">
+                  <i class="fas fa-eye text-[10px]"></i> View
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% else %}
+      <!-- Empty state -->
+      <div class="empty-state">
+        <div class="w-16 h-16 rounded-2xl bg-slate-100 flex items-center justify-center mb-4">
+          <i class="fas fa-receipt text-slate-300 text-2xl"></i>
+        </div>
+        <p class="font-display font-bold text-slate-400 text-base mb-1">No transactions found</p>
+        <p class="font-body text-sm text-slate-300">Try adjusting your filters or check back later</p>
+        {% if show %}
+        <a href="{{ url_for('view.showtransaction') }}" class="reset-btn mt-4">
+          <i class="fas fa-undo text-xs"></i> Clear filters
+        </a>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
+
+
+    <!-- ── TRANSACTIONS CARDS (mobile) ── -->
+    <div class="dash-card rise rise-3 overflow-hidden md:hidden mb-4">
+      {% if transactions.items %}
+        {% for transaction in transactions %}
+        {% set is_debit = transaction.transaction_type == 'DBT' %}
+        <a href="{{ url_for('view.view_transaction', trans_id=transaction.id) }}" class="txn-mobile-card">
+          <div class="txn-mobile-icon {% if is_debit %}bg-red-50{% else %}bg-brand-50{% endif %}">
+            <i class="fas {% if is_debit %}fa-arrow-up text-red-500{% else %}fa-arrow-down text-brand-600{% endif %} text-sm"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-body font-semibold text-sm text-ink truncate">{{ transaction.trans_category.category }}</p>
+            <p class="font-body text-xs text-slate-400 mt-0.5">{{ transaction.date_posted.strftime('%d %b %Y') }}</p>
+          </div>
+          <div class="text-right flex-shrink-0">
+            <p class="{% if is_debit %}amount-debit{% else %}amount-credit{% endif %} text-sm">
+              {% if is_debit %}−{% else %}+{% endif %}₦{{ "{:,.2f}".format(transaction.transaction_amount) }}
+            </p>
+            <span class="status-pill mt-1 inline-block
+              {% if transaction.status == 'Success'  %}status-success
+              {% elif transaction.status == 'Pending' %}status-pending
+              {% elif transaction.status == 'Failed'  %}status-failed
+              {% else %}status-refunded{% endif %}">
+              {{ transaction.status }}
+            </span>
+          </div>
+        </a>
+        {% endfor %}
+      {% else %}
+      <div class="empty-state">
+        <div class="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mb-3">
+          <i class="fas fa-receipt text-slate-300 text-xl"></i>
+        </div>
+        <p class="font-display font-bold text-slate-400 text-sm">No transactions found</p>
+      </div>
+      {% endif %}
+    </div>
+
+
+    <!-- ── PAGINATION ── -->
+    {% if transactions.pages > 1 %}
+    <div class="rise rise-3 flex items-center justify-center gap-2 flex-wrap">
+
+      <!-- Prev -->
+      {% if transactions.has_prev %}
+        <a href="{{ url_for('view.showtransaction', page=transactions.prev_num, status=status, category=category, types=types, ref=ref) }}"
+           class="page-btn">
+          <i class="fas fa-chevron-left text-xs"></i>
+        </a>
+      {% else %}
+        <span class="page-btn disabled"><i class="fas fa-chevron-left text-xs"></i></span>
+      {% endif %}
+
+      <!-- Page numbers -->
       {% for num in transactions.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
         {% if num %}
-          <li class="page-item {% if num == transactions.page %}active{% endif %}">
-            <a class="page-link primary-btn border-0" href="{{ url_for('view.showtransaction', page=num) }}">{{ num }}</a>
-          </li>
+          <a href="{{ url_for('view.showtransaction', page=num, status=status, category=category, types=types, ref=ref) }}"
+             class="page-btn {% if num == transactions.page %}active{% endif %}">
+            {{ num }}
+          </a>
         {% else %}
-          <li class="page-item disabled"><span class="page-link">...</span></li>
+          <span class="page-dots">…</span>
         {% endif %}
       {% endfor %}
-      {% if transactions.has_next %}
-        <li class="page-item">
-          <a class="page-link primary-btn border-0" href="{{ url_for('view.showtransaction', page=transactions.next_num) }}" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-          </a>
-        </li>
-      {% endif %}
-    </ul>
-  </nav>
-</div>
 
-  {% endblock content %}
+      <!-- Next -->
+      {% if transactions.has_next %}
+        <a href="{{ url_for('view.showtransaction', page=transactions.next_num, status=status, category=category, types=types, ref=ref) }}"
+           class="page-btn">
+          <i class="fas fa-chevron-right text-xs"></i>
+        </a>
+      {% else %}
+        <span class="page-btn disabled"><i class="fas fa-chevron-right text-xs"></i></span>
+      {% endif %}
+
+    </div>
+
+    <!-- Page info -->
+    <p class="font-body text-xs text-slate-400 text-center mt-3">
+      Showing page <strong class="text-ink">{{ transactions.page }}</strong> of
+      <strong class="text-ink">{{ transactions.pages }}</strong>
+      &nbsp;·&nbsp;
+      <strong class="text-ink">{{ transactions.total }}</strong> total transactions
+    </p>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock content %}

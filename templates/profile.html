@@ -1,134 +1,357 @@
 {% extends 'base.html' %}
 
+{% block title %}My Profile — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise   { opacity: 0; animation: riseUp .55s cubic-bezier(.34,1.1,.64,1) forwards; }
+  .rise-1 { animation-delay: .05s; }
+  .rise-2 { animation-delay: .13s; }
+  .rise-3 { animation-delay: .21s; }
+
+  /* Cover banner */
+  .cover {
+    height: 130px; border-radius: 22px;
+    background: linear-gradient(135deg, #0c694c 0%, #164e49 45%, #1a6f94 100%);
+    position: relative; overflow: hidden;
+  }
+  .cover::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 80% 30%, rgba(46,139,182,0.3) 0%, transparent 50%),
+      radial-gradient(circle at 15% 70%, rgba(26,163,116,0.2) 0%, transparent 50%);
+  }
+  .cover::after {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Avatar — KEY FIX: use a wrapping div as the circle, not the img itself */
+  .avatar-circle {
+    width: 96px; height: 96px;
+    border-radius: 50%;
+    border: 4px solid #f7faf8;
+    box-shadow: 0 6px 20px rgba(13,31,26,0.18);
+    overflow: hidden;           /* clips the image to the circle */
+    flex-shrink: 0;
+    background: #e2e8f0;        /* fallback while image loads */
+  }
+  .avatar-circle img {
+    width: 100%; height: 100%;
+    object-fit: cover;          /* fills circle, crops edges */
+    object-position: center top;/* show face not feet */
+    display: block;
+  }
+
+  .avatar-status {
+    position: absolute; bottom: 4px; right: 4px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #22c55e; border: 3px solid #f7faf8;
+  }
+
+  /* Detail card */
+  .detail-card {
+    background: #fff; border-radius: 18px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 12px rgba(13,31,26,0.04); overflow: hidden;
+  }
+  .card-head {
+    display: flex; align-items: center; gap: 10px;
+    padding: 16px 20px 12px; border-bottom: 1px solid #f8fafc;
+  }
+  .card-head-icon {
+    width: 30px; height: 30px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .prow {
+    display: flex; align-items: center;
+    padding: 13px 20px; border-bottom: 1px solid #f8fafc; gap: 14px;
+  }
+  .prow:last-child { border-bottom: none; }
+  .prow-icon {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .prow-label {
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+    color: #94a3b8; text-transform: uppercase; letter-spacing: .07em; margin-bottom: 2px;
+  }
+  .prow-value {
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; color: #0d1f1a;
+    word-break: break-all;
+  }
+  .active-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 700;
+    padding: 4px 11px; border-radius: 20px;
+    background: rgba(26,163,116,0.1); color: #0c694c;
+    border: 1px solid rgba(26,163,116,0.2);
+  }
+  .verified-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 20px;
+    background: rgba(26,163,116,0.1); color: #0c694c; flex-shrink: 0;
+  }
+  .stat-card {
+    background: #fff; border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 8px rgba(13,31,26,0.03);
+    padding: 14px 16px; flex: 1;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .stat-icon { width: 38px; height: 38px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .stat-val { font-family: 'Cabinet Grotesk', sans-serif; font-size: 18px; font-weight: 900; color: #0d1f1a; line-height: 1; }
+  .stat-lbl { font-family: 'DM Sans', sans-serif; font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+  .copy-btn-sm {
+    background: none; border: none; padding: 3px 7px;
+    color: #94a3b8; cursor: pointer; font-size: 12px;
+    border-radius: 6px; transition: color .2s, background .2s;
+  }
+  .copy-btn-sm:hover { color: #1aa374; background: rgba(26,163,116,0.08); }
+  .edit-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    color: #0c694c; text-decoration: none;
+    padding: 8px 16px; border-radius: 10px;
+    border: 1.5px solid rgba(26,163,116,0.25);
+    background: rgba(26,163,116,0.06); transition: all .2s;
+  }
+  .edit-link:hover { background: rgba(26,163,116,0.12); color: #0c694c; }
+
+  #copy-toast {
+    position: fixed; bottom: 1.5rem;
+    left: 50%; transform: translateX(-50%) translateY(10px);
+    background: #0d1f1a; color: #fff;
+    font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px;
+    padding: 12px 20px; border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.25);
+    display: flex; align-items: center; gap: 8px;
+    pointer-events: none; z-index: 9999;
+    opacity: 0; transition: opacity .3s, transform .3s;
+  }
+</style>
+{% endblock head %}
+
+
 {% block content %}
+<div class="w-full" style="background:#f7faf8; padding:1.5rem 1rem 5rem; min-height:80vh;">
+  <div style="max-width:640px; margin:0 auto;">
 
-    <style>
-        td{
-            font-size: .8rem;
-            width: 100%;
-        }
-    </style>
-
-    <div class="m-auto mt-5" style="max-width: 600px;">
-        <p class="text-center h4 table_head rounded text-light py-2">MY PROFILE</p>
-        <!-- <table class="table m-auto border">
-            <tbody>
-                <tr>
-                  <td class="fw-bold text-muted py-3">Last Name :</td>
-                  <td class="fw-bold text-muted py-3">{{ current_user.last_name.title() }}</td>
-                </tr>
-
-                <tr>
-                    <td class="fw-bold text-muted py-3">First Name :</td>
-                    <td class="fw-bold text-muted py-3">{{ current_user.first_name.title() }}</td>
-                  </tr>
-                  
-                  <tr>
-                    <td class="fw-bold text-muted py-3">Account Number :</td>
-                    <td class="fw-bold text-muted py-3">{{ current_user.account_number }}</td>
-                  </tr>
-
-                  <tr>
-                    <td class="fw-bold text-muted py-3">Account Status :</td>
-                    <td class="fw-bold text-muted py-3">Active <i class="fa fa-check-circle text-success"></i></td>
-                  </tr>
-                  <tr>
-                    <td class="fw-bold text-muted py-3">Email Address :</td>
-                    <td class="fw-bold text-muted py-3">{{ current_user.email }}</td>
-                  </tr>
-
-                  <tr>
-                    <td class="fw-bold text-muted py-3">Username :</td>
-                    <td class="fw-bold text-muted py-3">{{ current_user.username.title() }}</td>
-                  </tr>
-
-                  <tr>
-                    <td class="fw-bold text-muted py-3">Phone Number :</td>
-                    <td class="fw-bold text-muted py-3">0{{ current_user.phone_number }}</td>
-                  </tr>
-              </tbody>
-        </table> -->
-    </div>
-
-
-
-<section>
-  <div class="container py-3">
-    <div class="row">
-      <div class="col">
+    <!-- Header row -->
+    <div class="rise rise-1" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+      <div>
+        <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.5rem;color:#0d1f1a;margin:0;">My Profile</h1>
+        <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:4px 0 0;">Your personal information</p>
       </div>
+      <a href="{{ url_for('view.account') }}" class="edit-link">
+        <i class="fas fa-cog" style="font-size:11px;"></i>
+        Settings
+      </a>
     </div>
 
-    <div class="row">
-      <div class="col-lg-4">
-        <div class="card mb-4">
-          <div class="card-body text-center table_head">
-            <img src="{{ current_user.photo }}" alt="avatar"
-              class="rounded-circle img-fluid img-thumbnail" style="width: 310px; height: 310px;">
-            <!-- <h5 class="my-3">{{ current_user.last_name.title() }} {{ current_user.first_name.title() }}</h5> -->
+    <!-- ═══ PROFILE HEADER CARD ═══ -->
+    <div class="rise rise-1" style="margin-bottom:20px;">
+      <!-- Cover -->
+      <div class="cover">
+        <div style="position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.04);top:-60px;right:-30px;z-index:1;"></div>
+        <div style="position:absolute;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.04);bottom:-30px;left:45%;z-index:1;"></div>
+      </div>
+
+      <!-- Avatar + name (sits below cover, avatar overlaps) -->
+      <div style="padding: 0 20px 20px; background:#fff; border-radius: 0 0 18px 18px; border: 1px solid #f1f5f9; border-top: none; box-shadow: 0 2px 12px rgba(13,31,26,0.04);">
+        <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-top:-48px;">
+          <!-- Avatar overlapping cover -->
+          <div style="position:relative; flex-shrink:0;">
+            <div class="avatar-circle">
+              <img src="{{ current_user.photo }}" alt="{{ current_user.first_name.title() }}" />
+            </div>
+            <div class="avatar-status"></div>
+          </div>
+          <!-- Active pill on same row as avatar (right side) -->
+          <div style="padding-bottom:6px; flex-shrink:0;">
+            <span class="active-pill">
+              <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;animation:pulse 2s infinite;"></span>
+              Active
+            </span>
           </div>
         </div>
-      </div>
-      <div class="col-lg-8">
-        <div class="card mb-4">
-          <div class="card-body">
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Full Name</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ current_user.last_name.title() }} {{ current_user.first_name.title() }}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Email</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ current_user.email }}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Phone</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">0{{ current_user.phone_number }}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Account Number</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ current_user.account_number }}</p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Account Status</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">Active <i class="fa fa-check-circle text-success"></i></p>
-              </div>
-            </div>
-            <hr>
-            <div class="row">
-              <div class="col-sm-3">
-                <p class="mb-0">Username</p>
-              </div>
-              <div class="col-sm-9">
-                <p class="text-muted mb-0">{{ current_user.username }}</p>
-              </div>
-            </div>
+
+        <!-- Name + handle below avatar -->
+        <div style="margin-top:12px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <h2 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.25rem;color:#0d1f1a;margin:0;line-height:1.2;">
+              {{ current_user.last_name.title() }} {{ current_user.first_name.title() }}
+            </h2>
+            <span class="verified-pill">
+              <i class="fas fa-check-circle" style="font-size:9px;"></i> Verified
+            </span>
           </div>
+          <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:4px 0 0;">@{{ current_user.username }}</p>
         </div>
       </div>
     </div>
+
+    <!-- ═══ STATS ═══ -->
+    <div class="rise rise-2" style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(26,163,116,0.1);">
+          <i class="fas fa-arrow-right-arrow-left" style="color:#1aa374;font-size:13px;"></i>
+        </div>
+        <div>
+          <p class="stat-val">{{ current_user.transacts | length if current_user.transacts else 0 }}</p>
+          <p class="stat-lbl">Transactions</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(46,139,182,0.1);">
+          <i class="fas fa-users" style="color:#2e8bb6;font-size:13px;"></i>
+        </div>
+        <div>
+          <p class="stat-val">{{ current_user.beneficials | length if current_user.beneficials else 0 }}</p>
+          <p class="stat-lbl">Beneficiaries</p>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(245,158,11,0.1);">
+          <i class="fas fa-star" style="color:#f59e0b;font-size:13px;"></i>
+        </div>
+        <div>
+          <p class="stat-val">{{ current_user.invite_count if current_user.invite_count is defined else 0 }}</p>
+          <p class="stat-lbl">Referrals</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PERSONAL INFO ═══ -->
+    <div class="detail-card rise rise-2" style="margin-bottom:16px;">
+      <div class="card-head">
+        <div class="card-head-icon" style="background:rgba(26,163,116,0.1);">
+          <i class="fas fa-user" style="color:#1aa374;font-size:11px;"></i>
+        </div>
+        <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:14px;color:#0d1f1a;margin:0;">Personal Information</p>
+      </div>
+
+      <div class="prow">
+        <div class="prow-icon" style="background:#f8fafc;">
+          <i class="fas fa-id-badge" style="color:#94a3b8;font-size:11px;"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p class="prow-label">Full Name</p>
+          <p class="prow-value">{{ current_user.last_name.title() }} {{ current_user.first_name.title() }}</p>
+        </div>
+      </div>
+
+      <div class="prow">
+        <div class="prow-icon" style="background:rgba(26,163,116,0.08);">
+          <i class="fas fa-at" style="color:#1aa374;font-size:11px;"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p class="prow-label">Username</p>
+          <p class="prow-value">@{{ current_user.username }}</p>
+        </div>
+      </div>
+
+      <div class="prow">
+        <div class="prow-icon" style="background:rgba(59,130,246,0.08);">
+          <i class="fas fa-envelope" style="color:#3b82f6;font-size:11px;"></i>
+        </div>
+        <div style="flex:1;min-width:0;overflow:hidden;">
+          <p class="prow-label">Email Address</p>
+          <p class="prow-value" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ current_user.email }}</p>
+        </div>
+        <span class="verified-pill" style="flex-shrink:0;margin-left:8px;">
+          <i class="fas fa-check-circle" style="font-size:9px;"></i> Verified
+        </span>
+      </div>
+
+      <div class="prow">
+        <div class="prow-icon" style="background:rgba(34,197,94,0.08);">
+          <i class="fas fa-phone" style="color:#16a34a;font-size:11px;"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p class="prow-label">Phone Number</p>
+          <p class="prow-value">0{{ current_user.phone_number }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ ACCOUNT INFO ═══ -->
+    <div class="detail-card rise rise-3">
+      <div class="card-head">
+        <div class="card-head-icon" style="background:rgba(46,139,182,0.1);">
+          <i class="fas fa-university" style="color:#2e8bb6;font-size:11px;"></i>
+        </div>
+        <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:14px;color:#0d1f1a;margin:0;">Account Information</p>
+      </div>
+
+      <div class="prow">
+        <div class="prow-icon" style="background:rgba(26,163,116,0.08);">
+          <i class="fas fa-hashtag" style="color:#1aa374;font-size:11px;"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p class="prow-label">Account Number</p>
+          <p class="prow-value" style="font-family:'Courier New',monospace;letter-spacing:.1em;">{{ current_user.account_number }}</p>
+        </div>
+        <button class="copy-btn-sm" onclick="copyVal('{{ current_user.account_number }}','Account number')">
+          <i class="fas fa-copy"></i>
+        </button>
+      </div>
+
+      <div class="prow">
+        <div class="prow-icon" style="background:rgba(34,197,94,0.08);">
+          <i class="fas fa-check-circle" style="color:#16a34a;font-size:11px;"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p class="prow-label">Account Status</p>
+          <p class="prow-value">Active</p>
+        </div>
+        <span class="active-pill" style="flex-shrink:0;">
+          <span style="width:6px;height:6px;border-radius:50%;background:#22c55e;display:inline-block;animation:pulse 2s infinite;"></span>
+          Good standing
+        </span>
+      </div>
+
+      <div class="prow">
+        <div class="prow-icon" style="background:rgba(245,158,11,0.08);">
+          <i class="fas fa-wallet" style="color:#f59e0b;font-size:11px;"></i>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <p class="prow-label">Account Type</p>
+          <p class="prow-value">Personal Wallet</p>
+        </div>
+      </div>
+    </div>
+
   </div>
-</section>
+</div>
+
+<div id="copy-toast">
+  <i class="fas fa-check-circle" style="color:#6dd6ae;font-size:14px;"></i>
+  <span id="copy-toast-msg">Copied!</span>
+</div>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+  function copyVal(val, label) {
+    navigator.clipboard.writeText(val).then(() => {
+      const t = document.getElementById('copy-toast');
+      document.getElementById('copy-toast-msg').textContent = (label||'Value') + ' copied!';
+      t.style.opacity='1'; t.style.transform='translateX(-50%) translateY(0)';
+      clearTimeout(window._tt);
+      window._tt = setTimeout(()=>{ t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(10px)'; },2200);
+    });
+  }
+</script>
+{% endblock scripts %}

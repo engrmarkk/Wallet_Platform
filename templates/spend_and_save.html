@@ -1,142 +1,267 @@
-{% extends 'base.html' %} {% block content %}
-<div>
-  <!-- Flash messages -->
-  {% with messages = get_flashed_messages(with_categories=true) %} {% if
-  messages %} {% for category, message in messages %}
-  <div
-    class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
-    role="alert"
-    style="height: 3.5rem; transition: 0.6s"
-  >
-    {% if category=='success' %}
-    <div class="small text-center">
-      <i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}
-    </div>
-    {% else %}
-    <div class="small text-center">
-      <i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}
-    </div>
-    {% endif %}
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="alert"
-      aria-label="Close"
-    ></button>
-  </div>
-  {% endfor %} {% endif %} {% endwith %}
+{% extends 'base.html' %}
 
-  <div
-    class="card rounded-circle p-4 mt-5"
-    style="
-      max-width: 14rem;
-      height: 14rem;
-      margin: auto;
-      background: linear-gradient(158deg, #1edf00 -45%, #2e8bb6);
-    "
-  >
-    <p class="m-auto text-white text-center">
-      Savings<br />
-      <span class="h4 fw-bold"
-        ><del style="text-decoration-style: double">N</del> 
-        {{ "{:,.2f}".format(current_user.spend_save_amount) }}</span>
-    </p>
-  </div>
+{% block title %}Spend & Save — EasyTransact{% endblock title %}
 
-  <a href="{{ url_for('view.enable_spend_and_save') }}" class="btn mt-2 btn-{% if current_user.enabled_spend_save %}danger{% else %}success{% endif %} m-auto d-flex" style="width: fit-content;">
-    {% if current_user.enabled_spend_save %}Disable{% else %}Enable{% endif %}
-  </a>
-  {% if current_user.enabled_spend_save and current_user.spend_save_amount %}
-  <button class="text-center btn btn-success d-flex m-auto mt-2" id="openform"
-  data-bs-toggle="modal"
-  data-bs-target="#staticBackdrop" style="border: none;" type="button" id="dropdownMenuButton"
-  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-  >
-    Withdraw
-  </button>
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+
+  @keyframes riseUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes shimmer { 0%{background-position:-200% center} 100%{background-position:200% center} }
+  @keyframes slideInRight { from{opacity:0;transform:translateX(120%)} to{opacity:1;transform:translateX(0)} }
+  @keyframes slideOutRight { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(120%)} }
+  @keyframes shrink { from{width:100%} to{width:0} }
+
+  .rise   { opacity:0; animation:riseUp .55s cubic-bezier(.34,1.1,.64,1) forwards; }
+  .rise-1 { animation-delay:.06s; }
+  .rise-2 { animation-delay:.16s; }
+  .rise-3 { animation-delay:.26s; }
+
+  .savings-hero {
+    border-radius:24px; padding:32px 24px 28px;
+    position:relative; overflow:hidden;
+    box-shadow:0 12px 40px rgba(26,163,116,0.28);
+  }
+  .hero-enabled  { background:linear-gradient(135deg,#0c694c 0%,#1aa374 45%,#2e8bb6 100%); }
+  .hero-disabled { background:linear-gradient(135deg,#374151,#4b5563,#6b7280); }
+  .savings-hero::before {
+    content:''; position:absolute; inset:0;
+    background-image:radial-gradient(circle at 85% 15%,rgba(255,255,255,0.10) 0%,transparent 50%),radial-gradient(circle at 10% 85%,rgba(255,255,255,0.06) 0%,transparent 45%);
+  }
+  .savings-hero::after {
+    content:''; position:absolute; inset:0;
+    background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);
+    background-size:28px 28px;
+  }
+  .savings-hero > * { position:relative; z-index:1; }
+  .balance-shimmer {
+    background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0.12) 50%,rgba(255,255,255,0) 100%);
+    background-size:200% 100%; animation:shimmer 3s linear infinite;
+    position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  }
+
+  .toggle-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    padding:12px 22px; border-radius:14px; border:none; cursor:pointer;
+    font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px;
+    transition:transform .2s, box-shadow .2s; text-decoration:none;
+  }
+  .toggle-btn:hover { transform:translateY(-2px); }
+  .btn-disable { background:rgba(239,68,68,0.15); color:#dc2626; border:1.5px solid rgba(239,68,68,0.25); }
+  .btn-disable:hover { background:rgba(239,68,68,0.22); box-shadow:0 6px 18px rgba(239,68,68,0.2); color:#dc2626; }
+  .btn-enable  { background:rgba(255,255,255,0.15); color:#fff; border:1.5px solid rgba(255,255,255,0.3); }
+  .btn-enable:hover  { background:rgba(255,255,255,0.25); box-shadow:0 6px 18px rgba(0,0,0,0.15); color:#fff; }
+  .btn-withdraw { background:#fff; color:#0c694c; box-shadow:0 4px 16px rgba(0,0,0,0.10); }
+  .btn-withdraw:hover { box-shadow:0 8px 24px rgba(0,0,0,0.16); color:#0c694c; }
+
+  .info-card { background:#fff; border-radius:18px; border:1px solid #f1f5f9; box-shadow:0 2px 12px rgba(13,31,26,0.04); padding:18px 20px; display:flex; align-items:center; gap:14px; }
+  .info-icon  { width:42px; height:42px; border-radius:13px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .info-label { font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:.07em; margin:0 0 3px; }
+  .info-value { font-family:'Cabinet Grotesk',sans-serif; font-size:18px; font-weight:900; color:#0d1f1a; margin:0; line-height:1; }
+
+  /* Modal */
+  .et-modal-overlay { position:fixed; inset:0; z-index:999; background:rgba(13,31,26,0.5); backdrop-filter:blur(6px); display:flex; align-items:flex-end; justify-content:center; opacity:0; pointer-events:none; transition:opacity .3s; }
+  .et-modal-overlay.open { opacity:1; pointer-events:auto; }
+  .et-modal { background:#fff; border-radius:24px 24px 0 0; padding:0; width:100%; max-width:480px; box-shadow:0 -20px 60px rgba(13,31,26,0.18); transform:translateY(100%); transition:transform .4s cubic-bezier(.34,1.1,.64,1); }
+  .et-modal-overlay.open .et-modal { transform:translateY(0); }
+  .modal-handle { width:40px; height:4px; border-radius:2px; background:#e2e8f0; margin:12px auto 0; }
+  .modal-body-inner { padding:20px 24px 32px; }
+
+  .et-input { width:100%; background:#f8fafc; border:1.5px solid #e2e8f0; border-radius:12px; padding:11px 14px; font-family:'DM Sans',sans-serif; font-size:14px; color:#0d1f1a; outline:none; transition:border-color .25s,box-shadow .25s; }
+  .et-input::placeholder { color:#94a3b8; }
+  .et-input:focus { border-color:#1aa374; background:#fff; box-shadow:0 0 0 4px rgba(26,163,116,0.10); }
+  .et-input.has-error { border-color:#f87171; background:#fff5f5; }
+  .field-label { display:block; font-family:'DM Sans',sans-serif; font-size:11px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:.07em; margin-bottom:6px; }
+  .amount-wrap { position:relative; }
+  .amount-prefix { position:absolute; left:14px; top:50%; transform:translateY(-50%); font-family:'Cabinet Grotesk',sans-serif; font-weight:900; font-size:17px; color:#1aa374; pointer-events:none; }
+  .amount-input { padding-left:30px !important; font-family:'Cabinet Grotesk',sans-serif !important; font-weight:700 !important; font-size:18px !important; }
+
+  .submit-btn { width:100%; padding:14px; border-radius:14px; border:none; background:linear-gradient(135deg,#1aa374,#2e8bb6); color:#fff; font-family:'DM Sans',sans-serif; font-weight:700; font-size:15px; cursor:pointer; position:relative; overflow:hidden; box-shadow:0 8px 25px rgba(26,163,116,0.30); transition:transform .2s,box-shadow .2s; display:flex; align-items:center; justify-content:center; gap:8px; }
+  .submit-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,#0c694c,#1a6f94); opacity:0; transition:opacity .3s; }
+  .submit-btn:hover::before { opacity:1; }
+  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 14px 35px rgba(26,163,116,0.4); }
+  .submit-btn span { position:relative; z-index:1; display:flex; align-items:center; gap:8px; }
+
+  /* Toast */
+  .flash-toast { position:fixed; top:1.25rem; right:1.25rem; z-index:9999; display:flex; align-items:flex-start; gap:12px; background:#fff; border-radius:16px; padding:14px 16px; min-width:280px; max-width:360px; box-shadow:0 8px 32px rgba(13,31,26,0.14); border:1px solid #f1f5f9; animation:slideInRight .4s cubic-bezier(.34,1.2,.64,1) forwards; overflow:hidden; }
+  .flash-toast.hide { animation:slideOutRight .35s ease forwards; }
+  .ft-icon{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+  .ft-icon.success{background:rgba(26,163,116,0.1);color:#0c694c;} .ft-icon.error{background:rgba(239,68,68,0.1);color:#dc2626;}
+  .ft-title{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0 0 2px;}
+  .ft-msg{font-family:'DM Sans',sans-serif;font-size:12px;color:#64748b;margin:0;}
+  .ft-close{background:none;border:none;cursor:pointer;padding:0;color:#cbd5e1;font-size:12px;line-height:1;}
+  .ft-bar{position:absolute;bottom:0;left:0;height:3px;border-radius:0 0 16px 16px;animation:shrink 4s linear forwards;}
+  .ft-bar.success{background:#1aa374;} .ft-bar.error{background:#ef4444;}
+</style>
+{% endblock head %}
+
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div style="position:fixed;top:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:10px;">
+      {% for category, message in messages %}
+      {% set tone = 'success' if category=='success' else 'error' %}
+      <div class="flash-toast" id="ft-{{ loop.index }}" style="position:relative;">
+        <div class="ft-icon {{ tone }}"><i class="fas {% if tone=='success' %}fa-check-circle{% else %}fa-times-circle{% endif %}"></i></div>
+        <div style="flex:1;min-width:0;"><p class="ft-title">{% if tone=='success' %}Success{% else %}Error{% endif %}</p><p class="ft-msg">{{ message }}</p></div>
+        <button class="ft-close" onclick="dismissToast('ft-{{ loop.index }}')"><i class="fas fa-times"></i></button>
+        <div class="ft-bar {{ tone }}"></div>
+      </div>
+      {% endfor %}
+    </div>
   {% endif %}
-  
+{% endwith %}
 
-  <!-- end of form -->
+<div class="w-full" style="background:#f7faf8;padding:1.5rem 1rem 5rem;min-height:80vh;">
+  <div style="max-width:480px;margin:0 auto;">
 
-  <!-- overlay -->
-  <!-- {% if not n %}
-  <div class="savealert-container">
-    <div class="savealert">
-      <div>10% of your spendings on transfers will be saved</div>
-      <button class="btn btn-info mr-auto mt-3" id="savebtn" autofocus>OK</button>
-    </div>
-  </div>
-  {% endif %} -->
-
-
-
-
-
-
-      <!-- Modal -->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-  aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable">
-  <div class=" modal-content">
-    <div class="modal-header">
-      <h1 class="modal-title fs-5" id="staticBackdropLabel">Amount</h1>
-      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <!-- Header -->
+    <div class="rise rise-1" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;">
+      <div>
+        <h1 style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:1.5rem;color:#0d1f1a;margin:0 0 3px;">Spend &amp; Save</h1>
+        <p style="font-family:'DM Sans',sans-serif;font-size:13px;color:#94a3b8;margin:0;">10% of every transfer auto-saved</p>
+      </div>
+      <div style="width:40px;height:40px;border-radius:14px;background:{% if current_user.enabled_spend_save %}linear-gradient(135deg,#1aa374,#2e8bb6){% else %}#e2e8f0{% endif %};display:flex;align-items:center;justify-content:center;box-shadow:{% if current_user.enabled_spend_save %}0 4px 14px rgba(26,163,116,0.3){% else %}none{% endif %};">
+        <i class="fas fa-piggy-bank" style="color:{% if current_user.enabled_spend_save %}#fff{% else %}#94a3b8{% endif %};font-size:16px;"></i>
+      </div>
     </div>
 
-    <div class="modal-body">
-      <!-- form -->
-  <form
-      action=""
-      method="post"
-      class="p-3 mt-3 m-auto"
-    >
-      {{ form.hidden_tag() }}
-      <!-- For Amount validations -->
-      {{ form.amount(class="form-control p-2 ", required=False, placeholder='Enter amount') }}
-      
-      {% if form.amount.errors %}
-      {% for error in form.amount.errors %}
-      <small class="text-danger mt-1"
-        ><i class="fa fas fa-exclamation-circle"></i>&nbsp;&nbsp;{{ error
-        }}</small
-      ><br>
-      {% endfor %} 
-      {% endif %}
-            <!-- For submit button -->
-      {{ form.submit(size=20, class='pay-btn btn btn-success mt-4 w-100 p-1')}}
-    </form>
+    <!-- Hero balance card -->
+    <div class="savings-hero {% if current_user.enabled_spend_save %}hero-enabled{% else %}hero-disabled{% endif %} rise rise-1" style="margin-bottom:20px;">
+      <div style="position:absolute;inset:0;border-radius:24px;overflow:hidden;"><div class="balance-shimmer"></div></div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+        <p style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;margin:0;">Spend &amp; Save Balance</p>
+        <span style="display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);padding:4px 11px;border-radius:20px;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:rgba(255,255,255,.8);">
+          <span style="width:6px;height:6px;border-radius:50%;background:{% if current_user.enabled_spend_save %}#4ade80{% else %}#9ca3af{% endif %};display:inline-block;{% if current_user.enabled_spend_save %}animation:pulse 2s infinite{% endif %}"></span>
+          {% if current_user.enabled_spend_save %}Active{% else %}Inactive{% endif %}
+        </span>
+      </div>
+
+      <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:900;font-size:2.6rem;color:#fff;margin:0 0 4px;line-height:1;">
+        <span style="font-size:1.5rem;opacity:.65;">₦</span>{{ "{:,.2f}".format(current_user.spend_save_amount) }}
+      </p>
+      <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:rgba(255,255,255,.5);margin:0 0 22px;">Auto-saved from transfers</p>
+
+      <!-- Action buttons -->
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <a href="{{ url_for('view.enable_spend_and_save') }}"
+           class="toggle-btn {% if current_user.enabled_spend_save %}btn-disable{% else %}btn-enable{% endif %}">
+          <i class="fas {% if current_user.enabled_spend_save %}fa-toggle-off{% else %}fa-toggle-on{% endif %}" style="font-size:15px;"></i>
+          {% if current_user.enabled_spend_save %}Disable{% else %}Enable{% endif %}
+        </a>
+        {% if current_user.enabled_spend_save and current_user.spend_save_amount %}
+        <button class="toggle-btn btn-withdraw" onclick="openModal('withdraw-modal')">
+          <i class="fas fa-arrow-down" style="font-size:13px;color:#1aa374;"></i>
+          Withdraw
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Info cards -->
+    <div class="rise rise-2" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+      <div class="info-card">
+        <div class="info-icon" style="background:rgba(26,163,116,0.1);">
+          <i class="fas fa-percent" style="color:#1aa374;font-size:14px;"></i>
+        </div>
+        <div>
+          <p class="info-label">Auto-save</p>
+          <p class="info-value">10%</p>
+          <p style="font-family:'DM Sans',sans-serif;font-size:10px;color:#94a3b8;margin:2px 0 0;">Per transfer</p>
+        </div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon" style="background:rgba(46,139,182,0.1);">
+          <i class="fas fa-bolt" style="color:#2e8bb6;font-size:14px;"></i>
+        </div>
+        <div>
+          <p class="info-label">Trigger</p>
+          <p class="info-value">Auto</p>
+          <p style="font-family:'DM Sans',sans-serif;font-size:10px;color:#94a3b8;margin:2px 0 0;">Every send</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- How it works -->
+    <div class="rise rise-3" style="background:#fff;border-radius:18px;border:1px solid #f1f5f9;box-shadow:0 2px 12px rgba(13,31,26,0.04);padding:18px 20px;">
+      <p style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.1em;margin:0 0 14px;">How Spend &amp; Save works</p>
+      {% for icon, bg, color, title, desc in [
+        ('fa-toggle-on','rgba(26,163,116,0.1)','#1aa374','Enable it','Turn on Spend & Save from this page'),
+        ('fa-paper-plane','rgba(46,139,182,0.1)','#2e8bb6','Send money','Make any wallet or bank transfer as usual'),
+        ('fa-piggy-bank','rgba(245,158,11,0.1)','#f59e0b','Auto-save 10%','10% of your transfer is quietly saved for you'),
+        ('fa-hand-holding-usd','rgba(16,185,129,0.1)','#10b981','Withdraw anytime','Pull your savings whenever you need them')
+      ] %}
+      <div style="display:flex;align-items:center;gap:12px;{% if not loop.last %}margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #f8fafc;{% endif %}">
+        <div style="width:36px;height:36px;border-radius:10px;background:{{ bg }};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="fas {{ icon }}" style="color:{{ color }};font-size:13px;"></i>
+        </div>
+        <div>
+          <p style="font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#0d1f1a;margin:0;">{{ title }}</p>
+          <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin:2px 0 0;">{{ desc }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
 
   </div>
 </div>
+
+<!-- Withdraw modal -->
+<div class="et-modal-overlay" id="withdraw-modal">
+  <div class="et-modal">
+    <div class="modal-handle"></div>
+    <div class="modal-body-inner">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#1aa374,#2e8bb6);display:flex;align-items:center;justify-content:center;">
+            <i class="fas fa-arrow-down" style="color:#fff;font-size:15px;"></i>
+          </div>
+          <div>
+            <p style="font-family:'Cabinet Grotesk',sans-serif;font-weight:700;font-size:15px;color:#0d1f1a;margin:0;">Withdraw Savings</p>
+            <p style="font-family:'DM Sans',sans-serif;font-size:11px;color:#94a3b8;margin:0;">Available: ₦{{ "{:,.2f}".format(current_user.spend_save_amount) }}</p>
+          </div>
+        </div>
+        <button onclick="closeModal('withdraw-modal')" style="width:32px;height:32px;border-radius:10px;background:#f1f5f9;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+          <i class="fas fa-times" style="color:#64748b;font-size:11px;"></i>
+        </button>
+      </div>
+      <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <label class="field-label">Amount to Withdraw</label>
+        {% if form.amount.errors %}
+        <div class="amount-wrap" style="margin-bottom:6px;">
+          <span class="amount-prefix">₦</span>
+          {{ form.amount(class="et-input amount-input has-error", required=False, placeholder="0.00") }}
+        </div>
+        {% for error in form.amount.errors %}
+        <p style="font-family:'DM Sans',sans-serif;font-size:12px;color:#ef4444;margin:4px 0 12px;display:flex;align-items:center;gap:5px;">
+          <i class="fas fa-exclamation-circle" style="font-size:10px;"></i>{{ error }}
+        </p>
+        {% endfor %}
+        {% else %}
+        <div class="amount-wrap" style="margin-bottom:16px;">
+          <span class="amount-prefix">₦</span>
+          {{ form.amount(class="et-input amount-input", required=False, placeholder="0.00") }}
+        </div>
+        {% endif %}
+        {{ form.submit(class="submit-btn") }}
+      </form>
+    </div>
+  </div>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  <script>
-    const disapearBtn = document.querySelector("#savebtn");
-    const disapearMenu = document.querySelector(".savealert-container");
-
-    disapearBtn.addEventListener("click", () => {
-      disapearMenu.classList.add("disappear");
-    });
-  </script>
-</div>
-
 {% endblock content %}
+
+{% block scripts %}
+<script>
+  function openModal(id)  { document.getElementById(id).classList.add('open');    document.body.style.overflow='hidden'; }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+  document.querySelectorAll('.et-modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) closeModal(o.id); }));
+  document.addEventListener('keydown', e => { if(e.key==='Escape') document.querySelectorAll('.et-modal-overlay.open').forEach(m=>closeModal(m.id)); });
+  document.querySelectorAll('.flash-toast').forEach((t,i) => setTimeout(()=>dismissToast(t.id), 4000+i*300));
+  function dismissToast(id) { const el=document.getElementById(id); if(!el)return; el.classList.add('hide'); setTimeout(()=>el.remove(),380); }
+  {% if form.amount.errors %}window.addEventListener('load',()=>openModal('withdraw-modal'));{% endif %}
+</script>
+{% endblock scripts %}
