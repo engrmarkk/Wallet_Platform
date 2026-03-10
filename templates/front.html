@@ -1,187 +1,845 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
 
-<!-- Flash messages -->
-{% with messages = get_flashed_messages(with_categories=true) %} {% if messages
-%} {% for category, message in messages %}
-<div
-  class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }} mt-3"
-  role="alert"
-  style="height: 3.5rem; transition: 0.6s"
->
-  {% if category=='success' %}
-  <div class="small text-center">
-    <i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}
-  </div>
-  {% else %}
-  <div class="small text-center">
-    <i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}
-  </div>
-  {% endif %}
-  <button
-    type="button"
-    class="btn-close"
-    data-bs-dismiss="alert"
-    aria-label="Close"
-  ></button>
-</div>
-{% endfor %} {% endif %} {% endwith %}
+{% block title %}EasyTransact — The Wallet App for Nigerians{% endblock title %}
 
-<!-- intro section -->
-<div class="hero-container">
-  <img
-    src="{{ url_for('static', filename='images/blueC.png') }}"
-    alt="img"
-    class="blue1"
-    style="width: 25rem"
-  /><img
-    src="{{ url_for('static', filename='images/yellowC.png') }}"
-    alt="img"
-    class="yellow1"
-    style="width: 25rem"
-  /><img
-    src="{{ url_for('static', filename='images/blueC.png') }}"
-    alt="img"
-    class="blue2"
-    style="width: 25rem"
-  /><img
-    src="{{ url_for('static', filename='images/yellowC.png') }}"
-    alt="img"
-    class="yellow2"
-    style="width: 25rem"
-  />
-  <div class="d-flex hero-section">
-    <div class="d-flex flex-column w-100">
-      <h1 class="hero">
-        The <span>wallet app</span> <br />
-        for Nigerians
+{% block head %}
+<style>
+  /* ─────────────────────────────────────────
+     LANDING PAGE — LOCAL STYLES
+     (Tailwind handles layout; these handle
+     effects that Tailwind CDN can't express)
+  ───────────────────────────────────────── */
+
+  /* Animated gradient mesh background */
+  .hero-bg {
+    background-color: #f7faf8;
+    background-image:
+      radial-gradient(ellipse 70% 60% at 15% 55%, rgba(26,163,116,0.13) 0%, transparent 65%),
+      radial-gradient(ellipse 55% 50% at 85% 20%, rgba(46,139,182,0.11) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 60% 80%, rgba(12,105,76,0.08) 0%, transparent 55%);
+  }
+
+  /* Dot-grid overlay */
+  .dot-grid {
+    background-image: radial-gradient(circle, rgba(13,31,26,0.07) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  /* Animated blob */
+  @keyframes morphBlob {
+    0%,100% { border-radius: 60% 40% 70% 30% / 50% 60% 40% 70%; }
+    33%      { border-radius: 40% 60% 30% 70% / 60% 40% 70% 30%; }
+    66%      { border-radius: 70% 30% 50% 50% / 40% 70% 30% 60%; }
+  }
+  .blob {
+    animation: morphBlob 12s ease-in-out infinite;
+    filter: blur(45px);
+    pointer-events: none;
+  }
+  .blob-2 { animation-duration: 16s; animation-direction: reverse; }
+
+  /* Hero stagger entrance */
+  @keyframes riseIn {
+    from { opacity: 0; transform: translateY(32px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise { opacity: 0; animation: riseIn .75s ease forwards; }
+  .rise-1 { animation-delay: .05s; }
+  .rise-2 { animation-delay: .18s; }
+  .rise-3 { animation-delay: .30s; }
+  .rise-4 { animation-delay: .44s; }
+  .rise-5 { animation-delay: .58s; }
+
+  /* Phone float */
+  @keyframes phoneFloat {
+    0%,100% { transform: translateY(0px) rotate(-1deg); }
+    50%      { transform: translateY(-16px) rotate(1deg); }
+  }
+  .phone-float { animation: phoneFloat 7s ease-in-out infinite; }
+
+  /* Badge float */
+  @keyframes badgeA {
+    0%,100% { transform: translateY(0) rotate(-3deg); }
+    50%      { transform: translateY(-10px) rotate(-3deg); }
+  }
+  @keyframes badgeB {
+    0%,100% { transform: translateY(0) rotate(3deg); }
+    50%      { transform: translateY(-8px) rotate(3deg); }
+  }
+  .badge-a { animation: badgeA 5s ease-in-out infinite; }
+  .badge-b { animation: badgeB 6s ease-in-out 1s infinite; }
+
+  /* Shimmer on phone card */
+  @keyframes shimmer {
+    0%   { left: -70%; }
+    100% { left: 160%;  }
+  }
+  .shimmer-wrap { position: relative; overflow: hidden; }
+  .shimmer-wrap::after {
+    content: '';
+    position: absolute; top: -50%; left: -70%;
+    width: 35%; height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.14), transparent);
+    transform: skewX(-18deg);
+    animation: shimmer 4s infinite;
+  }
+
+  /* Ticker */
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  .ticker-track { animation: ticker 22s linear infinite; display: flex; width: max-content; }
+
+  /* Scroll reveal */
+  .reveal { opacity: 0; transform: translateY(36px); transition: opacity .75s ease, transform .75s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* Feature card */
+  .feat-card {
+    transition: transform .35s cubic-bezier(.34,1.4,.64,1), box-shadow .35s ease;
+  }
+  .feat-card:hover {
+    transform: translateY(-8px) scale(1.01);
+    box-shadow: 0 28px 60px rgba(12,105,76,0.13);
+  }
+
+  /* Section divider wave */
+  .wave-divider { line-height: 0; }
+  .wave-divider svg { display: block; }
+
+  /* Step connector line */
+  .step-line {
+    position: absolute; top: 28px; left: calc(50% + 36px); right: calc(-50% + 36px);
+    height: 2px;
+    background: linear-gradient(90deg, #1aa374, #2e8bb6);
+    opacity: .25;
+  }
+
+  /* Underline squiggle */
+  .squiggle {
+    text-decoration: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='8'%3E%3Cpath d='M0 5 Q12.5 1 25 5 Q37.5 9 50 5 Q62.5 1 75 5 Q87.5 9 100 5' stroke='%231aa374' stroke-width='2.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-position: 0 100%;
+    background-size: 60px 8px;
+    padding-bottom: 8px;
+  }
+
+  /* Progress bar fill */
+  @keyframes fillBar { from { width: 0; } to { width: var(--target); } }
+  .fill-bar { animation: fillBar 1.5s ease forwards; animation-delay: .5s; width: 0; }
+
+  /* Pulse ring */
+  @keyframes pulseRing {
+    0%   { transform: scale(1); opacity: .5; }
+    100% { transform: scale(2.2); opacity: 0; }
+  }
+  .pulse-ring::before {
+    content: '';
+    position: absolute; inset: 0; border-radius: 9999px;
+    background: rgba(26,163,116,0.35);
+    animation: pulseRing 2.4s ease-out infinite;
+  }
+
+  /* Testimonial card */
+  .testi-card { transition: transform .3s ease, box-shadow .3s ease; }
+  .testi-card:hover { transform: translateY(-5px); box-shadow: 0 20px 45px rgba(12,105,76,0.10); }
+
+  /* CTA section mesh */
+  .cta-mesh {
+    background:
+      linear-gradient(135deg, #0c694c 0%, #164e49 50%, #1a6f94 100%);
+  }
+  .cta-mesh::before {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(circle at 20% 50%, rgba(30,223,0,0.12) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 30%, rgba(46,139,182,0.15) 0%, transparent 50%);
+  }
+  .cta-mesh::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+</style>
+{% endblock head %}
+
+
+{% block content %}
+
+<!-- ══════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════ -->
+<section class="hero-bg relative min-h-[92vh] flex items-center overflow-hidden px-4 sm:px-6 pt-6 pb-20">
+
+  <!-- Dot grid -->
+  <div class="dot-grid absolute inset-0 opacity-60 pointer-events-none"></div>
+
+  <!-- Animated blobs -->
+  <div class="blob absolute w-[480px] h-[480px] -top-24 -left-32 opacity-60" style="background:radial-gradient(circle,rgba(26,163,116,0.25),transparent 70%);"></div>
+  <div class="blob blob-2 absolute w-[380px] h-[380px] bottom-0 right-0 opacity-50" style="background:radial-gradient(circle,rgba(46,139,182,0.2),transparent 70%);"></div>
+
+  <div class="relative z-10 max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 xl:gap-20 items-center">
+
+    <!-- ── Left copy ── -->
+    <div class="flex flex-col">
+
+      <!-- Badge pill -->
+      <div class="rise rise-1 inline-flex self-start items-center gap-2 bg-white/80 backdrop-blur border border-brand-200 rounded-full pl-1.5 pr-4 py-1 mb-7 shadow-sm">
+        <span class="pulse-ring relative flex items-center justify-center w-5 h-5 rounded-full bg-brand-500">
+          <i class="fas fa-bolt text-white text-[8px] relative z-10"></i>
+        </span>
+        <span class="font-body text-xs font-semibold text-brand-800 tracking-wide">Nigeria's Fastest Wallet App</span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="rise rise-2 font-display font-black leading-[1.08] text-ink mb-5" style="font-size:clamp(2.6rem,5.5vw,4.5rem);">
+        Your money,<br>
+        <span class="squiggle text-brand-600">finally free.</span>
       </h1>
-      <p class="text-muted h6 mt-3 w-75">
-        Save, spend, invest and send money across the Nation.
+
+      <p class="rise rise-3 font-body text-base text-slate-500 leading-relaxed max-w-md mb-9">
+        Save, spend, invest and send money across Nigeria — all from one beautifully simple app. No queues, no stress, no hidden fees.
       </p>
-      <a
-        href="{{url_for('auth.register')}}"
-        class="hero-btn mt-3 text-light px-4 fw-bold py-2 text-decoration-none rounded"
-        style="width: fit-content"
-        >Sign Up</a
-      >
+
+      <!-- CTAs -->
+      <div class="rise rise-4 flex flex-wrap gap-3 mb-10">
+        <a href="{{ url_for('auth.register') }}"
+           class="cta-btn inline-flex items-center gap-2.5 font-body font-bold text-sm text-white px-7 py-3.5 rounded-2xl shadow-xl">
+          <span>Open Free Account</span>
+          <i class="fas fa-arrow-right text-xs"></i>
+        </a>
+        <a href="#features"
+           class="inline-flex items-center gap-2.5 font-body font-semibold text-sm text-brand-700 px-6 py-3.5 rounded-2xl border border-brand-200 bg-white/70 hover:bg-brand-50 transition-colors">
+          <i class="fas fa-play-circle text-brand-400"></i>
+          <span>See Features</span>
+        </a>
+      </div>
+
+      <!-- Social proof -->
+      <div class="rise rise-5 flex items-center gap-5 flex-wrap">
+        <div class="flex -space-x-2.5">
+          {% for letter, bg in [('A','#1aa374'),('K','#2e8bb6'),('O','#0c694c'),('N','#4bafd4'),('E','#38bc8d')] %}
+          <div class="w-9 h-9 rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold font-display shadow-sm" style="background:{{ bg }};">{{ letter }}</div>
+          {% endfor %}
+        </div>
+        <div>
+          <div class="flex text-amber-400 text-xs gap-0.5 mb-0.5">
+            {% for _ in range(5) %}<i class="fas fa-star"></i>{% endfor %}
+          </div>
+          <p class="font-body text-xs text-slate-500">Trusted by <strong class="text-ink font-semibold">50,000+</strong> Nigerians</p>
+        </div>
+        <!-- Live stat -->
+        <div class="ml-auto hidden sm:flex items-center gap-2 bg-white/80 border border-brand-100 rounded-xl px-3 py-2 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+          <span class="font-body text-xs font-semibold text-slate-600">₦2B+ processed today</span>
+        </div>
+      </div>
     </div>
-    <div class="d-flex flex-column w-100 p-5">
-      <img
-        src="{{ url_for('static', filename='images/heroImg.png') }}"
-        alt=""
-      />
+
+    <!-- ── Right — Phone mockup ── -->
+    <div class="relative flex justify-center lg:justify-end">
+      <!-- Glow halo -->
+      <div class="absolute w-80 h-80 rounded-full opacity-20 blur-3xl top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" style="background:radial-gradient(circle,#1aa374,#2e8bb6);"></div>
+
+      <!-- Phone -->
+      <div class="phone-float relative z-10 w-72">
+        <div class="shimmer-wrap rounded-[42px] p-[3px] shadow-2xl" style="background:linear-gradient(145deg,#1aa374,#0c694c,#2e8bb6);">
+          <div class="rounded-[40px] overflow-hidden" style="background:#0a1f16;">
+
+            <!-- Status bar -->
+            <div class="flex justify-between items-center px-5 pt-4 pb-2">
+              <span class="font-body text-green-400 text-xs font-semibold">9:41</span>
+              <div class="flex gap-1 items-center">
+                <i class="fas fa-signal text-green-400 text-[10px]"></i>
+                <i class="fas fa-wifi text-green-400 text-[10px]"></i>
+                <div class="w-4 h-2 rounded-sm border border-green-400 relative ml-1">
+                  <div class="absolute inset-[2px] right-[4px] bg-green-400 rounded-[1px]"></div>
+                  <div class="absolute -right-[3px] top-[3px] w-[2px] h-[4px] bg-green-400 rounded-r-[1px]"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="px-5 pb-6">
+              <!-- Greeting -->
+              <p class="font-body text-green-400/70 text-[11px] mt-1">Good morning 👋</p>
+              <p class="font-display font-bold text-white text-base mb-4">Adaeze Okonkwo</p>
+
+              <!-- Balance card -->
+              <div class="rounded-2xl p-4 mb-4 relative overflow-hidden" style="background:linear-gradient(135deg,rgba(26,163,116,0.35),rgba(46,139,182,0.25));border:1px solid rgba(255,255,255,0.08);">
+                <div class="absolute -right-4 -top-4 w-20 h-20 rounded-full opacity-20" style="background:radial-gradient(circle,#1aa374,transparent);"></div>
+                <p class="font-body text-green-300/70 text-[10px] mb-0.5">Total Balance</p>
+                <p class="font-display font-black text-white text-3xl leading-none">₦284,500</p>
+                <p class="font-body text-green-400/60 text-[10px] mt-1.5">**** **** **** 4821</p>
+                <div class="flex justify-between mt-3">
+                  <div>
+                    <p class="font-body text-[9px] text-green-300/50">Income</p>
+                    <p class="font-body text-xs text-green-300 font-semibold">+₦180k</p>
+                  </div>
+                  <div class="text-right">
+                    <p class="font-body text-[9px] text-green-300/50">Expense</p>
+                    <p class="font-body text-xs text-red-300 font-semibold">-₦42k</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick actions -->
+              <div class="grid grid-cols-4 gap-2 mb-4">
+                {% for icon, label, color, bg in [
+                  ('paper-plane','Send','text-brand-300','rgba(26,163,116,0.2)'),
+                  ('arrow-down','Receive','text-blue-300','rgba(46,139,182,0.2)'),
+                  ('exchange-alt','Swap','text-amber-300','rgba(245,158,11,0.2)'),
+                  ('chart-line','Invest','text-purple-300','rgba(167,139,250,0.2)')
+                ] %}
+                <div class="flex flex-col items-center gap-1">
+                  <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background:{{ bg }};">
+                    <i class="fas fa-{{ icon }} {{ color }} text-xs"></i>
+                  </div>
+                  <span class="font-body text-[9px] {{ color }}">{{ label }}</span>
+                </div>
+                {% endfor %}
+              </div>
+
+              <!-- Transactions -->
+              <p class="font-body text-green-300/60 text-[10px] font-semibold mb-2">Recent</p>
+              <div class="space-y-1.5">
+                <div class="flex items-center justify-between px-2.5 py-2 rounded-xl" style="background:rgba(255,255,255,0.05);">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:rgba(26,163,116,0.25);">
+                      <i class="fas fa-arrow-down text-green-400 text-[8px]"></i>
+                    </div>
+                    <div>
+                      <p class="font-body text-white text-[10px] font-semibold">Salary</p>
+                      <p class="font-body text-slate-500 text-[8px]">Today 8:00 AM</p>
+                    </div>
+                  </div>
+                  <span class="font-display font-bold text-green-400 text-[11px]">+₦180k</span>
+                </div>
+                <div class="flex items-center justify-between px-2.5 py-2 rounded-xl" style="background:rgba(255,255,255,0.05);">
+                  <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:rgba(239,68,68,0.2);">
+                      <i class="fas fa-arrow-up text-red-400 text-[8px]"></i>
+                    </div>
+                    <div>
+                      <p class="font-body text-white text-[10px] font-semibold">Chidi Nwosu</p>
+                      <p class="font-body text-slate-500 text-[8px]">2 mins ago</p>
+                    </div>
+                  </div>
+                  <span class="font-display font-bold text-red-400 text-[11px]">-₦5k</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating badges -->
+      <div class="badge-a absolute -left-6 top-1/4 bg-white rounded-2xl px-3.5 py-2.5 shadow-xl border border-brand-50 z-20" style="transform:rotate(-3deg);">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-brand-100 flex items-center justify-center">
+            <i class="fas fa-shield-alt text-brand-600 text-sm"></i>
+          </div>
+          <div>
+            <p class="font-display font-bold text-xs text-ink">256-bit</p>
+            <p class="font-body text-[9px] text-slate-400">Encryption</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="badge-b absolute -right-4 bottom-1/3 bg-white rounded-2xl px-3.5 py-2.5 shadow-xl border border-ocean-400/20 z-20" style="transform:rotate(3deg);">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl flex items-center justify-center" style="background:rgba(46,139,182,0.12);">
+            <i class="fas fa-bolt text-ocean-500 text-sm"></i>
+          </div>
+          <div>
+            <p class="font-display font-bold text-xs text-ink">Instant</p>
+            <p class="font-body text-[9px] text-slate-400">Transfers</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="badge-a absolute left-0 bottom-16 bg-white rounded-2xl px-3 py-2 shadow-xl border border-amber-100 z-20" style="transform:rotate(-2deg);animation-delay:2s;">
+        <div class="flex items-center gap-2">
+          <div class="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center">
+            <i class="fas fa-star text-amber-500 text-xs"></i>
+          </div>
+          <div>
+            <div class="flex text-amber-400 text-[8px] gap-0.5">{% for _ in range(5) %}<i class="fas fa-star"></i>{% endfor %}</div>
+            <p class="font-body text-[9px] text-slate-400 mt-0.5">50k+ users</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-<!-- save -->
-<div
-  class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between"
-  style="margin-top: 6rem"
->
-  <div class="d-flex flex-column w-100">
-    <h2 class="text-h2">Save</h2>
-    <p class="text-p text-muted h6 mt-3 ">
-      With our app, saving has never been easier. Our platform allows you to set savings goals and automate your savings, so you can focus on your other financial priorities. You can also earn interest on your savings and track your progress towards your goals. Start saving towards your dreams today and take control of your finances with ease. Sign up now to experience the benefits of effortless saving.
-    </p>
-  </div>
-  <div class="d-flex flex-column w-100 p-5">
-    <img
-      src="{{ url_for('static', filename='images/save.png') }}"
-      alt="save"
-    />
-  </div>
-</div>
+</section>
 
-<!-- spend -->
-<div
-  class="d-flex flex-column flex-lg-row-reverse align-items-lg-center justify-content-between"
-  style="margin-top: 6rem"
->
-  <div class="d-flex flex-column w-100">
-    <h2 class="text-h2">Spend</h2>
-    <p class="text-p text-muted h6 mt-3 ">
-      With our app, you can easily make payments and settle bills with just a few clicks. Say goodbye to the hassle of queuing at payment centers and bank branches. Our platform supports a wide range of payment options, from bank transfers to mobile money, and allows you to easily split bills with friends and family. Experience fast, secure, and convenient payments today. Sign up now and start enjoying seamless transactions.
-    </p>
-  </div>
-  <div class="d-flex flex-column w-100 p-5">
-    <img
-      src="{{ url_for('static', filename='images/spend.png') }}"
-      alt="spend"
-    />
-  </div>
-</div>
 
-<!-- send -->
-<div
-  class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between"
-  style="margin-top: 6rem"
->
-  <div class="d-flex flex-column w-100">
-    <h2 class="text-h2">Send</h2>
-    <p class="text-p text-muted h6 mt-3 ">
-      Our app makes it easy to send money to friends and family, no matter where they are in the world. With our international money transfer service, you can send money abroad quickly, securely, and at a competitive rate. You can also track your transactions and receive real-time updates on the status of your transfers. Experience the ease and convenience of sending money with our app. Sign up now and start sending money with ease.
-    </p>
-  </div>
-  <div class="d-flex flex-column w-100 p-5">
-    <img
-      src="{{ url_for('static', filename='images/card-doppe.png') }}"
-      alt="send"
-    />
+<!-- ══════════════════════════════════════════════════
+     TICKER STRIP
+══════════════════════════════════════════════════ -->
+<div class="overflow-hidden py-3.5" style="background:linear-gradient(90deg,#0c694c,#1aa374,#2e8bb6,#0c694c);">
+  <div class="ticker-track font-body text-sm font-semibold text-white/80 select-none">
+    {% for item in ['💸 Send Money Instantly','🔒 Bank-Grade Security','📈 Earn on Savings','⚡ Zero Transfer Fees','🌍 International Transfers','📱 Pay All Your Bills','🎯 Smart Savings Goals','💳 Virtual & Physical Cards','🇳🇬 Built for Nigeria'] * 2 %}
+    <span class="mx-8">{{ item }}</span>
+    {% endfor %}
   </div>
 </div>
 
 
-<!-- customer care -->
-<div
-  class="d-flex flex-column flex-lg-row-reverse align-items-lg-center justify-content-between"
-  style="margin-top: 6rem"
->
-  <div class="d-flex flex-column w-100">
-    <h2 class="text-h2">We're always happy to help you</h2>
-    <p class="text-muted h6 mt-3">
-      At our company, we pride ourselves on providing exceptional customer service. Our team of experts is always available to assist you with any questions or issues you may have. Whether you need help setting up your account, making a transaction, or resolving an error, we are here to help. Contact us via phone, email, or chat for fast and friendly support. We are committed to ensuring your experience with our app is a positive one.
-    </p>
-    <p class="d-flex align-items-center mt-3">
-      <a href="{{url_for('view.contact')}}" class="text-white">Contact Us</a
-      ><i class="fas fa-caret-right text-light px-3"></i>
-    </p>
-  </div>
-  <div class="d-flex flex-column w-100 p-5">
-    <img
-      src="{{ url_for('static', filename='images/services.png') }}"
-      alt="service"
-    />
+<!-- ══════════════════════════════════════════════════
+     STATS ROW
+══════════════════════════════════════════════════ -->
+<div class="reveal py-14 px-4 sm:px-6 bg-white border-y border-slate-100">
+  <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+    {% for val, label, suffix in [
+      ('₦2B+','Transactions',''),
+      ('50K+','Active Users',''),
+      ('99.9%','Uptime',''),
+      ('<3s','Transfer Speed','')
+    ] %}
+    <div class="group">
+      <p class="font-display font-black text-4xl md:text-5xl text-brand-700 group-hover:text-ocean-500 transition-colors duration-300">{{ val }}</p>
+      <p class="font-body text-sm text-slate-400 mt-1.5 font-medium">{{ label }}</p>
+    </div>
+    {% endfor %}
   </div>
 </div>
 
-<!-- Before footer -->
-<div
-  class=" px-5 d-flex flex-column flex-lg-row align-items-lg-center justify-content-center mt-5 bg-dark"
-  style="margin: auto"
->
-  <div class="before-footer d-flex flex-column w-100 py-4">
-    <h4 class="text-h4">
-      The wallet app
-      for Nigeria
-    </h4>
-    <p class="text-muted h6 mt-3 w-75">
-      Save, spend, send and invest money across the nation.
+
+<!-- ══════════════════════════════════════════════════
+     FEATURES  — SAVE
+══════════════════════════════════════════════════ -->
+<section id="features" class="py-24 px-4 sm:px-6 bg-cream relative overflow-hidden">
+  <div class="blob absolute w-[420px] h-[420px] -right-40 top-10 opacity-40" style="background:radial-gradient(circle,rgba(26,163,116,0.2),transparent 70%);"></div>
+
+  <div class="max-w-7xl mx-auto">
+    <!-- Section label -->
+    <div class="reveal text-center mb-16">
+      <div class="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 rounded-full px-4 py-1.5 mb-4">
+        <span class="font-body text-xs font-bold text-brand-700 uppercase tracking-widest">What we offer</span>
+      </div>
+      <h2 class="font-display font-black text-ink leading-tight" style="font-size:clamp(2.2rem,4vw,3.5rem);">
+        One app. Every<br>
+        <span class="text-brand-600">financial need.</span>
+      </h2>
+    </div>
+
+    <!-- ── SAVE ── -->
+    <div class="reveal grid lg:grid-cols-2 gap-14 xl:gap-20 items-center mb-24">
+      <div>
+        <div class="inline-flex items-center gap-2 bg-brand-50 rounded-full px-3 py-1 mb-5">
+          <i class="fas fa-piggy-bank text-brand-600 text-xs"></i>
+          <span class="font-body text-xs font-bold text-brand-700">Save</span>
+        </div>
+        <h3 class="font-display font-black text-4xl text-ink mb-4 leading-tight">
+          Your goals,<br><span class="text-brand-600">on autopilot.</span>
+        </h3>
+        <p class="font-body text-slate-500 leading-relaxed mb-7 max-w-md">
+          Set savings goals and let EasyTransact do the heavy lifting. Automate your savings, earn up to 15% annual interest, and watch your money multiply — without lifting a finger.
+        </p>
+        <ul class="space-y-3 mb-8">
+          {% for item in ['Automated savings rules & schedules','Up to 15% annual interest rate','Goal-based savings pockets','Round-up micro-savings'] %}
+          <li class="flex items-center gap-3 font-body text-sm text-slate-600">
+            <div class="w-5 h-5 rounded-full bg-brand-100 flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-check text-brand-600 text-[9px]"></i>
+            </div>{{ item }}
+          </li>
+          {% endfor %}
+        </ul>
+        <a href="{{ url_for('auth.register') }}" class="cta-btn inline-flex items-center gap-2 text-white font-body font-bold text-sm px-6 py-3 rounded-xl shadow-lg">
+          <span>Start Saving Today</span><i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+
+      <!-- Save UI mock -->
+      <div class="relative">
+        <div class="absolute inset-0 rounded-3xl" style="background:linear-gradient(135deg,#edfaf4,#d0f4e4);"></div>
+        <div class="relative p-7 rounded-3xl">
+          <!-- Goal card -->
+          <div class="bg-white rounded-2xl p-5 shadow-lg mb-4">
+            <div class="flex justify-between items-start mb-4">
+              <div>
+                <p class="font-body text-xs text-slate-400 mb-0.5">Savings Goal</p>
+                <p class="font-display font-bold text-xl text-ink">New iPhone 16</p>
+              </div>
+              <span class="bg-brand-100 text-brand-700 text-xs font-bold font-body px-3 py-1 rounded-full">Active</span>
+            </div>
+            <div class="mb-4">
+              <div class="flex justify-between mb-2">
+                <span class="font-body text-xs text-slate-400">Progress</span>
+                <span class="font-display font-bold text-sm text-brand-700">73%</span>
+              </div>
+              <div class="h-3 bg-brand-50 rounded-full overflow-hidden">
+                <div class="fill-bar h-full rounded-full" style="--target:73%;background:linear-gradient(90deg,#1aa374,#2e8bb6);"></div>
+              </div>
+            </div>
+            <div class="flex justify-between">
+              <div><p class="font-body text-xs text-slate-400">Saved</p><p class="font-display font-bold text-sm text-ink">₦547,500</p></div>
+              <div class="text-right"><p class="font-body text-xs text-slate-400">Target</p><p class="font-display font-bold text-sm text-ink">₦750,000</p></div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-white rounded-xl p-3.5 shadow-sm">
+              <p class="font-body text-xs text-slate-400 mb-1">Interest Earned</p>
+              <p class="font-display font-bold text-base text-brand-600">+₦12,340</p>
+              <p class="font-body text-[10px] text-brand-400 mt-0.5">This month</p>
+            </div>
+            <div class="bg-white rounded-xl p-3.5 shadow-sm">
+              <p class="font-body text-xs text-slate-400 mb-1">Auto-Save</p>
+              <p class="font-display font-bold text-base text-ink">₦10k/wk</p>
+              <p class="font-body text-[10px] text-slate-400 mt-0.5">Every Monday</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SPEND ── -->
+    <div class="reveal grid lg:grid-cols-2 gap-14 xl:gap-20 items-center mb-24">
+      <!-- Spend UI mock (left on large screens) -->
+      <div class="relative order-2 lg:order-1">
+        <div class="absolute inset-0 rounded-3xl" style="background:linear-gradient(135deg,#e0f4fd,#bde8f8);"></div>
+        <div class="relative p-7 rounded-3xl">
+          <div class="bg-white rounded-2xl p-5 shadow-lg mb-3">
+            <p class="font-body text-xs text-slate-400 font-semibold mb-4">Quick Pay</p>
+            <div class="grid grid-cols-3 gap-3">
+              {% for icon, label, bg, color in [
+                ('phone','Airtime','bg-green-50','text-brand-600'),
+                ('bolt','Electricity','bg-yellow-50','text-amber-500'),
+                ('tv','Cable TV','bg-purple-50','text-purple-500'),
+                ('wifi','Data','bg-blue-50','text-ocean-500'),
+                ('tint','Water','bg-cyan-50','text-cyan-500'),
+                ('ellipsis-h','More','bg-slate-50','text-slate-400')
+              ] %}
+              <div class="flex flex-col items-center gap-1.5 p-2.5 rounded-xl hover:bg-slate-50 cursor-pointer transition-colors">
+                <div class="w-11 h-11 rounded-xl {{ bg }} flex items-center justify-center">
+                  <i class="fas fa-{{ icon }} {{ color }}"></i>
+                </div>
+                <span class="font-body text-[10px] text-slate-500 font-semibold">{{ label }}</span>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          <!-- Success toast -->
+          <div class="bg-white rounded-xl px-4 py-3 flex items-center gap-3 shadow-sm">
+            <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-check text-brand-600 text-xs"></i>
+            </div>
+            <div class="flex-1">
+              <p class="font-body font-semibold text-xs text-ink">Electricity Bill Paid!</p>
+              <p class="font-body text-[10px] text-slate-400">Ikeja Electric — ₦8,500</p>
+            </div>
+            <span class="font-body text-[10px] text-slate-300">Just now</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-1 lg:order-2">
+        <div class="inline-flex items-center gap-2 rounded-full px-3 py-1 mb-5" style="background:rgba(46,139,182,0.1);">
+          <i class="fas fa-credit-card text-ocean-500 text-xs"></i>
+          <span class="font-body text-xs font-bold text-ocean-500">Spend</span>
+        </div>
+        <h3 class="font-display font-black text-4xl text-ink mb-4 leading-tight">
+          Bills paid in<br><span class="text-ocean-500">seconds, not hours.</span>
+        </h3>
+        <p class="font-body text-slate-500 leading-relaxed mb-7 max-w-md">
+          Say goodbye to queues and bank branches. Pay electricity, buy airtime, recharge DSTV, and split bills with friends — all from one tap.
+        </p>
+        <ul class="space-y-3 mb-8">
+          {% for item in ['10+ bill categories supported','Split bills with friends instantly','Scheduled recurring payments','Instant payment confirmation'] %}
+          <li class="flex items-center gap-3 font-body text-sm text-slate-600">
+            <div class="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(46,139,182,0.12);">
+              <i class="fas fa-check text-ocean-500 text-[9px]"></i>
+            </div>{{ item }}
+          </li>
+          {% endfor %}
+        </ul>
+        <a href="{{ url_for('auth.register') }}" class="inline-flex items-center gap-2 font-body font-bold text-sm text-ocean-500 px-6 py-3 rounded-xl border border-ocean-400/30 hover:bg-blue-50 transition-colors">
+          <span>Pay Smarter</span><i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── SEND ── -->
+    <div class="reveal grid lg:grid-cols-2 gap-14 xl:gap-20 items-center">
+      <div>
+        <div class="inline-flex items-center gap-2 bg-purple-50 rounded-full px-3 py-1 mb-5">
+          <i class="fas fa-paper-plane text-purple-600 text-xs"></i>
+          <span class="font-body text-xs font-bold text-purple-700">Send</span>
+        </div>
+        <h3 class="font-display font-black text-4xl text-ink mb-4 leading-tight">
+          Send money<br><span class="text-purple-600">anywhere. Always.</span>
+        </h3>
+        <p class="font-body text-slate-500 leading-relaxed mb-7 max-w-md">
+          Transfer to any bank in Nigeria or abroad in seconds. Competitive exchange rates, zero hidden charges, and real-time delivery tracking.
+        </p>
+        <ul class="space-y-3 mb-8">
+          {% for item in ['All Nigerian banks supported','International wire transfers','Real-time status notifications','Zero transfer fees on wallet-to-wallet'] %}
+          <li class="flex items-center gap-3 font-body text-sm text-slate-600">
+            <div class="w-5 h-5 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+              <i class="fas fa-check text-purple-600 text-[9px]"></i>
+            </div>{{ item }}
+          </li>
+          {% endfor %}
+        </ul>
+        <a href="{{ url_for('auth.register') }}" class="inline-flex items-center gap-2 font-body font-bold text-sm text-purple-700 px-6 py-3 rounded-xl border border-purple-200 hover:bg-purple-50 transition-colors">
+          <span>Send Money Now</span><i class="fas fa-arrow-right text-xs"></i>
+        </a>
+      </div>
+
+      <!-- Send UI mock -->
+      <div class="relative">
+        <div class="absolute inset-0 rounded-3xl" style="background:linear-gradient(135deg,#f5f0ff,#ede8ff);"></div>
+        <div class="relative p-7 rounded-3xl">
+          <div class="bg-white rounded-2xl p-5 shadow-lg">
+            <p class="font-body text-xs text-slate-400 font-semibold mb-4">Send Money</p>
+            <div class="space-y-3">
+              <div class="bg-slate-50 rounded-xl p-3.5">
+                <p class="font-body text-[9px] text-slate-400 mb-1.5">Recipient</p>
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-full bg-brand-400 flex items-center justify-center text-white text-xs font-bold font-display flex-shrink-0">C</div>
+                  <div>
+                    <p class="font-body font-semibold text-sm text-ink">Chioma Eze</p>
+                    <p class="font-body text-[10px] text-slate-400">Access Bank • 0123456789</p>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-slate-50 rounded-xl p-3.5">
+                <p class="font-body text-[9px] text-slate-400 mb-1">Amount</p>
+                <p class="font-display font-black text-3xl text-ink">₦ 25,000</p>
+              </div>
+              <div class="flex gap-2.5">
+                <div class="flex-1 bg-slate-50 rounded-xl p-3">
+                  <p class="font-body text-[9px] text-slate-400">Transfer fee</p>
+                  <p class="font-body font-bold text-sm text-brand-600">₦0.00 🎉</p>
+                </div>
+                <div class="flex-1 bg-slate-50 rounded-xl p-3">
+                  <p class="font-body text-[9px] text-slate-400">Delivery</p>
+                  <p class="font-body font-bold text-sm text-ink">Instant</p>
+                </div>
+              </div>
+              <button class="w-full cta-btn py-3.5 rounded-xl font-body font-bold text-sm text-white">
+                <span>Confirm Transfer →</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════
+     HOW IT WORKS
+══════════════════════════════════════════════════ -->
+<section class="py-24 px-4 sm:px-6 bg-white">
+  <div class="max-w-5xl mx-auto">
+    <div class="reveal text-center mb-16">
+      <div class="inline-flex items-center gap-2 bg-brand-50 border border-brand-200 rounded-full px-4 py-1.5 mb-4">
+        <span class="font-body text-xs font-bold text-brand-700 uppercase tracking-widest">Simple steps</span>
+      </div>
+      <h2 class="font-display font-black text-ink leading-tight" style="font-size:clamp(2.2rem,4vw,3.5rem);">
+        Up and running in<br>
+        <span class="font-serif italic text-brand-600">3 minutes flat.</span>
+      </h2>
+    </div>
+
+    <div class="reveal grid md:grid-cols-3 gap-6 relative">
+      <!-- connecting lines (desktop only) -->
+      <div class="hidden md:block step-line" style="left:calc(33.33% + 28px);right:calc(33.33% + 28px);"></div>
+
+      {% for num, icon, title, desc, bg, text, shadow in [
+        ('01','user-plus','Create Account','Sign up in 2 minutes with just your BVN and phone number. Zero paperwork, zero stress.','bg-cream','text-ink','shadow-md'),
+        ('02','wallet','Fund Wallet','Add money via bank transfer, card, or USSD. Your dedicated virtual account number is ready instantly.','bg-brand-700','text-white','shadow-xl'),
+        ('03','rocket','Start Transacting','Send, save, invest and pay bills — everything you need at your fingertips. Welcome aboard!','bg-cream','text-ink','shadow-md')
+      ] %}
+      <div class="feat-card {{ bg }} rounded-3xl p-7 relative overflow-hidden border {% if num == '02' %}border-brand-600{% else %}border-brand-50{% endif %}">
+        <span class="font-display font-black text-6xl absolute top-5 right-5 opacity-10 {% if num == '02' %}text-white{% else %}text-brand-300{% endif %}">{{ num }}</span>
+        <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 {{ shadow }}"
+          style="background:{% if num == '02' %}rgba(255,255,255,0.15){% elif num == '03' %}linear-gradient(135deg,#2e8bb6,#1a6f94){% else %}linear-gradient(135deg,#1aa374,#0c694c){% endif %};">
+          <i class="fas fa-{{ icon }} {% if num == '02' %}text-white{% else %}text-white{% endif %} text-xl"></i>
+        </div>
+        <h4 class="font-display font-bold text-xl {{ text }} mb-2">{{ title }}</h4>
+        <p class="font-body text-sm leading-relaxed {% if num == '02' %}text-brand-200{% else %}text-slate-500{% endif %}">{{ desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════
+     TESTIMONIALS
+══════════════════════════════════════════════════ -->
+<section class="py-24 px-4 sm:px-6 bg-cream relative overflow-hidden">
+  <div class="blob absolute w-96 h-96 -left-32 bottom-0 opacity-40" style="background:radial-gradient(circle,rgba(46,139,182,0.2),transparent 70%);"></div>
+  <div class="max-w-6xl mx-auto">
+    <div class="reveal text-center mb-14">
+      <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-4 py-1.5 mb-4">
+        <i class="fas fa-star text-amber-500 text-xs"></i>
+        <span class="font-body text-xs font-bold text-amber-700 uppercase tracking-widest">Loved by Nigerians</span>
+      </div>
+      <h2 class="font-display font-black text-ink" style="font-size:clamp(2rem,3.5vw,3rem);">
+        Real people. Real <span class="text-brand-600">results.</span>
+      </h2>
+    </div>
+
+    <div class="reveal grid md:grid-cols-3 gap-6">
+      {% for name, role, text, avatar in [
+        ('Adaeze O.','Lagos, Teacher','"EasyTransact changed how I handle my finances. I set up auto-savings and hit my house rent goal in 6 months!"','A'),
+        ('Chukwudi M.','Abuja, Engineer','"Sending money to my family in Enugu used to take days. Now it\'s done in seconds. I love this app!"','C'),
+        ('Ngozi B.','Port Harcourt, Nurse','"I pay all my bills in one place — electricity, DSTV, airtime. My life is so much simpler now."','N')
+      ] %}
+      <div class="testi-card bg-white rounded-3xl p-6 shadow-sm border border-slate-100 relative">
+        <!-- Quote mark -->
+        <div class="absolute top-5 right-6 font-serif text-6xl text-brand-100 leading-none select-none">"</div>
+        <div class="flex text-amber-400 text-xs gap-0.5 mb-4">{% for _ in range(5) %}<i class="fas fa-star"></i>{% endfor %}</div>
+        <p class="font-body text-sm text-slate-600 leading-relaxed mb-5 relative z-10">{{ text }}</p>
+        <div class="flex items-center gap-3 pt-4 border-t border-slate-100">
+          <div class="w-10 h-10 rounded-full bg-brand-500 flex items-center justify-center text-white font-bold font-display">{{ avatar }}</div>
+          <div>
+            <p class="font-body font-semibold text-sm text-ink">{{ name }}</p>
+            <p class="font-body text-xs text-slate-400">{{ role }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════
+     SUPPORT
+══════════════════════════════════════════════════ -->
+<section class="py-24 px-4 sm:px-6 bg-white">
+  <div class="max-w-6xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+    <div class="reveal">
+      <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 rounded-full px-4 py-1.5 mb-6">
+        <i class="fas fa-headset text-amber-600 text-xs"></i>
+        <span class="font-body text-xs font-bold text-amber-700 uppercase tracking-widest">24 / 7 Support</span>
+      </div>
+      <h2 class="font-display font-black text-ink mb-4 leading-tight" style="font-size:clamp(2rem,3.5vw,3rem);">
+        We're always here<br><span class="text-brand-600 font-serif italic">for you.</span>
+      </h2>
+      <p class="font-body text-slate-500 leading-relaxed mb-8 max-w-md">
+        Our support team is available round the clock. Real humans, fast responses — not just a chatbot.
+      </p>
+      <div class="space-y-3 mb-8">
+        {% for icon, fab, title, sub, accent in [
+          ('comments','','Live Chat','Average response under 2 minutes','brand'),
+          ('envelope','','Email Support','support@easytransact.ng','ocean'),
+          ('','whatsapp','WhatsApp','+234 800 EASY-PAY','green')
+        ] %}
+        <div class="flex items-center gap-4 bg-slate-50 rounded-2xl p-4 hover:bg-brand-50 transition-colors group">
+          <div class="w-11 h-11 rounded-xl bg-white flex items-center justify-center shadow-sm flex-shrink-0">
+            <i class="{% if fab %}fab fa-{{ fab }}{% else %}fas fa-{{ icon }}{% endif %}
+              {% if accent == 'brand' %}text-brand-600{% elif accent == 'ocean' %}text-ocean-500{% else %}text-green-600{% endif %} text-lg"></i>
+          </div>
+          <div class="flex-1">
+            <p class="font-body font-semibold text-sm text-ink">{{ title }}</p>
+            <p class="font-body text-xs text-slate-400">{{ sub }}</p>
+          </div>
+          {% if accent == 'brand' %}<span class="w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse flex-shrink-0"></span>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      <a href="{{ url_for('view.contact') }}" class="cta-btn inline-flex items-center gap-2 text-white font-body font-bold text-sm px-7 py-3.5 rounded-2xl shadow-lg">
+        <span>Contact Support</span><i class="fas fa-arrow-right text-xs"></i>
+      </a>
+    </div>
+
+    <!-- Contact form -->
+    <div class="reveal">
+      <div class="bg-white rounded-3xl p-8 shadow-xl border border-slate-100">
+        <h3 class="font-display font-bold text-xl text-ink mb-1">Send us a message</h3>
+        <p class="font-body text-xs text-slate-400 mb-6">We'll get back to you within 2 hours.</p>
+        <div class="space-y-4">
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="font-body text-xs text-slate-500 mb-1 block font-semibold">First Name</label>
+              <input type="text" placeholder="Adaeze" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-body text-sm text-ink placeholder-slate-300 outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition-all">
+            </div>
+            <div>
+              <label class="font-body text-xs text-slate-500 mb-1 block font-semibold">Last Name</label>
+              <input type="text" placeholder="Okonkwo" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-body text-sm text-ink placeholder-slate-300 outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition-all">
+            </div>
+          </div>
+          <div>
+            <label class="font-body text-xs text-slate-500 mb-1 block font-semibold">Email</label>
+            <input type="email" placeholder="adaeze@email.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-body text-sm text-ink placeholder-slate-300 outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition-all">
+          </div>
+          <div>
+            <label class="font-body text-xs text-slate-500 mb-1 block font-semibold">Message</label>
+            <textarea rows="4" placeholder="How can we help you?" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-body text-sm text-ink placeholder-slate-300 outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 transition-all resize-none"></textarea>
+          </div>
+          <button class="w-full cta-btn py-3.5 rounded-xl font-body font-bold text-sm text-white shadow-lg"><span>Send Message</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ══════════════════════════════════════════════════
+     CTA BANNER
+══════════════════════════════════════════════════ -->
+<section class="cta-mesh relative py-24 px-4 sm:px-6 overflow-hidden">
+  <div class="relative z-10 max-w-4xl mx-auto text-center reveal">
+    <p class="font-body text-brand-300 text-xs font-bold uppercase tracking-widest mb-4">Join 50,000+ Nigerians</p>
+    <h2 class="font-display font-black text-white leading-tight mb-5" style="font-size:clamp(2.2rem,4.5vw,3.8rem);">
+      Your money deserves<br>
+      <span class="font-serif italic text-brand-200">better management.</span>
+    </h2>
+    <p class="font-body text-brand-200/80 mb-10 max-w-md mx-auto leading-relaxed">
+      Open your free EasyTransact account in 2 minutes. No maintenance fees. No minimum balance. Just freedom.
     </p>
-    <a
-      href="{{url_for('auth.register')}}"
-      class="footer-btn mt-3 text-light text-decoration-none"
-      style="width: fit-content"
-      >Sign Up</a
-    >
+    <div class="flex flex-wrap justify-center gap-4">
+      <a href="{{ url_for('auth.register') }}"
+         class="inline-flex items-center gap-2.5 bg-white text-brand-700 font-body font-bold px-8 py-4 rounded-2xl text-sm shadow-2xl hover:shadow-brand-900/30 transition-all hover:scale-105 hover:-translate-y-0.5">
+        <span>Create Free Account</span>
+        <i class="fas fa-arrow-right text-xs"></i>
+      </a>
+      <a href="{{ url_for('auth.login') }}"
+         class="inline-flex items-center gap-2.5 text-white font-body font-semibold px-8 py-4 rounded-2xl text-sm border border-white/20 hover:bg-white/10 transition-colors">
+        <span>Sign In</span>
+      </a>
+    </div>
+    <!-- Trust badges -->
+    <div class="mt-10 flex flex-wrap justify-center gap-5">
+      {% for icon, label in [('shield-alt','CBN Licensed'),('lock','256-bit SSL'),('award','PCI DSS Compliant')] %}
+      <div class="flex items-center gap-2 text-brand-200/60">
+        <i class="fas fa-{{ icon }} text-xs"></i>
+        <span class="font-body text-xs">{{ label }}</span>
+      </div>
+      {% endfor %}
+    </div>
   </div>
-  <div class="d-flex flex-column p-5 d-lg-block">
-    <img
-      src="{{ url_for('static', filename='images/logo-white.png') }}"
-      alt="easy transact"
-      class="et-logo"
-      style="width: 10rem; margin: 0 auto;"
-    />
-  </div>
-</div>
+</section>
 
 {% endblock content %}
+
+
+{% block scripts %}
+<script>
+  // Scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.10 });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // Progress bar trigger on scroll
+  const bars = document.querySelectorAll('.fill-bar');
+  const barObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.width = e.target.style.getPropertyValue('--target') || '73%';
+        barObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+  bars.forEach(b => barObs.observe(b));
+</script>
+{% endblock scripts %}
