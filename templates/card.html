@@ -1,66 +1,633 @@
 {% extends 'base.html' %}
+
+{% block title %}My Card — EasyTransact{% endblock title %}
+
+{% block head %}
+<style>
+  body { background: #f7faf8 !important; }
+
+  /* ── Entrance ── */
+  @keyframes riseUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .rise   { opacity: 0; animation: riseUp .6s cubic-bezier(.34,1.1,.64,1) forwards; }
+  .rise-1 { animation-delay: .06s; }
+  .rise-2 { animation-delay: .16s; }
+  .rise-3 { animation-delay: .26s; }
+
+  /* ══════════════════════════════
+     CARD FLIP
+  ══════════════════════════════ */
+  .card-scene {
+    width: 380px;
+    height: 230px;
+    perspective: 1000px;
+    cursor: pointer;
+    margin: 0 auto;
+  }
+  .card-scene:hover .card-flipper { transform: rotateY(8deg); }
+  .card-flipper {
+    width: 100%; height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform .75s cubic-bezier(.4,0,.2,1);
+  }
+  .card-flipper.flipped { transform: rotateY(180deg) !important; }
+
+  .card-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .card-back {
+    transform: rotateY(180deg);
+  }
+
+  /* ── FRONT ── */
+  .card-front-bg {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #0d1f1a 0%, #0c694c 40%, #1a6f94 100%);
+    position: relative; overflow: hidden;
+    border-radius: 20px;
+    box-shadow:
+      0 25px 60px rgba(12,105,76,0.45),
+      0 8px 20px rgba(13,31,26,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  /* noise texture overlay */
+  .card-front-bg::before {
+    content: '';
+    position: absolute; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: cover;
+  }
+
+  /* holographic shimmer */
+  @keyframes holo {
+    0%   { transform: translateX(-100%) skewX(-15deg); }
+    100% { transform: translateX(300%)  skewX(-15deg); }
+  }
+  .card-holo {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255,255,255,0.04) 30%,
+      rgba(26,163,116,0.08) 50%,
+      rgba(46,139,182,0.06) 60%,
+      transparent 100%);
+    animation: holo 4s ease-in-out infinite;
+  }
+
+  /* grid lines */
+  .card-grid {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  /* blobs */
+  .card-blob-1 {
+    position: absolute; width: 200px; height: 200px;
+    border-radius: 50%; z-index: 1; pointer-events: none;
+    background: radial-gradient(circle, rgba(26,163,116,0.25), transparent 70%);
+    top: -60px; right: -40px;
+  }
+  .card-blob-2 {
+    position: absolute; width: 160px; height: 160px;
+    border-radius: 50%; z-index: 1; pointer-events: none;
+    background: radial-gradient(circle, rgba(46,139,182,0.20), transparent 70%);
+    bottom: -50px; left: 20px;
+  }
+
+  .card-content { position: relative; z-index: 2; padding: 22px 26px; height: 100%; display: flex; flex-direction: column; }
+
+  /* contactless icon */
+  .contactless {
+    width: 22px; height: 22px; opacity: 0.5;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='1.5' stroke-linecap='round'%3E%3Cpath d='M8.5 12a5.5 5.5 0 0 1 7 0'/%3E%3Cpath d='M5.5 9a9.5 9.5 0 0 1 13 0'/%3E%3Cpath d='M11.5 15a1 1 0 1 1 0 0.01'/%3E%3C/svg%3E");
+    background-size: contain; background-repeat: no-repeat;
+  }
+
+  /* chip */
+  .chip-img {
+    width: 42px; height: 32px; border-radius: 6px;
+    background: linear-gradient(135deg, #d4a843, #f0d060, #d4a843, #a07830);
+    position: relative; overflow: hidden;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  }
+  .chip-img::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      linear-gradient(rgba(255,255,255,0.15) 0, transparent 40%),
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.06) 0, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 8px),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.06) 0, rgba(0,0,0,0.06) 1px, transparent 1px, transparent 8px);
+  }
+  .chip-img::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px; height: 14px;
+    border: 1.5px solid rgba(0,0,0,0.2);
+    border-radius: 2px;
+  }
+
+  /* card number */
+  .card-number-display {
+    font-family: 'Courier New', 'Lucida Console', monospace;
+    font-size: 17px; font-weight: 700;
+    color: #ffffff; letter-spacing: .18em;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+  }
+
+  /* card number groups */
+  .num-group { display: inline-block; }
+  .num-group.masked { letter-spacing: .25em; }
+
+  /* holder + expiry row */
+  .card-holder-name {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: rgba(255,255,255,0.85);
+    text-transform: uppercase; letter-spacing: .1em;
+  }
+  .card-expiry-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 8px; font-weight: 600;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase; letter-spacing: .1em;
+  }
+  .card-expiry-val {
+    font-family: 'Courier New', monospace;
+    font-size: 13px; font-weight: 700;
+    color: rgba(255,255,255,0.9);
+  }
+
+  /* mastercard circles */
+  .mc-wrap { display: flex; align-items: center; }
+  .mc-circle {
+    width: 34px; height: 34px; border-radius: 50%;
+  }
+  .mc-left  { background: rgba(235,0,27,0.88); margin-right: -10px; }
+  .mc-right { background: rgba(255,163,0,0.85); }
+
+  /* ── BACK ── */
+  .card-back-bg {
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #0a1a15 0%, #0d2b21 50%, #0d2535 100%);
+    border-radius: 20px;
+    box-shadow:
+      0 25px 60px rgba(12,105,76,0.45),
+      0 8px 20px rgba(13,31,26,0.3);
+    position: relative; overflow: hidden;
+  }
+  .card-back-bg::before {
+    content: ''; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  /* magnetic stripe */
+  .mag-stripe {
+    width: 100%; height: 44px; margin-top: 28px;
+    background: linear-gradient(180deg, #111, #1a1a1a, #111);
+    position: relative;
+  }
+  .mag-stripe::after {
+    content: '';
+    position: absolute; inset: 2px 0;
+    background: linear-gradient(90deg, transparent 20%, rgba(255,255,255,0.03) 50%, transparent 80%);
+  }
+
+  /* signature strip */
+  .sig-strip {
+    margin: 16px 20px 0;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 10px;
+  }
+  .sig-paper {
+    flex: 1; height: 38px; border-radius: 4px;
+    background: repeating-linear-gradient(
+      0deg,
+      #f0f0f0 0px, #f0f0f0 4px,
+      #e8e8e8 4px, #e8e8e8 8px
+    );
+    display: flex; align-items: center; justify-content: flex-end;
+    padding: 0 10px; position: relative; overflow: hidden;
+  }
+  .sig-paper::before {
+    content: 'AUTHORIZED SIGNATURE';
+    position: absolute; bottom: 2px; left: 6px;
+    font-size: 6px; font-family: 'DM Sans', sans-serif;
+    color: rgba(0,0,0,0.25); letter-spacing: .05em; font-weight: 600;
+  }
+  .cvv-box {
+    background: rgba(255,255,255,0.95); border-radius: 6px;
+    padding: 6px 14px; flex-shrink: 0;
+    font-family: 'Courier New', monospace;
+    font-size: 16px; font-weight: 700; color: #0d1f1a;
+    letter-spacing: .12em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .cvv-label {
+    font-family: 'DM Sans', sans-serif; font-size: 9px;
+    font-weight: 700; color: rgba(255,255,255,0.35);
+    text-transform: uppercase; letter-spacing: .1em;
+    text-align: right; padding: 0 20px; margin-top: 3px;
+  }
+
+  /* back logo area */
+  .back-logo-area {
+    position: absolute; bottom: 20px; right: 22px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .back-brand {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-size: 11px; font-weight: 900;
+    color: rgba(255,255,255,0.25);
+  }
+
+  /* ── Flip hint ── */
+  @keyframes nudge {
+    0%,100% { transform: rotate(0deg); }
+    25%      { transform: rotate(8deg); }
+    75%      { transform: rotate(-8deg); }
+  }
+  .flip-hint { animation: nudge 2s ease-in-out infinite; }
+
+  /* ── Info panel ── */
+  .info-card {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 2px 12px rgba(13,31,26,0.04);
+  }
+  .info-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 13px 20px; border-bottom: 1px solid #f8fafc;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-lbl {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 600;
+    color: #94a3b8; text-transform: uppercase;
+    letter-spacing: .06em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .info-val {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    font-size: 14px; font-weight: 700; color: #0d1f1a;
+  }
+  .info-icon {
+    width: 28px; height: 28px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* masked toggle */
+  .masked-num { font-family: 'Courier New', monospace; font-size: 14px; letter-spacing: .1em; }
+  .reveal-btn {
+    background: none; border: none; padding: 0 6px;
+    color: #94a3b8; cursor: pointer; font-size: 12px;
+    transition: color .2s;
+  }
+  .reveal-btn:hover { color: #1aa374; }
+
+  /* copy btn */
+  .copy-btn {
+    background: rgba(26,163,116,0.08);
+    border: 1px solid rgba(26,163,116,0.15);
+    border-radius: 8px; padding: 4px 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+    color: #0c694c; cursor: pointer; display: flex; align-items: center; gap: 4px;
+    transition: background .2s;
+  }
+  .copy-btn:hover { background: rgba(26,163,116,0.15); }
+
+  /* status dot */
+  .status-active {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+    color: #0c694c; background: rgba(26,163,116,0.1);
+    border: 1px solid rgba(26,163,116,0.2);
+    padding: 4px 10px; border-radius: 20px;
+  }
+
+  /* mobile scale */
+  @media (max-width: 430px) {
+    .card-scene { width: 320px; height: 195px; }
+    .card-number-display { font-size: 14px; letter-spacing: .13em; }
+    .card-holder-name { font-size: 11px; }
+  }
+</style>
+{% endblock head %}
+
+
 {% block content %}
-{% with messages = get_flashed_messages(with_categories=true) %} {% if
-  messages %} {% for category, message in messages %}
-  <div
-    class="alert-dismissible fade show mb-4 m-auto small alert alert-{{ category }}"
-    role="alert"
-    style="height: 3.5rem; transition: 0.6s"
-  >
-  {% if category=='success' %}
-    <div class="small text-center"><i class="fa fas fas fa-check"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-    {% else %}
-    <div class="small text-center"><i class="fa fas fa-exclamation-triangle"></i>&nbsp;&nbsp;&nbsp;{{ message }}</div>
-    {% endif %}
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="alert"
-      aria-label="Close"
-    ></button>
-  </div>
-  {% endfor %} {% endif %} {% endwith %}
-<!-- <div class="card" style="width: 18rem;">
-    <div class="card-body">
-      <h5 class="card-title">{{card.card_number}}</h5>
-      <h6 class="card-subtitle mb-2 text-muted">Expiry date: {{card.expiry_date}}</h6>
-      <p class="card-text">CVV: {{card.cvv}}</p>
-      <a href="#" class="card-link">Card link</a>
-      <a href="#" class="card-link">Another link</a>
-    </div>
-  </div> -->
+<div class="w-full" style="background:#f7faf8; padding: 1.5rem 1rem 5rem; min-height: 80vh;">
+  <div style="max-width: 480px; margin: 0 auto;">
 
-<div class="mt-3" style="display: flex; flex-wrap: wrap; justify-content: space-around;">
-  <div class="card-container my-2">
-    
-    <div class="card-name">Debit Card</div>
-    
-    <div class="chip">
-        <img src="{{ url_for('static', filename='images/chip.png') }}">
-    </div>
-
-    <div class="card-data">
-        <div class="card-no">{{card.card_number}}</div>
-        <div class="expire-data">
-          <div>{{ current_user.first_name.title() + ' ' + current_user.last_name.title() }}</div>
-          <div class="card-type">
-            <img src="{{ url_for('static', filename='images/Mastercard.png') }}">
-          </div>
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-4 space-y-2">
+          {% for category, message in messages %}
+            <div class="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl font-body text-sm font-medium
+              {% if category == 'success' %}bg-brand-600 text-white{% else %}bg-red-500 text-white{% endif %}">
+              <div class="flex items-center gap-2">
+                <i class="fas {% if category == 'success' %}fa-check-circle{% else %}fa-exclamation-triangle{% endif %}"></i>
+                <span>{{ message }}</span>
+              </div>
+              <button onclick="this.closest('div[class]').remove()" class="text-white/60 hover:text-white">
+                <i class="fas fa-times text-xs"></i>
+              </button>
+            </div>
+          {% endfor %}
         </div>
-        <small class="expire-date">
-            <div class="date-label">MONTH/YEAR</div>
-            <div class="date" title="01/17">{{card.expiry_date}}</div>
-        </small>
-    </div>
-    
-</div>
-<div class="card-container2 my-2">
-  <div class="bg-dark" style="width: 100%; height: 15%; margin-top: 2rem;"></div>
-  <div class="text-right px-3 mt-3 small">CVV</div>
-  <div class="bg-white m-auto rounded text-dark text-right fw-bold px-3" style="width: 95%; height: 15%;">
-    {{card.cvv}}
-  </div>
-  </div>
-  </div>
+      {% endif %}
+    {% endwith %}
 
+    <!-- Page header -->
+    <div class="rise rise-1 flex items-center justify-between mb-6">
+      <div>
+        <h1 class="font-display font-black text-2xl text-ink">My Card</h1>
+        <p class="font-body text-sm text-slate-400 mt-0.5">Tap the card to flip</p>
+      </div>
+      <div class="flex items-center gap-2 bg-white border border-slate-100 rounded-xl px-3 py-2 shadow-sm">
+        <span class="status-active">
+          <span class="w-1.5 h-1.5 rounded-full bg-brand-500 animate-pulse"></span>
+          Active
+        </span>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════
+         THE CARD
+    ══════════════════════════════ -->
+    <div class="rise rise-1 mb-3">
+      <div class="card-scene" id="cardScene" onclick="flipCard()" title="Click to flip">
+        <div class="card-flipper" id="cardFlipper">
+
+          <!-- ── FRONT ── -->
+          <div class="card-face">
+            <div class="card-front-bg">
+              <div class="card-holo"></div>
+              <div class="card-grid"></div>
+              <div class="card-blob-1"></div>
+              <div class="card-blob-2"></div>
+
+              <div class="card-content">
+                <!-- Top row: brand + contactless -->
+                <div class="flex items-center justify-between mb-3">
+                  <div class="flex items-center gap-1.5">
+                    <div class="w-6 h-6 rounded-lg flex items-center justify-center" style="background:rgba(26,163,116,0.3);">
+                      <i class="fas fa-bolt text-white text-[10px]"></i>
+                    </div>
+                    <span class="font-display font-black text-white text-sm">EasyTransact</span>
+                  </div>
+                  <div class="contactless"></div>
+                </div>
+
+                <!-- Chip -->
+                <div class="mb-4">
+                  <div class="chip-img"></div>
+                </div>
+
+                <!-- Card number -->
+                <div class="mb-4">
+                  <p class="card-number-display" id="front-card-num">
+                    {% set parts = card.card_number.replace(' ','') %}
+                    {% for i in range(0, parts|length, 4) %}
+                      <span class="num-group {% if i < 8 %}masked{% endif %}">
+                        {% if i < 8 %}••••{% else %}{{ parts[i:i+4] }}{% endif %}
+                      </span>{% if i < 12 %}&ensp;{% endif %}
+                    {% endfor %}
+                  </p>
+                </div>
+
+                <!-- Bottom row: holder + expiry + mastercard -->
+                <div class="flex items-end justify-between mt-auto">
+                  <div>
+                    <p style="font-family:'DM Sans',sans-serif;font-size:8px;font-weight:600;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px;">Card Holder</p>
+                    <p class="card-holder-name">{{ current_user.first_name.title() }} {{ current_user.last_name.title() }}</p>
+                  </div>
+                  <div class="text-center mx-auto">
+                    <p class="card-expiry-label mb-0.5">Expires</p>
+                    <p class="card-expiry-val">{{ card.expiry_date }}</p>
+                  </div>
+                  <div class="mc-wrap">
+                    <div class="mc-circle mc-left"></div>
+                    <div class="mc-circle mc-right"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── BACK ── -->
+          <div class="card-face card-back">
+            <div class="card-back-bg">
+              <!-- Magnetic stripe -->
+              <div class="mag-stripe"></div>
+
+              <!-- CVV label -->
+              <p class="cvv-label mt-3">CVV / Security Code</p>
+
+              <!-- Signature + CVV -->
+              <div class="sig-strip">
+                <div class="sig-paper">
+                  <span style="font-family:'Courier New',monospace;font-size:12px;color:#bbb;letter-spacing:.04em;font-style:italic;">
+                    {{ current_user.first_name.title() }} {{ current_user.last_name.title() }}
+                  </span>
+                </div>
+                <div class="cvv-box" id="back-cvv">{{ card.cvv }}</div>
+              </div>
+
+              <!-- Card number small -->
+              <p style="font-family:'Courier New',monospace;font-size:11px;color:rgba(255,255,255,0.2);letter-spacing:.15em;text-align:center;margin-top:14px;">
+                {{ card.card_number }}
+              </p>
+
+              <!-- Back logo -->
+              <div class="back-logo-area">
+                <span class="back-brand">EasyTransact</span>
+                <div class="mc-wrap">
+                  <div class="mc-circle mc-left" style="width:22px;height:22px;opacity:.5;"></div>
+                  <div class="mc-circle mc-right" style="width:22px;height:22px;opacity:.5;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /card-flipper -->
+      </div><!-- /card-scene -->
+    </div>
+
+    <!-- Flip instruction -->
+    <div class="rise rise-2 flex items-center justify-center gap-2 mb-6">
+      <span class="flip-hint text-slate-300 text-xs">
+        <i class="fas fa-sync-alt text-[11px]"></i>
+      </span>
+      <p class="font-body text-xs text-slate-400" id="flip-label">Click card to reveal CVV</p>
+    </div>
+
+    <!-- ══════════════════════════════
+         CARD DETAILS PANEL
+    ══════════════════════════════ -->
+    <div class="info-card rise rise-2">
+
+      <!-- Card number -->
+      <div class="info-row">
+        <div class="info-lbl">
+          <div class="info-icon bg-brand-50">
+            <i class="fas fa-credit-card text-brand-600 text-[10px]"></i>
+          </div>
+          Card Number
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="info-val masked-num" id="panel-cardnum">
+            •••• •••• •••• {{ card.card_number[-4:] }}
+          </span>
+          <button class="reveal-btn" id="cardnum-toggle" onclick="toggleCardNum()" title="Show/hide">
+            <i class="fas fa-eye" id="cardnum-icon"></i>
+          </button>
+          <button class="copy-btn" onclick="copyVal('{{ card.card_number }}', 'card number')">
+            <i class="fas fa-copy text-[9px]"></i> Copy
+          </button>
+        </div>
+      </div>
+
+      <!-- Expiry -->
+      <div class="info-row">
+        <div class="info-lbl">
+          <div class="info-icon bg-amber-50">
+            <i class="fas fa-calendar text-amber-500 text-[10px]"></i>
+          </div>
+          Expiry Date
+        </div>
+        <span class="info-val">{{ card.expiry_date }}</span>
+      </div>
+
+      <!-- CVV -->
+      <div class="info-row">
+        <div class="info-lbl">
+          <div class="info-icon bg-red-50">
+            <i class="fas fa-shield-alt text-red-400 text-[10px]"></i>
+          </div>
+          CVV
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="info-val font-mono tracking-widest" id="panel-cvv">•••</span>
+          <button class="reveal-btn" onclick="toggleCvv()" title="Show/hide">
+            <i class="fas fa-eye" id="cvv-icon"></i>
+          </button>
+          <button class="copy-btn" onclick="copyVal('{{ card.cvv }}', 'CVV')">
+            <i class="fas fa-copy text-[9px]"></i> Copy
+          </button>
+        </div>
+      </div>
+
+      <!-- Card type -->
+      <div class="info-row">
+        <div class="info-lbl">
+          <div class="info-icon" style="background:rgba(235,0,27,0.08);">
+            <i class="fas fa-circle-dot text-red-500 text-[10px]"></i>
+          </div>
+          Network
+        </div>
+        <div class="flex items-center gap-2">
+          <div class="mc-wrap">
+            <div class="mc-circle mc-left" style="width:18px;height:18px;"></div>
+            <div class="mc-circle mc-right" style="width:18px;height:18px;"></div>
+          </div>
+          <span class="info-val">Mastercard</span>
+        </div>
+      </div>
+
+      <!-- Holder -->
+      <div class="info-row">
+        <div class="info-lbl">
+          <div class="info-icon bg-brand-50">
+            <i class="fas fa-user text-brand-600 text-[10px]"></i>
+          </div>
+          Card Holder
+        </div>
+        <span class="info-val">{{ current_user.first_name.title() }} {{ current_user.last_name.title() }}</span>
+      </div>
+
+    </div><!-- /info-card -->
+
+    <!-- Copy feedback toast -->
+    <div id="copy-toast"
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-ink text-white font-body font-semibold text-sm
+             px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2 pointer-events-none z-50"
+      style="opacity:0;transition:opacity .3s,transform .3s;transform:translateX(-50%) translateY(10px);">
+      <i class="fas fa-check-circle text-brand-400 text-sm"></i>
+      <span id="copy-toast-msg">Copied!</span>
+    </div>
+
+  </div>
+</div>
 {% endblock content %}
+
+
+{% block scripts %}
+<script>
+  let isFlipped   = false;
+  let cvvRevealed = false;
+  let numRevealed = false;
+
+  // ── Card flip
+  function flipCard() {
+    isFlipped = !isFlipped;
+    document.getElementById('cardFlipper').classList.toggle('flipped', isFlipped);
+    document.getElementById('flip-label').textContent = isFlipped
+      ? 'Click card to see front'
+      : 'Click card to reveal CVV';
+  }
+
+  // ── Toggle CVV in panel
+  function toggleCvv() {
+    cvvRevealed = !cvvRevealed;
+    const el   = document.getElementById('panel-cvv');
+    const icon = document.getElementById('cvv-icon');
+    el.textContent   = cvvRevealed ? '{{ card.cvv }}' : '•••';
+    icon.className   = cvvRevealed ? 'fas fa-eye-slash' : 'fas fa-eye';
+  }
+
+  // ── Toggle card number in panel
+  function toggleCardNum() {
+    numRevealed = !numRevealed;
+    const el   = document.getElementById('panel-cardnum');
+    const icon = document.getElementById('cardnum-icon');
+    el.textContent = numRevealed
+      ? '{{ card.card_number }}'
+      : '•••• •••• •••• {{ card.card_number[-4:] }}';
+    icon.className = numRevealed ? 'fas fa-eye-slash' : 'fas fa-eye';
+  }
+
+  // ── Copy helper
+  function copyVal(val, label) {
+    navigator.clipboard.writeText(val).then(() => {
+      const toast = document.getElementById('copy-toast');
+      const msg   = document.getElementById('copy-toast-msg');
+      msg.textContent = label.charAt(0).toUpperCase() + label.slice(1) + ' copied!';
+      toast.style.opacity   = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        toast.style.opacity   = '0';
+        toast.style.transform = 'translateX(-50%) translateY(10px)';
+      }, 2200);
+    });
+  }
+</script>
+{% endblock scripts %}
