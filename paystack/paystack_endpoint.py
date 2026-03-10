@@ -8,6 +8,7 @@ class PaystackEndpoints(PaystackBase):
             url = f"{self.url}/bank?country={self.country}"
             response = requests.get(url, headers=self.header)
             response.raise_for_status()
+            print(f"Paystck Res: {response.content}")
             return response.json()
         except Exception as e:
             print(e, "error from list_banks")
