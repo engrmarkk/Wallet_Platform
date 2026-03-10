@@ -1,313 +1,601 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Quicksand:wght@400;700&family=Sora&display=swap" rel="stylesheet">
-    <link rel='stylesheet' href="{{ url_for('static', filename='css/customStyle.css') }}"/>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-      crossorigin="anonymous"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- For dropdown BOOTSTRAP -->
-    <!-- Load Bootstrap -->
-    <link
-      rel="stylesheet"
-      href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
-      integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I"
-      crossorigin="anonymous"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-      integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/js/bootstrap.min.js"
-      integrity="sha384-oesi62hOLfzrys4LxRF63OJCXdXDipiYWBnvTl9Y9/TRlw5xlKIEHpNyvvDShgf/"
-      crossorigin="anonymous"
-    ></script>
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;900&family=Instrument+Serif:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    <!-- font awesome -->
-
-    <!-- fontAwesome -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
-
-    <!-- @@@@@@@@@@@@@@@@@@@@@@@ -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
-    />
-
-    <link
-      rel="stylesheet"
-      href="{{ url_for('static', filename='css/customStyle.css') }}"
-    />
-
-    
-    <!-- The Jquery local libarary -->
-    <script
-      type="text/javascript"
-      src="{{ url_for('static', filename='javascript/jquery-3.6.1.min.js') }}"
-    ></script>
-
-    <!-- Js -->
-
-    <script
-      src="{{ url_for('static', filename='javascript/script.js') }}"
-      defer
-    ></script>
-
-    <title>Easy Transact</title>
-
-    <link
-      rel="icon"
-      href="{{ url_for('static', filename='images/logo-yellow.png') }}"
-    />
-
-    <script>
-      // Do this before the body gets parsed
-      //if (localStorage.getItem('darkmode') === '1') {
-      //  document.documentElement.classList.add('darkmode');
-      //}else{
-      //  document.documentElement.classList.remove('darkmode');
-      //}
-    </script>
-  </head>
-  <body class='light'>
-    <style>
-      .btn:hover{
-        cursor: pointer;
-        background-color: black !important;
-        color: white !important;
-        transition: ease-in-out 0.5s;
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#edfaf4',
+              100: '#d0f4e4',
+              200: '#a4e9cc',
+              300: '#6dd6ae',
+              400: '#38bc8d',
+              500: '#1aa374',
+              600: '#0f835d',
+              700: '#0c694c',
+              800: '#0b543e',
+              900: '#0a4534',
+            },
+            ocean: {
+              400: '#4bafd4',
+              500: '#2e8bb6',
+              600: '#1a6f94',
+            },
+            ink: '#0d1f1a',
+            cream: '#f7faf8',
+          },
+          fontFamily: {
+            display: ['"Cabinet Grotesk"', 'sans-serif'],
+            serif:   ['"Instrument Serif"', 'serif'],
+            body:    ['"DM Sans"', 'sans-serif'],
+          },
+        }
       }
-    </style>
-    {% if current_user.is_authenticated %}
+    }
+  </script>
 
-    <!-- Navbar -->
-    <nav class="d-flex align-items-center navbar navbar-expand-lg nav-bar py-3" id="navbar">
-      <div class="container">
-        <a href="{{ url_for('view.home') }}" class="navbar-brand d-flex">
-          <img
-            src="{{ url_for('static', filename='images/logo-normal.png') }}"
-            alt="company's logo"
-            style="width: 2.5rem"
-          />
-          <span class='logo-text'>&nbsp;Easy<span class="text-green">Transact</span></span>
-        </a>
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navmenu"
-        >
-        <span class="navbar-toggler-ico one"
-        ></span>
-        <span class="navbar-toggler-ico two"></span>
-        <span class="navbar-toggler-ico three"></span>
-        </button>
+  <!-- jQuery -->
+  <script type="text/javascript" src="{{ url_for('static', filename='javascript/jquery-3.6.1.min.js') }}"></script>
 
-        <div class="collapse navbar-collapse" id="navmenu">
-          <ul class="navbar-nav m-auto">
-            <li class="nav-item _box">
-              <a href="{{ url_for('view.home') }}" class="nav-link " id="navlinks">
-                <i class="fas fa-home d-none d-lg-inline"></i>
-                Home</a>
-            </li>
-            <li class="nav-item _box" style="margin-left:2rem">
-              <a href="#" class="nav-link" id="navlinks">
-                <i class="far fa-money-bill-alt d-none d-lg-inline"></i>
-                Pay</a>
-            </li>
-            <li class="nav-item _box" style="margin-left:2rem">
-              <a href="{{ url_for('view.create_card') }}" class="nav-link" id="navlinks">
-                <i class="far fa-credit-card d-none d-lg-inline"></i>
-                Card</a>
-            </li>
-            <li class="nav-item _box" style="margin-left:2rem">
-              <a href="{{ url_for('view.coming_soon') }}" class="nav-link" id="navlinks">
-                <i class="fas fa-business-time d-none d-lg-inline"></i>
-                Invest</a>
-            </li>
+  <!-- Custom JS (deferred) -->
+  <script src="{{ url_for('static', filename='javascript/script.js') }}" defer></script>
 
-            </ul>
-            <!-- drop down -->
-            <div class="dropdown">
-              <button class="text-accent" style="border: none; background: none;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-              >
-              <div class="user d-flex align-items-center">
-                 <img src="{{ current_user.photo }}" 
-                 style="width: 2rem;"
-                 class="rounded" alt="{{ current_user.first_name }}"></i> &nbsp; {{ current_user.last_name.title() + ' ' + current_user.first_name.title() }}
-                </div>
-                </button>
-                <div class="dropdown-menu px-2" aria-labelledby="dropdownMenuButton">
-                  <a class="dropdown-item text-decoration-none text-muted small text-center fw-bold">Notification
-                  <span class="badge rounded-pill bg-danger position-absolute">9+</span>
-                  </a>
-                  <a class="dropdown-item text-decoration-none text-muted small text-center fw-bold" href="{{ url_for('view.account') }}">Account</a>
-                  <a class="dropdown-item text-decoration-none text-muted small text-center fw-bold" href="{{ url_for('view.user_profile') }}">Profile</a>
-                  <a class="dropdown-item text-decoration-none text-white rounded small bg-danger text-center" href="{{ url_for('auth.logout') }}">Logout</a>
-                </div>
-              </div>
-  
-            <!-- ................... -->
-        </div>
-      </div>
-    </nav>
+  <!-- Page-specific head block -->
+  {% block head %}{% endblock head %}
 
+  <title>{% block title %}EasyTransact{% endblock title %}</title>
+  <link rel="icon" href="{{ url_for('static', filename='images/logo-yellow.png') }}"/>
 
-    {% else %}
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg py-3" id="navbar">
-      <div class="container">
-        <a href="{{ url_for('view.front_page') }}" class="navbar-brand">
-          <img
-            src="{{ url_for('static', filename='images/logo-normal.png') }}"
-            alt="company's logo"
-            style="width: 2.5rem"
-          />
-          <span class='logo-text'>&nbsp;Easy<span class="text-green">Transact</span></span>
-        </a>
+  <style>
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: #f7faf8; color: #0d1f1a; overflow-x: hidden; }
 
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navmenu"
-        >
-        <span class="navbar-toggler-ico one"></span>
-        <span class="navbar-toggler-ico two"></span>
-        <span class="navbar-toggler-ico three"></span>
-        </button>
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.35;
+    }
 
-        <div class="collapse navbar-collapse" id="navmenu">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item _box">
-              <a href="{{ url_for('view.coming_soon') }}" class="nav-link">Business</a>
-            </li>
-            <li class="nav-item _box">
-              <a href="{{ url_for('view.team') }}" class="nav-link">Team</a>
-            </li>
-            <li class="nav-item _box">
-              <a href="{{ url_for('view.contact') }}" class="nav-link">Help</a>
-            </li>
-            <li class="nav-item _button">
-              <a href="{{ url_for('auth.login') }}" class="nav-link nav-btn"><span>Sign In</span></a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-    {% endif %}
-    <section class="container">
-      {% block content %} {% endblock content %}
+    /* Glass effect */
+    .glass {
+      background: rgba(255,255,255,0.75);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,255,255,0.55);
+    }
 
-      {% if alert %}
-  <div class="toast align-items-center show fade text-white {% if bg_color %} bg-{{bg_color}} {% else %} bg-info {% endif %} border-0 position-fixed top-0 end-0" role="alert"
-  data-bs-autohide="true" aria-live="polite" aria-atomic="true" data-bs-animation="true" style="z-index: 99; margin-top: 5rem; transform: translateX(100%); transition: transform 4s ease-in-out;">
-    <div class="d-flex">
-      <div class="toast-body" style="font-size: 1rem;">
-        {{alert}}
-      </div>
-      <!-- <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button> -->
-    </div>
-  </div>
-{% endif %}
+    /* CTA gradient button */
+    .cta-btn {
+      position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #1aa374, #2e8bb6);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .cta-btn::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, #0c694c, #1a6f94);
+      opacity: 0; transition: opacity .3s;
+    }
+    .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(26,163,116,0.4); }
+    .cta-btn:hover::before { opacity: 1; }
+    .cta-btn span { position: relative; z-index: 1; }
 
-      <!-- footer -->
-      <!-- <hr style="border: 1px solid rgb(124, 120, 120); margin-top: 7rem"/> -->
-    {% if current_user.is_authenticated %}
-    <!-- The footer to see if the user is logged in -->
-    <footer>
-      <p class="text-dark text-center"></p>
-    </footer>
-    {% else %}
-    <!-- The footer to see if the user is not yet logged in -->
-      <footer
-        class="footer footer-text"
-      >
-        <div class="w-100 py-3">
-          <img
-            class=""
-            src="{{ url_for('static', filename='images/logo-normal.png') }}"
-            alt="EasyTransact"
-            style="width: 4rem; margin-left: 2rem"
-          />
-        </div>
-        <div class='footer-wrapper'>
-        <div class="d-flex flex-row w-100">
-          <ul class="w-100 text-muted" style="list-style: none;padding:0 !important;">
-            <li class="p-2">Useful Links</li>
-            <li class="p-2"> <a href="{{ url_for('view.faq') }}" class="text-decoration-none text-info">FAQs</a> </li>
-            <li class="p-2"> <a href="{{ url_for('view.contact') }}" class="text-decoration-none text-info">Help</a></li>
-            <li class="p-2"> <a href="{{ url_for('view.coming_soon') }}" class="text-decoration-none text-info">Business</a> </li>
-            <li class="p-2"> <a href="{{ url_for('view.team') }}" class="text-decoration-none text-info">Team</a></li>
-          </ul>
-        </div>
+    /* Navbar active underline */
+    .nav-link-et {
+      position: relative;
+      transition: color .2s;
+    }
+    .nav-link-et::after {
+      content: ''; position: absolute; bottom: -2px; left: 0;
+      width: 0; height: 2px; background: #1aa374; border-radius: 2px;
+      transition: width .3s ease;
+    }
+    .nav-link-et:hover::after, .nav-link-et.active::after { width: 100%; }
 
-        <div class="d-flex flex-row w-100">
-          <ul class="w-100 text-muted" style="list-style: none;padding:0 !important;">
-            <li class="p-2">Socials</li>
-            <li class="p-2"><a href="#" class="text-decoration-none text-info">Twitter</a></li>
-            <li class="p-2"><a href="#" class="text-decoration-none text-info">Instagram</a></li>
-            <li class="p-2"><a href="#" class="text-decoration-none text-info">Linkedin</a></li>
-            <li class="p-2"><a href="#" class="text-decoration-none text-info">Facebook</a></li>
-          </ul>
-        </div>
-        </div>
-      </footer>
+    /* Mobile menu transition */
+    #mobile-menu {
+      max-height: 0; opacity: 0; overflow: hidden;
+      transition: max-height .4s ease, opacity .4s ease;
+    }
+    #mobile-menu.open { max-height: 500px; opacity: 1; }
+
+    /* Hamburger animation */
+    #menu-btn.open .bar-1 { transform: translateY(6px) rotate(45deg); }
+    #menu-btn.open .bar-2 { opacity: 0; }
+    #menu-btn.open .bar-3 { transform: translateY(-6px) rotate(-45deg); }
+    .bar-1, .bar-2, .bar-3 { transition: transform .3s ease, opacity .3s ease; }
+
+    /* Dropdown */
+    .user-dropdown { position: relative; }
+    .user-dropdown-menu {
+      position: absolute; right: 0; top: calc(100% + 10px);
+      min-width: 180px;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 12px 40px rgba(13,31,26,0.13);
+      border: 1px solid rgba(13,31,26,0.07);
+      padding: 6px;
+      opacity: 0; visibility: hidden; transform: translateY(-8px);
+      transition: opacity .25s ease, transform .25s ease, visibility .25s;
+      z-index: 99;
+    }
+    .user-dropdown:hover .user-dropdown-menu,
+    .user-dropdown.open .user-dropdown-menu {
+      opacity: 1; visibility: visible; transform: translateY(0);
+    }
+    .drop-item {
+      display: block; padding: 8px 14px; border-radius: 8px;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+      color: #475569; text-decoration: none;
+      transition: background .2s, color .2s;
+    }
+    .drop-item:hover { background: #edfaf4; color: #0c694c; }
+    .drop-item.danger { color: #dc2626; }
+    .drop-item.danger:hover { background: #fef2f2; color: #b91c1c; }
+
+    /* Toast notification */
+    #et-toast {
+      position: fixed; top: 5.5rem; right: 1.5rem; z-index: 9999;
+      min-width: 280px; max-width: 380px;
+      transform: translateX(120%);
+      transition: transform .5s cubic-bezier(.34,1.56,.64,1);
+    }
+    #et-toast.show { transform: translateX(0); }
+
+    /* Flash alert bar */
+    .flash-bar { position: relative; overflow: hidden; }
+    .flash-bar::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      height: 3px; width: 0; background: rgba(255,255,255,0.6);
+      border-radius: 3px;
+      animation: flashRun 3s ease forwards;
+    }
+    @keyframes flashRun { from { width: 0; } to { width: 100%; } }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #1aa374; border-radius: 3px; }
+
+    /* Dark mode toggle */
+    #dark-mode-toggle {
+      position: fixed; bottom: 24px; left: 20px; z-index: 99;
+      width: 42px; height: 42px; border-radius: 12px;
+      background: #0c694c; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 16px;
+      box-shadow: 0 4px 15px rgba(12,105,76,0.4);
+      transition: background .3s, transform .2s;
+    }
+    #dark-mode-toggle:hover { transform: scale(1.1); background: #0f835d; }
+
+    /* Scroll-to-top */
+    #scroll-top {
+      position: fixed; bottom: 24px; right: 24px; z-index: 99;
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(135deg,#1aa374,#2e8bb6);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-size: 14px; text-decoration: none;
+      opacity: 0; pointer-events: none;
+      box-shadow: 0 4px 15px rgba(26,163,116,0.35);
+      transition: opacity .3s, transform .2s;
+    }
+    #scroll-top.visible { opacity: 1; pointer-events: auto; }
+    #scroll-top:hover { transform: translateY(-3px); }
+
+    /* Night mode */
+    body.night { background: #0d1f1a !important; color: #e2e8f0 !important; }
+    body.night .glass { background: rgba(13,31,26,0.75) !important; border-color: rgba(255,255,255,0.08) !important; }
+    body.night #navbar { background: rgba(10,25,18,0.92) !important; }
+    body.night .user-dropdown-menu { background: #112318; border-color: rgba(255,255,255,0.08); }
+    body.night .drop-item { color: #94a3b8; }
+    body.night .drop-item:hover { background: rgba(26,163,116,0.15); color: #6dd6ae; }
+    body.night #dark-mode-toggle { background: #1a3a2a; }
+    body.night #dark-mode-toggle i { color: #fbbf24; }
+    body.night footer { background: #070f0c !important; }
+
+    /* Page content padding for fixed navbar */
+    .page-content { padding-top: 5rem; width: 100%; }
+  </style>
+</head>
+
+<body class="light relative min-h-screen flex flex-col">
+
+  <!-- ══════════════════════════════════
+       NAVBAR
+  ══════════════════════════════════ -->
+  <nav class="fixed top-0 left-0 right-0 z-50 glass" id="navbar">
+    <div class="max-w-7xl mx-auto px-5 py-3.5 flex items-center justify-between gap-4">
+
+      <!-- ── Logo ── -->
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('view.home') }}" class="flex items-center gap-2 flex-shrink-0">
+      {% else %}
+        <a href="{{ url_for('view.front_page') }}" class="flex items-center gap-2 flex-shrink-0">
       {% endif %}
-      <p class="footer-text mt-3 text-muted">
-        EasyTransact | copyright &copy; {{ date.year }}
+        <div class="w-8 h-8 rounded-lg flex items-center justify-center shadow" style="background:linear-gradient(135deg,#1aa374,#2e8bb6);">
+          <i class="fas fa-bolt text-white text-xs"></i>
+        </div>
+        <span class="font-display font-black text-lg text-ink">Easy<span class="text-brand-600">Transact</span></span>
+      </a>
+
+      <!-- ══════════ AUTHENTICATED NAV ══════════ -->
+      {% if current_user.is_authenticated %}
+
+        <!-- Desktop links -->
+        <ul class="hidden lg:flex items-center gap-1 flex-1 justify-center">
+          <li>
+            <a href="{{ url_for('view.home') }}" class="nav-link-et flex items-center gap-2 font-body font-semibold text-sm text-slate-600 hover:text-brand-700 px-3 py-2 rounded-xl hover:bg-brand-50 transition-colors">
+              <i class="fas fa-home text-xs opacity-70"></i> Home
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-link-et flex items-center gap-2 font-body font-semibold text-sm text-slate-600 hover:text-brand-700 px-3 py-2 rounded-xl hover:bg-brand-50 transition-colors">
+              <i class="far fa-money-bill-alt text-xs opacity-70"></i> Pay
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('view.create_card') }}" class="nav-link-et flex items-center gap-2 font-body font-semibold text-sm text-slate-600 hover:text-brand-700 px-3 py-2 rounded-xl hover:bg-brand-50 transition-colors">
+              <i class="far fa-credit-card text-xs opacity-70"></i> Card
+            </a>
+          </li>
+          <li>
+            <a href="{{ url_for('view.coming_soon') }}" class="nav-link-et flex items-center gap-2 font-body font-semibold text-sm text-slate-600 hover:text-brand-700 px-3 py-2 rounded-xl hover:bg-brand-50 transition-colors">
+              <i class="fas fa-chart-line text-xs opacity-70"></i> Invest
+            </a>
+          </li>
+        </ul>
+
+        <!-- Desktop user dropdown -->
+        <div class="hidden lg:flex items-center gap-3">
+          <div class="user-dropdown" id="userDropdown">
+            <button class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-brand-50 transition-colors focus:outline-none" onclick="document.getElementById('userDropdown').classList.toggle('open')">
+              <img src="{{ current_user.photo }}" class="w-7 h-7 rounded-lg object-cover" alt="{{ current_user.first_name }}"/>
+              <span class="font-body font-semibold text-sm text-slate-700">
+                {{ current_user.last_name.title() }} {{ current_user.first_name.title() }}
+              </span>
+              <i class="fas fa-chevron-down text-[10px] text-slate-400 transition-transform"></i>
+            </button>
+            <div class="user-dropdown-menu">
+              <div class="px-3 py-2 mb-1 border-b border-slate-100">
+                <p class="font-body text-xs font-semibold text-slate-400 uppercase tracking-wider">Account</p>
+              </div>
+              <a href="#" class="drop-item flex items-center justify-between">
+                Notifications
+                <span class="bg-red-500 text-white text-[9px] font-bold font-body px-1.5 py-0.5 rounded-full">9+</span>
+              </a>
+              <a href="{{ url_for('view.account') }}" class="drop-item">
+                <i class="fas fa-user-circle mr-2 text-brand-400"></i>Account
+              </a>
+              <a href="{{ url_for('view.user_profile') }}" class="drop-item">
+                <i class="fas fa-id-card mr-2 text-ocean-500"></i>Profile
+              </a>
+              <div class="border-t border-slate-100 mt-1 pt-1">
+                <a href="{{ url_for('auth.logout') }}" class="drop-item danger">
+                  <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile hamburger (authenticated) -->
+        <button id="menu-btn" class="lg:hidden flex flex-col gap-1.5 p-2 rounded-xl hover:bg-brand-50 transition-colors"
+          onclick="this.classList.toggle('open'); document.getElementById('mobile-menu').classList.toggle('open')">
+          <span class="bar-1 block w-5 h-0.5 bg-ink rounded"></span>
+          <span class="bar-2 block w-5 h-0.5 bg-ink rounded"></span>
+          <span class="bar-3 block w-3 h-0.5 bg-ink rounded"></span>
+        </button>
+
+      <!-- ══════════ GUEST NAV ══════════ -->
+      {% else %}
+
+        <!-- Desktop links -->
+        <ul class="hidden md:flex items-center gap-1 ml-auto">
+          <li><a href="{{ url_for('view.coming_soon') }}" class="nav-link-et font-body font-medium text-sm text-slate-600 hover:text-brand-700 px-3 py-2 rounded-xl hover:bg-brand-50 transition-colors">Business</a></li>
+          <li><a href="{{ url_for('view.team') }}" class="nav-link-et font-body font-medium text-sm text-slate-600 hover:text-brand-700 px-3 py-2 rounded-xl hover:bg-brand-50 transition-colors">Team</a></li>
+          <li><a href="{{ url_for('view.contact') }}" class="nav-link-et font-body font-medium text-sm text-slate-600 hover:text-brand-700 px-3 py-2 rounded-xl hover:bg-brand-50 transition-colors">Help</a></li>
+          <li class="ml-2">
+            <a href="{{ url_for('auth.login') }}" class="cta-btn inline-flex items-center gap-2 font-body font-semibold text-sm text-white px-5 py-2.5 rounded-xl">
+              <span>Sign In</span>
+            </a>
+          </li>
+        </ul>
+
+        <!-- Mobile hamburger (guest) -->
+        <button id="menu-btn" class="md:hidden flex flex-col gap-1.5 p-2 rounded-xl hover:bg-brand-50 transition-colors"
+          onclick="this.classList.toggle('open'); document.getElementById('mobile-menu').classList.toggle('open')">
+          <span class="bar-1 block w-5 h-0.5 bg-ink rounded"></span>
+          <span class="bar-2 block w-5 h-0.5 bg-ink rounded"></span>
+          <span class="bar-3 block w-3 h-0.5 bg-ink rounded"></span>
+        </button>
+
+      {% endif %}
+    </div>
+
+    <!-- ── Mobile Menu ── -->
+    <div id="mobile-menu">
+      <div class="px-5 pb-4 border-t border-brand-100">
+        {% if current_user.is_authenticated %}
+          <!-- Authenticated mobile user info -->
+          <div class="flex items-center gap-3 py-4 border-b border-brand-50 mb-2">
+            <img src="{{ current_user.photo }}" class="w-10 h-10 rounded-xl object-cover" alt="{{ current_user.first_name }}"/>
+            <div>
+              <p class="font-body font-semibold text-sm text-ink">{{ current_user.last_name.title() }} {{ current_user.first_name.title() }}</p>
+              <p class="font-body text-xs text-slate-400">EasyTransact Member</p>
+            </div>
+          </div>
+          <ul class="space-y-1">
+            <li><a href="{{ url_for('view.home') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm text-slate-600 hover:text-brand-700 hover:bg-brand-50 transition-colors"><i class="fas fa-home w-4 text-center text-brand-400"></i>Home</a></li>
+            <li><a href="#" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm text-slate-600 hover:text-brand-700 hover:bg-brand-50 transition-colors"><i class="far fa-money-bill-alt w-4 text-center text-brand-400"></i>Pay</a></li>
+            <li><a href="{{ url_for('view.create_card') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm text-slate-600 hover:text-brand-700 hover:bg-brand-50 transition-colors"><i class="far fa-credit-card w-4 text-center text-brand-400"></i>Card</a></li>
+            <li><a href="{{ url_for('view.coming_soon') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm text-slate-600 hover:text-brand-700 hover:bg-brand-50 transition-colors"><i class="fas fa-chart-line w-4 text-center text-brand-400"></i>Invest</a></li>
+            <li><a href="{{ url_for('view.account') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm text-slate-600 hover:text-brand-700 hover:bg-brand-50 transition-colors"><i class="fas fa-user-circle w-4 text-center text-ocean-500"></i>Account</a></li>
+            <li><a href="{{ url_for('view.user_profile') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm text-slate-600 hover:text-brand-700 hover:bg-brand-50 transition-colors"><i class="fas fa-id-card w-4 text-center text-ocean-500"></i>Profile</a></li>
+            <li class="pt-2 border-t border-brand-50">
+              <a href="{{ url_for('auth.logout') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-body text-sm text-red-600 hover:bg-red-50 transition-colors"><i class="fas fa-sign-out-alt w-4 text-center"></i>Logout</a>
+            </li>
+          </ul>
+        {% else %}
+          <ul class="space-y-1 pt-3">
+            <li><a href="{{ url_for('view.coming_soon') }}" class="block px-3 py-2.5 rounded-xl font-body text-sm text-slate-600 hover:text-brand-700 hover:bg-brand-50 transition-colors">Business</a></li>
+            <li><a href="{{ url_for('view.team') }}" class="block px-3 py-2.5 rounded-xl font-body text-sm text-slate-600 hover:text-brand-700 hover:bg-brand-50 transition-colors">Team</a></li>
+            <li><a href="{{ url_for('view.contact') }}" class="block px-3 py-2.5 rounded-xl font-body text-sm text-slate-600 hover:text-brand-700 hover:bg-brand-50 transition-colors">Help</a></li>
+            <li class="pt-2">
+              <a href="{{ url_for('auth.login') }}" class="cta-btn flex justify-center items-center gap-2 font-body font-semibold text-sm text-white px-5 py-3 rounded-xl"><span>Sign In</span></a>
+            </li>
+          </ul>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+  <!-- ── END NAVBAR ── -->
+
+
+  <!-- ══════════════════════════════════
+       FLASH MESSAGES
+  ══════════════════════════════════ -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 w-full max-w-md px-4 space-y-2">
+        {% for category, message in messages %}
+          <div class="flash-bar flex items-center justify-between gap-3 px-4 py-3 rounded-2xl shadow-lg font-body text-sm font-medium
+            {% if category == 'success' %}
+              bg-brand-600 text-white
+            {% elif category == 'danger' or category == 'error' %}
+              bg-red-500 text-white
+            {% elif category == 'warning' %}
+              bg-amber-500 text-white
+            {% else %}
+              bg-ocean-500 text-white
+            {% endif %}">
+            <div class="flex items-center gap-2">
+              {% if category == 'success' %}
+                <i class="fas fa-check-circle text-white/80 text-sm"></i>
+              {% else %}
+                <i class="fas fa-exclamation-triangle text-white/80 text-sm"></i>
+              {% endif %}
+              <span>{{ message }}</span>
+            </div>
+            <button onclick="this.closest('.flash-bar').remove()" class="text-white/70 hover:text-white transition-colors ml-2">
+              <i class="fas fa-times text-xs"></i>
+            </button>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+  <!-- ── END FLASH ── -->
+
+
+  <!-- ══════════════════════════════════
+       TOAST ALERT (from view context)
+  ══════════════════════════════════ -->
+  {% if alert %}
+    <div id="et-toast" class="glass rounded-2xl shadow-xl px-4 py-3 flex items-center gap-3
+      {% if bg_color == 'success' %} border-l-4 border-brand-500
+      {% elif bg_color == 'danger' %} border-l-4 border-red-500
+      {% else %} border-l-4 border-ocean-500
+      {% endif %}">
+      <div class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0
+        {% if bg_color == 'success' %} bg-brand-100
+        {% elif bg_color == 'danger' %} bg-red-100
+        {% else %} bg-blue-100
+        {% endif %}">
+        <i class="fas
+          {% if bg_color == 'success' %} fa-check text-brand-600
+          {% elif bg_color == 'danger' %} fa-times text-red-600
+          {% else %} fa-info text-ocean-500
+          {% endif %} text-xs"></i>
+      </div>
+      <p class="font-body text-sm font-medium text-ink flex-1">{{ alert }}</p>
+      <button onclick="document.getElementById('et-toast').remove()" class="text-slate-400 hover:text-slate-600 transition-colors">
+        <i class="fas fa-times text-xs"></i>
+      </button>
+    </div>
+  {% endif %}
+  <!-- ── END TOAST ── -->
+
+
+  <!-- ══════════════════════════════════
+       MAIN PAGE CONTENT
+  ══════════════════════════════════ -->
+  <main class="page-content flex-1 w-full overflow-x-hidden">
+    {% block content %}{% endblock content %}
+  </main>
+  <!-- ── END MAIN ── -->
+
+
+  <!-- ══════════════════════════════════
+       FOOTER
+  ══════════════════════════════════ -->
+  {% if current_user.is_authenticated %}
+    <!-- Minimal footer for authenticated users -->
+    <footer class="mt-10 py-4 border-t border-brand-100">
+      <p class="font-body text-xs text-slate-400 text-center">
+        EasyTransact &nbsp;|&nbsp; &copy; <span id="footer-year"></span>
       </p>
-    </section>
+    </footer>
+  {% else %}
+    <!-- Full footer for guests -->
+    <footer class="bg-ink text-white mt-20 pt-14 pb-8">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid md:grid-cols-3 gap-10 mb-10">
 
-    <!-- Go to top button -->
-    <a href="#" class="position-fixed p-4" style="bottom: 0; right: 0"
-      ><i class="far fa-arrow-alt-circle-up text-muted h3"></i
-    ></a>
-    <!-- ............... -->
+          <!-- Brand -->
+          <div>
+            <div class="flex items-center gap-2 mb-4">
+              <div class="w-9 h-9 rounded-xl flex items-center justify-center shadow" style="background:linear-gradient(135deg,#1aa374,#2e8bb6);">
+                <i class="fas fa-bolt text-white text-sm"></i>
+              </div>
+              <span class="font-display font-black text-xl">Easy<span class="text-brand-400">Transact</span></span>
+            </div>
+            <p class="font-body text-sm text-slate-400 leading-relaxed max-w-xs mb-5">Save, spend, send and invest money across the nation. Built for Nigerians.</p>
+            <div class="flex gap-2.5">
+              <a href="#" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-brand-600 transition-colors"><i class="fab fa-twitter text-xs"></i></a>
+              <a href="#" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-brand-600 transition-colors"><i class="fab fa-instagram text-xs"></i></a>
+              <a href="#" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-brand-600 transition-colors"><i class="fab fa-linkedin-in text-xs"></i></a>
+              <a href="#" class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-brand-600 transition-colors"><i class="fab fa-facebook-f text-xs"></i></a>
+            </div>
+          </div>
 
-        <!-- Icon for the dark mode -->
-        <i class="dntoggle fas fa-moon" id="dark-mode-toggle"></i>
+          <!-- Useful Links -->
+          <div>
+            <p class="font-body font-semibold text-xs text-slate-400 uppercase tracking-widest mb-4">Useful Links</p>
+            <ul class="space-y-2.5">
+              <li><a href="{{ url_for('view.faq') }}"        class="font-body text-sm text-slate-400 hover:text-white transition-colors">FAQs</a></li>
+              <li><a href="{{ url_for('view.contact') }}"    class="font-body text-sm text-slate-400 hover:text-white transition-colors">Help &amp; Support</a></li>
+              <li><a href="{{ url_for('view.coming_soon') }}" class="font-body text-sm text-slate-400 hover:text-white transition-colors">Business</a></li>
+              <li><a href="{{ url_for('view.team') }}"       class="font-body text-sm text-slate-400 hover:text-white transition-colors">Our Team</a></li>
+            </ul>
+          </div>
+
+          <!-- Socials -->
+          <div>
+            <p class="font-body font-semibold text-xs text-slate-400 uppercase tracking-widest mb-4">Socials</p>
+            <ul class="space-y-2.5">
+              <li><a href="#" class="font-body text-sm text-slate-400 hover:text-white transition-colors">Twitter / X</a></li>
+              <li><a href="#" class="font-body text-sm text-slate-400 hover:text-white transition-colors">Instagram</a></li>
+              <li><a href="#" class="font-body text-sm text-slate-400 hover:text-white transition-colors">LinkedIn</a></li>
+              <li><a href="#" class="font-body text-sm text-slate-400 hover:text-white transition-colors">Facebook</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-white/10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <p class="font-body text-xs text-slate-500">EasyTransact &nbsp;&copy;&nbsp;<span id="footer-year"></span>. All rights reserved.</p>
+          <div class="flex gap-4">
+            <a href="#" class="font-body text-xs text-slate-500 hover:text-white transition-colors">Privacy</a>
+            <a href="#" class="font-body text-xs text-slate-500 hover:text-white transition-colors">Terms</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+  {% endif %}
+  <!-- ── END FOOTER ── -->
 
 
-    <script>
-    var myToast = new bootstrap.Toast(document.querySelector('.toast'));
+  <!-- ── Dark mode toggle ── -->
+<!--  <div id="dark-mode-toggle" title="Toggle dark mode">-->
+<!--    <i class="fas fa-moon"></i>-->
+<!--  </div>-->
 
-    document.querySelector('.toast').style.transform = 'translateX(-0%)';
+  <!-- ── Scroll to top ── -->
+  <a href="#" id="scroll-top" title="Back to top">
+    <i class="fas fa-chevron-up"></i>
+  </a>
 
-    setTimeout(function() {
-        // fade the toast away
-        document.querySelector('.toast').style.transition = '4s ease-in-out';
-        myToast.hide();
-    }, 2000);
-    </script>
 
-    <!-- BOOTSTRAP -->
+  <!-- ══════════════════════════════════
+       SCRIPTS
+  ══════════════════════════════════ -->
+  <script>
+    // ── Year
+    document.querySelectorAll('#footer-year').forEach(el => el.textContent = new Date().getFullYear());
 
-    <!-- Bootsrap popper -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
-      integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js"
-      integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk"
-      crossorigin="anonymous"
-    ></script>
-  </body>
+    // ── Navbar scroll effect
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      navbar.style.background = window.scrollY > 20
+        ? 'rgba(247,250,248,0.94)'
+        : '';
+    });
+
+    // ── Toast auto-show & auto-hide
+    const toast = document.getElementById('et-toast');
+    if (toast) {
+      setTimeout(() => toast.classList.add('show'), 100);
+      setTimeout(() => {
+        toast.style.transition = 'transform .5s ease, opacity .5s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(120%)';
+        setTimeout(() => toast.remove(), 500);
+      }, 4000);
+    }
+
+    // ── Flash messages auto-dismiss
+    document.querySelectorAll('.flash-bar').forEach(bar => {
+      setTimeout(() => {
+        bar.style.transition = 'opacity .5s ease, transform .5s ease';
+        bar.style.opacity = '0';
+        bar.style.transform = 'translateY(-10px)';
+        setTimeout(() => bar.remove(), 500);
+      }, 4000);
+    });
+
+    // ── Scroll to top
+    const scrollTop = document.getElementById('scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollTop.classList.toggle('visible', window.scrollY > 400);
+    });
+    scrollTop.addEventListener('click', e => {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ── Dark mode toggle
+    const toggle = document.getElementById('dark-mode-toggle');
+    const icon   = toggle.querySelector('i');
+    let dark = localStorage.getItem('et-dark') === '1';
+    const applyDark = () => {
+      document.body.classList.toggle('night', dark);
+      icon.className = dark ? 'fas fa-sun' : 'fas fa-moon';
+      toggle.style.background = dark ? '#1a3a2a' : '#0c694c';
+    };
+    applyDark();
+    toggle.addEventListener('click', () => {
+      dark = !dark;
+      localStorage.setItem('et-dark', dark ? '1' : '0');
+      applyDark();
+    });
+
+    // ── Close user dropdown on outside click
+    document.addEventListener('click', e => {
+      const dd = document.getElementById('userDropdown');
+      if (dd && !dd.contains(e.target)) dd.classList.remove('open');
+    });
+  </script>
+
+  <!-- ── Extra scripts block for child templates ── -->
+  {% block scripts %}{% endblock scripts %}
+
+</body>
 </html>
