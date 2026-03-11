@@ -5,7 +5,7 @@ import worker.schedule as celeryConfig
 import os
 
 load_dotenv()
-
+print(f"REDIS_URL in celery app: {os.getenv('REDIS_URL')}")
 
 app = create_app()
 
