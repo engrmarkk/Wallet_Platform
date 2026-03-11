@@ -51,7 +51,7 @@ from utils import (
     authenticate_auth_code,
     send_alert_email,
     return_redis_count,
-    get_time_of_day
+    get_time_of_day,
 )
 from paystack.paystack_endpoint import PaystackEndpoints
 from configs.redis_config import redis_conn
@@ -286,7 +286,7 @@ def home():
         banks=banks["data"],
         alert=alert,
         bg_color=bg_color,
-        greeting=get_time_of_day()
+        greeting=get_time_of_day(),
     )
 
 
