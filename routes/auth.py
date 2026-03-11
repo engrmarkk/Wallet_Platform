@@ -405,6 +405,7 @@ def register():
                     print(e)
                     print(f"❌ Failed to send task: {type(e).__name__}: {e}")
                     import traceback
+
                     traceback.print_exc()
                     alert = "Failed to verify email"
                     bg_color = "danger"
