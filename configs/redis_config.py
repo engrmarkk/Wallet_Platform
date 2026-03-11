@@ -24,6 +24,9 @@ class RedisConnection:
     def delete(self, key):
         return self.connection.delete(key)
 
+    def incr(self, key, amount=1):
+        return self.connection.incr(key, amount)
+
     # clear partial cache
     def clear_partial_cache(self, key):
         for k in self.connection.scan_iter(f"{key}*"):
