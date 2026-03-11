@@ -10,10 +10,12 @@ app = create_app()
 
 
 def make_celery(app=app):
+    redis_url = os.getenv("REDIS_URL")
+    print(f"Redis urlll: {redis_url}")
     celery = Celery(
         app.import_name,
-        backend=os.getenv("REDIS_URL"),
-        broker=os.getenv("REDIS_URL"),
+        backend=redis_url,
+        broker=redis_url,
     )
     celery.conf.update(app.config)
     celery.config_from_object(celeryConfig)
