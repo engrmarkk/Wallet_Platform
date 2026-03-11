@@ -1,4 +1,4 @@
-from models.main import User, UserSession
+from models.main import User, UserSession, create_user_session
 from models.transact import Transaction, Card, TransactionCategories
 from models.beneficiary import (
     Beneficiary,

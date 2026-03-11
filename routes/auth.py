@@ -2,7 +2,7 @@ from datetime import datetime
 from extensions import db, mail
 from flask_login import current_user, login_user, logout_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint, session
-from models import User, Invitees, Admin
+from models import User, Invitees, Admin, create_user_session
 from form import *
 from utils import authenticate_auth_code
 from random import randint
@@ -31,7 +31,7 @@ def validate(email):
             session["bg_color"] = "danger"
             return redirect(url_for("auth.login"))
         in_num = int(user.invited_by)
-        if int(user_otp) == otp:
+        if str(user_otp) == user.user_session.otp:
             user.confirmed = True
             if user.invited_by:
                 user1 = User.query.filter_by(account_number=in_num).first()
@@ -89,12 +89,16 @@ def login():
                         session["alert"] = "First validate your email"
                         session["bg_color"] = "danger"
 
+                        my_otp = otp
+
                         send_email_users.delay(
                             "Email Verification",
                             email,
                             "email_verification.html",
-                            {"otp": str(otp)},
+                            {"otp": str(my_otp)},
                         )
+
+                        create_user_session(user.id, my_otp)
                     except Exception as e:
                         print(e, "ERROR")
                         alert = "Failed to validate"
@@ -390,11 +394,12 @@ def register():
                     confirmed=False,
                 )
                 try:
+                    my_otp = otp
                     result = send_email_users.delay(
                         "Email Verification",
                         email,
                         "email_verification.html",
-                        {"otp": str(otp)},
+                        {"otp": str(my_otp)},
                     )
                 except Exception as e:
                     print(e)
@@ -414,6 +419,8 @@ def register():
                 # Add the 'new_user'
                 db.session.add(new_user)
                 db.session.commit()
+
+                create_user_session(new_user.id, my_otp)
 
                 session["alert"] = "A confirmation email has been sent to you via email"
                 session["bg_color"] = "success"
