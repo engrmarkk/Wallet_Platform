@@ -88,8 +88,12 @@ def login():
                         session["alert"] = "First validate your email"
                         session["bg_color"] = "danger"
 
-                        send_email_users.delay("Email Verification",
-                                               email, "email_verification.html", {"otp": str(otp)})
+                        send_email_users.delay(
+                            "Email Verification",
+                            email,
+                            "email_verification.html",
+                            {"otp": str(otp)},
+                        )
                     except Exception as e:
                         print(e, "ERROR")
                         alert = "Failed to validate"
@@ -158,9 +162,7 @@ def login():
                     #     return redirect(url_for("auth.login"))
                 else:
                     print(f"Admin Email: {email}")
-                    admin = Admin.query.filter_by(
-                        email=form.email.data.lower()
-                    ).first()
+                    admin = Admin.query.filter_by(email=form.email.data.lower()).first()
                     if admin:
                         print("admin found")
                         if not hasher.verify(form.password.data, admin.password):
@@ -272,7 +274,7 @@ def register():
     # If the request is a post request and the form doesn't get validated, redirect the user to that same page
     if request.method == "POST":
         try:
-        # If the form gets validated on submit
+            # If the form gets validated on submit
             if form.validate_on_submit():
                 # Check if the username already exist
                 user = User.query.filter_by(username=form.username.data.lower()).first()
@@ -283,7 +285,9 @@ def register():
                     return redirect(url_for("auth.register"))
 
                 # Check if email exist
-                existing_email = User.query.filter_by(email=form.email.data.lower()).first()
+                existing_email = User.query.filter_by(
+                    email=form.email.data.lower()
+                ).first()
                 # if the email exist
                 if existing_email:
                     alert = "User with this email already exist"
@@ -383,9 +387,12 @@ def register():
                     confirmed=False,
                 )
                 try:
-                    send_email_users.delay("Email Verification",
-                                           email, "email_verification.html",
-                                           {"otp": str(otp)})
+                    send_email_users.delay(
+                        "Email Verification",
+                        email,
+                        "email_verification.html",
+                        {"otp": str(otp)},
+                    )
                 except Exception as e:
                     print(e)
                     alert = "Failed to verify email"
