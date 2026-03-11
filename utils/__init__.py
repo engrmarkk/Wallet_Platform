@@ -189,9 +189,7 @@ def send_alert_email(
             "sender_acct": sender_acct,
             "phone": phone,
         }
-        send_email_users.delay(
-            subject, user.email, "alert.html", context
-        )
+        send_email_users.delay(subject, user.email, "alert.html", context)
     except Exception as e:
         print(e, "ERROR")
         session["alert"] = "Network Error"
