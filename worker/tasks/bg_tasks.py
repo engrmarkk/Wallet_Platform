@@ -7,6 +7,7 @@ from celery import shared_task
 @shared_task
 def send_email_users(subject, email, template_name, html_context: dict, send_body = None):
     try:
+        print(f"Got notification for subject: {subject}: template_name: {template_name}")
         msg = Message(
             subject=subject,
             sender="Easytransact <easytransact.send@gmail.com>",
