@@ -4,12 +4,12 @@ from flask_login import current_user, login_user, logout_user, login_required
 from flask import redirect, url_for, flash, request, render_template, Blueprint, session
 from models import User, Invitees, Admin
 from form import *
-from flask_mail import Message
 from utils import authenticate_auth_code
 from random import randint
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import OperationalError
 from passlib.hash import pbkdf2_sha256 as hasher
+from worker.tasks.bg_tasks import send_email_users
 
 auth = Blueprint("auth", __name__, template_folder="../templates")
 
@@ -88,15 +88,8 @@ def login():
                         session["alert"] = "First validate your email"
                         session["bg_color"] = "danger"
 
-                        msg = Message(
-                            subject="Email Verification",
-                            sender="Easytransact <easytransact.send@gmail.com>",
-                            recipients=[email],
-                        )
-                        msg.html = render_template(
-                            "email_verification.html", otp=str(otp)
-                        )
-                        mail.send(msg)
+                        send_email_users.delay("Email Verification",
+                                               email, "email_verification.html", {"otp": str(otp)})
                     except Exception as e:
                         print(e, "ERROR")
                         alert = "Failed to validate"
@@ -390,13 +383,9 @@ def register():
                     confirmed=False,
                 )
                 try:
-                    msg = Message(
-                        subject="Email Verification",
-                        sender="EasyTransact <easytransact.send@gmail.com>",
-                        recipients=[email],
-                    )
-                    msg.html = render_template("email_verification.html", otp=str(otp))
-                    mail.send(msg)
+                    send_email_users.delay("Email Verification",
+                                           email, "email_verification.html",
+                                           {"otp": str(otp)})
                 except Exception as e:
                     print(e)
                     alert = "Failed to verify email"
