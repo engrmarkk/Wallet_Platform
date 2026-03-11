@@ -6,7 +6,6 @@ from flask import (
 )
 from extensions import db, mail
 from func import get_cat
-from flask_mail import Message
 from models.main import get_account_number_details
 from models.transact import save_transfer_in_transactions
 from utils import generate_session_id, generate_transaction_ref
