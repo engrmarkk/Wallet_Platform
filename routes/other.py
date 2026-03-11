@@ -4,7 +4,6 @@ from datetime import datetime
 from werkzeug.exceptions import RequestEntityTooLarge
 from werkzeug.security import check_password_hash
 from extensions import mail, db
-from flask_mail import Message
 from flask_login import current_user, login_required
 from flask import (
     redirect,
@@ -51,9 +50,11 @@ from utils import (
     get_uri,
     authenticate_auth_code,
     send_alert_email,
+    return_redis_count
 )
 from paystack.paystack_endpoint import PaystackEndpoints
 from configs.redis_config import redis_conn
+from worker.tasks.bg_tasks import send_email_users
 
 view = Blueprint("view", __name__, template_folder="../templates")
 
@@ -62,14 +63,10 @@ pay_stack = PaystackEndpoints()
 
 def send_reset_email(user):
     token = user.get_reset_token()
-    msg = Message(
-        "Password Reset Request",
-        sender="EasyTransact <easytransact.send@gmail.com>",
-        recipients=[user.email],
+    send_email_users.delay(
+        "Password Reset Request", user.email, "reset_email.html", {"user": user, "token": token}
     )
-    msg.html = render_template("reset_email.html", user=user, token=token)
-
-    mail.send(msg)
+    return True
 
 
 def generate_reference():
@@ -435,6 +432,8 @@ def transfer_to_bank():
             print(f"Getting resolution from redis")
             res, status_code = json.loads(res_red), 200
         else:
+            if return_redis_count("resolve_account"):
+                bank_code = "001"
             res, status_code = pay_stack.resolve_account(account_number, bank_code)
             redis_conn.set(f"{account_number}_{bank_code}", json.dumps(res), 8000000)
         if status_code != 200:
@@ -887,17 +886,14 @@ def contact():
                 name = form.name.data.title()
                 email = form.email.data.lower()
                 message = form.message.data.title()
-                msg = Message(
+                send_email_users.delay(
                     "EasyTransact: from " + name,
-                    sender=email,
-                    recipients=[
+                    [
                         "atmme1992@gmail.com",
                         "greatsoma2019@gmail.com",
                         "vnoah410@gmail.com",
-                    ],
+                    ], "", {}, f"{message}\nMy email address is: {email}"
                 )
-                msg.body = f"{message}\nMy email address is: {email}"
-                mail.send(msg)
                 session["alert"] = "Message Sent"
                 session["bg_color"] = "success"
                 return redirect(url_for("view.contact"))
