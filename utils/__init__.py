@@ -5,7 +5,6 @@ import random
 import pyotp
 from extensions import db
 import re
-from worker.tasks.bg_tasks import send_email_users
 from configs.redis_config import redis_conn
 
 
@@ -173,6 +172,8 @@ def send_alert_email(
     phone=None,
 ):
     try:
+        from worker.tasks.bg_tasks import send_email_users
+
         context = {
             "user": user,
             "amount": f"{float(amount):,.2f}",

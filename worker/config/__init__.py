@@ -1,44 +1,32 @@
 from celery import Celery, shared_task
-from app_config import create_app
 from dotenv import load_dotenv
 import worker.schedule as celeryConfig
 import os
 
 load_dotenv()
 
-app = create_app()
 
 
-def make_celery(app=app):
+def make_celery():
     redis_url = os.getenv("REDIS_URL")
-    print(f"Redis urlll: {redis_url}")
-    print(f"celery Config: {celeryConfig}")
+    
     celery = Celery(
-        app.import_name,
+        "app_config",
         backend=redis_url,
         broker=redis_url,
     )
-    celery.conf.update(app.config)
-    celery.config_from_object(celeryConfig)
 
-    # Add explicit connection pool settings
-    celery.conf.broker_pool_limit = 10  # Don't use None — that causes unbounded pools
+    celery.config_from_object(celeryConfig)
+    
+    # Configure celery (no app_context here!)
+    celery.conf.broker_pool_limit = 10
     celery.conf.redis_socket_keepalive = True
     celery.conf.redis_socket_timeout = 30
     celery.conf.redis_retry_on_timeout = True
-
-    class ContextTask(celery.Task):
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return self.run(*args, **kwargs)
-
-    celery.Task = ContextTask
+    
     return celery
 
-
 celery = make_celery()
-
-from worker.tasks import bg_tasks
 
 
 @shared_task

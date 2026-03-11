@@ -9,7 +9,6 @@ from random import randint
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.exc import OperationalError
 from passlib.hash import pbkdf2_sha256 as hasher
-from worker.tasks.bg_tasks import send_email_users
 
 auth = Blueprint("auth", __name__, template_folder="../templates")
 
@@ -64,6 +63,8 @@ def validate(email):
 def login():
     form = LoginForm()
     try:
+        from worker.tasks.bg_tasks import send_email_users
+
         # If the logged-in user is trying to access the login url, redirects the user to the homepage
         if current_user.is_authenticated:
             return redirect(url_for("view.home"))
@@ -263,6 +264,8 @@ def verify_2fa():
 
 @auth.route("/register/", methods=["GET", "POST"])
 def register():
+    from worker.tasks.bg_tasks import send_email_users
+
     # If the logged-in user is trying to access the login url, redirects the user to the homepage
     if current_user.is_authenticated:
         return redirect(url_for("view.home"))
@@ -393,8 +396,6 @@ def register():
                         "email_verification.html",
                         {"otp": str(otp)},
                     )
-                    print(f"Task sent! ID: {result.id}")
-                    print(f"Task status: {result.status}")
                 except Exception as e:
                     print(e)
                     print(f"❌ Failed to send task: {type(e).__name__}: {e}")

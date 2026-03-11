@@ -54,7 +54,6 @@ from utils import (
 )
 from paystack.paystack_endpoint import PaystackEndpoints
 from configs.redis_config import redis_conn
-from worker.tasks.bg_tasks import send_email_users
 
 view = Blueprint("view", __name__, template_folder="../templates")
 
@@ -62,6 +61,8 @@ pay_stack = PaystackEndpoints()
 
 
 def send_reset_email(user):
+    from worker.tasks.bg_tasks import send_email_users
+
     token = user.get_reset_token()
     send_email_users.delay(
         "Password Reset Request",
@@ -887,6 +888,8 @@ def card():
 @view.route("/contact/", methods=["GET", "POST"])
 def contact():
     form = ContactForm()
+    from worker.tasks.bg_tasks import send_email_users
+
     alert = session.pop("alert", None)
     bg_color = session.pop("bg_color", None)
     if request.method == "POST":

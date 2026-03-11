@@ -19,7 +19,6 @@ app = create_app()
 
 load_dotenv()
 
-
 @app.shell_context_processor
 def make_shell_context():
     return {
@@ -34,6 +33,15 @@ def make_shell_context():
         "Admin": Admin,
         "BankBeneficiary": BankBeneficiary,
     }
+
+from worker.config import celery
+
+class ContextTask(celery.Task):
+    def __call__(self, *args, **kwargs):
+        with app.app_context():
+            return self.run(*args, **kwargs)
+
+celery.Task = ContextTask
 
 
 if __name__ == "__main__":
