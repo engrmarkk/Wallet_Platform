@@ -387,14 +387,19 @@ def register():
                     confirmed=False,
                 )
                 try:
-                    send_email_users.delay(
+                    result = send_email_users.delay(
                         "Email Verification",
                         email,
                         "email_verification.html",
                         {"otp": str(otp)},
                     )
+                    print(f"Task sent! ID: {result.id}")
+                    print(f"Task status: {result.status}")
                 except Exception as e:
                     print(e)
+                    print(f"❌ Failed to send task: {type(e).__name__}: {e}")
+                    import traceback
+                    traceback.print_exc()
                     alert = "Failed to verify email"
                     bg_color = "danger"
                     return render_template(
