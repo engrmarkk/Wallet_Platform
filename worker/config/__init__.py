@@ -36,6 +36,8 @@ def make_celery(app=app):
 
 celery = make_celery()
 
+from worker.tasks import bg_tasks
+
 
 @shared_task
 def add_numbers(x, y):
