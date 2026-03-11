@@ -1,6 +1,6 @@
 import redis
 import os
-
+print(f"REDIS_URL in web app: {os.getenv('REDIS_URL')}")
 
 class RedisConnection:
     def __init__(self, url=os.getenv("REDIS_URL")):
