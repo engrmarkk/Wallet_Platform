@@ -6,6 +6,7 @@ import pyotp
 from extensions import db
 import re
 from configs.redis_config import redis_conn
+from datetime import datetime
 
 
 def determine_purchase_type(service_id):
@@ -203,3 +204,19 @@ def return_redis_count(key):
     if count >= 3:
         return True
     return False
+
+
+def get_time_of_day():
+    """Return 'morning', 'afternoon', or 'evening' based on current hour"""
+    current_hour = datetime.now().hour
+
+    print(current_hour)
+
+    if 5 <= current_hour < 12:
+        return "Good Morning"
+    elif 12 <= current_hour < 17:
+        return "Good Afternoon"
+    elif 17 <= current_hour < 21:
+        return "Good Evening"
+    else:
+        return "Good Night"
