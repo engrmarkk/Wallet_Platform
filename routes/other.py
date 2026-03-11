@@ -23,7 +23,7 @@ from models import (
     Invitees,
     save_bank_beneficiary,
     get_one_bank_beneficiary,
-    TransactionCategories
+    TransactionCategories,
 )
 from models.transact import (
     save_transfer_in_transactions,
@@ -50,7 +50,7 @@ from utils import (
     get_uri,
     authenticate_auth_code,
     send_alert_email,
-    return_redis_count
+    return_redis_count,
 )
 from paystack.paystack_endpoint import PaystackEndpoints
 from configs.redis_config import redis_conn
@@ -64,7 +64,10 @@ pay_stack = PaystackEndpoints()
 def send_reset_email(user):
     token = user.get_reset_token()
     send_email_users.delay(
-        "Password Reset Request", user.email, "reset_email.html", {"user": user, "token": token}
+        "Password Reset Request",
+        user.email,
+        "reset_email.html",
+        {"user": user, "token": token},
     )
     return True
 
@@ -209,7 +212,11 @@ def showtransaction():
         .paginate(page=page, per_page=per_page)
     )
     # print(transactions.items, "transactions")
-    category_name = TransactionCategories.query.filter_by(id=category).first().category if category else None
+    category_name = (
+        TransactionCategories.query.filter_by(id=category).first().category
+        if category
+        else None
+    )
     return render_template(
         "show-histories.html",
         date=x,
@@ -872,7 +879,9 @@ def card():
     alert = session.pop("alert", None)
     bg_color = session.pop("bg_color", None)
     card = Card.query.filter_by(user_id=current_user.id).first()
-    return render_template("card.html", date=x, card=card, alert=alert, bg_color=bg_color)
+    return render_template(
+        "card.html", date=x, card=card, alert=alert, bg_color=bg_color
+    )
 
 
 @view.route("/contact/", methods=["GET", "POST"])
@@ -892,7 +901,10 @@ def contact():
                         "atmme1992@gmail.com",
                         "greatsoma2019@gmail.com",
                         "vnoah410@gmail.com",
-                    ], "", {}, f"{message}\nMy email address is: {email}"
+                    ],
+                    "",
+                    {},
+                    f"{message}\nMy email address is: {email}",
                 )
                 session["alert"] = "Message Sent"
                 session["bg_color"] = "success"
