@@ -5,6 +5,8 @@ import random
 import pyotp
 from extensions import db
 import re
+from worker.tasks.bg_tasks import send_email_users
+from configs.redis_config import redis_conn
 
 
 def determine_purchase_type(service_id):
@@ -187,14 +189,18 @@ def send_alert_email(
             "sender_acct": sender_acct,
             "phone": phone,
         }
-        msg = Message(
-            subject=subject,  # Dynamic subject passed to the function
-            sender="EasyTransact <easytransact.send@gmail.com>",
-            recipients=[user.email],
+        send_email_users.delay(
+            subject, user.email, "alert.html", context
         )
-        msg.html = render_template("alert.html", **context)
-        mail.send(msg)
     except Exception as e:
         print(e, "ERROR")
         session["alert"] = "Network Error"
         session["bg_color"] = "danger"
+
+
+# increase redis count and return True once its the tird time
+def return_redis_count(key):
+    count = redis_conn.incr(key)
+    if count >= 3:
+        return True
+    return False
