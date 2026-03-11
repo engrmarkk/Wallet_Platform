@@ -12,6 +12,7 @@ app = create_app()
 def make_celery(app=app):
     redis_url = os.getenv("REDIS_URL")
     print(f"Redis urlll: {redis_url}")
+    print(f"celery Config: {celeryConfig}")
     celery = Celery(
         app.import_name,
         backend=redis_url,
