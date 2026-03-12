@@ -350,3 +350,45 @@ def message_user():
         print(e, "error in message user")
         print(traceback.format_exc(), "TraceBack")
         return redirect(url_for("admin_blp.admin_dashboard"))
+
+
+# settings where admin will able to change there password
+@admin_blp.route("/settings", methods=["GET", "POST"])
+@login_required
+@admin_required
+def admin_settings():
+    try:
+        alert = session.pop("alert", None)
+        bg_color = session.pop("bg_color", None)
+        if request.method == "POST":
+            old_password = request.form.get("old_password")
+            new_password = request.form.get("new_password")
+            confirm_password = request.form.get("confirm_password")
+
+            if not all([old_password, new_password, confirm_password]):
+                session["alert"] = "All fields are required"
+                session["bg_color"] = "#FF5E6C"
+                return redirect(url_for("admin_blp.admin_settings"))
+
+            if new_password != confirm_password:
+                session["alert"] = "New password and confirm password do not match"
+                session["bg_color"] = "#FF5E6C"
+                return redirect(url_for("admin_blp.admin_settings"))
+
+            if not hasher.verify(old_password, current_user.password):
+                session["alert"] = "Old password is incorrect"
+                session["bg_color"] = "#FF5E6C"
+                return redirect(url_for("admin_blp.admin_settings"))
+
+            current_user.password = hasher.hash(new_password)
+            db.session.commit()
+
+            session["alert"] = "Password changed successfully"
+            session["bg_color"] = "#00C896"
+            return redirect(url_for("admin_blp.admin_settings"))
+
+        return render_template("admin_temp/settings.html", admin_dashboard=True, alert=alert, bg_color=bg_color)
+    except Exception as e:
+        print(e, "error in admin settings")
+        print(traceback.format_exc(), "TraceBack")
+        return redirect(url_for("admin_blp.admin_dashboard"))
