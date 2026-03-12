@@ -160,11 +160,11 @@ def login():
                         db.session.commit()
                         login_user(user, remember=False)
                         return redirect(url_for("view.home"))
-                    # else:
-                    #     # If the check failed, flash a message to the user while still on the same page
-                    #     session["alert"] = "Incorrect password"
-                    #     session["bg_color"] = "danger"
-                    #     return redirect(url_for("auth.login"))
+                    else:
+                        # If the check failed, flash a message to the user while still on the same page
+                        session["alert"] = "Incorrect password"
+                        session["bg_color"] = "danger"
+                        return redirect(url_for("auth.login"))
                 else:
                     print(f"Admin Email: {email}")
                     admin = Admin.query.filter_by(email=form.email.data.lower()).first()
