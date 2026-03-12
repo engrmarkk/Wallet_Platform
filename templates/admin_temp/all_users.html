@@ -1,132 +1,328 @@
 {% extends 'admin_temp/admin_layout.html' %}
+
+{% block title %}Users | EasyTransact Admin{% endblock %}
+{% block page_title %}Users{% endblock %}
+
+{% block extra_head %}
+<style>
+  .stat-card {
+    background: #1E2740;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 16px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s;
+    opacity: 0;
+    animation: fadeUp 0.4s ease forwards;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; right: 0;
+    width: 70px; height: 70px; border-radius: 50%;
+    background: var(--glow, rgba(0,200,150,0.06));
+    transform: translate(28px, -28px);
+    pointer-events: none;
+  }
+  .stat-card:hover { border-color: rgba(255,255,255,0.12); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  .stat-card:nth-child(1) { animation-delay:0.05s; }
+  .stat-card:nth-child(2) { animation-delay:0.10s; }
+  .stat-card:nth-child(3) { animation-delay:0.15s; }
+  .stat-card:nth-child(4) { animation-delay:0.20s; }
+  .stat-card:nth-child(5) { animation-delay:0.25s; }
+
+  .stat-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0;
+  }
+  .stat-label {
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #8892A4; font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .stat-count {
+    font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 700;
+    color: #e2e8f0; line-height: 1;
+  }
+
+  /* Table */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table thead tr {
+    background: #151c30;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .data-table th {
+    padding: 12px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #8892A4; font-weight: 500; text-align: left; white-space: nowrap;
+  }
+  .data-table tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+  .data-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+  .data-table td {
+    padding: 11px 14px;
+    font-size: 13px; color: #b0b8c8;
+    font-family: 'Outfit', sans-serif;
+  }
+  .data-table td.mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+
+  /* Status badge */
+  .badge-yes {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 20px;
+    background: rgba(0,200,150,0.1); color: #00C896;
+    font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid rgba(0,200,150,0.2);
+  }
+  .badge-no {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 20px;
+    background: rgba(255,94,108,0.1); color: #FF5E6C;
+    font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid rgba(255,94,108,0.2);
+  }
+
+  /* Avatar */
+  .user-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: linear-gradient(135deg, #1E2740, #2a3454);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    color: #00C896; flex-shrink: 0;
+  }
+
+  /* View button */
+  .btn-view {
+    padding: 5px 14px;
+    background: rgba(0,200,150,0.1);
+    border: 1px solid rgba(0,200,150,0.25);
+    border-radius: 6px;
+    color: #00C896;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+    letter-spacing: 0.06em;
+    text-decoration: none;
+    transition: all 0.18s;
+    white-space: nowrap;
+    display: inline-block;
+  }
+  .btn-view:hover {
+    background: rgba(0,200,150,0.2);
+    border-color: rgba(0,200,150,0.5);
+    color: #00C896;
+  }
+
+  /* Pagination */
+  .page-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 6px;
+    background: #1E2740; border: 1px solid rgba(255,255,255,0.07);
+    color: #8892A4; font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+    text-decoration: none; transition: all 0.18s;
+  }
+  .page-btn:hover { border-color: #00C896; color: #00C896; }
+  .page-btn.active { background: rgba(0,200,150,0.15); border-color: #00C896; color: #00C896; font-weight: 700; }
+  .page-btn.disabled { opacity: 0.3; pointer-events: none; }
+
+  /* Search bar */
+  .search-input {
+    background: #1E2740;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 8px;
+    padding: 9px 14px 9px 38px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px;
+    color: #e2e8f0;
+    outline: none;
+    transition: all 0.18s;
+    width: 240px;
+  }
+  .search-input:focus { border-color: #00C896; box-shadow: 0 0 0 3px rgba(0,200,150,0.1); }
+  .search-input::placeholder { color: #8892A4; }
+
+  .section-title {
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    color: #e2e8f0; letter-spacing: 0.04em;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-3">
-    <div class="row">
-        <!-- Card for Total Users -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-info">
-                <div class="card-header text-center">Total Users</div>
-                <div class="card-body">
-                    <h5 class="card-title text-center fw-bold">{{user_count}}</h5>
-                </div>
-            </div>
-        </div>
 
-        <!-- Card for Completed Users -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-info">
-                <div class="card-header text-center">Completed Users</div>
-                <div class="card-body">
-                    <h5 class="card-title text-center fw-bold">{{completed_user}}</h5>
-                </div>
-            </div>
-        </div>
+<!-- ── Stat Cards ── -->
+<div style="display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:24px;">
 
-        <!-- Card for Uncompleted Users -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-info">
-                <div class="card-header text-center">Uncompleted Users</div>
-                <div class="card-body">
-                    <h5 class="card-title text-center fw-bold">{{uncompleted_user}}</h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-info">
-                <div class="card-header text-center">Active Users</div>
-                <div class="card-body">
-                    <h5 class="card-title text-center fw-bold">{{active_users}}</h5>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card text-white bg-info">
-                <div class="card-header text-center">Inactive Users</div>
-                <div class="card-body">
-                    <h5 class="card-title text-center fw-bold">{{inactive_users}}</h5>
-                </div>
-            </div>
-        </div>
+  <div class="stat-card" style="--glow:rgba(74,144,226,0.08);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(74,144,226,0.12); color:#4A90E2;"><i class="fas fa-users"></i></div>
+      Total Users
     </div>
+    <div class="stat-count">{{ user_count }}</div>
+  </div>
+
+  <div class="stat-card" style="--glow:rgba(0,200,150,0.08);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(0,200,150,0.12); color:#00C896;"><i class="fas fa-user-check"></i></div>
+      Completed
+    </div>
+    <div class="stat-count" style="color:#00C896;">{{ completed_user }}</div>
+  </div>
+
+  <div class="stat-card" style="--glow:rgba(245,166,35,0.08);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(245,166,35,0.12); color:#F5A623;"><i class="fas fa-user-clock"></i></div>
+      Uncompleted
+    </div>
+    <div class="stat-count" style="color:#F5A623;">{{ uncompleted_user }}</div>
+  </div>
+
+  <div class="stat-card" style="--glow:rgba(0,200,150,0.08);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(0,200,150,0.12); color:#00C896;"><i class="fas fa-toggle-on"></i></div>
+      Active
+    </div>
+    <div class="stat-count" style="color:#00C896;">{{ active_users }}</div>
+  </div>
+
+  <div class="stat-card" style="--glow:rgba(255,94,108,0.08);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(255,94,108,0.12); color:#FF5E6C;"><i class="fas fa-toggle-off"></i></div>
+      Inactive
+    </div>
+    <div class="stat-count" style="color:#FF5E6C;">{{ inactive_users }}</div>
+  </div>
+
 </div>
 
-<div class="table-responsive">
-    <table class="table table-hover table-bordered text-center table-sm">
-        <thead>
-          <tr class="bg-info text-white fw-normal">
-            <th scope="col">S/N</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
-            <th scope="col">Email</th>
-            <th scope="col">Pin Set</th>
-            <th scope="col">Active</th>
-            <th scope="col">Email Confirmed</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-            {% for user in users %}
-          <tr class="text-muted fw-normal" style="font-size: .9rem;">
-            <th scope="row">{{loop.index}}</th>
-            <td>{{user.first_name.title()}}</td>
-            <td>{{user.last_name.title()}}</td>
-            <td>{{user.email}}</td>
-            <td>
-                {% if user.pin_set == True %}
-                <i class="fa fa-check-circle text-success"></i>
-                {% else %}
-                <i class="fa fa-times-circle text-danger"></i>
-                {% endif %}
-            </td>
-            <td>
-                {% if user.is_active == True %}
-                <i class="fa fa-check-circle text-success"></i>
-                {% else %}
-                <i class="fa fa-times-circle text-danger"></i>
-                {% endif %}
-            </td>
-            <td>
-                {% if user.confirmed == True %}
-                <i class="fa fa-check-circle text-success"></i>
-                {% else %}
-                <i class="fa fa-times-circle text-danger"></i>
-                {% endif %}
-            </td>
-            <td><a href="{{ url_for('admin_blp.one_user', user_id=user.id) }}" class="btn btn-info text-white shadow-none" style="font-size: .9rem;">View</a></td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+<!-- ── Table Card ── -->
+<div style="background:#1E2740; border:1px solid rgba(255,255,255,0.06); border-radius:10px; overflow:hidden;">
+
+  <!-- Table header bar -->
+  <div style="padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+    <div class="section-title" style="margin-bottom:0;">All Users</div>
+    <!-- Search -->
+    <div style="position:relative;">
+      <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#8892A4; font-size:12px; pointer-events:none;"></i>
+      <input type="text" id="user-search" class="search-input" placeholder="Search name or email…">
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div style="overflow-x:auto;">
+    <table class="data-table" id="users-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>User</th>
+          <th>Email</th>
+          <th style="text-align:center;">Pin Set</th>
+          <th style="text-align:center;">Active</th>
+          <th style="text-align:center;">Confirmed</th>
+          <th style="text-align:center;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for user in users %}
+        <tr>
+          <td class="mono" style="color:#8892A4;">{{ loop.index }}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="user-avatar">{{ user.first_name[0].upper() }}{{ user.last_name[0].upper() }}</div>
+              <div>
+                <div style="font-family:'Outfit',sans-serif; font-weight:500; color:#e2e8f0; font-size:13px;">
+                  {{ user.first_name.title() }} {{ user.last_name.title() }}
+                </div>
+              </div>
+            </div>
+          </td>
+          <td class="mono" style="font-size:12px;">{{ user.email }}</td>
+          <td style="text-align:center;">
+            {% if user.pin_set %}
+            <span class="badge-yes"><i class="fas fa-check" style="font-size:9px;"></i> Yes</span>
+            {% else %}
+            <span class="badge-no"><i class="fas fa-times" style="font-size:9px;"></i> No</span>
+            {% endif %}
+          </td>
+          <td style="text-align:center;">
+            {% if user.is_active %}
+            <span class="badge-yes"><i class="fas fa-check" style="font-size:9px;"></i> Yes</span>
+            {% else %}
+            <span class="badge-no"><i class="fas fa-times" style="font-size:9px;"></i> No</span>
+            {% endif %}
+          </td>
+          <td style="text-align:center;">
+            {% if user.confirmed %}
+            <span class="badge-yes"><i class="fas fa-check" style="font-size:9px;"></i> Yes</span>
+            {% else %}
+            <span class="badge-no"><i class="fas fa-times" style="font-size:9px;"></i> No</span>
+            {% endif %}
+          </td>
+          <td style="text-align:center;">
+            <a href="{{ url_for('admin_blp.one_user', user_id=user.id) }}" class="btn-view">
+              <i class="fas fa-arrow-right" style="font-size:10px; margin-right:4px;"></i>View
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div style="padding:14px 20px; border-top:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8892A4;">
+      Page {{ users.page }} of {{ ((users.total - 1) // users.per_page) + 1 }} &nbsp;·&nbsp; {{ users.total }} total
+    </div>
+    <div style="display:flex; align-items:center; gap:4px;">
+      <!-- Prev -->
+      <a href="?page={{ users.page - 1 }}" class="page-btn {% if users.page == 1 %}disabled{% endif %}" title="Previous">
+        <i class="fas fa-chevron-left" style="font-size:10px;"></i>
+      </a>
+
+      <!-- Page numbers -->
+      {% set total_pages = ((users.total - 1) // users.per_page) + 1 %}
+      {% for i in range(1, total_pages + 1) %}
+        {% if i == users.page %}
+          <span class="page-btn active">{{ i }}</span>
+        {% elif i == 1 or i == total_pages or (i >= users.page - 2 and i <= users.page + 2) %}
+          <a href="?page={{ i }}" class="page-btn">{{ i }}</a>
+        {% elif i == users.page - 3 or i == users.page + 3 %}
+          <span style="color:#8892A4; font-size:12px; padding:0 4px;">…</span>
+        {% endif %}
+      {% endfor %}
+
+      <!-- Next -->
+      <a href="?page={{ users.page + 1 }}" class="page-btn {% if users.page == total_pages %}disabled{% endif %}" title="Next">
+        <i class="fas fa-chevron-right" style="font-size:10px;"></i>
+      </a>
+    </div>
+  </div>
+
 </div>
-<!-- Pagination -->
-<div>
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center mb-0">
-            <!-- Previous Button -->
-            <li class="page-item {{ 'disabled' if users.page == 1 }}">
-                <a class="page-link border-0 text-white" href="?page={{ users.page - 1 }}" aria-label="Previous" {{ 'tabindex="-1"' if users.page == 1 }}>
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
 
-            <!-- Page Numbers -->
-            {% for i in range(1, (users.total // users.per_page) + 2) %}
-                <li class="page-item {{ 'active' if users.page == i }}">
-                    <a class="page-link bg-info border-0 text-white" href="?page={{ i }}">{{ i }}</a>
-                </li>
-            {% endfor %}
+{% endblock %}
 
-            <!-- Next Button -->
-            <li class="page-item {{ 'disabled' if users.page == (users.total // users.per_page) + 1 }}">
-                <a class="page-link border-0 text-white" href="?page={{ users.page + 1 }}" aria-label="Next" {{ 'tabindex="-1"' if users.page == (users.total // users.per_page) + 1 }}>
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
-</div>
+{% block extra_scripts %}
+<script>
+  // Client-side search filter
+  const searchInput = document.getElementById('user-search');
+  const tableBody = document.querySelector('#users-table tbody');
 
-
-{% endblock content %}
+  searchInput.addEventListener('input', function () {
+    const q = this.value.toLowerCase().trim();
+    const rows = tableBody.querySelectorAll('tr');
+    rows.forEach(row => {
+      const text = row.textContent.toLowerCase();
+      row.style.display = text.includes(q) ? '' : 'none';
+    });
+  });
+</script>
+{% endblock %}
