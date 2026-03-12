@@ -961,7 +961,7 @@ def download_pdf():
             200,
             {
                 "Content-Type": "application/pdf",
-                "Content-Disposition": f'attachment; filename={current_user.last_name.title() + " " + current_user.first_name.title()}.pdf',
+                "Content-Disposition": f'attachment; filename=EasyTransact_{current_user.last_name.title() + " " + current_user.first_name.title()}.pdf',
             },
         )
     except Exception as e:
