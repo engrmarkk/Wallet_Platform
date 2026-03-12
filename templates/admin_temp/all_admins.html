@@ -1,135 +1,353 @@
 {% extends 'admin_temp/admin_layout.html' %}
+
+{% block title %}Admins | EasyTransact Admin{% endblock %}
+{% block page_title %}Admins{% endblock %}
+
+{% block extra_head %}
+<style>
+  .et-card {
+    background: #1E2740;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .data-table th {
+    padding: 12px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #8892A4; font-weight: 500; text-align: left; white-space: nowrap;
+  }
+  .data-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+  .data-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+  .data-table td { padding: 12px 16px; font-size: 13px; color: #b0b8c8; font-family: 'Outfit', sans-serif; }
+  .data-table td.mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+
+  .badge-yes {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px;
+    background: rgba(0,200,150,0.1); color: #00C896;
+    font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid rgba(0,200,150,0.2);
+  }
+  .badge-no {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px;
+    background: rgba(255,94,108,0.1); color: #FF5E6C;
+    font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid rgba(255,94,108,0.2);
+  }
+  .badge-super {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px;
+    background: rgba(138,100,255,0.12); color: #8A64FF;
+    font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid rgba(138,100,255,0.2);
+  }
+
+  .admin-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: linear-gradient(135deg, #1E2740, #2a3454);
+    border: 1px solid rgba(255,255,255,0.08);
+    display: inline-flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    color: #8A64FF; flex-shrink: 0;
+  }
+
+  .btn-emerald {
+    padding: 7px 16px; border-radius: 7px;
+    background: rgba(0,200,150,0.1); color: #00C896;
+    border: 1px solid rgba(0,200,150,0.25);
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.18s; text-decoration: none;
+  }
+  .btn-emerald:hover { background: rgba(0,200,150,0.2); color: #00C896; }
+
+  .btn-amber {
+    padding: 7px 14px; border-radius: 7px;
+    background: rgba(245,166,35,0.1); color: #F5A623;
+    border: 1px solid rgba(245,166,35,0.25);
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.18s;
+  }
+  .btn-amber:hover { background: rgba(245,166,35,0.2); }
+
+  .btn-red {
+    padding: 7px 14px; border-radius: 7px;
+    background: rgba(255,94,108,0.1); color: #FF5E6C;
+    border: 1px solid rgba(255,94,108,0.25);
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.18s; text-decoration: none;
+  }
+  .btn-red:hover { background: rgba(255,94,108,0.2); color: #FF5E6C; }
+
+  /* Modal */
+  .et-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 9999;
+    align-items: center; justify-content: center;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+  }
+  .et-modal-overlay.open { display: flex; }
+  .et-modal-box {
+    background: #1E2740;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    width: 100%; max-width: 440px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    overflow: hidden;
+    animation: modalIn 0.25s cubic-bezier(0.16,1,0.3,1) both;
+  }
+  @keyframes modalIn { from { opacity:0; transform:translateY(16px) scale(0.98); } to { opacity:1; transform:none; } }
+  .et-modal-header {
+    padding: 18px 22px; border-bottom: 1px solid rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .et-modal-body { padding: 22px; display: flex; flex-direction: column; gap: 14px; }
+
+  .f-label {
+    display: block; font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #8892A4; margin-bottom: 6px;
+  }
+  .f-input {
+    width: 100%; padding: 10px 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 7px; color: #e2e8f0;
+    font-family: 'Outfit', sans-serif; font-size: 13px;
+    outline: none; transition: all 0.18s;
+  }
+  .f-input:focus { border-color: #00C896; box-shadow: 0 0 0 3px rgba(0,200,150,0.1); }
+  .f-input::placeholder { color: #8892A4; font-size: 12px; }
+
+  .f-checkbox { display: flex; align-items: center; gap: 10px; }
+  .f-checkbox input[type=checkbox] { width: 16px; height: 16px; accent-color: #00C896; cursor: pointer; }
+  .f-checkbox label { font-family: 'Outfit', sans-serif; font-size: 13px; color: #b0b8c8; cursor: pointer; }
+
+  .h-rule { height: 1px; background: rgba(255,255,255,0.06); margin: 4px 0; }
+
+  .page-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 6px;
+    background: #1E2740; border: 1px solid rgba(255,255,255,0.07);
+    color: #8892A4; font-size: 12px; font-family: 'IBM Plex Mono', monospace;
+    text-decoration: none; transition: all 0.18s;
+  }
+  .page-btn:hover { border-color: #00C896; color: #00C896; }
+  .page-btn.active { background: rgba(0,200,150,0.15); border-color: #00C896; color: #00C896; font-weight: 700; }
+  .page-btn.disabled { opacity: 0.3; pointer-events: none; }
+
+  .fade-up { opacity:0; animation: fadeUp 0.4s ease forwards; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+</style>
+{% endblock %}
+
 {% block content %}
-<div>
-    <h1 class="text-center">All Admins</h1>
 
-    <div>
-        <button type="button" class="btn btn-info text-white mb-3 shadow-none hover" data-bs-toggle="modal" data-bs-target="#createAdmin" >
-        Create Admin
+<!-- Header row -->
+<div class="fade-up" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:20px;">
+  <div>
+    <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#8892A4; margin-bottom:4px;">Management</div>
+    <div style="font-family:'Syne',sans-serif; font-size:22px; font-weight:700; color:#e2e8f0;">All Admins</div>
+  </div>
+  <button onclick="openModal('create-admin-modal')" class="btn-emerald">
+    <i class="fas fa-plus" style="font-size:11px;"></i> Create Admin
+  </button>
+</div>
+
+<!-- Table card -->
+<div class="et-card fade-up" style="animation-delay:0.08s;">
+  <div style="overflow-x:auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Admin</th>
+          <th>Email</th>
+          <th style="text-align:center;">Super Admin</th>
+          <th style="text-align:center;">Status</th>
+          <th style="text-align:center;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for admin in admins %}
+        <tr>
+          <td class="mono" style="color:#8892A4;">{{ loop.index }}</td>
+          <td>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="admin-avatar">{{ admin.first_name[0].upper() }}{{ admin.last_name[0].upper() }}</div>
+              <div>
+                <div style="font-weight:500; color:#e2e8f0; font-size:13px;">{{ admin.first_name.title() }} {{ admin.last_name.title() }}</div>
+                {% if admin.is_super_admin %}
+                <span class="badge-super" style="margin-top:3px;"><i class="fas fa-shield-alt" style="font-size:8px;"></i> Super Admin</span>
+                {% endif %}
+              </div>
+            </div>
+          </td>
+          <td class="mono" style="font-size:11px;">{{ admin.email }}</td>
+          <td style="text-align:center;">
+            {% if admin.is_super_admin %}
+            <span class="badge-yes"><i class="fas fa-check" style="font-size:9px;"></i> Yes</span>
+            {% else %}
+            <span class="badge-no"><i class="fas fa-times" style="font-size:9px;"></i> No</span>
+            {% endif %}
+          </td>
+          <td style="text-align:center;">
+            {% if admin.active %}
+            <span class="badge-yes"><i class="fas fa-circle" style="font-size:7px;"></i> Active</span>
+            {% else %}
+            <span class="badge-no"><i class="fas fa-circle" style="font-size:7px;"></i> Inactive</span>
+            {% endif %}
+          </td>
+          <td style="text-align:center;">
+            <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
+              <button onclick="openModal('update-admin-{{ admin.id }}')" class="btn-amber">
+                <i class="fas fa-pen" style="font-size:10px;"></i> Edit
+              </button>
+              <a href="{{ url_for('admin_blp.one_admin', admin_id=admin.id, delete=True) }}" class="btn-red"
+                onclick="return confirm('Delete {{ admin.first_name.title() }}? This cannot be undone.')">
+                <i class="fas fa-trash" style="font-size:10px;"></i> Delete
+              </a>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+<!-- ── Create Admin Modal ── -->
+<div id="create-admin-modal" class="et-modal-overlay" onclick="if(event.target===this)closeModal('create-admin-modal')">
+  <div class="et-modal-box">
+    <div class="et-modal-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:30px; height:30px; border-radius:8px; background:rgba(0,200,150,0.1); border:1px solid rgba(0,200,150,0.2); display:flex; align-items:center; justify-content:center;">
+          <i class="fas fa-user-plus" style="color:#00C896; font-size:12px;"></i>
+        </div>
+        <span style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:#e2e8f0;">Create Admin</span>
+      </div>
+      <button onclick="closeModal('create-admin-modal')" style="background:none; border:none; color:#8892A4; cursor:pointer; font-size:16px; transition:color 0.15s;" onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8892A4'">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <form method="POST" action="{{ url_for('admin_blp.get_admins') }}" class="et-modal-body">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div>
+          <label class="f-label">First Name</label>
+          <input type="text" name="first_name" class="f-input" placeholder="John" required>
+        </div>
+        <div>
+          <label class="f-label">Last Name</label>
+          <input type="text" name="last_name" class="f-input" placeholder="Doe" required>
+        </div>
+      </div>
+      <div>
+        <label class="f-label">Email</label>
+        <input type="email" name="email" class="f-input" placeholder="admin@easytransact.com" required>
+      </div>
+      <div>
+        <label class="f-label">Password</label>
+        <input type="password" name="password" class="f-input" placeholder="••••••••" required>
+      </div>
+      <div class="f-checkbox">
+        <input type="checkbox" name="is_super_admin" id="create_super_admin">
+        <label for="create_super_admin">Grant Super Admin privileges</label>
+      </div>
+      <div class="h-rule"></div>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button type="button" onclick="closeModal('create-admin-modal')"
+          style="padding:9px 18px; border-radius:7px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); color:#8892A4; font-family:'Outfit',sans-serif; font-size:13px; cursor:pointer; transition:all 0.18s;"
+          onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8892A4'">Cancel</button>
+        <button type="submit" class="btn-emerald">
+          <i class="fas fa-check" style="font-size:10px;"></i> Create Admin
         </button>
-    </div>
+      </div>
+    </form>
+  </div>
+</div>
 
-    <!-- modal -->
-    <div class="modal fade" id="createAdmin" tabindex="-1" aria-labelledby="createAdminLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="createAdminLabel">Create Admin</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <form method="POST" action="{{ url_for('admin_blp.get_admins') }}">
-              <div class="mb-3">
-                <label for="first_name" class="form-label">First Name</label>
-                <input type="text" name="first_name" class="form-control shadow-none" id="first_name" placeholder="First Name" required>
-              </div>
-              <div class="mb-3">
-                <label for="last_name" class="form-label">Last Name</label>
-                <input type="text" name="last_name" class="form-control shadow-none" id="last_name" placeholder="Last Name" required>
-              </div>
-              <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" name="email" class="form-control shadow-none" id="email" placeholder="Email" required>
-              </div>
-              <div class="mb-3">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" name="password" class="form-control shadow-none" id="password" placeholder="Password" required>
-              </div>
-              <!-- is super admin tick -->
-              <div class="mb-3 form-check">
-                <input type="checkbox" name="is_super_admin" class="form-check-input shadow-none" id="is_super_admin">
-                <label class="form-check-label" for="is_super_admin">Super Admin</label>
-              </div>
-              <button type="submit" class="btn btn-primary shadow-none">Create</button>
-            </form>
-          </div>
+<!-- ── Update Admin Modals ── -->
+{% for admin in admins %}
+<div id="update-admin-{{ admin.id }}" class="et-modal-overlay" onclick="if(event.target===this)closeModal('update-admin-{{ admin.id }}')">
+  <div class="et-modal-box">
+    <div class="et-modal-header">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div style="width:30px; height:30px; border-radius:8px; background:rgba(245,166,35,0.1); border:1px solid rgba(245,166,35,0.2); display:flex; align-items:center; justify-content:center;">
+          <i class="fas fa-user-edit" style="color:#F5A623; font-size:12px;"></i>
+        </div>
+        <span style="font-family:'Syne',sans-serif; font-size:15px; font-weight:700; color:#e2e8f0;">
+          Edit — {{ admin.first_name.title() }} {{ admin.last_name.title() }}
+        </span>
+      </div>
+      <button onclick="closeModal('update-admin-{{ admin.id }}')" style="background:none; border:none; color:#8892A4; cursor:pointer; font-size:16px; transition:color 0.15s;" onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8892A4'">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <form method="POST" action="{{ url_for('admin_blp.one_admin', admin_id=admin.id, update=True) }}" class="et-modal-body">
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+        <div>
+          <label class="f-label">First Name</label>
+          <input type="text" name="first_name" value="{{ admin.first_name }}" class="f-input" required>
+        </div>
+        <div>
+          <label class="f-label">Last Name</label>
+          <input type="text" name="last_name" value="{{ admin.last_name }}" class="f-input" required>
         </div>
       </div>
-    </div>
-
-    <div class="table-responsive">
-        <table class="table table-hover table-bordered text-center table-sm">
-          <thead>
-            <tr class="bg-info text-white fw-normal" style="font-size: .9rem;">
-              <th scope="col" class="fw-normal">S/N</th>
-              <th scope="col" class="fw-normal">Last Name</th>
-              <th scope="col" class="fw-normal">First Name</th>
-              <th scope="col" class="fw-normal">Email</th>
-              <th scope="col" class="fw-normal">SuperAdmin</th>
-              <th scope="col" class="fw-normal">Status</th>
-              <th scope="col" class="fw-normal">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for admin in admins %}
-            <tr class="text-muted fw-normal" style="font-size: .9rem;">
-              <td>{{loop.index}}</td>
-              <td>
-                {{admin.last_name.title()}}
-              </td>
-              <td>
-                {{admin.first_name.title()}}
-              </td>
-              <td>{{admin.email}}</td>
-              <td>{% if admin.is_super_admin == True %} <i class="fa fa-check-circle text-success"></i> {% else %} <i class="fa fa-times-circle text-danger"></i> {% endif %}</td>
-              <td>{% if admin.active == True %} <i class="fa fa-check-circle text-success"></i> {% else %} <i class="fa fa-times-circle text-danger"></i> {% endif %}</td>
-              <td>
-                <button type="button" class="btn btn-info text-white shadow-none" style="font-size: .9rem;" data-bs-toggle="modal" data-bs-target="#updateAdmin{{admin.id}}">Update</button>
-                <a href="{{ url_for('admin_blp.one_admin', admin_id=admin.id, delete=True) }}" class="btn btn-danger text-white shadow-none" style="font-size: .9rem;">Delete</a>
-            </td>
-            
-            </tr>
-
-
-            <!-- MODAL -->
-            <!-- MODAL -->
-<div class="modal fade" id="updateAdmin{{admin.id}}" tabindex="-1" aria-labelledby="updateAdminModal{{admin.id}}" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="updateAdminModal{{admin.id}}">Create Admin</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" action="{{ url_for('admin_blp.one_admin', admin_id=admin.id, update=True) }}">
-                    <div class="mb-3">
-                        <label for="first_name" class="form-label">First Name</label>
-                        <input type="text" value="{{admin.first_name}}" name="first_name" class="form-control shadow-none" id="first_name" placeholder="First Name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="last_name" class="form-label">Last Name</label>
-                        <input type="text" value="{{admin.last_name}}" name="last_name" class="form-control shadow-none" id="last_name" placeholder="Last Name" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" value="{{admin.email}}" name="email" class="form-control shadow-none" id="email" placeholder="Email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control shadow-none" id="password" placeholder="Password">
-                    </div>
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" {% if admin.is_super_admin == True %} checked {% endif %} name="is_super_admin" class="form-check-input shadow-none" id="is_super_admin">
-                        <label class="form-check-label" for="is_super_admin">Super Admin</label>
-                    </div>
-                    <!-- active -->
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" {% if admin.active == True %} checked {% endif %} name="is_active" class="form-check-input shadow-none" id="is_active">
-                        <label class="form-check-label" for="is_active">
-                            {% if admin.active == True %} Active {% else %} Inactive {% endif %}
-                        </label>
-                    </div>
-                    <button type="submit" class="btn btn-primary shadow-none">Update</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- END MODAL -->
-
-            {% endfor %}
-          </tbody>
-        </table>
+      <div>
+        <label class="f-label">Email</label>
+        <input type="email" name="email" value="{{ admin.email }}" class="f-input" required>
       </div>
+      <div>
+        <label class="f-label">New Password <span style="color:#8892A4; font-size:9px; text-transform:none; letter-spacing:0;">(leave blank to keep current)</span></label>
+        <input type="password" name="password" class="f-input" placeholder="••••••••">
+      </div>
+      <div style="display:flex; gap:20px;">
+        <div class="f-checkbox">
+          <input type="checkbox" name="is_super_admin" id="super_{{ admin.id }}" {% if admin.is_super_admin %}checked{% endif %}>
+          <label for="super_{{ admin.id }}">Super Admin</label>
+        </div>
+        <div class="f-checkbox">
+          <input type="checkbox" name="is_active" id="active_{{ admin.id }}" {% if admin.active %}checked{% endif %}>
+          <label for="active_{{ admin.id }}">Active</label>
+        </div>
+      </div>
+      <div class="h-rule"></div>
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button type="button" onclick="closeModal('update-admin-{{ admin.id }}')"
+          style="padding:9px 18px; border-radius:7px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08); color:#8892A4; font-family:'Outfit',sans-serif; font-size:13px; cursor:pointer; transition:all 0.18s;"
+          onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8892A4'">Cancel</button>
+        <button type="submit" class="btn-amber">
+          <i class="fas fa-save" style="font-size:10px;"></i> Save Changes
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
-{% endblock content %}
+{% endfor %}
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+  // expose to inline onclick handlers
+  window.openModal = openModal;
+  window.closeModal = closeModal;
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.querySelectorAll('.et-modal-overlay.open').forEach(m => m.classList.remove('open'));
+  });
+});
+</script>
+{% endblock %}
