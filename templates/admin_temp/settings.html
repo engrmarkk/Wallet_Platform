@@ -1,0 +1,381 @@
+{% extends 'admin_temp/admin_layout.html' %}
+
+{% block title %}Settings | EasyTransact Admin{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block extra_head %}
+<style>
+  .settings-card {
+    background: #1E2740;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .settings-card-header {
+    padding: 16px 22px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: #151c30;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .settings-card-header-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; flex-shrink: 0;
+  }
+  .settings-card-body { padding: 22px; }
+
+  .info-field {
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .info-field-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #8892A4;
+  }
+  .info-field-value {
+    width: 100%; padding: 10px 14px;
+    background: rgba(255,255,255,0.02);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 7px;
+    color: #8892A4;
+    font-family: 'Outfit', sans-serif; font-size: 13px;
+    cursor: not-allowed;
+    user-select: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .info-field-value i { font-size: 11px; opacity: 0.5; }
+
+  /* Password strength indicator */
+  .strength-bar-wrap {
+    height: 3px; border-radius: 2px;
+    background: rgba(255,255,255,0.06);
+    margin-top: 6px; overflow: hidden;
+  }
+  .strength-bar {
+    height: 100%; border-radius: 2px;
+    width: 0%; transition: width 0.3s, background 0.3s;
+  }
+  .strength-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; letter-spacing: 0.1em;
+    margin-top: 4px; min-height: 13px;
+    text-transform: uppercase;
+  }
+
+  /* Match indicator */
+  .match-hint {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+    margin-top: 5px; min-height: 13px;
+    transition: color 0.2s;
+  }
+
+  .fade-up { opacity: 0; animation: fadeUp 0.4s ease forwards; }
+  .fade-up:nth-child(1) { animation-delay: 0.04s; }
+  .fade-up:nth-child(2) { animation-delay: 0.1s; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Page header -->
+<div class="fade-up" style="margin-bottom: 24px;">
+  <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#8892A4; margin-bottom:4px;">Account</div>
+  <div style="font-family:'Syne',sans-serif; font-size:22px; font-weight:700; color:#e2e8f0;">Settings</div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
+
+  <!-- ── Profile Info Card ── -->
+  <div class="settings-card fade-up">
+    <div class="settings-card-header">
+      <div class="settings-card-header-icon" style="background: rgba(74,144,226,0.1); border: 1px solid rgba(74,144,226,0.2);">
+        <i class="fas fa-user" style="color: #4A90E2;"></i>
+      </div>
+      <div>
+        <div style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#e2e8f0;">Profile Information</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#8892A4; margin-top:2px;">Read-only — contact a super admin to update</div>
+      </div>
+    </div>
+
+    <div class="settings-card-body" style="display: flex; flex-direction: column; gap: 16px;">
+
+      <!-- Avatar + name row -->
+      <div style="display: flex; align-items: center; gap: 16px; padding: 16px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px;">
+        <div style="width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, rgba(138,100,255,0.25), rgba(74,144,226,0.25)); border: 2px solid rgba(138,100,255,0.3); display: flex; align-items: center; justify-content: center; font-family:'Syne',sans-serif; font-size: 18px; font-weight: 700; color: #8A64FF; flex-shrink: 0;">
+          {{ current_user.first_name[0].upper() }}{{ current_user.last_name[0].upper() }}
+        </div>
+        <div>
+          <div style="font-family:'Syne',sans-serif; font-size:16px; font-weight:700; color:#e2e8f0;">
+            {{ current_user.first_name.title() }} {{ current_user.last_name.title() }}
+          </div>
+          <div style="margin-top:5px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+            {% if current_user.is_super_admin %}
+            <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:20px; background:rgba(138,100,255,0.12); color:#8A64FF; font-size:10px; font-family:'IBM Plex Mono',monospace; border:1px solid rgba(138,100,255,0.2);">
+              <i class="fas fa-shield-alt" style="font-size:8px;"></i> Super Admin
+            </span>
+            {% else %}
+            <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:20px; background:rgba(74,144,226,0.1); color:#4A90E2; font-size:10px; font-family:'IBM Plex Mono',monospace; border:1px solid rgba(74,144,226,0.2);">
+              <i class="fas fa-user-shield" style="font-size:8px;"></i> Admin
+            </span>
+            {% endif %}
+            {% if current_user.active %}
+            <span style="display:inline-flex; align-items:center; gap:4px; padding:2px 9px; border-radius:20px; background:rgba(0,200,150,0.1); color:#00C896; font-size:10px; font-family:'IBM Plex Mono',monospace; border:1px solid rgba(0,200,150,0.2);">
+              <i class="fas fa-circle" style="font-size:6px;"></i> Active
+            </span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <!-- First Name + Last Name -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+        <div class="info-field">
+          <span class="info-field-label">First Name</span>
+          <div class="info-field-value">
+            <i class="fas fa-lock"></i>
+            {{ current_user.first_name.title() }}
+          </div>
+        </div>
+        <div class="info-field">
+          <span class="info-field-label">Last Name</span>
+          <div class="info-field-value">
+            <i class="fas fa-lock"></i>
+            {{ current_user.last_name.title() }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="info-field">
+        <span class="info-field-label">Email Address</span>
+        <div class="info-field-value">
+          <i class="fas fa-envelope"></i>
+          {{ current_user.email }}
+        </div>
+      </div>
+
+      <!-- Super admin flag -->
+      <div class="info-field">
+        <span class="info-field-label">Access Level</span>
+        <div class="info-field-value">
+          <i class="fas fa-key"></i>
+          {% if current_user.is_super_admin %}Super Administrator{% else %}Administrator{% endif %}
+        </div>
+      </div>
+
+      <!-- Account status -->
+      <div class="info-field">
+        <span class="info-field-label">Account Status</span>
+        <div class="info-field-value">
+          <i class="fas fa-circle" style="font-size:8px; color:{% if current_user.active %}#00C896{% else %}#FF5E6C{% endif %};"></i>
+          {% if current_user.active %}Active{% else %}Inactive{% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Change Password Card ── -->
+  <div class="settings-card fade-up">
+    <div class="settings-card-header">
+      <div class="settings-card-header-icon" style="background: rgba(0,200,150,0.1); border: 1px solid rgba(0,200,150,0.2);">
+        <i class="fas fa-lock" style="color: #00C896;"></i>
+      </div>
+      <div>
+        <div style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#e2e8f0;">Change Password</div>
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#8892A4; margin-top:2px;">New and confirm password must match</div>
+      </div>
+    </div>
+
+    <div class="settings-card-body">
+      <form method="POST" action="{{ url_for('admin_blp.admin_settings') }}" id="pw-form" style="display:flex; flex-direction:column; gap:16px;" novalidate>
+
+        <!-- Old Password -->
+        <div>
+          <label class="f-label" for="old_password">Current Password</label>
+          <div style="position:relative;">
+            <input type="password" id="old_password" name="old_password"
+              class="f-input" placeholder="••••••••" required autocomplete="current-password"
+              style="padding-right: 40px;">
+            <button type="button" class="pw-toggle" data-target="old_password"
+              style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#8892A4; cursor:pointer; font-size:12px; padding:2px;"
+              onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8892A4'">
+              <i class="fas fa-eye" id="toggle-icon-old_password"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div style="border-top: 1px solid rgba(255,255,255,0.05);"></div>
+
+        <!-- New Password -->
+        <div>
+          <label class="f-label" for="new_password">New Password</label>
+          <div style="position:relative;">
+            <input type="password" id="new_password" name="new_password"
+              class="f-input" placeholder="••••••••" required autocomplete="new-password"
+              style="padding-right: 40px;" oninput="checkStrength(this.value); checkMatch();">
+            <button type="button" class="pw-toggle" data-target="new_password"
+              style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#8892A4; cursor:pointer; font-size:12px; padding:2px;"
+              onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8892A4'">
+              <i class="fas fa-eye" id="toggle-icon-new_password"></i>
+            </button>
+          </div>
+          <!-- Strength bar -->
+          <div class="strength-bar-wrap">
+            <div class="strength-bar" id="strength-bar"></div>
+          </div>
+          <div class="strength-label" id="strength-label" style="color:#8892A4;"></div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label class="f-label" for="confirm_password">Confirm New Password</label>
+          <div style="position:relative;">
+            <input type="password" id="confirm_password" name="confirm_password"
+              class="f-input" placeholder="••••••••" required autocomplete="new-password"
+              style="padding-right: 40px;" oninput="checkMatch();">
+            <button type="button" class="pw-toggle" data-target="confirm_password"
+              style="position:absolute; right:12px; top:50%; transform:translateY(-50%); background:none; border:none; color:#8892A4; cursor:pointer; font-size:12px; padding:2px;"
+              onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8892A4'">
+              <i class="fas fa-eye" id="toggle-icon-confirm_password"></i>
+            </button>
+          </div>
+          <div class="match-hint" id="match-hint"></div>
+        </div>
+
+        <!-- Form error (shown if validation fails) -->
+        <div id="form-error" style="display:none !important; padding:10px 14px; border-radius:7px; background:rgba(255,94,108,0.08); border:1px solid rgba(255,94,108,0.2); color:#FF5E6C; font-size:12px; font-family:'Outfit',sans-serif; display:flex; align-items:center; gap:8px;">
+          <i class="fas fa-exclamation-circle" style="flex-shrink:0;"></i>
+          <span id="form-error-text"></span>
+        </div>
+
+        <!-- Submit -->
+        <div style="display:flex; justify-content:flex-end; padding-top:4px;">
+          <button type="submit" id="submit-btn" class="btn-emerald" style="padding:10px 22px; font-size:13px; opacity:0.5; pointer-events:none; transition:opacity 0.2s;">
+            <i class="fas fa-shield-alt" style="font-size:11px;"></i> Update Password
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- Responsive: stack on small screens -->
+<style>
+  @media (max-width: 860px) {
+    #settings-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Show/Hide password toggles ──
+  document.querySelectorAll('.pw-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const targetId = btn.dataset.target;
+      const input = document.getElementById(targetId);
+      const icon  = document.getElementById('toggle-icon-' + targetId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+      } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+      }
+    });
+  });
+
+  // ── Password strength ──
+  window.checkStrength = function(val) {
+    const bar   = document.getElementById('strength-bar');
+    const label = document.getElementById('strength-label');
+    let score = 0;
+    if (val.length >= 8)                        score++;
+    if (/[A-Z]/.test(val))                      score++;
+    if (/[0-9]/.test(val))                      score++;
+    if (/[^A-Za-z0-9]/.test(val))               score++;
+    if (val.length >= 12)                        score++;
+
+    const levels = [
+      { pct: '0%',   color: 'transparent',  text: '' },
+      { pct: '25%',  color: '#FF5E6C',      text: 'Weak' },
+      { pct: '50%',  color: '#F5A623',      text: 'Fair' },
+      { pct: '75%',  color: '#4A90E2',      text: 'Good' },
+      { pct: '100%', color: '#00C896',      text: 'Strong' },
+      { pct: '100%', color: '#00C896',      text: 'Strong' },
+    ];
+    const lvl = levels[Math.min(score, 5)];
+    bar.style.width      = val.length ? lvl.pct : '0%';
+    bar.style.background = lvl.color;
+    label.textContent    = val.length ? lvl.text : '';
+    label.style.color    = lvl.color;
+    updateSubmit();
+  };
+
+  // ── Match check ──
+  window.checkMatch = function() {
+    const np  = document.getElementById('new_password').value;
+    const cp  = document.getElementById('confirm_password').value;
+    const hint = document.getElementById('match-hint');
+    if (!cp) {
+      hint.textContent = '';
+    } else if (np === cp) {
+      hint.textContent = '✓ Passwords match';
+      hint.style.color = '#00C896';
+    } else {
+      hint.textContent = '✗ Passwords do not match';
+      hint.style.color = '#FF5E6C';
+    }
+    updateSubmit();
+  };
+
+  // ── Enable submit only when valid ──
+  function updateSubmit() {
+    const old = document.getElementById('old_password').value.trim();
+    const np  = document.getElementById('new_password').value;
+    const cp  = document.getElementById('confirm_password').value;
+    const btn = document.getElementById('submit-btn');
+    const ready = old.length > 0 && np.length >= 6 && np === cp;
+    btn.style.opacity       = ready ? '1'    : '0.5';
+    btn.style.pointerEvents = ready ? 'auto' : 'none';
+  }
+
+  // Also re-check when old_password is typed
+  document.getElementById('old_password').addEventListener('input', updateSubmit);
+
+  // ── Client-side validation before submit ──
+  document.getElementById('pw-form').addEventListener('submit', function(e) {
+    const np  = document.getElementById('new_password').value;
+    const cp  = document.getElementById('confirm_password').value;
+    const err = document.getElementById('form-error');
+    const errTxt = document.getElementById('form-error-text');
+
+    if (np !== cp) {
+      e.preventDefault();
+      errTxt.textContent = 'New password and confirm password do not match.';
+      err.style.display = 'flex';
+      document.getElementById('confirm_password').focus();
+      return;
+    }
+    if (np.length < 6) {
+      e.preventDefault();
+      errTxt.textContent = 'New password must be at least 6 characters.';
+      err.style.display = 'flex';
+      document.getElementById('new_password').focus();
+      return;
+    }
+    err.style.display = 'none';
+  });
+
+});
+</script>
+{% endblock %}
