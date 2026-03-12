@@ -1,181 +1,360 @@
 {% extends 'admin_temp/admin_layout.html' %}
+
+{% block title %}{{ user.first_name.title() }} {{ user.last_name.title() }} | EasyTransact Admin{% endblock %}
+{% block page_title %}User Profile{% endblock %}
+
+{% block extra_head %}
+<style>
+  .profile-card {
+    background: #1E2740;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .info-row {
+    display: flex; align-items: center;
+    padding: 13px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    gap: 12px;
+  }
+  .info-row:last-child { border-bottom: none; }
+  .info-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #8892A4; width: 110px; flex-shrink: 0;
+  }
+  .info-value {
+    font-family: 'Outfit', sans-serif;
+    font-size: 13px; color: #e2e8f0; font-weight: 500;
+  }
+  .info-value.mono {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+  }
+
+  /* Stat mini card */
+  .mini-stat {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 12px 14px;
+    text-align: center;
+  }
+  .mini-stat-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: #e2e8f0; line-height: 1;
+  }
+  .mini-stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #8892A4; margin-top: 5px;
+  }
+
+  /* Table */
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table thead tr { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .data-table th {
+    padding: 11px 14px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: #8892A4; font-weight: 500; text-align: left; white-space: nowrap;
+  }
+  .data-table tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+  .data-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+  .data-table td {
+    padding: 10px 14px;
+    font-size: 12px; color: #b0b8c8;
+    font-family: 'Outfit', sans-serif;
+    white-space: nowrap;
+  }
+  .data-table td.mono { font-family: 'IBM Plex Mono', monospace; font-size: 11px; }
+
+  /* Badges */
+  .badge-credit {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px;
+    background: rgba(0,200,150,0.1); color: #00C896;
+    font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid rgba(0,200,150,0.2);
+  }
+  .badge-debit {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 20px;
+    background: rgba(255,94,108,0.1); color: #FF5E6C;
+    font-size: 10px; font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid rgba(255,94,108,0.2);
+  }
+  .badge-active {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px;
+    background: rgba(0,200,150,0.1); color: #00C896;
+    font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid rgba(0,200,150,0.2);
+  }
+  .badge-inactive {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 20px;
+    background: rgba(255,94,108,0.1); color: #FF5E6C;
+    font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    border: 1px solid rgba(255,94,108,0.2);
+  }
+
+  /* Avatar */
+  .avatar-wrap {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 2px solid rgba(0,200,150,0.3);
+    overflow: hidden; margin: 0 auto;
+    box-shadow: 0 0 0 4px rgba(0,200,150,0.08);
+  }
+  .avatar-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .avatar-fallback {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #1E2740, #2a3454);
+    border: 2px solid rgba(0,200,150,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 700;
+    color: #00C896; margin: 0 auto;
+    box-shadow: 0 0 0 4px rgba(0,200,150,0.08);
+  }
+
+  /* Action buttons */
+  .btn-action-green {
+    padding: 8px 18px; border-radius: 7px;
+    background: rgba(0,200,150,0.1); color: #00C896;
+    border: 1px solid rgba(0,200,150,0.25);
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+    cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.18s;
+  }
+  .btn-action-green:hover { background: rgba(0,200,150,0.2); color: #00C896; }
+
+  .btn-action-red {
+    padding: 8px 18px; border-radius: 7px;
+    background: rgba(255,94,108,0.1); color: #FF5E6C;
+    border: 1px solid rgba(255,94,108,0.25);
+    font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+    cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.18s;
+  }
+  .btn-action-red:hover { background: rgba(255,94,108,0.2); color: #FF5E6C; }
+
+  .btn-ghost-sm {
+    padding: 6px 14px; border-radius: 6px;
+    background: rgba(255,255,255,0.05); color: #8892A4;
+    border: 1px solid rgba(255,255,255,0.08);
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.06em;
+    cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.18s;
+  }
+  .btn-ghost-sm:hover { color: #e2e8f0; border-color: rgba(255,255,255,0.15); }
+
+  .section-title {
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+    color: #e2e8f0; letter-spacing: 0.05em; text-transform: uppercase;
+    display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.06); }
+
+  /* Page animation */
+  .fade-up { opacity: 0; animation: fadeUp 0.4s ease forwards; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .fade-up:nth-child(1) { animation-delay: 0.05s; }
+  .fade-up:nth-child(2) { animation-delay: 0.12s; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div>
-    <section>
-        <div class="container py-5">
-      
-          <div class="row">
-            <div class="col-lg-4">
-              <div class="card mb-4">
-                <div class="card-body text-center">
-                  <img src="{{ user.photo }}" alt="avatar"
-                    class="rounded-circle img-fluid" style="width: 150px;">
-                  <h5 class="my-3">{{ user.first_name.title() }} {{ user.last_name.title() }}</h5>
-                  <p class="text-muted mb-1">
-                    {% if user.active %}
-                    <span class="text-success">Active</span>
-                    {% else %}
-                    <span class="text-danger">Inactive</span>
-                    {% endif %}
-                  </p>
-                  <div class="d-flex justify-content-center mb-2">
-                    <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary ms-1 badge rounded-pill fw-normal bg-info border-0" style="font-size: .7rem;">Message</button>
-                    <a href="{{ url_for('admin_blp.one_user', user_id=user.id, deactivate=user.active) }}" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-primary shadow-none ms-1 badge rounded-pill fw-normal border-0 {% if user.active %}btn-danger{% else %}btn-success{% endif %}" style="font-size: .7rem;">
-                        {% if user.active %}Deactivate{% else %}Activate{% endif %}
-                    </a>
-                  </div>
-                </div>
-              </div>
-              <div class="card mb-4 mb-lg-0">
-                <div class="card-body p-0">
-                  <ul class="list-group list-group-flush rounded-3">
-                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                      <i class="fas fa-globe fa-lg text-warning"></i>
-                      <p class="mb-0">https://mdbootstrap.com</p>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                      <i class="fab fa-github fa-lg text-body"></i>
-                      <p class="mb-0">mdbootstrap</p>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                      <i class="fab fa-twitter fa-lg" style="color: #55acee;"></i>
-                      <p class="mb-0">@mdbootstrap</p>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                      <i class="fab fa-instagram fa-lg" style="color: #ac2bac;"></i>
-                      <p class="mb-0">mdbootstrap</p>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                      <i class="fab fa-facebook-f fa-lg" style="color: #3b5998;"></i>
-                      <p class="mb-0">mdbootstrap</p>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            <div class="col-lg-8">
-              <div class="card mb-4">
-                <div class="card-body" style="font-size: .8rem;">
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <p class="mb-0">Full Name</p>
-                    </div>
-                    <div class="col-sm-9">
-                      <p class="text-muted mb-0">{{ user.last_name.title() }} {{ user.first_name.title() }}</p>
-                    </div>
-                  </div>
-                  <hr>
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <p class="mb-0">Email</p>
-                    </div>
-                    <div class="col-sm-9">
-                      <p class="text-muted mb-0">{{ user.email }}</p>
-                    </div>
-                  </div>
-                  <hr>
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <p class="mb-0">Phone</p>
-                    </div>
-                    <div class="col-sm-9">
-                      <p class="text-muted mb-0">0{{ user.phone_number }}</p>
-                    </div>
-                  </div>
-                  <hr>
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <p class="mb-0">Account</p>
-                    </div>
-                    <div class="col-sm-9">
-                      <p class="text-muted mb-0">{{ user.account_number }}</p>
-                    </div>
-                  </div>
-                  <hr>
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <p class="mb-0">Username</p>
-                    </div>
-                    <div class="col-sm-9">
-                      <p class="text-muted mb-0">{{ user.username }}</p>
-                    </div>
-                  </div>
-                  <hr>
-                  <div class="row">
-                    <div class="col-sm-3">
-                      <p class="mb-0">Balance</p>
-                    </div>
-                    <div class="col-sm-9">
-                      <p class="text-muted mb-0">NGN {{ "{:,.2f}".format(user.account_balance) }}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="card mb-4 mb-md-0">
-                    <div class="card-body">
-                      <p class="mb-4 text-center"><span class="text-dark font-italic me-1">Recent</span>Transaction History
-                      </p>
-                    {% if user.transacts %}                    
-                      <div class="d-flex justify-content-end mb-2">
-                        <a href="{{ url_for('admin_blp.user_transactions', user_id=user.id) }}" class="btn btn-primary me-1 shadow-none fw-normal badge text-decoration-none text-white bg-info border-0">View All</a>
-                    </div>
-                      <div class="table-responsive">
-                        <table class="table table-hover table-bordered text-center table-sm">
-                            <thead>
-                              <tr class="bg-info text-white fw-normal" style="font-size: .8rem;">
-                                <th scope="col" class="fw-normal">Type</th>
-                                <th scope="col" class="fw-normal">Amount</th>
-                                <th scope="col" class="fw-normal">Balance</th>
-                                <th scope="col" class="fw-normal">Category</th>
-                                <th scope="col" class="fw-normal">Date</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                                {% for trans in user.transacts[::-1][:10] %}
-                              <tr class="text-muted fw-normal" style="font-size: .8rem;">
-                                <td>{% if trans.transaction_type.title() == "Crt" %}
-                                    Credit
-                                    {% else %}
-                                    Debit
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if trans.transaction_amount is not none and trans.transaction_amount is number %}
-                                        {{ "{:,.2f}".format(trans.transaction_amount) }}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if trans.balance is not none and trans.balance is number %}
-                                        {{ "{:,.2f}".format(trans.balance) }}
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td>{{trans.trans_category.category.title()}}</td>
-                                <td>
-                                    {{trans.date_posted.strftime("%Y-%m-%d %H:%M:%S")}}
-                                </td>
-                              </tr>
-                              {% endfor %}
-                            </tbody>
-                          </table>
-                    </div>
-                    {% else %}
-                    <div>
-                        <p class="text-center text-muted" style="font-size: .7rem;">No Transaction History</p>
-                    </div>
-                    {% endif %}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+
+<!-- Back link -->
+<div style="margin-bottom:20px;">
+  <a href="{{ url_for('admin_blp.get_users') }}" style="display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8892A4; text-decoration:none; letter-spacing:0.06em; transition:color 0.15s;" onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8892A4'">
+    <i class="fas fa-arrow-left" style="font-size:10px;"></i> Back to Users
+  </a>
+</div>
+
+<div style="display:grid; grid-template-columns:300px 1fr; gap:20px; align-items:start;">
+
+  <!-- ── Left column ── -->
+  <div style="display:flex; flex-direction:column; gap:16px;">
+
+    <!-- Profile card -->
+    <div class="profile-card fade-up">
+      <div style="padding:28px 20px; text-align:center; border-bottom:1px solid rgba(255,255,255,0.06);">
+        <!-- Avatar -->
+        {% if user.photo %}
+        <div class="avatar-wrap">
+          <img src="{{ user.photo }}" alt="{{ user.first_name }}">
+        </div>
+        {% else %}
+        <div class="avatar-fallback">{{ user.first_name[0].upper() }}{{ user.last_name[0].upper() }}</div>
+        {% endif %}
+
+        <div style="margin-top:14px;">
+          <div style="font-family:'Syne',sans-serif; font-size:17px; font-weight:700; color:#e2e8f0;">
+            {{ user.first_name.title() }} {{ user.last_name.title() }}
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8892A4; margin-top:4px;">
+            @{{ user.username }}
+          </div>
+          <div style="margin-top:10px;">
+            {% if user.active %}
+            <span class="badge-active"><i class="fas fa-circle" style="font-size:7px;"></i> Active</span>
+            {% else %}
+            <span class="badge-inactive"><i class="fas fa-circle" style="font-size:7px;"></i> Inactive</span>
+            {% endif %}
           </div>
         </div>
-      </section>
+      </div>
+
+      <!-- Balance highlight -->
+      <div style="padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.06); text-align:center;">
+        <div style="font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:#8892A4; margin-bottom:6px;">Wallet Balance</div>
+        <div style="font-family:'Syne',sans-serif; font-size:26px; font-weight:800; color:#00C896; line-height:1;">
+          ₦{{ "{:,.2f}".format(user.account_balance) }}
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div style="padding:16px 20px; display:flex; gap:8px; justify-content:center;">
+        <button class="btn-ghost-sm">
+          <i class="fas fa-envelope" style="font-size:10px;"></i> Message
+        </button>
+        <a href="{{ url_for('admin_blp.one_user', user_id=user.id, deactivate=user.active) }}"
+          class="{% if user.active %}btn-action-red{% else %}btn-action-green{% endif %}">
+          <i class="fas fa-{% if user.active %}ban{% else %}check{% endif %}" style="font-size:10px;"></i>
+          {% if user.active %}Deactivate{% else %}Activate{% endif %}
+        </a>
+      </div>
+    </div>
+
+    <!-- Account flags card -->
+    <div class="profile-card fade-up">
+      <div style="padding:16px 20px; border-bottom:1px solid rgba(255,255,255,0.06);">
+        <div style="font-family:'Syne',sans-serif; font-size:11px; font-weight:700; letter-spacing:0.1em; text-transform:uppercase; color:#8892A4;">Account Flags</div>
+      </div>
+      <div style="padding:6px 20px 14px;">
+        {% set flags = [
+          ('Pin Set',        user.pin_set),
+          ('Email Confirmed', user.confirmed),
+          ('Account Active', user.is_active),
+        ] %}
+        {% for label, val in flags %}
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+          <span style="font-family:'Outfit',sans-serif; font-size:12px; color:#8892A4;">{{ label }}</span>
+          {% if val %}
+          <span style="display:inline-flex; align-items:center; gap:4px; font-family:'IBM Plex Mono',monospace; font-size:10px; color:#00C896;">
+            <i class="fas fa-check-circle" style="font-size:11px;"></i> Yes
+          </span>
+          {% else %}
+          <span style="display:inline-flex; align-items:center; gap:4px; font-family:'IBM Plex Mono',monospace; font-size:10px; color:#FF5E6C;">
+            <i class="fas fa-times-circle" style="font-size:11px;"></i> No
+          </span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Right column ── -->
+  <div style="display:flex; flex-direction:column; gap:16px;">
+
+    <!-- User details card -->
+    <div class="profile-card fade-up">
+      <div style="padding:16px 22px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; gap:10px;">
+        <div style="width:28px; height:28px; border-radius:7px; background:rgba(74,144,226,0.12); display:flex; align-items:center; justify-content:center;">
+          <i class="fas fa-id-card" style="color:#4A90E2; font-size:12px;"></i>
+        </div>
+        <span style="font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:#e2e8f0;">Account Details</span>
+      </div>
+      <div style="padding:4px 22px 8px;">
+        {% set details = [
+          ('Full Name',       user.last_name.title() ~ ' ' ~ user.first_name.title(), False),
+          ('Email',           user.email, True),
+          ('Phone',           '0' ~ user.phone_number, True),
+          ('Account No.',     user.account_number, True),
+          ('Username',        '@' ~ user.username, False),
+        ] %}
+        {% for label, value, is_mono in details %}
+        <div class="info-row">
+          <span class="info-label">{{ label }}</span>
+          <span class="info-value {% if is_mono %}mono{% endif %}">{{ value }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Recent Transactions -->
+    <div class="profile-card fade-up">
+      <div style="padding:16px 22px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:28px; height:28px; border-radius:7px; background:rgba(0,200,150,0.1); display:flex; align-items:center; justify-content:center;">
+            <i class="fas fa-exchange-alt" style="color:#00C896; font-size:12px;"></i>
+          </div>
+          <span style="font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:#e2e8f0;">Recent Transactions</span>
+        </div>
+        {% if user.transacts %}
+        <a href="{{ url_for('admin_blp.user_transactions', user_id=user.id) }}" class="btn-ghost-sm">
+          View All <i class="fas fa-arrow-right" style="font-size:9px;"></i>
+        </a>
+        {% endif %}
+      </div>
+
+      {% if user.transacts %}
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Amount (₦)</th>
+              <th>Balance (₦)</th>
+              <th>Category</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for trans in user.transacts[::-1][:10] %}
+            <tr>
+              <td>
+                {% if trans.transaction_type.title() == "Crt" %}
+                <span class="badge-credit"><i class="fas fa-arrow-down" style="font-size:8px;"></i> Credit</span>
+                {% else %}
+                <span class="badge-debit"><i class="fas fa-arrow-up" style="font-size:8px;"></i> Debit</span>
+                {% endif %}
+              </td>
+              <td class="mono">
+                {% if trans.transaction_amount is not none and trans.transaction_amount is number %}
+                  {{ "{:,.2f}".format(trans.transaction_amount) }}
+                {% else %}N/A{% endif %}
+              </td>
+              <td class="mono">
+                {% if trans.balance is not none and trans.balance is number %}
+                  {{ "{:,.2f}".format(trans.balance) }}
+                {% else %}N/A{% endif %}
+              </td>
+              <td>{{ trans.trans_category.category.title() }}</td>
+              <td class="mono" style="color:#8892A4; font-size:10px;">
+                {{ trans.date_posted.strftime("%Y-%m-%d %H:%M") }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div style="padding:36px 20px; text-align:center;">
+        <i class="fas fa-inbox" style="font-size:28px; color:#8892A4; opacity:0.3; display:block; margin-bottom:10px;"></i>
+        <p style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8892A4; letter-spacing:0.06em;">No transactions yet</p>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
 </div>
-{% endblock content %}
+{% endblock %}
