@@ -1,170 +1,313 @@
 {% extends 'admin_temp/admin_layout.html' %}
+
+{% block title %}Transactions | EasyTransact Admin{% endblock %}
+{% block page_title %}Transactions{% endblock %}
+
+{% block extra_head %}
+<style>
+  .stat-card {
+    background: #1E2740;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px; padding: 16px 18px;
+    position: relative; overflow: hidden; transition: all 0.2s;
+    opacity: 0; animation: fadeUp 0.4s ease forwards;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; right: 0;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--glow, rgba(0,200,150,0.06));
+    transform: translate(22px,-22px); pointer-events: none;
+  }
+  .stat-card:hover { border-color: rgba(255,255,255,0.1); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.25); }
+  .stat-card:nth-child(1){animation-delay:.04s} .stat-card:nth-child(2){animation-delay:.08s}
+  .stat-card:nth-child(3){animation-delay:.12s} .stat-card:nth-child(4){animation-delay:.16s}
+  .stat-card:nth-child(5){animation-delay:.20s} .stat-card:nth-child(6){animation-delay:.24s}
+  .stat-card:nth-child(7){animation-delay:.28s}
+
+  .stat-icon { width:28px; height:28px; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; }
+  .stat-label { font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:#8892A4; margin-bottom:8px; display:flex; align-items:center; gap:7px; }
+  .stat-count { font-family:'Syne',sans-serif; font-size:24px; font-weight:700; color:#e2e8f0; line-height:1; }
+
+  .et-card { background:#1E2740; border:1px solid rgba(255,255,255,0.06); border-radius:12px; overflow:hidden; }
+
+  .data-table { width:100%; border-collapse:collapse; }
+  .data-table thead tr { background:rgba(255,255,255,0.03); border-bottom:1px solid rgba(255,255,255,0.07); }
+  .data-table th { padding:11px 14px; font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:0.14em; text-transform:uppercase; color:#8892A4; font-weight:500; text-align:left; white-space:nowrap; }
+  .data-table tbody tr { border-bottom:1px solid rgba(255,255,255,0.04); transition:background 0.15s; }
+  .data-table tbody tr:hover { background:rgba(255,255,255,0.025); }
+  .data-table td { padding:11px 14px; font-size:12px; color:#b0b8c8; font-family:'Outfit',sans-serif; white-space:nowrap; }
+  .data-table td.mono { font-family:'IBM Plex Mono',monospace; font-size:11px; }
+
+  .badge-credit { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; background:rgba(0,200,150,0.1); color:#00C896; font-size:10px; font-family:'IBM Plex Mono',monospace; border:1px solid rgba(0,200,150,0.2); }
+  .badge-debit  { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:20px; background:rgba(255,94,108,0.1); color:#FF5E6C; font-size:10px; font-family:'IBM Plex Mono',monospace; border:1px solid rgba(255,94,108,0.2); }
+
+  .status-badge {
+    display:inline-block; padding:3px 9px; border-radius:20px;
+    font-size:10px; font-family:'IBM Plex Mono',monospace; text-transform:capitalize;
+  }
+  .status-success { background:rgba(0,200,150,0.1); color:#00C896; border:1px solid rgba(0,200,150,0.2); }
+  .status-pending { background:rgba(245,166,35,0.1); color:#F5A623; border:1px solid rgba(245,166,35,0.2); }
+  .status-failed  { background:rgba(255,94,108,0.1); color:#FF5E6C; border:1px solid rgba(255,94,108,0.2); }
+  .status-refunded{ background:rgba(74,144,226,0.1); color:#4A90E2; border:1px solid rgba(74,144,226,0.2); }
+  .status-default { background:rgba(255,255,255,0.06); color:#8892A4; border:1px solid rgba(255,255,255,0.08); }
+
+  .page-btn { display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:6px; background:#1E2740; border:1px solid rgba(255,255,255,0.07); color:#8892A4; font-size:12px; font-family:'IBM Plex Mono',monospace; text-decoration:none; transition:all 0.18s; }
+  .page-btn:hover { border-color:#00C896; color:#00C896; }
+  .page-btn.active { background:rgba(0,200,150,0.15); border-color:#00C896; color:#00C896; font-weight:700; }
+  .page-btn.disabled { opacity:0.3; pointer-events:none; }
+
+  .search-input { background:#1a2035; border:1px solid rgba(255,255,255,0.08); border-radius:7px; padding:8px 14px 8px 36px; font-family:'Outfit',sans-serif; font-size:13px; color:#e2e8f0; outline:none; transition:all 0.18s; width:220px; }
+  .search-input:focus { border-color:#00C896; box-shadow:0 0 0 3px rgba(0,200,150,0.1); }
+  .search-input::placeholder { color:#8892A4; }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+  .fade-up { opacity:0; animation:fadeUp 0.4s ease forwards; }
+</style>
+{% endblock %}
+
 {% block content %}
 
-<div class="container mt-3">
-  <div class="row">
+<!-- Stat cards -->
+<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:12px; margin-bottom:24px;">
+  <div class="stat-card" style="--glow:rgba(74,144,226,0.08);">
+    <div class="stat-label"><div class="stat-icon" style="background:rgba(74,144,226,0.12);color:#4A90E2;"><i class="fas fa-exchange-alt"></i></div>All</div>
+    <div class="stat-count">{{ all_transactions_count }}</div>
+  </div>
+  <div class="stat-card" style="--glow:rgba(0,200,150,0.08);">
+    <div class="stat-label"><div class="stat-icon" style="background:rgba(0,200,150,0.12);color:#00C896;"><i class="fas fa-check-circle"></i></div>Success</div>
+    <div class="stat-count" style="color:#00C896;">{{ successful_transactions }}</div>
+  </div>
+  <div class="stat-card" style="--glow:rgba(245,166,35,0.08);">
+    <div class="stat-label"><div class="stat-icon" style="background:rgba(245,166,35,0.12);color:#F5A623;"><i class="fas fa-clock"></i></div>Pending</div>
+    <div class="stat-count" style="color:#F5A623;">{{ pending_transactions }}</div>
+  </div>
+  <div class="stat-card" style="--glow:rgba(255,94,108,0.08);">
+    <div class="stat-label"><div class="stat-icon" style="background:rgba(255,94,108,0.12);color:#FF5E6C;"><i class="fas fa-times-circle"></i></div>Failed</div>
+    <div class="stat-count" style="color:#FF5E6C;">{{ failed_transactions }}</div>
+  </div>
+  <div class="stat-card" style="--glow:rgba(74,144,226,0.08);">
+    <div class="stat-label"><div class="stat-icon" style="background:rgba(74,144,226,0.12);color:#4A90E2;"><i class="fas fa-undo"></i></div>Refunded</div>
+    <div class="stat-count" style="color:#4A90E2;">{{ refund_transactions }}</div>
+  </div>
+  <div class="stat-card" style="--glow:rgba(0,200,150,0.08);">
+    <div class="stat-label"><div class="stat-icon" style="background:rgba(0,200,150,0.12);color:#00C896;"><i class="fas fa-arrow-down"></i></div>Money In</div>
+    <div class="stat-count" style="color:#00C896;">{{ inflow_transactions }}</div>
+  </div>
+  <div class="stat-card" style="--glow:rgba(255,94,108,0.08);">
+    <div class="stat-label"><div class="stat-icon" style="background:rgba(255,94,108,0.12);color:#FF5E6C;"><i class="fas fa-arrow-up"></i></div>Money Out</div>
+    <div class="stat-count" style="color:#FF5E6C;">{{ outflow_transactions }}</div>
+  </div>
+</div>
 
-      <!-- Card for Completed Users -->
-      <div class="col-md-4 mb-3">
-          <div class="card text-white bg-info">
-              <div class="card-header text-center">Total Transactions</div>
-              <div class="card-body">
-                  <h5 class="card-title text-center fw-bold">{{all_transactions_count}}</h5>
-              </div>
-          </div>
-      </div>
-
-      <!-- Card for Uncompleted Users -->
-      <div class="col-md-4 mb-3">
-          <div class="card text-white bg-info">
-              <div class="card-header text-center">Successful Transactions</div>
-              <div class="card-body">
-                  <h5 class="card-title text-center fw-bold">{{successful_transactions}}</h5>
-              </div>
-          </div>
-      </div>
-
-      <div class="col-md-4 mb-3">
-          <div class="card text-white bg-info">
-              <div class="card-header text-center">Pending Transactions</div>
-              <div class="card-body">
-                  <h5 class="card-title text-center fw-bold">{{pending_transactions}}</h5>
-              </div>
-          </div>
-      </div>
-
-      <div class="col-md-4 mb-3">
-          <div class="card text-white bg-info">
-              <div class="card-header text-center">Failed Transactions</div>
-              <div class="card-body">
-                  <h5 class="card-title text-center fw-bold">{{failed_transactions}}</h5>
-              </div>
-          </div>
-      </div>
-
-      <div class="col-md-4 mb-3">
-          <div class="card text-white bg-info">
-              <div class="card-header text-center">Refunded Transactions</div>
-              <div class="card-body">
-                  <h5 class="card-title text-center fw-bold">{{refund_transactions}}</h5>
-              </div>
-          </div>
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <div class="card text-white bg-info">
-            <div class="card-header text-center">Money In</div>
-            <div class="card-body">
-                <h5 class="card-title text-center fw-bold">{{inflow_transactions}}</h5>
-            </div>
-        </div>
+<!-- Table -->
+<div class="et-card fade-up" style="animation-delay:0.3s;">
+  <div style="padding:14px 18px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    <span style="font-family:'Syne',sans-serif; font-size:13px; font-weight:700; color:#e2e8f0;">All Transactions</span>
+    <div style="position:relative;">
+      <i class="fas fa-search" style="position:absolute; left:11px; top:50%; transform:translateY(-50%); color:#8892A4; font-size:11px; pointer-events:none;"></i>
+      <input type="text" id="txn-search" class="search-input" placeholder="Search name, ref, category…">
     </div>
-
-    <div class="col-md-4 mb-3">
-      <div class="card text-white bg-info">
-          <div class="card-header text-center">Money Out</div>
-          <div class="card-body">
-              <h5 class="card-title text-center fw-bold">{{outflow_transactions}}</h5>
-          </div>
-      </div>
   </div>
-  </div>
-</div>
 
-<div class="table-responsive">
-  <table class="table table-hover table-bordered text-center table-sm">
-    <thead>
-      <tr class="bg-info text-white fw-normal" style="font-size: .9rem;">
-        <th scope="col" class="fw-normal">Type</th>
-        <th scope="col" class="fw-normal">Amount</th>
-        <th scope="col" class="fw-normal">Balance</th>
-        <th scope="col" class="fw-normal">Category</th>
-        <th scope="col" class="fw-normal">Status</th>
-        <th scope="col" class="fw-normal">Name</th>
-        <th scope="col" class="fw-normal">Tranx Ref</th>
-        <th scope="col" class="fw-normal">Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for trans in paginated_transactions %}
-      <tr class="text-muted fw-normal" style="font-size: .9rem;">
-        <td class="{% if trans.transaction_type.title() == 'Crt' %}text-white bg-success{% else %}bg-danger text-white{% endif %}">{% if trans.transaction_type.title() == "Crt" %}
-          Credit
-          {% else %}
-          Debit
-          {% endif %}
-        </td>
-        <td>
-          {% if trans.transaction_amount is not none and trans.transaction_amount is number %}
-          {{ "{:,.2f}".format(trans.transaction_amount) }}
-          {% else %}
-          N/A
-          {% endif %}
-        </td>
-        <td>
-          {% if trans.balance is not none and trans.balance is number %}
-          {{ "{:,.2f}".format(trans.balance) }}
-          {% else %}
-          N/A
-          {% endif %}
-        </td>
-        <td>{{trans.trans_category.category.title()}}</td>
-        <td>{{trans.status.title()}}</td>
-        <td>{{trans.author.last_name.title()}} {{trans.author.first_name.title()}}</td>
-        <td>{{trans.transaction_ref|truncate(10)}}</td>
-        <td>
-          {{trans.date_posted.strftime("%Y-%m-%d %H:%M:%S")}}
-        </td>
-      </tr>
+  <div style="overflow-x:auto;">
+    <table class="data-table" id="txn-table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Type</th>
+          <th>Amount (₦)</th>
+          <th>Balance (₦)</th>
+          <th>Category</th>
+          <th>Status</th>
+          <th>User</th>
+          <th>Ref</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for trans in paginated_transactions %}
+        <tr>
+          <td style="width:36px; text-align:center;">
+            <button class="txn-view-btn" title="View details"
+              data-type="{% if trans.transaction_type.title() == 'Crt' %}Credit{% else %}Debit{% endif %}"
+              data-amount="{% if trans.transaction_amount is not none and trans.transaction_amount is number %}{{ '{:,.2f}'.format(trans.transaction_amount) }}{% else %}N/A{% endif %}"
+              data-balance="{% if trans.balance is not none and trans.balance is number %}{{ '{:,.2f}'.format(trans.balance) }}{% else %}N/A{% endif %}"
+              data-category="{{ trans.trans_category.category.title() }}"
+              data-status="{{ trans.status.title() }}"
+              data-user="{{ trans.author.last_name.title() }} {{ trans.author.first_name.title() }}"
+              data-ref="{{ trans.transaction_ref }}"
+              data-date="{{ trans.date_posted.strftime('%Y-%m-%d %H:%M:%S') }}"
+              style="width:28px; height:28px; border-radius:6px; background:rgba(74,144,226,0.1); border:1px solid rgba(74,144,226,0.2); color:#4A90E2; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; transition:all 0.15s; font-size:11px;"
+              onmouseover="this.style.background='rgba(74,144,226,0.2)'" onmouseout="this.style.background='rgba(74,144,226,0.1)'">
+              <i class="fas fa-eye" style="pointer-events:none;"></i>
+            </button>
+          </td>
+          <td>
+            {% if trans.transaction_type.title() == "Crt" %}
+            <span class="badge-credit"><i class="fas fa-arrow-down" style="font-size:8px;"></i> Credit</span>
+            {% else %}
+            <span class="badge-debit"><i class="fas fa-arrow-up" style="font-size:8px;"></i> Debit</span>
+            {% endif %}
+          </td>
+          <td class="mono">
+            {% if trans.transaction_amount is not none and trans.transaction_amount is number %}{{ "{:,.2f}".format(trans.transaction_amount) }}{% else %}N/A{% endif %}
+          </td>
+          <td class="mono">
+            {% if trans.balance is not none and trans.balance is number %}{{ "{:,.2f}".format(trans.balance) }}{% else %}N/A{% endif %}
+          </td>
+          <td>{{ trans.trans_category.category.title() }}</td>
+          <td>
+            {% set s = trans.status.lower() %}
+            <span class="status-badge {% if s == 'success' or s == 'successful' %}status-success{% elif s == 'pending' %}status-pending{% elif s == 'failed' %}status-failed{% elif s == 'refunded' %}status-refunded{% else %}status-default{% endif %}">
+              {{ trans.status.title() }}
+            </span>
+          </td>
+          <td style="color:#e2e8f0; font-weight:500;">{{ trans.author.last_name.title() }} {{ trans.author.first_name.title() }}</td>
+          <td class="mono" style="color:#8892A4; font-size:10px;">{{ trans.transaction_ref|truncate(12, True, '…') }}</td>
+          <td class="mono" style="color:#8892A4; font-size:10px;">{{ trans.date_posted.strftime("%Y-%m-%d %H:%M") }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div style="padding:14px 18px; border-top:1px solid rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+    {% set total_pages = ((paginated_transactions.total - 1) // paginated_transactions.per_page) + 1 %}
+    <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:#8892A4;">
+      Page {{ paginated_transactions.page }} of {{ total_pages }} &nbsp;·&nbsp; {{ paginated_transactions.total }} total
+    </div>
+    <div style="display:flex; align-items:center; gap:4px;">
+      <a href="?page=1" class="page-btn {% if paginated_transactions.page == 1 %}disabled{% endif %}" title="First">
+        <i class="fas fa-angle-double-left" style="font-size:10px;"></i>
+      </a>
+      <a href="?page={{ paginated_transactions.page - 1 }}" class="page-btn {% if paginated_transactions.page == 1 %}disabled{% endif %}" title="Prev">
+        <i class="fas fa-chevron-left" style="font-size:10px;"></i>
+      </a>
+      {% for i in range(1, total_pages + 1) %}
+        {% if i == paginated_transactions.page %}
+          <span class="page-btn active">{{ i }}</span>
+        {% elif i == 1 or i == total_pages or (i >= paginated_transactions.page - 2 and i <= paginated_transactions.page + 2) %}
+          <a href="?page={{ i }}" class="page-btn">{{ i }}</a>
+        {% elif i == paginated_transactions.page - 3 or i == paginated_transactions.page + 3 %}
+          <span style="color:#8892A4; font-size:12px; padding:0 4px;">…</span>
+        {% endif %}
       {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-<!-- Pagination -->
-<div>
-  <nav aria-label="Page navigation example">
-      <ul class="pagination justify-content-center mb-0">
-          <!-- First Button -->
-          <li class="page-item {{ 'disabled' if paginated_transactions.page == 1 }}">
-              <a class="page-link bg-info shadow-none border-0 text-white" href="?page=1" aria-label="First" {{ 'tabindex="-1"' if paginated_transactions.page == 1 }}>
-                  <span aria-hidden="true">&laquo;&laquo;</span>
-              </a>
-          </li>
-
-          <!-- Previous Button -->
-          <li class="page-item {{ 'disabled' if paginated_transactions.page == 1 }}">
-              <a class="page-link shadow-none border-0 text-white" href="?page={{ paginated_transactions.page - 1 }}" aria-label="Previous" {{ 'tabindex="-1"' if paginated_transactions.page == 1 }}>
-                  <span aria-hidden="true">&laquo;</span>
-              </a>
-          </li>
-
-          <!-- Page Numbers -->
-          {% for i in range(1, (paginated_transactions.total // paginated_transactions.per_page) + 2) %}
-              <!-- Add a margin to page 1 and 2 -->
-              <li class="page-item {{ 'active' if paginated_transactions.page == i }}" style="{{ 'margin-right: 10px;' if i == 1 or i == 2 }}">
-                  <a class="page-link shadow-none {{ 'bg-light text-muted' if paginated_transactions.page == i else 'bg-info text-white' }} border-0" href="?page={{ i }}" {{ 'tabindex="-1"' if paginated_transactions.page == i }}>
-                      {{ i }}
-                  </a>
-              </li>
-          {% endfor %}
-
-          <!-- Next Button -->
-          <li class="page-item {{ 'disabled' if paginated_transactions.page == (paginated_transactions.total // paginated_transactions.per_page) + 1 }}">
-              <a class="page-link shadow-none border-0 text-white" href="?page={{ paginated_transactions.page + 1 }}" aria-label="Next" {{ 'tabindex="-1"' if paginated_transactions.page == (paginated_transactions.total // paginated_transactions.per_page) + 1 }}>
-                  <span aria-hidden="true">&raquo;</span>
-              </a>
-          </li>
-
-          <!-- Last Button -->
-          <li class="page-item {{ 'disabled' if paginated_transactions.page == (paginated_transactions.total // paginated_transactions.per_page) + 1 }}">
-              <a class="page-link bg-info shadow-none border-0 text-white" href="?page={{ (paginated_transactions.total // paginated_transactions.per_page) + 1 }}" aria-label="Last" {{ 'tabindex="-1"' if paginated_transactions.page == (paginated_transactions.total // paginated_transactions.per_page) + 1 }}>
-                  <span aria-hidden="true">&raquo;&raquo;</span>
-              </a>
-          </li>
-      </ul>
-  </nav>
+      <a href="?page={{ paginated_transactions.page + 1 }}" class="page-btn {% if paginated_transactions.page == total_pages %}disabled{% endif %}" title="Next">
+        <i class="fas fa-chevron-right" style="font-size:10px;"></i>
+      </a>
+      <a href="?page={{ total_pages }}" class="page-btn {% if paginated_transactions.page == total_pages %}disabled{% endif %}" title="Last">
+        <i class="fas fa-angle-double-right" style="font-size:10px;"></i>
+      </a>
+    </div>
+  </div>
 </div>
 
 
+<!-- ── Transaction Detail Modal ── -->
+<div id="txn-detail-modal" style="display:none; position:fixed; inset:0; z-index:9999; align-items:center; justify-content:center; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); padding:20px;"
+  onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#1E2740; border:1px solid rgba(255,255,255,0.08); border-radius:12px; width:100%; max-width:420px; box-shadow:0 24px 64px rgba(0,0,0,0.5); overflow:hidden;">
+    <div style="padding:18px 22px; border-bottom:1px solid rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:space-between; background:#151c30;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div id="txn-modal-icon" style="width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px;"></div>
+        <div>
+          <div style="font-family:'Syne',sans-serif; font-size:14px; font-weight:700; color:#e2e8f0;">Transaction Details</div>
+          <div id="txn-modal-ref" style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#8892A4; margin-top:2px; letter-spacing:0.04em;"></div>
+        </div>
+      </div>
+      <button onclick="document.getElementById('txn-detail-modal').style.display='none'"
+        style="background:none; border:none; color:#8892A4; cursor:pointer; font-size:15px; padding:4px;"
+        onmouseover="this.style.color='#e2e8f0'" onmouseout="this.style.color='#8892A4'">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div style="padding:20px 22px 16px; border-bottom:1px solid rgba(255,255,255,0.05); text-align:center;">
+      <div style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:#8892A4; margin-bottom:6px;">Transaction Amount</div>
+      <div id="txn-modal-amount" style="font-family:'Syne',sans-serif; font-size:32px; font-weight:800; line-height:1;">—</div>
+      <div id="txn-modal-type-badge" style="margin-top:10px; display:inline-block;"></div>
+    </div>
+    <div style="padding:8px 22px 20px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#8892A4;">Balance After</span>
+        <span id="txn-modal-balance" style="font-family:'Outfit',sans-serif; font-size:13px; color:#e2e8f0; font-weight:500;"></span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#8892A4;">Category</span>
+        <span id="txn-modal-category" style="font-family:'Outfit',sans-serif; font-size:13px; color:#e2e8f0; font-weight:500;"></span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#8892A4;">Status</span>
+        <span id="txn-modal-status" style="font-family:'Outfit',sans-serif; font-size:13px; color:#e2e8f0; font-weight:500;"></span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.04);">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#8892A4;">User</span>
+        <span id="txn-modal-user" style="font-family:'Outfit',sans-serif; font-size:13px; color:#e2e8f0; font-weight:500;"></span>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:space-between; padding:11px 0;">
+        <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#8892A4;">Date &amp; Time</span>
+        <span id="txn-modal-date" style="font-family:'Outfit',sans-serif; font-size:13px; color:#e2e8f0; font-weight:500;"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('txn-search').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('#txn-table tbody tr').forEach(row => {
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+
+  document.querySelectorAll('.txn-view-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const d = btn.dataset;
+      const isCredit = d.type === 'Credit';
+      const modal = document.getElementById('txn-detail-modal');
+
+      const icon = document.getElementById('txn-modal-icon');
+      icon.style.background = isCredit ? 'rgba(0,200,150,0.12)' : 'rgba(255,94,108,0.12)';
+      icon.innerHTML = `<i class="fas fa-arrow-${isCredit ? 'down' : 'up'}" style="color:${isCredit ? '#00C896' : '#FF5E6C'};"></i>`;
+
+      document.getElementById('txn-modal-ref').textContent = d.ref;
+
+      const amtEl = document.getElementById('txn-modal-amount');
+      amtEl.textContent = `₦${d.amount}`;
+      amtEl.style.color = isCredit ? '#00C896' : '#FF5E6C';
+
+      const typeBadge = document.getElementById('txn-modal-type-badge');
+      typeBadge.style.cssText = `padding:3px 12px; border-radius:20px; font-size:11px; font-family:'IBM Plex Mono',monospace; border:1px solid; background:${isCredit ? 'rgba(0,200,150,0.1)' : 'rgba(255,94,108,0.1)'}; color:${isCredit ? '#00C896' : '#FF5E6C'}; border-color:${isCredit ? 'rgba(0,200,150,0.25)' : 'rgba(255,94,108,0.25)'};`;
+      typeBadge.textContent = d.type;
+
+      document.getElementById('txn-modal-balance').textContent = `₦${d.balance}`;
+      document.getElementById('txn-modal-category').textContent = d.category;
+      document.getElementById('txn-modal-user').textContent = d.user;
+      document.getElementById('txn-modal-date').textContent = d.date;
+
+      const s = d.status.toLowerCase();
+      const statusColors = {
+        success:    ['rgba(0,200,150,0.1)',  '#00C896', 'rgba(0,200,150,0.2)'],
+        successful: ['rgba(0,200,150,0.1)',  '#00C896', 'rgba(0,200,150,0.2)'],
+        pending:    ['rgba(245,166,35,0.1)', '#F5A623', 'rgba(245,166,35,0.2)'],
+        failed:     ['rgba(255,94,108,0.1)', '#FF5E6C', 'rgba(255,94,108,0.2)'],
+        refunded:   ['rgba(74,144,226,0.1)', '#4A90E2', 'rgba(74,144,226,0.2)'],
+      };
+      const [bg, color, border] = statusColors[s] || ['rgba(255,255,255,0.06)', '#8892A4', 'rgba(255,255,255,0.1)'];
+      document.getElementById('txn-modal-status').innerHTML =
+        `<span style="padding:3px 10px; border-radius:20px; font-size:11px; font-family:'IBM Plex Mono',monospace; background:${bg}; color:${color}; border:1px solid ${border};">${d.status}</span>`;
+
+      modal.style.display = 'flex';
+    });
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') document.getElementById('txn-detail-modal').style.display = 'none';
+  });
+});
+</script>
 {% endblock %}
