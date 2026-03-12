@@ -1,182 +1,458 @@
 {% extends 'admin_temp/admin_layout.html' %}
+
+{% block title %}Overview | EasyTransact Admin{% endblock %}
+{% block page_title %}Overview{% endblock %}
+
+{% block extra_head %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  /* Stat card */
+  .stat-card {
+    background: #1E2740;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 18px 20px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: var(--card-glow, rgba(0,200,150,0.06));
+    transform: translate(30px, -30px);
+    pointer-events: none;
+  }
+  .stat-card:hover {
+    border-color: rgba(255,255,255,0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8892A4;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 10px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stat-count {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: #e2e8f0;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-amount {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #8892A4;
+  }
+  .stat-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  /* Section heading */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #e2e8f0;
+    letter-spacing: 0.04em;
+    margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.06);
+  }
+
+  /* Chart card */
+  .chart-card {
+    background: #1E2740;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+  .chart-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+  .chart-sub {
+    font-size: 11px;
+    color: #8892A4;
+    font-family: 'IBM Plex Mono', monospace;
+    margin-bottom: 18px;
+  }
+
+  /* Summary row */
+  .summary-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* Stagger animation */
+  .stat-card { opacity: 0; animation: fadeUp 0.4s ease forwards; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+  .stat-card:nth-child(1)  { animation-delay: 0.04s; }
+  .stat-card:nth-child(2)  { animation-delay: 0.08s; }
+  .stat-card:nth-child(3)  { animation-delay: 0.12s; }
+  .stat-card:nth-child(4)  { animation-delay: 0.16s; }
+  .stat-card:nth-child(5)  { animation-delay: 0.20s; }
+  .stat-card:nth-child(6)  { animation-delay: 0.24s; }
+  .stat-card:nth-child(7)  { animation-delay: 0.28s; }
+  .stat-card:nth-child(8)  { animation-delay: 0.32s; }
+  .stat-card:nth-child(9)  { animation-delay: 0.36s; }
+  .stat-card:nth-child(10) { animation-delay: 0.40s; }
+  .stat-card:nth-child(11) { animation-delay: 0.44s; }
+  .stat-card:nth-child(12) { animation-delay: 0.48s; }
+  .stat-card:nth-child(13) { animation-delay: 0.52s; }
+  .stat-card:nth-child(14) { animation-delay: 0.56s; }
+  .stat-card:nth-child(15) { animation-delay: 0.60s; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="container mt-3">
-    <div class="row">
-  
-        <!-- Card for Total Transactions -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Total Transactions</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['all_transactions_count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['all_transactions_amount']) }}</span>
-                </div>
-            </div>
-        </div>
-  
-        <!-- Card for Successful Transactions -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Successful Transactions</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['success_count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['success_amount']) }}</span>
-                </div>
-            </div>
-        </div>
-  
-        <!-- Card for Pending Transactions -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Pending Transactions</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['pending_count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['pending_amount']) }}</span>
-                </div>
-            </div>
-        </div>
 
-        <!-- Card for Refunded Transactions -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Refunded Transactions</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['refunded_count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['refunded_amount']) }}</span>
-                </div>
-            </div>
-        </div>
-  
-        <!-- Card for Failed Transactions -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Failed Transactions</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['failed_count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['failed_amount']) }}</span>
-                </div>
-            </div>
-        </div>
-  
-        <!-- Card for Money In -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Money In</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['inflow_count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['inflow_amount']) }}</span>
-                </div>
-            </div>
-        </div>
-  
-        <!-- Card for Money Out -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Money Out</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['outflow_count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['outflow_amount']) }}</span>
-                </div>
-            </div>
-        </div>
+<!-- ── Top KPI row ── -->
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:28px;">
 
-        <!-- Card for Transactions Today -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Transaction Today</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['transactions_today_count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['transactions_today_amount']) }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card for Airtime -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Airtime</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Airtime']['count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Airtime']['amount']) }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card for Electricity -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Electricity</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Electricity']['count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Electricity']['amount']) }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card for Internet-Data -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Internet-Data</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Internet-Data']['count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Internet-Data']['amount']) }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card for TV Subscription -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">TV Subscription</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Tv-Subscription']['count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Tv-Subscription']['amount']) }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card for Transfer -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Transfer</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Transfer']['count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Transfer']['amount']) }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card for W2W -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">W2W</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['W2W']['count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['W2W']['amount']) }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card for Wallet-Topup -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Wallet-Topup</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['Wallet-Topup']['count']) }}</h5>
-                    <span class="fw-bold">{{ "{:,.2f}".format(stats['Wallet-Topup']['amount']) }}</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Card for Total Users -->
-        <div class="col-md-4 mb-3">
-            <div class="card text-dark bg-accent">
-                <div class="card-header text-center">Users</div>
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <h5 class="card-title fw-bold">{{ "{:,}".format(stats['all_users']) }}</h5>
-                </div>
-            </div>
-        </div>
+  <!-- Total Transactions -->
+  <div class="stat-card" style="--card-glow: rgba(74,144,226,0.1);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(74,144,226,0.12); color:#4A90E2;"><i class="fas fa-exchange-alt"></i></div>
+      All Transactions
     </div>
+    <div class="stat-count">{{ "{:,}".format(stats['all_transactions_count']) }}</div>
+    <div class="stat-amount">₦{{ "{:,.2f}".format(stats['all_transactions_amount']) }}</div>
+  </div>
+
+  <!-- Successful -->
+  <div class="stat-card" style="--card-glow: rgba(0,200,150,0.1);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(0,200,150,0.12); color:#00C896;"><i class="fas fa-check-circle"></i></div>
+      Successful
+    </div>
+    <div class="stat-count" style="color:#00C896;">{{ "{:,}".format(stats['success_count']) }}</div>
+    <div class="stat-amount">₦{{ "{:,.2f}".format(stats['success_amount']) }}</div>
+  </div>
+
+  <!-- Today -->
+  <div class="stat-card" style="--card-glow: rgba(245,166,35,0.1);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(245,166,35,0.12); color:#F5A623;"><i class="fas fa-calendar-day"></i></div>
+      Today
+    </div>
+    <div class="stat-count" style="color:#F5A623;">{{ "{:,}".format(stats['transactions_today_count']) }}</div>
+    <div class="stat-amount">₦{{ "{:,.2f}".format(stats['transactions_today_amount']) }}</div>
+  </div>
+
+  <!-- Users -->
+  <div class="stat-card" style="--card-glow: rgba(138,100,255,0.1);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(138,100,255,0.12); color:#8A64FF;"><i class="fas fa-users"></i></div>
+      Total Users
+    </div>
+    <div class="stat-count" style="color:#8A64FF;">{{ "{:,}".format(stats['all_users']) }}</div>
+    <div class="stat-amount">registered accounts</div>
+  </div>
 </div>
-{% endblock content %}
+
+<!-- ── Charts row ── -->
+<div style="display:grid; grid-template-columns:1.4fr 1fr; gap:16px; margin-bottom:28px;">
+
+  <!-- Transaction Breakdown Bar Chart -->
+  <div class="chart-card">
+    <div class="chart-title">Transaction Breakdown</div>
+    <div class="chart-sub">Volume &amp; amount by category</div>
+    <canvas id="categoryChart" height="200"></canvas>
+  </div>
+
+  <!-- Status Donut -->
+  <div class="chart-card">
+    <div class="chart-title">Status Distribution</div>
+    <div class="chart-sub">By transaction count</div>
+    <canvas id="statusChart" height="200"></canvas>
+    <!-- Legend -->
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:16px;">
+      <span class="summary-pill" style="background:rgba(0,200,150,0.12); color:#00C896;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#00C896;display:inline-block;"></span>
+        Success
+      </span>
+      <span class="summary-pill" style="background:rgba(245,166,35,0.12); color:#F5A623;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#F5A623;display:inline-block;"></span>
+        Pending
+      </span>
+      <span class="summary-pill" style="background:rgba(255,94,108,0.12); color:#FF5E6C;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#FF5E6C;display:inline-block;"></span>
+        Failed
+      </span>
+      <span class="summary-pill" style="background:rgba(74,144,226,0.12); color:#4A90E2;">
+        <span style="width:6px;height:6px;border-radius:50%;background:#4A90E2;display:inline-block;"></span>
+        Refunded
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- ── Money Flow + Service Stats ── -->
+<div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:28px;">
+
+  <!-- Money Flow -->
+  <div class="chart-card">
+    <div class="chart-title">Money Flow</div>
+    <div class="chart-sub">Inflow vs Outflow</div>
+    <canvas id="flowChart" height="160"></canvas>
+  </div>
+
+  <!-- Service cards grid -->
+  <div>
+    <div class="section-title">By Service</div>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+      {% set services = [
+        ('Airtime',         'fas fa-mobile-alt',   '#00C896', 'rgba(0,200,150,0.1)'),
+        ('Internet-Data',   'fas fa-wifi',         '#4A90E2', 'rgba(74,144,226,0.1)'),
+        ('Electricity',     'fas fa-bolt',         '#F5A623', 'rgba(245,166,35,0.1)'),
+        ('Tv-Subscription', 'fas fa-tv',           '#8A64FF', 'rgba(138,100,255,0.1)'),
+        ('Transfer',        'fas fa-paper-plane',  '#00C896', 'rgba(0,200,150,0.1)'),
+        ('W2W',             'fas fa-wallet',       '#FF5E6C', 'rgba(255,94,108,0.1)'),
+        ('Wallet-Topup',    'fas fa-plus-circle',  '#F5A623', 'rgba(245,166,35,0.1)'),
+      ] %}
+      {% for key, icon, color, bg in services %}
+      <div class="stat-card" style="--card-glow:{{ bg }}; padding:14px 16px;">
+        <div class="stat-label" style="margin-bottom:8px;">
+          <div class="stat-icon" style="background:{{ bg }}; color:{{ color }}; width:26px; height:26px; font-size:11px; border-radius:6px;">
+            <i class="{{ icon }}"></i>
+          </div>
+          {{ key }}
+        </div>
+        <div style="display:flex; align-items:baseline; gap:8px;">
+          <span style="font-family:'Syne',sans-serif; font-size:20px; font-weight:700; color:{{ color }};">{{ "{:,}".format(stats[key]['count']) }}</span>
+          <span style="font-family:'IBM Plex Mono',monospace; font-size:10px; color:#8892A4;">txns</span>
+        </div>
+        <div class="stat-amount">₦{{ "{:,.0f}".format(stats[key]['amount']) }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- ── Status detail row ── -->
+<div class="section-title">Transaction Status Detail</div>
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:12px;">
+
+  <div class="stat-card" style="--card-glow:rgba(245,166,35,0.1);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(245,166,35,0.12); color:#F5A623;"><i class="fas fa-clock"></i></div>
+      Pending
+    </div>
+    <div class="stat-count" style="color:#F5A623;">{{ "{:,}".format(stats['pending_count']) }}</div>
+    <div class="stat-amount">₦{{ "{:,.2f}".format(stats['pending_amount']) }}</div>
+  </div>
+
+  <div class="stat-card" style="--card-glow:rgba(255,94,108,0.1);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(255,94,108,0.12); color:#FF5E6C;"><i class="fas fa-times-circle"></i></div>
+      Failed
+    </div>
+    <div class="stat-count" style="color:#FF5E6C;">{{ "{:,}".format(stats['failed_count']) }}</div>
+    <div class="stat-amount">₦{{ "{:,.2f}".format(stats['failed_amount']) }}</div>
+  </div>
+
+  <div class="stat-card" style="--card-glow:rgba(74,144,226,0.1);">
+    <div class="stat-label">
+      <div class="stat-icon" style="background:rgba(74,144,226,0.12); color:#4A90E2;"><i class="fas fa-undo"></i></div>
+      Refunded
+    </div>
+    <div class="stat-count" style="color:#4A90E2;">{{ "{:,}".format(stats['refunded_count']) }}</div>
+    <div class="stat-amount">₦{{ "{:,.2f}".format(stats['refunded_amount']) }}</div>
+  </div>
+
+  <div class="stat-card" style="display:flex; align-items:center; gap:16px; flex-direction:row; --card-glow:rgba(0,200,150,0.08);">
+    <div style="flex:1;">
+      <div style="font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:#8892A4; font-family:'IBM Plex Mono',monospace; margin-bottom:6px;">Success Rate</div>
+      <div style="font-family:'Syne',sans-serif; font-size:28px; font-weight:800; color:#00C896; line-height:1;">
+        {{ "{:.0f}".format(stats['success_count'] / stats['all_transactions_count'] * 100 if stats['all_transactions_count'] else 0) }}<span style="font-size:16px;">%</span>
+      </div>
+    </div>
+    <canvas id="miniDonut" width="60" height="60"></canvas>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Global chart defaults
+  Chart.defaults.color = '#8892A4';
+  Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+  Chart.defaults.font.size = 10;
+
+  const gridColor = 'rgba(255,255,255,0.05)';
+  const emerald = '#00C896';
+  const amber   = '#F5A623';
+  const rose    = '#FF5E6C';
+  const blue    = '#4A90E2';
+  const purple  = '#8A64FF';
+
+  // ── 1. Category Bar Chart ──
+  const categoryData = {
+    labels: ['Airtime', 'Internet', 'Electricity', 'TV Sub', 'Transfer', 'W2W', 'Wallet+'],
+    counts: [
+      {{ stats['Airtime']['count'] }},
+      {{ stats['Internet-Data']['count'] }},
+      {{ stats['Electricity']['count'] }},
+      {{ stats['Tv-Subscription']['count'] }},
+      {{ stats['Transfer']['count'] }},
+      {{ stats['W2W']['count'] }},
+      {{ stats['Wallet-Topup']['count'] }},
+    ]
+  };
+  new Chart(document.getElementById('categoryChart'), {
+    type: 'bar',
+    data: {
+      labels: categoryData.labels,
+      datasets: [{
+        label: 'Transactions',
+        data: categoryData.counts,
+        backgroundColor: [
+          'rgba(0,200,150,0.7)',
+          'rgba(74,144,226,0.7)',
+          'rgba(245,166,35,0.7)',
+          'rgba(138,100,255,0.7)',
+          'rgba(0,200,150,0.5)',
+          'rgba(255,94,108,0.7)',
+          'rgba(245,166,35,0.5)',
+        ],
+        borderColor: [emerald, blue, amber, purple, emerald, rose, amber],
+        borderWidth: 1,
+        borderRadius: 5,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { font: { size: 10 } } },
+        y: { grid: { color: gridColor }, ticks: { font: { size: 10 } }, beginAtZero: true }
+      }
+    }
+  });
+
+  // ── 2. Status Donut ──
+  new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Success', 'Pending', 'Failed', 'Refunded'],
+      datasets: [{
+        data: [
+          {{ stats['success_count'] }},
+          {{ stats['pending_count'] }},
+          {{ stats['failed_count'] }},
+          {{ stats['refunded_count'] }},
+        ],
+        backgroundColor: [
+          'rgba(0,200,150,0.75)',
+          'rgba(245,166,35,0.75)',
+          'rgba(255,94,108,0.75)',
+          'rgba(74,144,226,0.75)',
+        ],
+        borderColor: ['#0B0F1A'],
+        borderWidth: 3,
+        hoverOffset: 6,
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '70%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: {
+          label: ctx => ` ${ctx.label}: ${ctx.parsed.toLocaleString()}`
+        }}
+      }
+    }
+  });
+
+  // ── 3. Flow Bar ──
+  new Chart(document.getElementById('flowChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Inflow', 'Outflow'],
+      datasets: [{
+        label: 'Count',
+        data: [{{ stats['inflow_count'] }}, {{ stats['outflow_count'] }}],
+        backgroundColor: ['rgba(0,200,150,0.7)', 'rgba(255,94,108,0.7)'],
+        borderColor: [emerald, rose],
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false,
+        yAxisID: 'y',
+      },{
+        label: 'Amount (₦)',
+        data: [{{ stats['inflow_amount'] }}, {{ stats['outflow_amount'] }}],
+        backgroundColor: ['rgba(0,200,150,0.2)', 'rgba(255,94,108,0.2)'],
+        borderColor: ['rgba(0,200,150,0.5)', 'rgba(255,94,108,0.5)'],
+        borderWidth: 1,
+        borderRadius: 6,
+        borderSkipped: false,
+        yAxisID: 'y1',
+        type: 'line',
+        fill: true,
+        tension: 0.3,
+        pointRadius: 5,
+        pointBackgroundColor: [emerald, rose],
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: true, position: 'bottom', labels: { boxWidth: 8, padding: 12 } }
+      },
+      scales: {
+        x: { grid: { color: gridColor } },
+        y: { grid: { color: gridColor }, position: 'left', beginAtZero: true },
+        y1: { grid: { display: false }, position: 'right', beginAtZero: true },
+      }
+    }
+  });
+
+  // ── 4. Mini Success Rate Donut ──
+  const rate = {{ stats['success_count'] }} / ({{ stats['all_transactions_count'] }} || 1) * 100;
+  new Chart(document.getElementById('miniDonut'), {
+    type: 'doughnut',
+    data: {
+      datasets: [{
+        data: [rate, 100 - rate],
+        backgroundColor: ['rgba(0,200,150,0.8)', 'rgba(255,255,255,0.05)'],
+        borderWidth: 0,
+        hoverOffset: 0,
+      }]
+    },
+    options: {
+      responsive: false,
+      cutout: '72%',
+      plugins: { legend: { display: false }, tooltip: { enabled: false } },
+      animation: { duration: 1200, easing: 'easeInOutQuart' }
+    }
+  });
+</script>
+{% endblock %}
