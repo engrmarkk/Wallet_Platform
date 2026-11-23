@@ -136,6 +136,4 @@ dmypy.json
 DS_Store
 run_script
 *.json
-.gitignore
-node_modules
-config.bat
+.vscode
