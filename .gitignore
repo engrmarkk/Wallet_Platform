@@ -136,4 +136,5 @@ dmypy.json
 DS_Store
 run_script
 *.json
-.vscode
+config.bat
+node_modules
